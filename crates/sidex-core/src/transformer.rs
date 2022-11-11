@@ -6,12 +6,12 @@ use sidex_syntax::ast;
 use crate::{ir, model::ModelSource};
 
 struct Model {
-    model_idx: ir::ModelIdx,
+    model_idx: ir::BundleIdx,
     schemas: HashMap<String, Schema>,
 }
 
 struct Schema {
-    model_idx: ir::ModelIdx,
+    model_idx: ir::BundleIdx,
     schema_idx: ir::SchemaIdx,
     ast_schema: ast::Schema,
     resolution_table: HashMap<String, ResolvedPath>,
@@ -19,14 +19,14 @@ struct Schema {
 
 enum ResolvedPath {
     Model {
-        model: ir::ModelIdx,
+        model: ir::BundleIdx,
     },
     Schema {
-        model: ir::ModelIdx,
+        model: ir::BundleIdx,
         schema: ir::SchemaIdx,
     },
     Def {
-        model: ir::ModelIdx,
+        model: ir::BundleIdx,
         schema: ir::SchemaIdx,
         def: ir::DefIdx,
     },
@@ -44,7 +44,7 @@ impl Transformer {
 
     fn resolve_path(
         &self,
-        model: ir::ModelIdx,
+        model: ir::BundleIdx,
         schema: ir::SchemaIdx,
         path: &ast::Path,
     ) -> Result<ResolvedPath, ()> {
@@ -53,7 +53,7 @@ impl Transformer {
 
     fn resolve_type(
         &self,
-        model: ir::ModelIdx,
+        model: ir::BundleIdx,
         schema: ir::SchemaIdx,
         scope: &HashMap<String, ir::TypeVarIdx>,
         expr: &ast::TypeExpr,
@@ -77,7 +77,7 @@ impl Transformer {
                 match resolved {
                     ResolvedPath::Def { model, schema, def } => {
                         Ok(ir::Type::Instance(ir::InstanceType {
-                            model,
+                            bundle: model,
                             schema,
                             def,
                             subst: instance_type_expr
@@ -89,22 +89,22 @@ impl Transformer {
                     }
                     _ => todo!("The path did not resolve to a definition! Generate error."),
                 }
-            }
-            ast::TypeExpr::Sequence(sequence_type_expr) => {
-                let element =
-                    self.resolve_type(model, schema, scope, &sequence_type_expr.element)?;
-                Ok(ir::Type::Sequence(ir::SequenceType {
-                    element: Box::new(element),
-                }))
-            }
-            ast::TypeExpr::Map(map_type_expr) => {
-                let key = self.resolve_type(model, schema, scope, &map_type_expr.key)?;
-                let value = self.resolve_type(model, schema, scope, &map_type_expr.value)?;
-                Ok(ir::Type::Map(ir::MapType {
-                    key: Box::new(key),
-                    value: Box::new(value),
-                }))
-            }
+            } /* ast::TypeExpr::Sequence(sequence_type_expr) => { */
+            //     let element =
+            //         self.resolve_type(model, schema, scope, &sequence_type_expr.element)?;
+            //     Ok(ir::Type::Sequence(ir::SequenceType {
+            //         element: Box::new(element),
+            //     }))
+            // }
+            // ast::TypeExpr::Map(map_type_expr) => {
+            //     let key = self.resolve_type(model, schema, scope, &map_type_expr.key)?;
+            //     let value = self.resolve_type(model, schema, scope, &map_type_expr.value)?;
+            //     Ok(ir::Type::Map(ir::MapType {
+            //         key: Box::new(key),
+            //         value: Box::new(value),
+            //     }))
+            // }
+            _ => todo!(),
         }
     }
 

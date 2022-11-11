@@ -1,13 +1,12 @@
-//! **🚧 TODO:** Generate this module from the `$reflect` Sidex model.
-
-pub(crate) mod reflect {
+/// **🚧 TODO:** Generate this module from the `reflect` Sidex schema.
+pub mod reflect {
     use serde::{Deserialize, Serialize};
 
-    /// Uniquely identifies a model in a compilation unit.
+    /// Uniquely identifies a bundle in a transformation unit.
     #[derive(Deserialize, Serialize, Debug, Copy, Clone)]
-    pub struct ModelIdx(pub(crate) usize);
+    pub struct BundleIdx(pub(crate) usize);
 
-    /// Uniquely identifies a schema in a model.
+    /// Uniquely identifies a schema in bundle.
     #[derive(Deserialize, Serialize, Debug, Copy, Clone)]
     pub struct SchemaIdx(pub(crate) usize);
 
@@ -19,39 +18,54 @@ pub(crate) mod reflect {
     #[derive(Deserialize, Serialize, Debug, Copy, Clone)]
     pub struct TypeVarIdx(pub(crate) usize);
 
-    /// A compilation unit is a collection of schemas organized into models.
+    /// A transformation unit is a collection of schemas organized into bundles.
     #[derive(Deserialize, Serialize, Debug, Clone, Default)]
+    #[non_exhaustive]
     pub struct Unit {
-        /// The models of the unit.
-        pub models: Vec<Model>,
+        /// The bundles of the unit.
+        pub bundles: Vec<Bundle>,
     }
 
-    /// A model is a flat collection of schemas evolving together.
+    /// A bundle is a flat collection of schemas evolving together.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct Model {
-        /// The metadata of the model.
-        pub metadata: Metadata,
-        /// The schemas of the model.
+    #[non_exhaustive]
+    pub struct Bundle {
+        /// The manifest of the bundle.
+        pub manifest: Manifest,
+        /// The schemas of the bundle.
         pub schemas: Vec<Schema>,
     }
 
-    /// Metadata of a model.
+    /// A bundle manifest.
     #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
+    pub struct Manifest {
+        /// The metadata of the bundle.
+        #[serde(rename = "bundle")]
+        pub metadata: Metadata,
+    }
+
+    /// Metadata of a bundle.
+    #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
     pub struct Metadata {
-        /// The name of the model.
+        /// The name of the bundle.
         pub name: String,
-        /// The version of the model.
+        /// The version of the bundle.
         pub version: String,
-        /// An optional description of the model.
-        #[serde(default)]
+        /// The optional description of the bundle.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub description: Option<String>,
-        /// The authors of the model.
-        #[serde(default)]
-        pub authors: Vec<String>,
+        /// The optional authors of the bundle.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub authors: Option<Vec<String>>,
     }
 
     /// A schema is a collection of definitions.
+    ///
+    /// Note that imports have already been processed and resolved.
     #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
     pub struct Schema {
         /// The name of the schema.
         pub name: String,
@@ -65,6 +79,7 @@ pub(crate) mod reflect {
 
     /// A definition.
     #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
     pub struct Def {
         /// The name of the definition.
         pub name: String,
@@ -80,68 +95,53 @@ pub(crate) mod reflect {
 
     /// A type variable.
     #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
     pub struct TypeVar {
-        /// The name of the type variable.
+        /// Name of the type variable.
         pub name: String,
     }
 
-    /// Different types of definitions.
+    /// A definition kind.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    #[serde(tag = "$tag")]
+    #[serde(tag = "tag")]
     pub enum DefKind {
-        /// Definition of an opaque type.
-        Opaque(OpaqueDef),
         /// Definition of a type alias.
-        Alias(AliasDef),
-        /// Definition of an enumeration type.
-        Enum(EnumDef),
-        /// Definition of a struct type.
-        Struct(StructDef),
+        TypeAlias(TypeAliasDef),
+        /// Definition of an opaque type.
+        OpaqueType(OpaqueTypeDef),
+        /// Definition of a record type.
+        RecordType(RecordTypeDef),
+        /// Definition of a variant type.
+        VariantType(VariantTypeDef),
+        /// Definition of a wrapper type.
+        WrapperType(WrapperTypeDef),
         /// Definition of a service.
         Service(ServiceDef),
     }
 
-    /// Definition of an opaque type.
-    #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct OpaqueDef {}
-
     /// Definition of a type alias.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct AliasDef {
+    #[non_exhaustive]
+    pub struct TypeAliasDef {
         /// The type that is aliased.
         pub aliased: Type,
     }
 
-    /// Definition of an enumeration type.
+    /// Definition of an opaque type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct EnumDef {
-        /// The variants of the enumeration type.
-        pub variants: Vec<EnumVariant>,
+    #[non_exhaustive]
+    pub struct OpaqueTypeDef {}
+
+    /// Definition of a record type.
+    #[derive(Deserialize, Serialize, Debug, Clone)]
+    pub struct RecordTypeDef {
+        /// The fields of the record type.
+        pub fields: Vec<Field>,
     }
 
-    /// A variant of an enumeration type.
+    /// A field of a record type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct EnumVariant {
-        /// The name of the variant.
-        pub name: String,
-        /// The documentation of the variant.
-        pub docs: String,
-        /// The attributes of the variant.
-        pub attrs: Vec<Attr>,
-        /// The type of the variant (must be a struct type).
-        pub typ: Option<Type>,
-    }
-
-    /// Definition of a struct type.
-    #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct StructDef {
-        /// The fields of the struct type.
-        pub fields: Vec<StructField>,
-    }
-
-    /// A field of a struct type.
-    #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct StructField {
+    pub struct Field {
         /// The name of the field.
         pub name: String,
         /// The documentation of the field.
@@ -154,31 +154,65 @@ pub(crate) mod reflect {
         pub is_optional: bool,
     }
 
-    /// Definition of a service.
+    /// Definition of a variant type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct ServiceDef {
-        /// The functions provided by the service.
-        pub functions: Vec<Function>,
+    #[non_exhaustive]
+    pub struct VariantTypeDef {
+        /// The variants of the variant type.
+        pub variants: Vec<Variant>,
     }
 
-    /// A function of a service definition.
+    /// A variant of a variant type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct Function {
-        /// The name of the function.
+    #[non_exhaustive]
+    pub struct Variant {
+        /// The name of the variant.
         pub name: String,
-        /// The documentation of the function.
+        /// The documentation of the variant.
         pub docs: String,
-        /// The attributes of the function.
+        /// The attributes of the variant.
         pub attrs: Vec<Attr>,
-        /// The parameters of the function.
-        pub parameters: Vec<FunctionParam>,
-        /// The return type of the function.
+        /// The optional type of the variant.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub typ: Option<Type>,
+    }
+
+    /// Definition of a wrapper type.
+    #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
+    pub struct WrapperTypeDef {
+        /// The type that is wrapped.
+        pub wrapped: Type,
+    }
+
+    /// Definition of a service.
+    #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
+    pub struct ServiceDef {
+        /// The methods provided by the service.
+        pub methods: Vec<Method>,
+    }
+
+    /// A method of a service definition.
+    #[derive(Deserialize, Serialize, Debug, Clone)]
+    #[non_exhaustive]
+    pub struct Method {
+        /// The name of the method.
+        pub name: String,
+        /// The documentation of the method.
+        pub docs: String,
+        /// The attributes of the method.
+        pub attrs: Vec<Attr>,
+        /// The parameters of the method.
+        pub parameters: Vec<MethodParam>,
+        /// The return type of the method.
         pub returns: Type,
     }
 
-    /// A parameter of a function.
+    /// A parameter of a method.
     #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct FunctionParam {
+    #[non_exhaustive]
+    pub struct MethodParam {
         /// The name of the parameter.
         pub name: String,
         /// The type of the parameter.
@@ -195,10 +229,6 @@ pub(crate) mod reflect {
         TypeVar(TypeVarType),
         /// An instantiation of a type defined in some schema.
         Instance(InstanceType),
-        /// An anonymous sequence type.
-        Sequence(SequenceType),
-        /// An anonymous map type.
-        Map(MapType),
     }
 
     /// A type to be determined via substitution of the respective type variable.
@@ -208,11 +238,11 @@ pub(crate) mod reflect {
         pub idx: TypeVarIdx,
     }
 
-    /// An instantiation of a type defined in some schema.
+    /// An instantiation of a type defined in some schema of some bundle.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     pub struct InstanceType {
-        /// The model containing the schema containing the definition.
-        pub model: ModelIdx,
+        /// The bundle containing the schema containing the definition.
+        pub bundle: BundleIdx,
         /// The schema containing the definition.
         pub schema: SchemaIdx,
         /// The actual definition.
@@ -221,28 +251,13 @@ pub(crate) mod reflect {
         pub subst: Vec<Type>,
     }
 
-    /// An anonymous sequence type.
-    #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct SequenceType {
-        /// The element type of the sequence type.
-        pub element: Box<Type>,
-    }
-
-    /// An anonymous map type.
-    #[derive(Deserialize, Serialize, Debug, Clone)]
-    pub struct MapType {
-        /// The key type of the map type.
-        pub key: Box<Type>,
-        /// The value type of the map type.
-        pub value: Box<Type>,
-    }
-
     /// An attribute.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     pub struct Attr {
         /// The name of the attribute.
         pub name: String,
         /// The free-form arguments of the attribute.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub args: Option<String>,
     }
 }

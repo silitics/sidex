@@ -1,5 +1,3 @@
-# Sidex Intermediate Representation (SIR)
+# Sidex Intermediate Representation (IR)
 
-_Sidex Intermediate Representation_ (SIR) used for code generation.
-
-**🚧 TODO:** Generate the `generated.rs` module itself from a Sidex package.
+The Sidex _Intermediate Representation_ (IR) is used for code generation.

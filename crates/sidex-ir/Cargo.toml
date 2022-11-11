@@ -10,3 +10,5 @@ homepage.workspace = true
 [dependencies]
 # Required for serialization of the IR.
 serde = { version = "1", features = ["derive"] }  # PUBLIC
+# The IR structures from `sidex_core` are re-exported in this crate.
+sidex-core = { path = "../sidex-core" }

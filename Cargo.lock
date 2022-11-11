@@ -808,7 +808,6 @@ dependencies = [
  "once_cell",
  "serde",
  "serde_json",
- "sidex-ir",
  "sidex-syntax",
  "thiserror",
  "toml",
@@ -846,6 +845,7 @@ name = "sidex-ir"
 version = "0.2.0"
 dependencies = [
  "serde",
+ "sidex-core",
 ]
 
 [[package]]
