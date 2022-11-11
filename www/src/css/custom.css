@@ -1,0 +1,52 @@
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #5dabf5;
+  --ifm-color-primary-dark: #3d9af3;
+  --ifm-color-primary-darker: #2d92f2;
+  --ifm-color-primary-darkest: #0e79df;
+  --ifm-color-primary-light: #7dbcf7;
+  --ifm-color-primary-lighter: #8dc4f8;
+  --ifm-color-primary-lightest: #bdddfb;
+
+  --ifm-code-font-size: 100%;
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  --ifm-font-family-base: "Lato", system-ui, -apple-system, Segoe UI, Roboto,
+    Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #5dabf5;
+  --ifm-color-primary-dark: #3d9af3;
+  --ifm-color-primary-darker: #2d92f2;
+  --ifm-color-primary-darkest: #0e79df;
+  --ifm-color-primary-light: #7dbcf7;
+  --ifm-color-primary-lighter: #8dc4f8;
+  --ifm-color-primary-lightest: #bdddfb;
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Styling for inline code. Colors copied from Prism theme. */
+code.keyword,
+code.builtin-type {
+  color: rgb(197, 165, 197);
+}
+code.type-name {
+  color: rgb(250, 200, 99);
+}
+
+/* Fix the spacing between footnote text and backref link. */
+.footnote-backref {
+  margin-left: 6pt;
+}
+
+sup {
+  vertical-align: top;
+  position: relative;
+  top: -0.2em;
+  margin-left: 0.1em;
+}
