@@ -1,0 +1,5 @@
+/// An *universally unique identifier*.
+opaque Uuid  // This is an opaque user-defined type.
+
+/// An *unique identifier* for a person.
+alias PersonId: Uuid  // This is a type alias.

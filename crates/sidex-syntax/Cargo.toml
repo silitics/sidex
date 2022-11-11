@@ -1,0 +1,20 @@
+[package]
+name = "sidex-syntax"
+version = "0.2.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+# Required for nice and colorful error reporting.
+ariadne = "0.1"  # PRIVATE
+# Required for parsing.
+chumsky = "0.8"  # PRIVATE
+# Required for defining error types.
+thiserror = "1"  # PRIVATE
+
+[dev-dependencies]
+# Required for snapshot testing.
+insta = "1.21.0"

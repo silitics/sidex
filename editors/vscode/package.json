@@ -1,0 +1,78 @@
+{
+	"name": "sidex",
+	"displayName": "Sidex",
+	"description": "Support for the Sidex data modeling and API definition language.",
+	"version": "0.0.1",
+	"publisher": "silitics",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/silitics/sidex.git"
+	},
+	"engines": {
+		"vscode": "^1.69.0"
+	},
+	"categories": [],
+	"activationEvents": [
+		"onLanguage:sidex",
+		"onCommand:sidex.restartServer"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"languages": [
+			{
+				"id": "sidex",
+				"aliases": [
+					"Sidex"
+				],
+				"extensions": [
+					".sidex"
+				],
+				"configuration": "./sidex-language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "sidex",
+				"scopeName": "source.sidex",
+				"path": "./sidex-grammar.tmGrammar.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "sidex.restartServer",
+				"title": "Sidex: Restart Language Server"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run package",
+		"compile": "webpack",
+		"watch": "webpack --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"compile-tests": "tsc -p . --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"pretest": "npm run compile-tests && npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.1",
+		"@types/node": "16.x",
+		"@types/vscode": "^1.69.0",
+		"@typescript-eslint/eslint-plugin": "^5.30.0",
+		"@typescript-eslint/parser": "^5.30.0",
+		"@vscode/test-electron": "^2.1.5",
+		"eslint": "^8.18.0",
+		"glob": "^8.0.3",
+		"mocha": "^10.0.0",
+		"ts-loader": "^9.3.1",
+		"typescript": "^4.7.4",
+		"webpack": "^5.73.0",
+		"webpack-cli": "^4.10.0"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^8.0.2"
+	}
+}

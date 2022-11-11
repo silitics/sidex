@@ -1,0 +1,56 @@
+//! Sidex builtin types.
+//!
+//! This schema is used to populate the builtin types.
+
+/// A sequence of Unicode code points.
+opaque string
+
+/// A sequence of bytes.
+opaque bytes
+
+/// An 8-bit signed integer
+opaque i8
+
+/// A 16-bit signed integer.
+opaque i16
+
+/// A 32-bit signed integer.
+opaque i32
+
+/// A 64-bit signed integer.
+opaque i64
+
+/// An 8-bit unsigned integer.
+opaque u8
+
+/// A 16-bit unsigned integer.
+opaque u16
+
+/// A 32-bit unsigned integer.
+opaque u32
+
+/// A 64-bit unsigned integer.
+opaque u64
+
+/// Type used for indexing sequences.
+///
+/// This is an unsigned integer of target-specific bit width.
+opaque idx
+
+/// A 32-bit floating-point number.
+opaque f32
+
+/// A 64-bit floating-point number.
+opaque f64
+
+/// A boolean.
+opaque bool
+
+/// Unit type indicating the absence of any specific data.
+opaque unit
+
+/// A sequence type.
+opaque Sequence<T>
+
+/// A map type.
+opaque Map<K, V>

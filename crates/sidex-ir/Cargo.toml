@@ -1,0 +1,12 @@
+[package]
+name = "sidex-ir"
+version = "0.2.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+# Required for serialization of the IR.
+serde = { version = "1", features = ["derive"] }  # PUBLIC

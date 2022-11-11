@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = ["crates/*", "languages/rust/*", "examples/rust-embed-macro"]
+
+[workspace.package]
+# We have no `version` here because the different crates can evolve independently.
+edition = "2021"
+authors = ["Silitics GmbH <info@silitics.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/silitics/sidex"
+homepage = "https://oss.silitics.com/sidex"

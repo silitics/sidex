@@ -1,0 +1,408 @@
+---
+source: crates/sidex-syntax/src/parser.rs
+expression: result
+---
+Some(
+    Schema {
+        docs: Docs(
+            [
+                Node {
+                    inner: " Data structures for tasks.",
+                    span: Span {
+                        src: SourceId(
+                            0,
+                        ),
+                        range: 0..31,
+                    },
+                },
+            ],
+        ),
+        items: [
+            Import(
+                Import {
+                    tree: Path(
+                        Path {
+                            segments: [
+                                Name(
+                                    Node {
+                                        inner: "ids",
+                                        span: Span {
+                                            src: SourceId(
+                                                0,
+                                            ),
+                                            range: 39..42,
+                                        },
+                                    },
+                                ),
+                                Name(
+                                    Node {
+                                        inner: "PersonId",
+                                        span: Span {
+                                            src: SourceId(
+                                                0,
+                                            ),
+                                            range: 44..52,
+                                        },
+                                    },
+                                ),
+                            ],
+                            is_absolute: false,
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "Status",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 85..91,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " The status of a task.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 54..80,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Enum(
+                        EnumDef {
+                            variants: [
+                                EnumVariant {
+                                    name: Name(
+                                        Node {
+                                            inner: "Pending",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 133..140,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The task is still pending.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 98..129,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: None,
+                                },
+                                EnumVariant {
+                                    name: Name(
+                                        Node {
+                                            inner: "InProgress",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 189..199,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The task is currently in progress.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 146..185,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: None,
+                                },
+                                EnumVariant {
+                                    name: Name(
+                                        Node {
+                                            inner: "Done",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 242..246,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The task has been completed.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 205..238,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: None,
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "Task",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 270..274,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " A task.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 251..263,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Struct(
+                        StructDef {
+                            fields: [
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "name",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 311..315,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The name of the task.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 281..307,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "string",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 317..323,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: false,
+                                },
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "status",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 361..367,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The status of the task.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 329..357,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "Status",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 369..375,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: false,
+                                },
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "description",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 426..437,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " An optional description of the task.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 381..422,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "string",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 440..446,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: true,
+                                },
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "assigned",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 505..513,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " An optional person assigned to the task.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 456..501,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "PersonId",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 516..524,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: true,
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+        ],
+    },
+)

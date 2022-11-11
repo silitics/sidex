@@ -1,0 +1,12 @@
+[package]
+name = "rust-embed-macro"
+description = "Example for embedding a Sidex model with a macro."
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+# Required for the Sidex macro.
+sidex = { path = "../../languages/rust/sidex", features = ["macros"] }
+# Used by the Sidex model.
+uuid = "^1.1"

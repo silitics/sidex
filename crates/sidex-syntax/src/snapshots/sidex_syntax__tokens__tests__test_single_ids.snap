@@ -1,0 +1,485 @@
+---
+source: crates/sidex-syntax/src/tokens.rs
+expression: result
+---
+(
+    Some(
+        [
+            Token {
+                kind: Doc {
+                    doc: " Identifiers used across the application.",
+                    kind: Inline,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 0..45,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " An *universally unique identifier* (UUID).",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 46..93,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Hash,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 93..94,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 94..95,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "rust",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 95..99,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 99..100,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "type",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 100..104,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Equals,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 105..106,
+                },
+            },
+            Token {
+                kind: Literal(
+                    String(
+                        "::uuid::Uuid",
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 107..121,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 121..122,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 122..123,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Hash,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 124..125,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 125..126,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "ts",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 126..128,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 128..129,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "type",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 129..133,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Equals,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 134..135,
+                },
+            },
+            Token {
+                kind: Literal(
+                    String(
+                        "string",
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 136..144,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 144..145,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 145..146,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Hash,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 147..148,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 148..149,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "json",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 149..153,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 153..154,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "type",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 154..158,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Equals,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 159..160,
+                },
+            },
+            Token {
+                kind: Literal(
+                    String(
+                        "string",
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 161..169,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 169..170,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 170..171,
+                },
+            },
+            Token {
+                kind: Keyword(
+                    OPAQUE,
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 172..178,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "Uuid",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 179..183,
+                },
+            },
+            Token {
+                kind: Comment {
+                    comment: " This is an opaque user-defined type.",
+                    kind: Line,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 185..225,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " An *unique identifier* for a person.",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 226..267,
+                },
+            },
+            Token {
+                kind: Keyword(
+                    ALIAS,
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 267..272,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "PersonId",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 273..281,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Colon,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 281..282,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "Uuid",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 283..287,
+                },
+            },
+            Token {
+                kind: Comment {
+                    comment: " This is a type alias.",
+                    kind: Line,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 289..314,
+                },
+            },
+        ],
+    ),
+    [],
+)

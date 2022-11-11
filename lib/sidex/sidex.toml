@@ -1,0 +1,5 @@
+[bundle]
+name = "sidex"
+version = "1"
+description = "A Sidex bundle for the builtins."
+authors = ["Silitics GmbH <info@silitics.com>"]

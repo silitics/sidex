@@ -1,0 +1,35 @@
+{
+    "folders": [
+        {
+            "name": "Sidex",
+            "path": "."
+        },
+        {
+            "name": "Website",
+            "path": "./www"
+        },
+        {
+            "name": "Language: TypeScript",
+            "path": "./languages/typescript",
+        },
+        {
+            "name": "Language: Rust",
+            "path": "./languages/rust",
+        },
+        {
+            "name": "VS Code Extension",
+            "path": "./editors/vscode"
+        }
+    ],
+    "extensions": {
+        "recommendations": [
+            "rust-lang.rust-analyzer",
+            "panicbit.cargo",
+            "serayuzgur.crates",
+            "esbenp.prettier-vscode"
+        ]
+    },
+    "settings": {
+        "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
+    }
+}

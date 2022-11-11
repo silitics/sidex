@@ -1,0 +1,25 @@
+//! Data structures for tasks.
+
+import ids::PersonId
+
+/// The status of a task.
+enum Status {
+    /// The task is still pending.
+    Pending,
+    /// The task is currently in progress.
+    InProgress,
+    /// The task has been completed.
+    Done,
+}
+
+/// A task.
+struct Task {
+    /// The name of the task.
+    name: string,
+    /// The status of the task.
+    status: Status,
+    /// An optional description of the task.
+    description?: string,    
+    /// An optional person assigned to the task.
+    assigned?: PersonId,
+}

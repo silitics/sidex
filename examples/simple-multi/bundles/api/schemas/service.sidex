@@ -1,0 +1,14 @@
+import ::data::{ids, person::Person}
+
+/// Result type for [`get_person_by_id`].
+enum GetPersonResult {
+    /// A person with the provided id cannot be found.
+    NotFound,
+    /// A person with the provided id has been found.
+    Found: Person,
+}
+
+service Api {
+    /// Lookup a person by it's id.
+    fun get_person_by_id(id: ids::PersonId) -> GetPersonResult
+}

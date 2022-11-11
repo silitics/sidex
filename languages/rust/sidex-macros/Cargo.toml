@@ -1,0 +1,22 @@
+[package]
+name = "sidex-macros"
+description = "Procedural macros for Sidex."
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+# Sidex core data structures and functions.
+sidex-core = { path = "../../../crates/sidex-core", version = "^0.1" }
+# Sidex code generation for Rust.
+sidex-gen-rs = { path = "../../../crates/sidex-gen-rs", version = "^0.1" }
+# Required for parsing Rust code.
+syn = { version = "^1", features = ["full"] }
+proc-macro2 = "^1"
+quote = "^1"

@@ -1,0 +1,283 @@
+---
+source: crates/sidex-syntax/src/parser.rs
+expression: result
+---
+Some(
+    Schema {
+        docs: Docs(
+            [
+                Node {
+                    inner: " Identifiers used across the application.",
+                    span: Span {
+                        src: SourceId(
+                            0,
+                        ),
+                        range: 0..45,
+                    },
+                },
+            ],
+        ),
+        items: [
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "Uuid",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 179..183,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " An *universally unique identifier* (UUID).",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 46..93,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [
+                        Attr {
+                            name: Name(
+                                Node {
+                                    inner: "rust",
+                                    span: Span {
+                                        src: SourceId(
+                                            0,
+                                        ),
+                                        range: 95..99,
+                                    },
+                                },
+                            ),
+                            args: Some(
+                                TokenStream(
+                                    [
+                                        Token {
+                                            kind: Identifier(
+                                                "type",
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 100..104,
+                                            },
+                                        },
+                                        Token {
+                                            kind: Punctuation(
+                                                PunctuationSymbol {
+                                                    kind: Equals,
+                                                    is_composed: false,
+                                                },
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 105..106,
+                                            },
+                                        },
+                                        Token {
+                                            kind: Literal(
+                                                String(
+                                                    "::uuid::Uuid",
+                                                ),
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 107..121,
+                                            },
+                                        },
+                                    ],
+                                ),
+                            ),
+                        },
+                        Attr {
+                            name: Name(
+                                Node {
+                                    inner: "ts",
+                                    span: Span {
+                                        src: SourceId(
+                                            0,
+                                        ),
+                                        range: 126..128,
+                                    },
+                                },
+                            ),
+                            args: Some(
+                                TokenStream(
+                                    [
+                                        Token {
+                                            kind: Identifier(
+                                                "type",
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 129..133,
+                                            },
+                                        },
+                                        Token {
+                                            kind: Punctuation(
+                                                PunctuationSymbol {
+                                                    kind: Equals,
+                                                    is_composed: false,
+                                                },
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 134..135,
+                                            },
+                                        },
+                                        Token {
+                                            kind: Literal(
+                                                String(
+                                                    "string",
+                                                ),
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 136..144,
+                                            },
+                                        },
+                                    ],
+                                ),
+                            ),
+                        },
+                        Attr {
+                            name: Name(
+                                Node {
+                                    inner: "json",
+                                    span: Span {
+                                        src: SourceId(
+                                            0,
+                                        ),
+                                        range: 149..153,
+                                    },
+                                },
+                            ),
+                            args: Some(
+                                TokenStream(
+                                    [
+                                        Token {
+                                            kind: Identifier(
+                                                "type",
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 154..158,
+                                            },
+                                        },
+                                        Token {
+                                            kind: Punctuation(
+                                                PunctuationSymbol {
+                                                    kind: Equals,
+                                                    is_composed: false,
+                                                },
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 159..160,
+                                            },
+                                        },
+                                        Token {
+                                            kind: Literal(
+                                                String(
+                                                    "string",
+                                                ),
+                                            ),
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 161..169,
+                                            },
+                                        },
+                                    ],
+                                ),
+                            ),
+                        },
+                    ],
+                    kind: Opaque(
+                        OpaqueDef,
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "PersonId",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 273..281,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " An *unique identifier* for a person.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 226..267,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Alias(
+                        AliasDef {
+                            aliased: Instance(
+                                InstanceTypeExpr {
+                                    path: Path {
+                                        segments: [
+                                            Name(
+                                                Node {
+                                                    inner: "Uuid",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 283..287,
+                                                    },
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    subst: [],
+                                },
+                            ),
+                        },
+                    ),
+                },
+            ),
+        ],
+    },
+)

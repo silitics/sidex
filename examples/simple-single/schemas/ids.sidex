@@ -1,0 +1,10 @@
+//! Identifiers used across the application.
+
+/// An *universally unique identifier* (UUID).
+#[rust(type = "::uuid::Uuid")]
+#[ts(type = "string")]
+#[json(type = "string")]
+opaque Uuid  // This is an opaque user-defined type.
+
+/// An *unique identifier* for a person.
+alias PersonId: Uuid  // This is a type alias.

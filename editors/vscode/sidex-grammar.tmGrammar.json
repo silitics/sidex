@@ -1,0 +1,319 @@
+{
+    "name": "Sidex",
+    "version": "0.1.0",
+    "scopeName": "source.sidex",
+    "fileTypes": "sidex",
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#items"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#type-expression"
+        }
+    ],
+    "repository": {
+        "items": {
+            "comment": "Items",
+            "patterns": [
+                {
+                    "comment": "Opaque Type Definition",
+                    "name": "meta.sidex.opaque",
+                    "begin": "opaque",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "storage.type.sidex.opaque"
+                        }
+                    },
+                    "end": "\\w+",
+                    "endCaptures": {
+                        "0": {
+                            "name": "entity.name.type"
+                        }
+                    }
+                },
+                {
+                    "comment": "Struct Type Definition (keep in sync with `enum`)",
+                    "name": "meta.sidex.definition.struct",
+                    "begin": "(struct)\\s*(\\w+)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.sidex"
+                        },
+                        "2": {
+                            "name": "entity.name.type"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {},
+                    "patterns": [
+                        {
+                            "include": "#comments"
+                        },
+                        {
+                            "begin": "\\w+",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "variable.other.field.sidex"
+                                }
+                            },
+                            "end": ",|(?=\\})",
+                            "patterns": [
+                                {
+                                    "include": "#comments"
+                                },
+                                {
+                                    "include": "#type-expression"
+                                },
+                                {
+                                    "name": "punctuation.separator.colon.sidex",
+                                    "match": ":"
+                                },
+                                {
+                                    "include": "#operators"
+                                }
+                            ]
+                        },
+                        {
+                            "include": "#type-expression"
+                        }
+                    ]
+                },
+                {
+                    "comment": "Enum Type Definition (keep in sync with struct`)",
+                    "name": "meta.sidex.definition.enum",
+                    "begin": "(enum)\\s*(\\w+)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.sidex"
+                        },
+                        "2": {
+                            "name": "entity.name.type"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {},
+                    "patterns": [
+                        {
+                            "include": "#comments"
+                        },
+                        {
+                            "begin": "\\w+",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "constant.other.variant.sidex"
+                                }
+                            },
+                            "end": ",|(?=\\})",
+                            "patterns": [
+                                {
+                                    "include": "#comments"
+                                },
+                                {
+                                    "include": "#type-expression"
+                                },
+                                {
+                                    "name": "punctuation.separator.colon.sidex",
+                                    "match": ":"
+                                },
+                                {
+                                    "include": "#operators"
+                                }
+                            ]
+                        },
+                        {
+                            "include": "#type-expression"
+                        }
+                    ]
+                },
+                {
+                    "comment": "Function Type",
+                    "name": "meta.sidex.function",
+                    "begin": "(fun)\\s*(\\w+)\\s*(\\()",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.sidex.function"
+                        },
+                        "2": {
+                            "name": "entity.name.function"
+                        },
+                        "3": {
+                            "name": "punctuation.parenthesis.open.sidex"
+                        }
+                    },
+                    "end": "\\)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.parenthesis.close.sidex"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#comments"
+                        },
+                        {
+                            "begin": "(\\w+)\\s*(\\?)?\\s*(:)",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "variable.parameter.sidex"
+                                },
+                                "2": {
+                                    "name": "keyword.operator.optional"
+                                }
+                            },
+                            "end": ",|(?=\\))",
+                            "patterns": [
+                                {
+                                    "include": "#type-expression"
+                                }
+                            ]
+                        },
+                        {
+                            "include": "#type-expression"
+                        }
+                    ]
+                }
+            ]
+        },
+        "type-expression": {
+            "comment": "Type Expressions",
+            "patterns": [
+                {
+                    "include": "#comments"
+                },
+                {
+                    "include": "#primitive-types"
+                },
+                {
+                    "include": "#type-path"
+                },
+                {
+                    "begin": "\\[",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.brackets.square.open.sidex"
+                        }
+                    },
+                    "end": "\\]",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.brackets.square.close.sidex"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#comments"
+                        },
+                        {
+                            "include": "#type-expression"
+                        },
+                        {
+                            "name": "punctuation.separator.colon.sidex",
+                            "match": ":"
+                        }
+                    ]
+                }
+            ]
+        },
+        "type-path": {
+            "comment": "Type Path",
+            "patterns": [
+                {
+                    "name": "keyword.operator.sidex",
+                    "match": "::"
+                },
+                {
+                    "name": "entity.name.sidex",
+                    "match": "\\w+"
+                }
+            ]
+        },
+        "primitive-types": {
+            "comment": "Primitive Types",
+            "patterns": [
+                {
+                    "match": "\\b(i8|i16|i32|i64|u8|u16|u32|u64|f32|f64)\\b",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.type.numeric.sidex"
+                        }
+                    }
+                },
+                {
+                    "match": "\\b(string|bool|unit)\\b",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.type.sidex"
+                        }
+                    }
+                }
+            ]
+        },
+        "keywords": {
+            "comment": "Keywords",
+            "patterns": [
+                {
+                    "name": "storage.type.sidex",
+                    "match": "\\b(opaque|alias|variant|record|wrapper)\\b"
+                },
+                {
+                    "name": "keyword.other.sidex",
+                    "match": "\\b(fun)\\b"
+                }
+            ]
+        },
+        "operators": {
+            "comment": "Operators",
+            "name": "keyword.operator.sidex",
+            "match": "\\?|->|::|:"
+        },
+        "comments": {
+            "comment": "Line and Block Comments",
+            "patterns": [
+                {
+                    "include": "#line-comments"
+                },
+                {
+                    "include": "#block-comments"
+                }
+            ]
+        },
+        "line-comments": {
+            "comment": "Line Comments",
+            "patterns": [
+                {
+                    "name": "comment.line.double-slash.sidex",
+                    "match": "\\s*//.*"
+                }
+            ]
+        },
+        "block-comments": {
+            "comment": "Block Comments",
+            "patterns": [
+                {
+                    "comment": "Documentation Comment",
+                    "name": "comment.block.documentation.sidex",
+                    "match": "^\\s*///.*"
+                },
+                {
+                    "comment": "Empty Block Comment",
+                    "name": "comment.block.sidex",
+                    "match": "/\\*\\*/"
+                },
+                {
+                    "name": "comment.block.sidex",
+                    "begin": "/\\*(?!\\*)",
+                    "end": "\\*/"
+                }
+            ]
+        }
+    }
+}

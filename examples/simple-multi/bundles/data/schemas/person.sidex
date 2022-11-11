@@ -1,0 +1,23 @@
+import ids::{*}
+
+/// A *role* of a person.
+enum Role {
+    /// The person is an administrator.
+    Admin,
+    /// The person is an user.
+    User,
+}
+
+/// A person.
+struct Person {
+    /// The unique id of the person.
+    id: PersonId,
+    /// The full name of the person.
+    name: string,
+    /// An optional e-mail address of the person.
+    email?: string,  // This field is optional.
+    /// The role of the person.
+    role: Role,
+    /// Unique identifiers of the person's friends.
+    friends: [PersonId],  // A sequence of person ids.
+}

@@ -1,0 +1,101 @@
+---
+source: crates/sidex-syntax/src/parser.rs
+expression: result
+---
+Some(
+    Schema {
+        docs: Docs(
+            [],
+        ),
+        items: [
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "Uuid",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 47..51,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " An *universally unique identifier*.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 0..40,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Opaque(
+                        OpaqueDef,
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "PersonId",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 141..149,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " An *unique identifier* for a person.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 94..135,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Alias(
+                        AliasDef {
+                            aliased: Instance(
+                                InstanceTypeExpr {
+                                    path: Path {
+                                        segments: [
+                                            Name(
+                                                Node {
+                                                    inner: "Uuid",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 151..155,
+                                                    },
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    subst: [],
+                                },
+                            ),
+                        },
+                    ),
+                },
+            ),
+        ],
+    },
+)

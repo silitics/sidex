@@ -1,0 +1,748 @@
+---
+source: crates/sidex-syntax/src/parser.rs
+expression: result
+---
+Some(
+    Schema {
+        docs: Docs(
+            [
+                Node {
+                    inner: " Data structures for persons.",
+                    span: Span {
+                        src: SourceId(
+                            0,
+                        ),
+                        range: 0..33,
+                    },
+                },
+            ],
+        ),
+        items: [
+            Import(
+                Import {
+                    tree: Path(
+                        Path {
+                            segments: [
+                                Name(
+                                    Node {
+                                        inner: "ids",
+                                        span: Span {
+                                            src: SourceId(
+                                                0,
+                                            ),
+                                            range: 41..44,
+                                        },
+                                    },
+                                ),
+                            ],
+                            is_absolute: false,
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "Role",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 77..81,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " A *role* of a person.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 46..72,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Enum(
+                        EnumDef {
+                            variants: [
+                                EnumVariant {
+                                    name: Name(
+                                        Node {
+                                            inner: "Admin",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 128..133,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The person is an administrator.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 88..124,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: None,
+                                },
+                                EnumVariant {
+                                    name: Name(
+                                        Node {
+                                            inner: "User",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 170..174,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The person is an user.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 139..166,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: None,
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "Person",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 200..206,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " A person.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 179..193,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Struct(
+                        StructDef {
+                            fields: [
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "id",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 250..252,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The unique id of the person.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 213..246,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "ids",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 254..257,
+                                                            },
+                                                        },
+                                                    ),
+                                                    Name(
+                                                        Node {
+                                                            inner: "PersonId",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 259..267,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: false,
+                                },
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "name",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 310..314,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The full name of the person.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 273..306,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "string",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 316..322,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: false,
+                                },
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "email",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 378..383,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " An optional e-mail address of the person.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 328..374,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "string",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 386..392,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: true,
+                                },
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "role",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 486..490,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " The role of the person.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 426..454,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [
+                                        Attr {
+                                            name: Name(
+                                                Node {
+                                                    inner: "json",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 460..464,
+                                                    },
+                                                },
+                                            ),
+                                            args: Some(
+                                                TokenStream(
+                                                    [
+                                                        Token {
+                                                            kind: Identifier(
+                                                                "name",
+                                                            ),
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 465..469,
+                                                            },
+                                                        },
+                                                        Token {
+                                                            kind: Punctuation(
+                                                                PunctuationSymbol {
+                                                                    kind: Equals,
+                                                                    is_composed: false,
+                                                                },
+                                                            ),
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 470..471,
+                                                            },
+                                                        },
+                                                        Token {
+                                                            kind: Literal(
+                                                                String(
+                                                                    "level",
+                                                                ),
+                                                            ),
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 472..479,
+                                                            },
+                                                        },
+                                                    ],
+                                                ),
+                                            ),
+                                        },
+                                    ],
+                                    typ: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "Role",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 492..496,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                    is_optional: false,
+                                },
+                                StructField {
+                                    name: Name(
+                                        Node {
+                                            inner: "friends",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 554..561,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " Unique identifiers of the person's friends.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 502..550,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Sequence(
+                                        SequenceTypeExpr {
+                                            element: Instance(
+                                                InstanceTypeExpr {
+                                                    path: Path {
+                                                        segments: [
+                                                            Name(
+                                                                Node {
+                                                                    inner: "ids",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 564..567,
+                                                                    },
+                                                                },
+                                                            ),
+                                                            Name(
+                                                                Node {
+                                                                    inner: "PersonId",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 569..577,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    subst: [],
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                    is_optional: false,
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "GetPersonResult",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 660..675,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " Result type for [`get_person_by_id`].",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 613..655,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Enum(
+                        EnumDef {
+                            variants: [
+                                EnumVariant {
+                                    name: Name(
+                                        Node {
+                                            inner: "NotFound",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 737..745,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " A person with the provided id cannot be found.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 682..733,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: None,
+                                },
+                                EnumVariant {
+                                    name: Name(
+                                        Node {
+                                            inner: "Found",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 805..810,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " A person with the provided id has been found.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 751..801,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Some(
+                                        Instance(
+                                            InstanceTypeExpr {
+                                                path: Path {
+                                                    segments: [
+                                                        Name(
+                                                            Node {
+                                                                inner: "Person",
+                                                                span: Span {
+                                                                    src: SourceId(
+                                                                        0,
+                                                                    ),
+                                                                    range: 812..818,
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                    is_absolute: false,
+                                                },
+                                                subst: [],
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Name(
+                        Node {
+                            inner: "Api",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 857..860,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " The main API service.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 823..849,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Service(
+                        ServiceDef {
+                            functions: [
+                                Function {
+                                    name: Name(
+                                        Node {
+                                            inner: "get_person_by_id",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 907..923,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " Lookup a person by it's id.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 867..899,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    params: [
+                                        FunctionParam {
+                                            name: Name(
+                                                Node {
+                                                    inner: "id",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 924..926,
+                                                    },
+                                                },
+                                            ),
+                                            typ: Instance(
+                                                InstanceTypeExpr {
+                                                    path: Path {
+                                                        segments: [
+                                                            Name(
+                                                                Node {
+                                                                    inner: "ids",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 928..931,
+                                                                    },
+                                                                },
+                                                            ),
+                                                            Name(
+                                                                Node {
+                                                                    inner: "PersonId",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 933..941,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    subst: [],
+                                                },
+                                            ),
+                                            is_optional: false,
+                                        },
+                                    ],
+                                    returns: Instance(
+                                        InstanceTypeExpr {
+                                            path: Path {
+                                                segments: [
+                                                    Name(
+                                                        Node {
+                                                            inner: "GetPersonResult",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 946..961,
+                                                            },
+                                                        },
+                                                    ),
+                                                ],
+                                                is_absolute: false,
+                                            },
+                                            subst: [],
+                                        },
+                                    ),
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+        ],
+    },
+)
