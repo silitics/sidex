@@ -1,6 +1,10 @@
-//! The Sidex _Intermediate Representation_ (IR) used for code generation.
+//! The _Sidex Intermediate Representation_ (SIR) used for code generation.
 //!
 //! This module re-exports the [`sidex-ir`](https://docs.rs/sidex-ir/latest/sidex-ir/) crate.
+//!
+//! ```plain
+//! pub use sidex_ir::*;
+//! ```
 
 // This crate will eventually re-export the `sidex-ir` crate. For now, however, we define
 // the IR here because it enables a direct construction.

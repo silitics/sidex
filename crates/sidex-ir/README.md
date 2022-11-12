@@ -1,3 +1,3 @@
-# Sidex Intermediate Representation (IR)
+# Sidex Intermediate Representation (SIR)
 
-The Sidex _Intermediate Representation_ (IR) is used for code generation.
+The _Sidex Intermediate Representation_ (SIR) is used for code generation.

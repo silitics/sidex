@@ -93,7 +93,7 @@ pub mod reflect {
         pub kind: DefKind,
     }
 
-    /// A type variable.
+    /// A type variable of a definition.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct TypeVar {
@@ -119,7 +119,7 @@ pub mod reflect {
         Service(ServiceDef),
     }
 
-    /// Definition of a type alias.
+    /// A definition of a type alias.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct TypeAliasDef {
@@ -127,12 +127,12 @@ pub mod reflect {
         pub aliased: Type,
     }
 
-    /// Definition of an opaque type.
+    /// A definition of an opaque type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct OpaqueTypeDef {}
 
-    /// Definition of a record type.
+    /// A definition of a record type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     pub struct RecordTypeDef {
         /// The fields of the record type.
@@ -154,7 +154,7 @@ pub mod reflect {
         pub is_optional: bool,
     }
 
-    /// Definition of a variant type.
+    /// A definition of a variant type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct VariantTypeDef {
@@ -177,7 +177,7 @@ pub mod reflect {
         pub typ: Option<Type>,
     }
 
-    /// Definition of a wrapper type.
+    /// A definition of a wrapper type.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct WrapperTypeDef {
@@ -185,7 +185,7 @@ pub mod reflect {
         pub wrapped: Type,
     }
 
-    /// Definition of a service.
+    /// A definition of a service.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct ServiceDef {
