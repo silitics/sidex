@@ -20,6 +20,6 @@ Nothing so far. :)
 
 ## Release Notes
 
-### 0.0.1
+### 0.0.{1,2}
 
-First experimental release.
+Experimental releases.
