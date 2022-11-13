@@ -1,0 +1,8 @@
+/// The main API service.
+service ListManager {
+    /// Lookup a person by it's id.
+    fun get_person_by_id(id: ids::PersonId) -> GetPersonResult
+
+    /// Change completion status.
+    fun set_completed(id: ids::TaskId, completed?: bool)
+}

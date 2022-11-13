@@ -1,1 +1,0 @@
-An example consisting of multiple models.

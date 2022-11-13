@@ -3,7 +3,8 @@
 import ids::PersonId
 
 /// The status of a task.
-enum Status {
+#[json(tagged(plain))]
+variant Status {
     /// The task is still pending.
     Pending,
     /// The task is currently in progress.
@@ -13,7 +14,7 @@ enum Status {
 }
 
 /// A task.
-struct Task {
+record Task {
     /// The name of the task.
     name: string,
     /// The status of the task.
@@ -21,5 +22,5 @@ struct Task {
     /// An optional description of the task.
     description?: string,    
     /// An optional person assigned to the task.
-    assigned?: PersonId,
+    assigned_to?: PersonId,
 }

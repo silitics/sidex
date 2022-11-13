@@ -1,7 +1,9 @@
-import ids::{*}
+//! Data structures for persons.
+
+import ids
 
 /// A *role* of a person.
-enum Role {
+variant Role {
     /// The person is an administrator.
     Admin,
     /// The person is an user.
@@ -9,15 +11,24 @@ enum Role {
 }
 
 /// A person.
-struct Person {
+record Person {
     /// The unique id of the person.
-    id: PersonId,
+    id: ids::PersonId,
     /// The full name of the person.
     name: string,
     /// An optional e-mail address of the person.
     email?: string,  // This field is optional.
     /// The role of the person.
+    #[json(name = "level")]
     role: Role,
     /// Unique identifiers of the person's friends.
-    friends: [PersonId],  // A sequence of person ids.
+    friends: [ids::PersonId],  // A sequence of person ids.
+}
+
+/// Result type for [`get_person_by_id`].
+variant GetPersonResult {
+    /// A person with the provided id cannot be found.
+    NotFound,
+    /// A person with the provided id has been found.
+    Found: Person,
 }
