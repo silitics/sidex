@@ -1,0 +1,259 @@
+---
+source: crates/sidex-syntax/src/parser.rs
+expression: result
+---
+Some(
+    Schema {
+        attrs: [],
+        docs: Docs(
+            [],
+        ),
+        items: [
+            Def(
+                Def {
+                    name: Identifier(
+                        Node {
+                            inner: "ListManager",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 34..45,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " The main API service.",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 0..26,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: Service(
+                        ServiceDef {
+                            methods: [
+                                Method {
+                                    name: Identifier(
+                                        Node {
+                                            inner: "get_person_by_id",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 92..108,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " Lookup a person by it's id.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 52..84,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    params: [
+                                        MethodParam {
+                                            name: Identifier(
+                                                Node {
+                                                    inner: "id",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 109..111,
+                                                    },
+                                                },
+                                            ),
+                                            typ: Instance(
+                                                InstanceTypeExpr {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "ids",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 113..116,
+                                                                    },
+                                                                },
+                                                            ),
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "PersonId",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 118..126,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    subst: [],
+                                                },
+                                            ),
+                                            is_optional: false,
+                                        },
+                                    ],
+                                    returns: Some(
+                                        Instance(
+                                            InstanceTypeExpr {
+                                                path: Path {
+                                                    segments: [
+                                                        Identifier(
+                                                            Node {
+                                                                inner: "GetPersonResult",
+                                                                span: Span {
+                                                                    src: SourceId(
+                                                                        0,
+                                                                    ),
+                                                                    range: 131..146,
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                    is_absolute: false,
+                                                },
+                                                subst: [],
+                                            },
+                                        ),
+                                    ),
+                                },
+                                Method {
+                                    name: Identifier(
+                                        Node {
+                                            inner: "set_completed",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 190..203,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " Change completion status.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 152..182,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    params: [
+                                        MethodParam {
+                                            name: Identifier(
+                                                Node {
+                                                    inner: "id",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 204..206,
+                                                    },
+                                                },
+                                            ),
+                                            typ: Instance(
+                                                InstanceTypeExpr {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "ids",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 208..211,
+                                                                    },
+                                                                },
+                                                            ),
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "TaskId",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 213..219,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    subst: [],
+                                                },
+                                            ),
+                                            is_optional: false,
+                                        },
+                                        MethodParam {
+                                            name: Identifier(
+                                                Node {
+                                                    inner: "completed",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 221..230,
+                                                    },
+                                                },
+                                            ),
+                                            typ: Instance(
+                                                InstanceTypeExpr {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "bool",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 233..237,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    subst: [],
+                                                },
+                                            ),
+                                            is_optional: true,
+                                        },
+                                    ],
+                                    returns: None,
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+        ],
+    },
+)

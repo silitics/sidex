@@ -14,9 +14,10 @@ use crate::{
 };
 
 /// Create a parser for a name.
-fn name_parser() -> impl Parser<TokenKind, ast::Name, Error = Simple<TokenKind, Span>> + Clone {
+fn name_parser() -> impl Parser<TokenKind, ast::Identifier, Error = Simple<TokenKind, Span>> + Clone
+{
     select! { TokenKind::Identifier(identifier) => identifier }
-        .map_with_span(|identifier, span| ast::Name(ast::Node::new(identifier, span)))
+        .map_with_span(|identifier, span| ast::Identifier(ast::Node::new(identifier, span)))
         .labelled("identifier")
 }
 
@@ -31,7 +32,7 @@ fn token_stream_parser(
     recursive(|token_tree| {
         choice((
             token_list,
-            // TODO: Other delimiters should also be allowed.
+            // 🚧 TODO: Other delimiters should also be allowed.
             token_tree
                 .delimited_by(
                     just(delimiters::Parenthesis::OPEN),
@@ -118,14 +119,20 @@ fn type_expr_parser(
                     .ignore_then(type_expr.clone())
                     .or_not(),
             )
-            .map(|(left, right)| match right {
-                Some(right) => ast::TypeExpr::Map(ast::MapTypeExpr {
-                    key: Box::new(left),
-                    value: Box::new(right),
-                }),
-                None => ast::TypeExpr::Sequence(ast::SequenceTypeExpr {
-                    element: Box::new(left),
-                }),
+            .map(|(left, right)| {
+                match right {
+                    Some(right) => {
+                        ast::TypeExpr::Map(ast::MapTypeExpr {
+                            key: Box::new(left),
+                            value: Box::new(right),
+                        })
+                    }
+                    None => {
+                        ast::TypeExpr::Sequence(ast::SequenceTypeExpr {
+                            element: Box::new(left),
+                        })
+                    }
+                }
             })
             .delimited_by(
                 just(delimiters::Bracket::OPEN),
@@ -175,8 +182,7 @@ fn docs_parser(
         .map(|docs| ast::Docs(docs))
 }
 
-fn struct_field_parser(
-) -> impl Parser<TokenKind, ast::StructField, Error = Simple<TokenKind, Span>> + Clone {
+fn field_parser() -> impl Parser<TokenKind, ast::Field, Error = Simple<TokenKind, Span>> + Clone {
     docs_parser(DocKind::Preceding)
         .then(attrs_parser())
         .then(name_parser())
@@ -187,19 +193,19 @@ fn struct_field_parser(
         )
         .then_ignore(just(punctuations::Colon::ALONE))
         .then(type_expr_parser())
-        .map(
-            |((((docs, attrs), name), optional), typ)| ast::StructField {
+        .map(|((((docs, attrs), name), optional), typ)| {
+            ast::Field {
                 name,
                 docs,
                 attrs,
                 typ,
                 is_optional: optional.is_some(),
-            },
-        )
+            }
+        })
 }
 
-fn enum_variant_parser(
-) -> impl Parser<TokenKind, ast::EnumVariant, Error = Simple<TokenKind, Span>> + Clone {
+fn variant_parser() -> impl Parser<TokenKind, ast::Variant, Error = Simple<TokenKind, Span>> + Clone
+{
     docs_parser(DocKind::Preceding)
         .then(attrs_parser())
         .then(name_parser())
@@ -208,11 +214,13 @@ fn enum_variant_parser(
                 .ignore_then(type_expr_parser())
                 .or_not(),
         )
-        .map(|(((docs, attrs), name), typ)| ast::EnumVariant {
-            name,
-            docs,
-            attrs,
-            typ,
+        .map(|(((docs, attrs), name), typ)| {
+            ast::Variant {
+                name,
+                docs,
+                attrs,
+                typ,
+            }
         })
 }
 
@@ -221,7 +229,7 @@ fn def_with_inner_parser(
     inner: impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone,
 ) -> impl Parser<
     TokenKind,
-    ((ast::Name, Vec<ast::TypeVar>), ast::DefKind),
+    ((ast::Identifier, Vec<ast::TypeVar>), ast::DefKind),
     Error = Simple<TokenKind, Span>,
 > + Clone {
     just(keyword)
@@ -233,24 +241,24 @@ fn def_with_inner_parser(
         ))
 }
 
-fn struct_def_inner_parser(
+fn record_def_inner_parser(
 ) -> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
-    struct_field_parser()
+    field_parser()
         .separated_by(just(punctuations::Comma::ALONE))
         .allow_trailing()
-        .map(|fields| ast::DefKind::Struct(ast::StructDef { fields }))
+        .map(|fields| ast::DefKind::RecordType(ast::RecordTypeDef { fields }))
 }
 
-fn enum_def_inner_parser(
+fn variant_def_inner_parser(
 ) -> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
-    enum_variant_parser()
+    variant_parser()
         .separated_by(just(punctuations::Comma::ALONE))
         .allow_trailing()
-        .map(|variants| ast::DefKind::Enum(ast::EnumDef { variants }))
+        .map(|variants| ast::DefKind::VariantType(ast::VariantTypeDef { variants }))
 }
 
-fn function_param_parser(
-) -> impl Parser<TokenKind, ast::FunctionParam, Error = Simple<TokenKind, Span>> + Clone {
+fn method_param_parser(
+) -> impl Parser<TokenKind, ast::MethodParam, Error = Simple<TokenKind, Span>> + Clone {
     name_parser()
         .then(
             just(punctuations::QuestionMark::ALONE)
@@ -259,21 +267,22 @@ fn function_param_parser(
         )
         .then_ignore(just(punctuations::Colon::ALONE))
         .then(type_expr_parser())
-        .map(|((name, optional), typ)| ast::FunctionParam {
-            name,
-            typ,
-            is_optional: optional.is_some(),
+        .map(|((name, optional), typ)| {
+            ast::MethodParam {
+                name,
+                typ,
+                is_optional: optional.is_some(),
+            }
         })
 }
 
-fn function_parser(
-) -> impl Parser<TokenKind, ast::Function, Error = Simple<TokenKind, Span>> + Clone {
+fn method_parser() -> impl Parser<TokenKind, ast::Method, Error = Simple<TokenKind, Span>> + Clone {
     docs_parser(DocKind::Preceding)
         .then(attrs_parser())
         .then_ignore(just(keywords::FUN))
         .then(name_parser())
         .then(
-            function_param_parser()
+            method_param_parser()
                 .separated_by(just(punctuations::Comma::ALONE))
                 .allow_trailing()
                 .delimited_by(
@@ -281,37 +290,38 @@ fn function_parser(
                     just(delimiters::Parenthesis::CLOSE),
                 ),
         )
-        .then_ignore(arrow())
-        .then(type_expr_parser())
-        .map(|((((docs, attrs), name), params), returns)| ast::Function {
-            name,
-            docs,
-            attrs,
-            params,
-            returns,
+        .then(arrow().ignore_then(type_expr_parser()).or_not())
+        .map(|((((docs, attrs), name), params), returns)| {
+            ast::Method {
+                name,
+                docs,
+                attrs,
+                params,
+                returns,
+            }
         })
 }
 
 fn service_def_inner_parser(
 ) -> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
-    function_parser()
+    method_parser()
         .repeated()
-        .map(|functions| ast::DefKind::Service(ast::ServiceDef { functions }))
+        .map(|functions| ast::DefKind::Service(ast::ServiceDef { methods: functions }))
 }
 
 fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, Span>> + Clone {
     docs_parser(DocKind::Preceding)
         .then(attrs_parser())
         .then(choice((
-            def_with_inner_parser(keywords::STRUCT, struct_def_inner_parser()),
-            def_with_inner_parser(keywords::ENUM, enum_def_inner_parser()),
+            def_with_inner_parser(keywords::RECORD, record_def_inner_parser()),
+            def_with_inner_parser(keywords::VARIANT, variant_def_inner_parser()),
             def_with_inner_parser(keywords::SERVICE, service_def_inner_parser()),
             just(keywords::OPAQUE)
                 .ignore_then(name_parser())
                 .map(|name| {
                     (
                         (name, Default::default()),
-                        ast::DefKind::Opaque(ast::OpaqueDef {}),
+                        ast::DefKind::OpaqueType(ast::OpaqueTypeDef {}),
                     )
                 }),
             just(keywords::ALIAS)
@@ -321,6 +331,14 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
                 .then(
                     type_expr_parser()
                         .map(|aliased| ast::DefKind::Alias(ast::AliasDef { aliased })),
+                ),
+            just(keywords::WRAPPER)
+                .ignore_then(name_parser())
+                .then(type_vars_parser())
+                .then_ignore(just(punctuations::Colon::ALONE))
+                .then(
+                    type_expr_parser()
+                        .map(|wrapped| ast::DefKind::WrapperType(ast::WrapperTypeDef { wrapped })),
                 ),
         )))
         .map(|((docs, attrs), ((name, vars), kind))| {
@@ -349,7 +367,7 @@ fn import_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind
                             .repeated()
                             .at_least(1),
                     )
-                    .then(
+                    .then(choice((
                         import_tree
                             .separated_by(just(punctuations::Comma::ALONE))
                             .allow_trailing()
@@ -357,13 +375,15 @@ fn import_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind
                                 just(delimiters::Brace::OPEN),
                                 just(delimiters::Brace::CLOSE),
                             ),
-                    )
+                        just(punctuations::Asterisk::ALONE)
+                            .map(|_| vec![ast::ImportTree::Wildcard]),
+                    )))
                     .map(|((root, prefix), trees)| {
                         let path = ast::Path {
                             segments: prefix,
                             is_absolute: root.is_some(),
                         };
-                        ast::ImportTree::From { path, trees }
+                        ast::ImportTree::Group { path, trees }
                     }),
                 path_parser().map(ast::ImportTree::Path),
             ))
@@ -375,7 +395,13 @@ fn schema_parser() -> impl Parser<TokenKind, ast::Schema, Error = Simple<TokenKi
     docs_parser(DocKind::Inline)
         .then(choice((item_parser(), import_parser())).repeated())
         .then_ignore(end())
-        .map(|(docs, items)| ast::Schema { docs, items })
+        .map(|(docs, items)| {
+            ast::Schema {
+                docs,
+                attrs: Vec::new(), // 🚧 TODO: Parse attrs from schema.
+                items,
+            }
+        })
 }
 
 /// Internal parsing function.
@@ -408,7 +434,7 @@ pub fn parse(storage: &SourceStorage, source: &Source) -> Option<ast::Schema> {
         None => (None, Default::default()),
     };
 
-    // TODO: We should return a result instead of printing here directly.
+    // 🚧 TODO: Return errors instead of printing them here.
     reporting::eprint_errors(
         storage,
         source.id(),
@@ -436,32 +462,22 @@ mod tests {
     }
 
     make_test_from_file!(
-        test_multi_service,
-        "../../../examples/simple-multi/bundles/api/schemas/service.sidex"
+        test_todo_list_api_manager,
+        "../../../examples/todo-list/api/schemas/manager.sidex"
     );
 
     make_test_from_file!(
-        test_multi_ids,
-        "../../../examples/simple-multi/bundles/data/schemas/ids.sidex"
+        test_todo_list_data_ids,
+        "../../../examples/todo-list/data/schemas/ids.sidex"
     );
 
     make_test_from_file!(
-        test_multi_person,
-        "../../../examples/simple-multi/bundles/data/schemas/person.sidex"
+        test_todo_list_data_person,
+        "../../../examples/todo-list/data/schemas/person.sidex"
     );
 
     make_test_from_file!(
-        test_single_ids,
-        "../../../examples/simple-single/schemas/ids.sidex"
-    );
-
-    make_test_from_file!(
-        test_single_person,
-        "../../../examples/simple-single/schemas/person.sidex"
-    );
-
-    make_test_from_file!(
-        test_single_task,
-        "../../../examples/simple-single/schemas/task.sidex"
+        test_todo_list_data_task,
+        "../../../examples/todo-list/data/schemas/task.sidex"
     );
 }

@@ -1,4 +1,4 @@
-//! Abstract syntax tree for Sidex schemas.
+//! _Abstract Syntax Tree_ (AST) for Sidex schemas.
 
 use std::{
     fmt::{self, Display, Write},
@@ -11,7 +11,7 @@ use crate::{
     tokens::Token,
 };
 
-/// A stream of tokens used for attributes.
+/// A stream of tokens.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct TokenStream(pub(crate) Vec<Token>);
 
@@ -19,6 +19,24 @@ impl TokenStream {
     /// An iterator over the tokens.
     pub fn iter(&self) -> impl Iterator<Item = &Token> {
         self.0.iter()
+    }
+}
+
+impl Deref for TokenStream {
+    type Target = [Token];
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl IntoIterator for TokenStream {
+    type Item = Token;
+
+    type IntoIter = TokenStreamIntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        TokenStreamIntoIter(self.0.into_iter())
     }
 }
 
@@ -34,10 +52,23 @@ impl Display for TokenStream {
     }
 }
 
+/// An iterator that moves out of a token stream.
+pub struct TokenStreamIntoIter(pub(crate) std::vec::IntoIter<Token>);
+
+impl Iterator for TokenStreamIntoIter {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.next()
+    }
+}
+
 /// A node of the AST behaving as a smart-pointer to `T`.
 #[derive(Clone, Debug)]
 pub struct Node<T> {
+    /// The inner value.
     pub(crate) inner: T,
+    /// The span of the node.
     pub(crate) span: Span,
 }
 
@@ -50,7 +81,7 @@ impl<T> Deref for Node<T> {
 }
 
 impl<T> Node<T> {
-    /// Construct a new AST nod from a given value and span.
+    /// Construct a new AST node from a given value and span.
     pub(crate) fn new(inner: T, span: Span) -> Self {
         Self { inner, span }
     }
@@ -71,11 +102,12 @@ impl<T> Node<T> {
     }
 }
 
-/// An name.
+/// An identifier.
 #[derive(Clone, Debug)]
-pub struct Name(pub(crate) Node<Arc<String>>);
+pub struct Identifier(pub(crate) Node<Arc<String>>);
 
-impl Name {
+impl Identifier {
+    /// The identifier as a `&str`.
     pub fn as_str(&self) -> &str {
         self.0.as_str()
     }
@@ -97,35 +129,36 @@ impl fmt::Display for Docs {
 
 /// A path is a `::` separated list of names.
 #[derive(Clone, Debug)]
+#[non_exhaustive]
 pub struct Path {
     /// The segments of the path.
-    pub segments: Vec<Name>,
+    pub segments: Vec<Identifier>,
     /// Indicates whether the path is absolute, i.e., starts with `::`.
     pub is_absolute: bool,
 }
 
-/// A schema is a collection of syntax items.
+/// A schema is a collection of items.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct Schema {
+    /// The attributes of the schema.
+    pub attrs: Vec<Attr>,
     /// The documentation of the schema.
     pub docs: Docs,
     /// The items of the schema.
     pub items: Vec<Item>,
 }
 
-/// A syntax item of a schema.
+/// An item of a schema.
 #[derive(Clone, Debug)]
 pub enum Item {
-    /// An import statement.
+    /// An import directive.
     Import(Import),
     /// A definition.
     Def(Def),
 }
 
-/// An import statement.
-///
-/// ** 🚧 TODO:** How do import statements look like?
+/// An import directive.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct Import {
@@ -133,12 +166,15 @@ pub struct Import {
     pub tree: ImportTree,
 }
 
+/// An import tree.
 #[derive(Clone, Debug)]
-#[non_exhaustive]
 pub enum ImportTree {
+    /// A path to import.
     Path(Path),
+    /// An import wildcard.
     Wildcard,
-    From { path: Path, trees: Vec<ImportTree> },
+    /// An import group.
+    Group { path: Path, trees: Vec<ImportTree> },
 }
 
 /// A definition.
@@ -146,7 +182,7 @@ pub enum ImportTree {
 #[non_exhaustive]
 pub struct Def {
     /// The name of the definition.
-    pub name: Name,
+    pub name: Identifier,
     /// The documentation of the definition.
     pub docs: Docs,
     /// The type variables of the definition.
@@ -162,73 +198,75 @@ pub struct Def {
 #[non_exhaustive]
 pub struct TypeVar {
     /// The name of the type variable.
-    pub name: Name,
+    pub name: Identifier,
 }
 
-/// Different types of definitions.
+/// A definition kind.
 #[derive(Clone, Debug)]
 pub enum DefKind {
-    /// Definition of an opaque type.
-    Opaque(OpaqueDef),
     /// Definition of a type alias.
     Alias(AliasDef),
-    /// Definition of an enumeration type.
-    Enum(EnumDef),
-    /// Definition of a struct type.
-    Struct(StructDef),
+    /// Definition of an opaque type.
+    OpaqueType(OpaqueTypeDef),
+    /// Definition of a record type.
+    RecordType(RecordTypeDef),
+    /// Definition of a variant type.
+    VariantType(VariantTypeDef),
+    /// Definition of a wrapper type.
+    WrapperType(WrapperTypeDef),
     /// Definition of a service.
     Service(ServiceDef),
 }
-
-/// Definition of an opaque type.
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct OpaqueDef {}
 
 /// Definition of a type alias.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct AliasDef {
-    /// The type expression describing the aliased type.
+    /// The type expression of the aliased type.
     pub aliased: TypeExpr,
 }
 
-/// Definition of an enumeration type.
+/// Definition of an opaque type.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
-pub struct EnumDef {
-    /// The variants of the enumeration type.
-    pub variants: Vec<EnumVariant>,
+pub struct OpaqueTypeDef {}
+
+/// Definition of a variant type.
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct VariantTypeDef {
+    /// The variants of the variant type.
+    pub variants: Vec<Variant>,
 }
 
-/// A variant of an enumeration type.
+/// A variant of a variant type.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
-pub struct EnumVariant {
+pub struct Variant {
     /// The name of the variant.
-    pub name: Name,
+    pub name: Identifier,
     /// The documentation of the variant.
     pub docs: Docs,
     /// The attributes of the variant.
     pub attrs: Vec<Attr>,
-    /// The type expression describing the type of the variant.
+    /// An optional type expression describing the type of the variant.
     pub typ: Option<TypeExpr>,
 }
 
-/// Definition of a struct type.
+/// Definition of a record type.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
-pub struct StructDef {
-    /// The fields of the struct type.
-    pub fields: Vec<StructField>,
+pub struct RecordTypeDef {
+    /// The fields of the record type.
+    pub fields: Vec<Field>,
 }
 
-/// A field of a struct type.
+/// A field of a record type.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
-pub struct StructField {
+pub struct Field {
     /// The name of the field.
-    pub name: Name,
+    pub name: Identifier,
     /// The documentation of the field.
     pub docs: Docs,
     /// The attributes of the field.
@@ -239,36 +277,44 @@ pub struct StructField {
     pub is_optional: bool,
 }
 
+/// Definition of a wrapper type.
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct WrapperTypeDef {
+    /// The type expression describing the wrapped type.
+    pub wrapped: TypeExpr,
+}
+
 /// Definition of a service.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct ServiceDef {
-    /// The functions provided by the service.
-    pub functions: Vec<Function>,
+    /// The methods provided by the service.
+    pub methods: Vec<Method>,
 }
 
-/// A function of a service definition.
+/// A method of a service definition.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
-pub struct Function {
-    /// The name of the function.
-    pub name: Name,
-    /// The documentation of the function.
+pub struct Method {
+    /// The name of the method.
+    pub name: Identifier,
+    /// The documentation of the method.
     pub docs: Docs,
-    /// The attributes of the function.
+    /// The attributes of the method.
     pub attrs: Vec<Attr>,
-    /// The parameters of the function.
-    pub params: Vec<FunctionParam>,
-    /// The type expression describing the return type of the function.
-    pub returns: TypeExpr,
+    /// The parameters of the method.
+    pub params: Vec<MethodParam>,
+    /// An optional type expression describing the return type of the method.
+    pub returns: Option<TypeExpr>,
 }
 
-/// A parameter of a function.
+/// A parameter of a method.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
-pub struct FunctionParam {
+pub struct MethodParam {
     /// The name of the parameter.
-    pub name: Name,
+    pub name: Identifier,
     /// The type expression describing the type of the parameter.
     pub typ: TypeExpr,
     /// Indicates whether the parameter is optional.
@@ -280,10 +326,12 @@ pub struct FunctionParam {
 pub enum TypeExpr {
     /// An instantiation of a type.
     Instance(InstanceTypeExpr),
-    /// An anonymous sequence type.
+    /// A sequence type expression.
     Sequence(SequenceTypeExpr),
-    /// An anonymous map type.
+    /// A map type expression.
     Map(MapTypeExpr),
+    /// A unit type expression.
+    Unit,
 }
 
 /// An instantiation of a type.
@@ -296,7 +344,7 @@ pub struct InstanceTypeExpr {
     pub subst: Vec<TypeExpr>,
 }
 
-/// An anonymous sequence type.
+/// A sequence type expression.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct SequenceTypeExpr {
@@ -304,7 +352,7 @@ pub struct SequenceTypeExpr {
     pub element: Box<TypeExpr>,
 }
 
-/// An anonymous map type.
+/// A map type expression.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct MapTypeExpr {
@@ -319,7 +367,7 @@ pub struct MapTypeExpr {
 #[non_exhaustive]
 pub struct Attr {
     /// The name of the attribute.
-    pub name: Name,
+    pub name: Identifier,
     /// The free-form arguments of the attribute.
     pub args: Option<TokenStream>,
 }

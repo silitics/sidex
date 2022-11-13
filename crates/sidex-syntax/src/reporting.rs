@@ -1,4 +1,4 @@
-//! Beautiful error reporting with [Ariadne](https://crates.io/crates/ariadne).
+//! Beautiful error reporting with the help of [Ariadne](https://crates.io/crates/ariadne).
 
 use ariadne::{Color, Fmt, Label, Report, ReportKind};
 
@@ -71,54 +71,60 @@ pub fn eprint_errors<'e, I: Iterator<Item = &'e SyntaxError>>(
         let report = Report::build(ReportKind::Error, id, error.0.span().start());
 
         let report = match error.0.reason() {
-            chumsky::error::SimpleReason::Unclosed { span, delimiter } => report
-                .with_message(format!(
-                    "Unclosed delimiter {}",
-                    delimiter.fg(Color::Yellow)
-                ))
-                .with_label(
-                    Label::new(span.clone())
-                        .with_message(format!(
-                            "Unclosed delimiter {}",
-                            delimiter.fg(Color::Yellow)
-                        ))
-                        .with_color(Color::Yellow),
+            chumsky::error::SimpleReason::Unclosed { span, delimiter } => {
+                report
+                    .with_message(format!(
+                        "Unclosed delimiter {}",
+                        delimiter.fg(Color::Yellow)
+                    ))
+                    .with_label(
+                        Label::new(span.clone())
+                            .with_message(format!(
+                                "Unclosed delimiter {}",
+                                delimiter.fg(Color::Yellow)
+                            ))
+                            .with_color(Color::Yellow),
+                    )
+                    .with_label(
+                        Label::new(error.0.span())
+                            .with_message(format!(
+                                "Must be closed before this {}",
+                                error
+                                    .0
+                                    .found()
+                                    .unwrap_or(&"end of file".to_string())
+                                    .fg(Color::Red)
+                            ))
+                            .with_color(Color::Red),
+                    )
+            }
+            chumsky::error::SimpleReason::Unexpected => {
+                report
+                    .with_message(if error.0.found().is_some() {
+                        "Unexpected token in input.".to_owned()
+                    } else {
+                        "Unexpected end of input.".to_owned()
+                    })
+                    .with_label(
+                        Label::new(error.0.span())
+                            .with_message(format!(
+                                "Unexpected token {}",
+                                error
+                                    .0
+                                    .found()
+                                    .unwrap_or(&"end of file".to_string())
+                                    .fg(Color::Red)
+                            ))
+                            .with_color(Color::Red),
+                    )
+            }
+            chumsky::error::SimpleReason::Custom(msg) => {
+                report.with_message(msg).with_label(
+                    Label::new(error.0.span())
+                        .with_message(format!("{}", msg.fg(Color::Red)))
+                        .with_color(Color::Red),
                 )
-                .with_label(
-                    Label::new(error.0.span())
-                        .with_message(format!(
-                            "Must be closed before this {}",
-                            error
-                                .0
-                                .found()
-                                .unwrap_or(&"end of file".to_string())
-                                .fg(Color::Red)
-                        ))
-                        .with_color(Color::Red),
-                ),
-            chumsky::error::SimpleReason::Unexpected => report
-                .with_message(if error.0.found().is_some() {
-                    "Unexpected token in input.".to_owned()
-                } else {
-                    "Unexpected end of input.".to_owned()
-                })
-                .with_label(
-                    Label::new(error.0.span())
-                        .with_message(format!(
-                            "Unexpected token {}",
-                            error
-                                .0
-                                .found()
-                                .unwrap_or(&"end of file".to_string())
-                                .fg(Color::Red)
-                        ))
-                        .with_color(Color::Red),
-                ),
-            chumsky::error::SimpleReason::Custom(msg) => report.with_message(msg).with_label(
-                Label::new(error.0.span())
-                    .with_message(format!("{}", msg.fg(Color::Red)))
-                    .with_color(Color::Red),
-            ),
+            }
         };
 
         report.finish().eprint(Cache::new(storage)).unwrap();

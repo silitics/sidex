@@ -4,6 +4,7 @@ expression: result
 ---
 Some(
     Schema {
+        attrs: [],
         docs: Docs(
             [
                 Node {
@@ -20,14 +21,14 @@ Some(
         items: [
             Def(
                 Def {
-                    name: Name(
+                    name: Identifier(
                         Node {
                             inner: "Uuid",
                             span: Span {
                                 src: SourceId(
                                     0,
                                 ),
-                                range: 179..183,
+                                range: 156..160,
                             },
                         },
                     ),
@@ -47,7 +48,7 @@ Some(
                     vars: [],
                     attrs: [
                         Attr {
-                            name: Name(
+                            name: Identifier(
                                 Node {
                                     inner: "rust",
                                     span: Span {
@@ -104,71 +105,14 @@ Some(
                             ),
                         },
                         Attr {
-                            name: Name(
-                                Node {
-                                    inner: "ts",
-                                    span: Span {
-                                        src: SourceId(
-                                            0,
-                                        ),
-                                        range: 126..128,
-                                    },
-                                },
-                            ),
-                            args: Some(
-                                TokenStream(
-                                    [
-                                        Token {
-                                            kind: Identifier(
-                                                "type",
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 129..133,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Punctuation(
-                                                PunctuationSymbol {
-                                                    kind: Equals,
-                                                    is_composed: false,
-                                                },
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 134..135,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Literal(
-                                                String(
-                                                    "string",
-                                                ),
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 136..144,
-                                            },
-                                        },
-                                    ],
-                                ),
-                            ),
-                        },
-                        Attr {
-                            name: Name(
+                            name: Identifier(
                                 Node {
                                     inner: "json",
                                     span: Span {
                                         src: SourceId(
                                             0,
                                         ),
-                                        range: 149..153,
+                                        range: 126..130,
                                     },
                                 },
                             ),
@@ -183,7 +127,7 @@ Some(
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 154..158,
+                                                range: 131..135,
                                             },
                                         },
                                         Token {
@@ -197,7 +141,7 @@ Some(
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 159..160,
+                                                range: 136..137,
                                             },
                                         },
                                         Token {
@@ -210,7 +154,7 @@ Some(
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 161..169,
+                                                range: 138..146,
                                             },
                                         },
                                     ],
@@ -218,21 +162,21 @@ Some(
                             ),
                         },
                     ],
-                    kind: Opaque(
-                        OpaqueDef,
+                    kind: OpaqueType(
+                        OpaqueTypeDef,
                     ),
                 },
             ),
             Def(
                 Def {
-                    name: Name(
+                    name: Identifier(
                         Node {
                             inner: "PersonId",
                             span: Span {
                                 src: SourceId(
                                     0,
                                 ),
-                                range: 273..281,
+                                range: 252..260,
                             },
                         },
                     ),
@@ -244,27 +188,27 @@ Some(
                                     src: SourceId(
                                         0,
                                     ),
-                                    range: 226..267,
+                                    range: 203..244,
                                 },
                             },
                         ],
                     ),
                     vars: [],
                     attrs: [],
-                    kind: Alias(
-                        AliasDef {
-                            aliased: Instance(
+                    kind: WrapperType(
+                        WrapperTypeDef {
+                            wrapped: Instance(
                                 InstanceTypeExpr {
                                     path: Path {
                                         segments: [
-                                            Name(
+                                            Identifier(
                                                 Node {
                                                     inner: "Uuid",
                                                     span: Span {
                                                         src: SourceId(
                                                             0,
                                                         ),
-                                                        range: 283..287,
+                                                        range: 262..266,
                                                     },
                                                 },
                                             ),

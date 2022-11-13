@@ -2,8 +2,8 @@
 //!
 //! The lexer is based on [Chumsky](https://crates.io/crates/chumsky).
 //!
-//! 📌 **Note:** The lexer also produces tokens for comments which will enable automated
-//! formatting.
+//! 📌 **Note:** The lexer also produces tokens for comments which will later enable
+//! automated formatting.
 
 use std::{
     fmt::{self, Display, Write},
@@ -108,9 +108,14 @@ macro_rules! gen_code_delimiters {
 }
 
 gen_code_delimiters![
-    (Parenthesis, "(", ")", "A parenthesis delimiter."),
-    (Bracket, "[", "]", "A bracket delimiter."),
-    (Brace, "{", "}", "A brace delimiter."),
+    (
+        Parenthesis,
+        "(",
+        ")",
+        "A parenthesis delimiter, i.e., `(` or `)`."
+    ),
+    (Bracket, "[", "]", "A bracket delimiter, i.e., `[` or `]`."),
+    (Brace, "{", "}", "A brace delimiter, i.e., `{` or `}`."),
 ];
 
 /// A punctuation symbol like `+`, `.`, or `:`.
@@ -290,14 +295,14 @@ macro_rules! gen_code_keywords {
 }
 
 gen_code_keywords![
-    (OPAQUE, "opaque", "The `opaque` keyword."),
     (ALIAS, "alias", "The `alias` keyword."),
-    (STRUCT, "struct", "The `struct` keyword."),
-    (ENUM, "enum", "The `enum` keyword."),
+    (OPAQUE, "opaque", "The `opaque` keyword."),
+    (RECORD, "record", "The `record` keyword."),
+    (VARIANT, "variant", "The `variant` keyword."),
+    (WRAPPER, "wrapper", "The `wrapper` keyword."),
     (FUN, "fun", "The `fun` keyword."),
     (SERVICE, "service", "The `service` keyword."),
     (IMPORT, "import", "The `import` keyword."),
-    (AS, "as", "The `as` keyword."),
 ];
 
 /// Indicates the type of a comment.
@@ -349,6 +354,7 @@ impl fmt::Display for Literal {
                 }
                 f.write_str(integral)?;
                 if let Some(fractional) = fractional {
+                    f.write_char('.')?;
                     f.write_str(fractional)?;
                 }
                 Ok(())
@@ -396,22 +402,26 @@ impl fmt::Display for TokenKind {
             TokenKind::Keyword(keyword) => keyword.fmt(f),
             TokenKind::Literal(literal) => literal.fmt(f),
             TokenKind::Identifier(identifier) => f.write_str(identifier),
-            TokenKind::Comment { comment, kind } => match kind {
-                CommentKind::Line => {
-                    write!(f, "//{comment}\n")
+            TokenKind::Comment { comment, kind } => {
+                match kind {
+                    CommentKind::Line => {
+                        write!(f, "//{comment}\n")
+                    }
+                    CommentKind::Block => {
+                        write!(f, "/*{comment}*/")
+                    }
                 }
-                CommentKind::Block => {
-                    write!(f, "/*{comment}*/")
+            }
+            TokenKind::Doc { doc, kind } => {
+                match kind {
+                    DocKind::Inline => {
+                        write!(f, "//!{doc}\n")
+                    }
+                    DocKind::Preceding => {
+                        write!(f, "///{doc}\n")
+                    }
                 }
-            },
-            TokenKind::Doc { doc, kind } => match kind {
-                DocKind::Inline => {
-                    write!(f, "//!{doc}\n")
-                }
-                DocKind::Preceding => {
-                    write!(f, "///{doc}\n")
-                }
-            },
+            }
         }
     }
 }
@@ -470,9 +480,11 @@ fn comment_lexer<O>(
 ) -> impl Parser<char, TokenKind, Error = Simple<char, Span>> {
     just(start)
         .ignore_then(take_until(until))
-        .map(move |(comment, _)| TokenKind::Comment {
-            comment: Arc::new(comment.into_iter().collect()),
-            kind,
+        .map(move |(comment, _)| {
+            TokenKind::Comment {
+                comment: Arc::new(comment.into_iter().collect()),
+                kind,
+            }
         })
 }
 
@@ -483,9 +495,11 @@ fn doc_lexer(
 ) -> impl Parser<char, TokenKind, Error = Simple<char, Span>> {
     just(start)
         .ignore_then(take_until(text::newline()))
-        .map(move |(doc, _)| TokenKind::Doc {
-            doc: Arc::new(doc.into_iter().collect()),
-            kind,
+        .map(move |(doc, _)| {
+            TokenKind::Doc {
+                doc: Arc::new(doc.into_iter().collect()),
+                kind,
+            }
         })
 }
 
@@ -588,32 +602,22 @@ mod tests {
     }
 
     make_test_from_file!(
-        test_multi_service,
-        "../../../examples/simple-multi/bundles/api/schemas/service.sidex"
+        test_todo_list_api_manager,
+        "../../../examples/todo-list/api/schemas/manager.sidex"
     );
 
     make_test_from_file!(
-        test_multi_ids,
-        "../../../examples/simple-multi/bundles/data/schemas/ids.sidex"
+        test_todo_list_data_ids,
+        "../../../examples/todo-list/data/schemas/ids.sidex"
     );
 
     make_test_from_file!(
-        test_multi_person,
-        "../../../examples/simple-multi/bundles/data/schemas/person.sidex"
+        test_todo_list_data_person,
+        "../../../examples/todo-list/data/schemas/person.sidex"
     );
 
     make_test_from_file!(
-        test_single_ids,
-        "../../../examples/simple-single/schemas/ids.sidex"
-    );
-
-    make_test_from_file!(
-        test_single_person,
-        "../../../examples/simple-single/schemas/person.sidex"
-    );
-
-    make_test_from_file!(
-        test_single_task,
-        "../../../examples/simple-single/schemas/task.sidex"
+        test_todo_list_data_task,
+        "../../../examples/todo-list/data/schemas/task.sidex"
     );
 }

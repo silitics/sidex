@@ -173,128 +173,13 @@ expression: result
             },
             Token {
                 kind: Identifier(
-                    "ts",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 126..128,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 128..129,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "type",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 129..133,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Equals,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 134..135,
-                },
-            },
-            Token {
-                kind: Literal(
-                    String(
-                        "string",
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 136..144,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 144..145,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Bracket,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 145..146,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Hash,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 147..148,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Bracket,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 148..149,
-                },
-            },
-            Token {
-                kind: Identifier(
                     "json",
                 ),
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 149..153,
+                    range: 126..130,
                 },
             },
             Token {
@@ -307,7 +192,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 153..154,
+                    range: 130..131,
                 },
             },
             Token {
@@ -318,7 +203,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 154..158,
+                    range: 131..135,
                 },
             },
             Token {
@@ -332,7 +217,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 159..160,
+                    range: 136..137,
                 },
             },
             Token {
@@ -345,7 +230,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 161..169,
+                    range: 138..146,
                 },
             },
             Token {
@@ -358,7 +243,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 169..170,
+                    range: 146..147,
                 },
             },
             Token {
@@ -371,7 +256,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 170..171,
+                    range: 147..148,
                 },
             },
             Token {
@@ -382,7 +267,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 172..178,
+                    range: 149..155,
                 },
             },
             Token {
@@ -393,7 +278,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 179..183,
+                    range: 156..160,
                 },
             },
             Token {
@@ -405,7 +290,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 185..225,
+                    range: 162..202,
                 },
             },
             Token {
@@ -417,18 +302,18 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 226..267,
+                    range: 203..244,
                 },
             },
             Token {
                 kind: Keyword(
-                    ALIAS,
+                    WRAPPER,
                 ),
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 267..272,
+                    range: 244..251,
                 },
             },
             Token {
@@ -439,7 +324,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 273..281,
+                    range: 252..260,
                 },
             },
             Token {
@@ -453,7 +338,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 281..282,
+                    range: 260..261,
                 },
             },
             Token {
@@ -464,19 +349,19 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 283..287,
+                    range: 262..266,
                 },
             },
             Token {
                 kind: Comment {
-                    comment: " This is a type alias.",
+                    comment: " This is a wrapper type.",
                     kind: Line,
                 },
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 289..314,
+                    range: 268..295,
                 },
             },
         ],

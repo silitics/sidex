@@ -17,4 +17,4 @@ thiserror = "1"  # PRIVATE
 
 [dev-dependencies]
 # Required for snapshot testing.
-insta = "1.21.0"
+insta = { version = "1.21.0", features = ["glob"] }

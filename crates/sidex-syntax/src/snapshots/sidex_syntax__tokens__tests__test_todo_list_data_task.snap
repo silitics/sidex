@@ -6,6 +6,18 @@ expression: result
     Some(
         [
             Token {
+                kind: Doc {
+                    doc: " Data structures for tasks.",
+                    kind: Inline,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 0..31,
+                },
+            },
+            Token {
                 kind: Keyword(
                     IMPORT,
                 ),
@@ -13,7 +25,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 0..6,
+                    range: 32..38,
                 },
             },
             Token {
@@ -24,7 +36,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 7..10,
+                    range: 39..42,
                 },
             },
             Token {
@@ -38,7 +50,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 10..11,
+                    range: 42..43,
                 },
             },
             Token {
@@ -52,265 +64,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 11..12,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 12..13,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Asterisk,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 13..14,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 14..15,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " A *role* of a person.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 17..43,
-                },
-            },
-            Token {
-                kind: Keyword(
-                    ENUM,
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 43..47,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Role",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 48..52,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 53..54,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The person is an administrator.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 59..95,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Admin",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 99..104,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 104..105,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The person is an user.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 110..137,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "User",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 141..145,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 145..146,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 147..148,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " A person.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 150..164,
-                },
-            },
-            Token {
-                kind: Keyword(
-                    STRUCT,
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 164..170,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Person",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 171..177,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 178..179,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The unique id of the person.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 184..217,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "id",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 221..223,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 223..224,
+                    range: 43..44,
                 },
             },
             Token {
@@ -321,7 +75,202 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 225..233,
+                    range: 44..52,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " The status of a task.",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 54..80,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Hash,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 80..81,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 81..82,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "json",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 82..86,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 86..87,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "tagged",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 87..93,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 93..94,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "plain",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 94..99,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 99..100,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Parenthesis,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 100..101,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Bracket,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 101..102,
+                },
+            },
+            Token {
+                kind: Keyword(
+                    VARIANT,
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 103..110,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "Status",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 111..117,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Brace,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 118..119,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " The task is still pending.",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 124..155,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "Pending",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 159..166,
                 },
             },
             Token {
@@ -335,19 +284,153 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 233..234,
+                    range: 166..167,
                 },
             },
             Token {
                 kind: Doc {
-                    doc: " The full name of the person.",
+                    doc: " The task is currently in progress.",
                     kind: Preceding,
                 },
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 239..272,
+                    range: 172..211,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "InProgress",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 215..225,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Comma,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 225..226,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " The task has been completed.",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 231..264,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "Done",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 268..272,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Comma,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 272..273,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Close(
+                        Brace,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 274..275,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " A task.",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 277..289,
+                },
+            },
+            Token {
+                kind: Keyword(
+                    RECORD,
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 289..295,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "Task",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 296..300,
+                },
+            },
+            Token {
+                kind: Delimiter(
+                    Open(
+                        Brace,
+                    ),
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 301..302,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " The name of the task.",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 307..333,
                 },
             },
             Token {
@@ -358,7 +441,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 276..280,
+                    range: 337..341,
                 },
             },
             Token {
@@ -372,7 +455,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 280..281,
+                    range: 341..342,
                 },
             },
             Token {
@@ -383,7 +466,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 282..288,
+                    range: 343..349,
                 },
             },
             Token {
@@ -397,30 +480,92 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 288..289,
+                    range: 349..350,
                 },
             },
             Token {
                 kind: Doc {
-                    doc: " An optional e-mail address of the person.",
+                    doc: " The status of the task.",
                     kind: Preceding,
                 },
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 294..340,
+                    range: 355..383,
                 },
             },
             Token {
                 kind: Identifier(
-                    "email",
+                    "status",
                 ),
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 344..349,
+                    range: 387..393,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Colon,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 393..394,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "Status",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 395..401,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: Comma,
+                        is_composed: false,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 401..402,
+                },
+            },
+            Token {
+                kind: Doc {
+                    doc: " An optional description of the task.",
+                    kind: Preceding,
+                },
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 407..448,
+                },
+            },
+            Token {
+                kind: Identifier(
+                    "description",
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 452..463,
                 },
             },
             Token {
@@ -434,7 +579,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 349..350,
+                    range: 463..464,
                 },
             },
             Token {
@@ -448,7 +593,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 350..351,
+                    range: 464..465,
                 },
             },
             Token {
@@ -459,7 +604,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 352..358,
+                    range: 466..472,
                 },
             },
             Token {
@@ -473,42 +618,44 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 358..359,
-                },
-            },
-            Token {
-                kind: Comment {
-                    comment: " This field is optional.",
-                    kind: Line,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 361..388,
+                    range: 472..473,
                 },
             },
             Token {
                 kind: Doc {
-                    doc: " The role of the person.",
+                    doc: " An optional person assigned to the task.",
                     kind: Preceding,
                 },
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 392..420,
+                    range: 482..527,
                 },
             },
             Token {
                 kind: Identifier(
-                    "role",
+                    "assigned_to",
                 ),
                 span: Span {
                     src: SourceId(
                         0,
                     ),
-                    range: 424..428,
+                    range: 531..542,
+                },
+            },
+            Token {
+                kind: Punctuation(
+                    PunctuationSymbol {
+                        kind: QuestionMark,
+                        is_composed: true,
+                    },
+                ),
+                span: Span {
+                    src: SourceId(
+                        0,
+                    ),
+                    range: 542..543,
                 },
             },
             Token {
@@ -522,82 +669,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 428..429,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Role",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 430..434,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 434..435,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " Unique identifiers of the person's friends.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 440..488,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "friends",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 492..499,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 499..500,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Bracket,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 501..502,
+                    range: 543..544,
                 },
             },
             Token {
@@ -608,20 +680,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 502..510,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Bracket,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 510..511,
+                    range: 545..553,
                 },
             },
             Token {
@@ -635,19 +694,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 511..512,
-                },
-            },
-            Token {
-                kind: Comment {
-                    comment: " A sequence of person ids.",
-                    kind: Line,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 514..543,
+                    range: 553..554,
                 },
             },
             Token {
@@ -660,7 +707,7 @@ expression: result
                     src: SourceId(
                         0,
                     ),
-                    range: 543..544,
+                    range: 555..556,
                 },
             },
         ],

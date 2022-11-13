@@ -4,45 +4,53 @@ expression: result
 ---
 Some(
     Schema {
+        attrs: [],
         docs: Docs(
-            [],
+            [
+                Node {
+                    inner: " Data structures for persons.",
+                    span: Span {
+                        src: SourceId(
+                            0,
+                        ),
+                        range: 0..33,
+                    },
+                },
+            ],
         ),
         items: [
             Import(
                 Import {
-                    tree: From {
-                        path: Path {
+                    tree: Path(
+                        Path {
                             segments: [
-                                Name(
+                                Identifier(
                                     Node {
                                         inner: "ids",
                                         span: Span {
                                             src: SourceId(
                                                 0,
                                             ),
-                                            range: 7..10,
+                                            range: 41..44,
                                         },
                                     },
                                 ),
                             ],
                             is_absolute: false,
                         },
-                        trees: [
-                            Wildcard,
-                        ],
-                    },
+                    ),
                 },
             ),
             Def(
                 Def {
-                    name: Name(
+                    name: Identifier(
                         Node {
                             inner: "Role",
                             span: Span {
                                 src: SourceId(
                                     0,
                                 ),
-                                range: 48..52,
+                                range: 80..84,
                             },
                         },
                     ),
@@ -54,25 +62,25 @@ Some(
                                     src: SourceId(
                                         0,
                                     ),
-                                    range: 17..43,
+                                    range: 46..72,
                                 },
                             },
                         ],
                     ),
                     vars: [],
                     attrs: [],
-                    kind: Enum(
-                        EnumDef {
+                    kind: VariantType(
+                        VariantTypeDef {
                             variants: [
-                                EnumVariant {
-                                    name: Name(
+                                Variant {
+                                    name: Identifier(
                                         Node {
                                             inner: "Admin",
                                             span: Span {
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 99..104,
+                                                range: 131..136,
                                             },
                                         },
                                     ),
@@ -84,7 +92,7 @@ Some(
                                                     src: SourceId(
                                                         0,
                                                     ),
-                                                    range: 59..95,
+                                                    range: 91..127,
                                                 },
                                             },
                                         ],
@@ -92,15 +100,15 @@ Some(
                                     attrs: [],
                                     typ: None,
                                 },
-                                EnumVariant {
-                                    name: Name(
+                                Variant {
+                                    name: Identifier(
                                         Node {
                                             inner: "User",
                                             span: Span {
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 141..145,
+                                                range: 173..177,
                                             },
                                         },
                                     ),
@@ -112,7 +120,7 @@ Some(
                                                     src: SourceId(
                                                         0,
                                                     ),
-                                                    range: 110..137,
+                                                    range: 142..169,
                                                 },
                                             },
                                         ],
@@ -127,14 +135,14 @@ Some(
             ),
             Def(
                 Def {
-                    name: Name(
+                    name: Identifier(
                         Node {
                             inner: "Person",
                             span: Span {
                                 src: SourceId(
                                     0,
                                 ),
-                                range: 171..177,
+                                range: 203..209,
                             },
                         },
                     ),
@@ -146,25 +154,25 @@ Some(
                                     src: SourceId(
                                         0,
                                     ),
-                                    range: 150..164,
+                                    range: 182..196,
                                 },
                             },
                         ],
                     ),
                     vars: [],
                     attrs: [],
-                    kind: Struct(
-                        StructDef {
+                    kind: RecordType(
+                        RecordTypeDef {
                             fields: [
-                                StructField {
-                                    name: Name(
+                                Field {
+                                    name: Identifier(
                                         Node {
                                             inner: "id",
                                             span: Span {
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 221..223,
+                                                range: 253..255,
                                             },
                                         },
                                     ),
@@ -176,7 +184,7 @@ Some(
                                                     src: SourceId(
                                                         0,
                                                     ),
-                                                    range: 184..217,
+                                                    range: 216..249,
                                                 },
                                             },
                                         ],
@@ -186,14 +194,25 @@ Some(
                                         InstanceTypeExpr {
                                             path: Path {
                                                 segments: [
-                                                    Name(
+                                                    Identifier(
+                                                        Node {
+                                                            inner: "ids",
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 257..260,
+                                                            },
+                                                        },
+                                                    ),
+                                                    Identifier(
                                                         Node {
                                                             inner: "PersonId",
                                                             span: Span {
                                                                 src: SourceId(
                                                                     0,
                                                                 ),
-                                                                range: 225..233,
+                                                                range: 262..270,
                                                             },
                                                         },
                                                     ),
@@ -205,15 +224,15 @@ Some(
                                     ),
                                     is_optional: false,
                                 },
-                                StructField {
-                                    name: Name(
+                                Field {
+                                    name: Identifier(
                                         Node {
                                             inner: "name",
                                             span: Span {
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 276..280,
+                                                range: 313..317,
                                             },
                                         },
                                     ),
@@ -225,7 +244,7 @@ Some(
                                                     src: SourceId(
                                                         0,
                                                     ),
-                                                    range: 239..272,
+                                                    range: 276..309,
                                                 },
                                             },
                                         ],
@@ -235,14 +254,14 @@ Some(
                                         InstanceTypeExpr {
                                             path: Path {
                                                 segments: [
-                                                    Name(
+                                                    Identifier(
                                                         Node {
                                                             inner: "string",
                                                             span: Span {
                                                                 src: SourceId(
                                                                     0,
                                                                 ),
-                                                                range: 282..288,
+                                                                range: 319..325,
                                                             },
                                                         },
                                                     ),
@@ -254,15 +273,15 @@ Some(
                                     ),
                                     is_optional: false,
                                 },
-                                StructField {
-                                    name: Name(
+                                Field {
+                                    name: Identifier(
                                         Node {
                                             inner: "email",
                                             span: Span {
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 344..349,
+                                                range: 381..386,
                                             },
                                         },
                                     ),
@@ -274,7 +293,7 @@ Some(
                                                     src: SourceId(
                                                         0,
                                                     ),
-                                                    range: 294..340,
+                                                    range: 331..377,
                                                 },
                                             },
                                         ],
@@ -284,14 +303,14 @@ Some(
                                         InstanceTypeExpr {
                                             path: Path {
                                                 segments: [
-                                                    Name(
+                                                    Identifier(
                                                         Node {
                                                             inner: "string",
                                                             span: Span {
                                                                 src: SourceId(
                                                                     0,
                                                                 ),
-                                                                range: 352..358,
+                                                                range: 389..395,
                                                             },
                                                         },
                                                     ),
@@ -303,15 +322,15 @@ Some(
                                     ),
                                     is_optional: true,
                                 },
-                                StructField {
-                                    name: Name(
+                                Field {
+                                    name: Identifier(
                                         Node {
                                             inner: "role",
                                             span: Span {
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 424..428,
+                                                range: 489..493,
                                             },
                                         },
                                     ),
@@ -323,24 +342,82 @@ Some(
                                                     src: SourceId(
                                                         0,
                                                     ),
-                                                    range: 392..420,
+                                                    range: 429..457,
                                                 },
                                             },
                                         ],
                                     ),
-                                    attrs: [],
+                                    attrs: [
+                                        Attr {
+                                            name: Identifier(
+                                                Node {
+                                                    inner: "json",
+                                                    span: Span {
+                                                        src: SourceId(
+                                                            0,
+                                                        ),
+                                                        range: 463..467,
+                                                    },
+                                                },
+                                            ),
+                                            args: Some(
+                                                TokenStream(
+                                                    [
+                                                        Token {
+                                                            kind: Identifier(
+                                                                "name",
+                                                            ),
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 468..472,
+                                                            },
+                                                        },
+                                                        Token {
+                                                            kind: Punctuation(
+                                                                PunctuationSymbol {
+                                                                    kind: Equals,
+                                                                    is_composed: false,
+                                                                },
+                                                            ),
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 473..474,
+                                                            },
+                                                        },
+                                                        Token {
+                                                            kind: Literal(
+                                                                String(
+                                                                    "level",
+                                                                ),
+                                                            ),
+                                                            span: Span {
+                                                                src: SourceId(
+                                                                    0,
+                                                                ),
+                                                                range: 475..482,
+                                                            },
+                                                        },
+                                                    ],
+                                                ),
+                                            ),
+                                        },
+                                    ],
                                     typ: Instance(
                                         InstanceTypeExpr {
                                             path: Path {
                                                 segments: [
-                                                    Name(
+                                                    Identifier(
                                                         Node {
                                                             inner: "Role",
                                                             span: Span {
                                                                 src: SourceId(
                                                                     0,
                                                                 ),
-                                                                range: 430..434,
+                                                                range: 495..499,
                                                             },
                                                         },
                                                     ),
@@ -352,15 +429,15 @@ Some(
                                     ),
                                     is_optional: false,
                                 },
-                                StructField {
-                                    name: Name(
+                                Field {
+                                    name: Identifier(
                                         Node {
                                             inner: "friends",
                                             span: Span {
                                                 src: SourceId(
                                                     0,
                                                 ),
-                                                range: 492..499,
+                                                range: 557..564,
                                             },
                                         },
                                     ),
@@ -372,7 +449,7 @@ Some(
                                                     src: SourceId(
                                                         0,
                                                     ),
-                                                    range: 440..488,
+                                                    range: 505..553,
                                                 },
                                             },
                                         ],
@@ -384,14 +461,25 @@ Some(
                                                 InstanceTypeExpr {
                                                     path: Path {
                                                         segments: [
-                                                            Name(
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "ids",
+                                                                    span: Span {
+                                                                        src: SourceId(
+                                                                            0,
+                                                                        ),
+                                                                        range: 567..570,
+                                                                    },
+                                                                },
+                                                            ),
+                                                            Identifier(
                                                                 Node {
                                                                     inner: "PersonId",
                                                                     span: Span {
                                                                         src: SourceId(
                                                                             0,
                                                                         ),
-                                                                        range: 502..510,
+                                                                        range: 572..580,
                                                                     },
                                                                 },
                                                             ),
@@ -404,6 +492,120 @@ Some(
                                         },
                                     ),
                                     is_optional: false,
+                                },
+                            ],
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Identifier(
+                        Node {
+                            inner: "GetPersonResult",
+                            span: Span {
+                                src: SourceId(
+                                    0,
+                                ),
+                                range: 666..681,
+                            },
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " Result type for [`get_person_by_id`].",
+                                span: Span {
+                                    src: SourceId(
+                                        0,
+                                    ),
+                                    range: 616..658,
+                                },
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: VariantType(
+                        VariantTypeDef {
+                            variants: [
+                                Variant {
+                                    name: Identifier(
+                                        Node {
+                                            inner: "NotFound",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 743..751,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " A person with the provided id cannot be found.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 688..739,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: None,
+                                },
+                                Variant {
+                                    name: Identifier(
+                                        Node {
+                                            inner: "Found",
+                                            span: Span {
+                                                src: SourceId(
+                                                    0,
+                                                ),
+                                                range: 811..816,
+                                            },
+                                        },
+                                    ),
+                                    docs: Docs(
+                                        [
+                                            Node {
+                                                inner: " A person with the provided id has been found.",
+                                                span: Span {
+                                                    src: SourceId(
+                                                        0,
+                                                    ),
+                                                    range: 757..807,
+                                                },
+                                            },
+                                        ],
+                                    ),
+                                    attrs: [],
+                                    typ: Some(
+                                        Instance(
+                                            InstanceTypeExpr {
+                                                path: Path {
+                                                    segments: [
+                                                        Identifier(
+                                                            Node {
+                                                                inner: "Person",
+                                                                span: Span {
+                                                                    src: SourceId(
+                                                                        0,
+                                                                    ),
+                                                                    range: 818..824,
+                                                                },
+                                                            },
+                                                        ),
+                                                    ],
+                                                    is_absolute: false,
+                                                },
+                                                subst: [],
+                                            },
+                                        ),
+                                    ),
                                 },
                             ],
                         },

@@ -120,6 +120,7 @@ impl chumsky::Span for Span {
 /// A storage for sources.
 #[derive(Default)]
 pub struct SourceStorage {
+    /// The text sources.
     pub(crate) sources: Vec<Source>,
 }
 
