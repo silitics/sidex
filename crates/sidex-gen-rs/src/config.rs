@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
-    #[serde(default, rename = "default-derive")]
-    pub default_derive: Vec<String>,
+    #[serde(default)]
+    pub derive: Vec<String>,
 }
 
 // pub struct Config {

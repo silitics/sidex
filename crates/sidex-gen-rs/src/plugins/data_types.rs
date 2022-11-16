@@ -20,7 +20,7 @@ impl Plugin for Types {
         let mut derive_traits = ctx
             .bundle_ctx
             .cfg
-            .default_derive
+            .derive
             .iter()
             .map(|path| TokenStream::from_str(path).unwrap())
             .collect::<Vec<_>>();
