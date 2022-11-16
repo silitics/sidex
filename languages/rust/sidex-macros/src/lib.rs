@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use proc_macro::TokenStream;
 use sidex_core::utils::load_unit_and_bundle;
-use sidex_gen_rs::RustGenerator;
+use sidex_gen_rs::{config::Config, RustGenerator};
 use syn::{parse::Parse, parse_macro_input, Lit};
 
 struct IncludeSidexArgs {
@@ -30,7 +30,11 @@ pub fn include_bundle(tokens: TokenStream) -> TokenStream {
 
     let generator = RustGenerator::new();
 
-    let inner = generator.generate_bundle_inner(&unit, bundle).unwrap();
+    let cfg = Config::default();
+
+    let inner = generator
+        .generate_bundle_inner(&cfg, &unit, bundle)
+        .unwrap();
 
     inner.into()
 }

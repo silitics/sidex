@@ -2,7 +2,7 @@ use color_eyre::Help;
 use eyre::Result;
 use sidex_core::{ir, transformer::Transformer};
 
-pub fn load_cwd_unit_and_bundle() -> Result<(ir::Unit, ir::BundleIdx)> {
+pub fn load_cwd_unit_and_bundle() -> Result<(ir::Unit, ir::BundleIdx, Transformer)> {
     let cwd = std::env::current_dir()?;
 
     let bundle_path = sidex_core::bundle::try_locate_bundle(&cwd)?
@@ -12,5 +12,5 @@ pub fn load_cwd_unit_and_bundle() -> Result<(ir::Unit, ir::BundleIdx)> {
     let mut transformer = Transformer::new();
     let idx = transformer.load_bundle_recursive(&bundle_path)?;
 
-    Ok((transformer.transform(), idx))
+    Ok((transformer.transform(), idx, transformer))
 }

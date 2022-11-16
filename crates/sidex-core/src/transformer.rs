@@ -11,7 +11,7 @@ use thiserror::Error;
 
 use crate::{
     builtins,
-    bundle::{self, iter_schemas, BundleSource},
+    bundle::{self, iter_schemas, BundleSource, Manifest},
     ir,
 };
 
@@ -371,8 +371,8 @@ impl Transformer {
         transformer
     }
 
-    fn _get_bundle_source(&self, idx: ir::BundleIdx) -> &BundleSource {
-        &self.loaded[idx.0].source
+    pub fn get_bundle_manifest(&self, idx: ir::BundleIdx) -> &Manifest {
+        &self.loaded[idx.0].source.manifest
     }
 
     fn get_bundle_by_path(&self, path: &Path) -> Option<&LoadedBundle> {
@@ -476,7 +476,7 @@ impl Transformer {
         }
     }
 
-    pub fn transform(self) -> ir::Unit {
+    pub fn transform(&self) -> ir::Unit {
         ir::Unit {
             bundles: self
                 .loaded

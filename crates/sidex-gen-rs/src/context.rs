@@ -4,8 +4,11 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use sidex_gen::ir;
 
+use crate::config::Config;
+
 #[derive(Clone)]
 pub struct BundleCtx<'cx> {
+    pub cfg: &'cx Config,
     pub unit: &'cx ir::Unit,
     pub bundle: &'cx ir::Bundle,
 }
@@ -49,6 +52,7 @@ impl<'cx> SchemaCtx<'cx> {
                     "::std::builtins::u32" => quote! { u32 },
                     "::std::builtins::u64" => quote! { u64 },
                     "::std::builtins::idx" => quote! { usize },
+                    "::std::builtins::bool" => quote! { bool },
                     "::std::builtins::Sequence" => quote! { ::std::vec::Vec },
                     "::std::builtins::Map" => quote! { ::std::collections::HashMap },
                     _ => {

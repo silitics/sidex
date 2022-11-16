@@ -1,5 +1,10 @@
+use std::str::FromStr;
+
+use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
+use sidex_attrs_rust::TypeAttrs;
 use sidex_gen::ir::{Def, DefKind};
+use sidex_syntax::parse_meta;
 
 use super::Plugin;
 use crate::context::SchemaCtx;
@@ -12,6 +17,31 @@ impl Plugin for Types {
         let docs = &def.docs;
         let vars = ctx.generic_type_vars(def);
         let vis = quote! { pub };
+        let mut derive_traits = ctx
+            .bundle_ctx
+            .cfg
+            .default_derive
+            .iter()
+            .map(|path| TokenStream::from_str(path).unwrap())
+            .collect::<Vec<_>>();
+        for attr in &def.attrs {
+            if attr.name == "rust" {
+                if let Some(args) = &attr.args {
+                    let meta = parse_meta(args).unwrap();
+                    let type_attrs = TypeAttrs::try_from(meta)?;
+                    for derive_trait in type_attrs.derive.positive {
+                        derive_traits.push(derive_trait);
+                    }
+                }
+            }
+        }
+        let derive = if derive_traits.is_empty() {
+            quote! {}
+        } else {
+            quote! (
+                #[derive( #(#derive_traits, )* )]
+            )
+        };
         match &def.kind {
             DefKind::TypeAlias(alias) => {
                 let aliased = ctx.resolve_type(def, &alias.aliased);
@@ -40,6 +70,7 @@ impl Plugin for Types {
                     .collect::<Vec<_>>();
                 Ok(quote! {
                     #[doc = #docs]
+                    #derive
                     #vis struct #name #vars {
                         #(#fields)*
                     }
@@ -68,6 +99,7 @@ impl Plugin for Types {
                     .collect::<Vec<_>>();
                 Ok(quote! {
                     #[doc = #docs]
+                    #derive
                     #vis enum #name #vars {
                         #(#variants)*
                     }
@@ -77,7 +109,8 @@ impl Plugin for Types {
                 let wrapped = ctx.resolve_type(def, &typ.wrapped);
                 Ok(quote! {
                     #[doc = #docs]
-                    #vis struct #name #vars (#wrapped);
+                    #derive
+                    #vis struct #name #vars (pub(crate) #wrapped);
                 })
             }
             DefKind::Service(_) => {

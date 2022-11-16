@@ -1,72 +1,76 @@
-use std::marker::PhantomData;
+use serde::{Deserialize, Serialize};
 
-use quote::quote;
-
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
-    pub containers: Containers,
+    #[serde(default, rename = "default-derive")]
+    pub default_derive: Vec<String>,
 }
 
-pub struct Containers {
-    pub sequence: String,
-    pub map: String,
-}
+// pub struct Config {
+//     pub containers: Containers,
+// }
 
-#[derive(Clone)]
-pub struct RustPath(syn::Path);
+// pub struct Containers {
+//     pub sequence: String,
+//     pub map: String,
+// }
 
-impl std::fmt::Display for RustPath {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let path = &self.0;
-        f.write_str(&quote!(#path).to_string())
-    }
-}
+// #[derive(Clone)]
+// pub struct RustPath(syn::Path);
 
-impl std::fmt::Debug for RustPath {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("SynPath").field(&self.to_string()).finish()
-    }
-}
+// impl std::fmt::Display for RustPath {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         let path = &self.0;
+//         f.write_str(&quote!(#path).to_string())
+//     }
+// }
 
-impl serde::Serialize for RustPath {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(&self.to_string())
-    }
-}
+// impl std::fmt::Debug for RustPath {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         f.debug_tuple("SynPath").field(&self.to_string()).finish()
+//     }
+// }
 
-pub struct SynVisitor<T: syn::parse::Parse>(PhantomData<T>);
+// impl serde::Serialize for RustPath {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where
+//         S: serde::Serializer,
+//     {
+//         serializer.serialize_str(&self.to_string())
+//     }
+// }
 
-impl<T: syn::parse::Parse> SynVisitor<T> {
-    pub fn new() -> Self {
-        Self(PhantomData)
-    }
-}
+// pub struct SynVisitor<T: syn::parse::Parse>(PhantomData<T>);
 
-impl<'de, T: syn::parse::Parse> serde::de::Visitor<'de> for SynVisitor<T> {
-    type Value = T;
+// impl<T: syn::parse::Parse> SynVisitor<T> {
+//     pub fn new() -> Self {
+//         Self(PhantomData)
+//     }
+// }
 
-    fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        f.write_fmt(format_args!(
-            "Expected Rust code of type {:?}.",
-            std::any::type_name::<T>()
-        ))
-    }
+// impl<'de, T: syn::parse::Parse> serde::de::Visitor<'de> for SynVisitor<T> {
+//     type Value = T;
 
-    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        syn::parse_str(v).map_err(|_| E::invalid_value(serde::de::Unexpected::Str(v), &self))
-    }
-}
+//     fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+//         f.write_fmt(format_args!(
+//             "Expected Rust code of type {:?}.",
+//             std::any::type_name::<T>()
+//         ))
+//     }
 
-impl<'de> serde::Deserialize<'de> for RustPath {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        Ok(RustPath(deserializer.deserialize_str(SynVisitor::new())?))
-    }
-}
+//     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+//     where
+//         E: serde::de::Error,
+//     {
+//         syn::parse_str(v).map_err(|_| E::invalid_value(serde::de::Unexpected::Str(v),
+// &self))     }
+// }
+
+// impl<'de> serde::Deserialize<'de> for RustPath {
+//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+//     where
+//         D: serde::Deserializer<'de>,
+//     {
+//         Ok(RustPath(deserializer.deserialize_str(SynVisitor::new())?))
+//     }
+// }

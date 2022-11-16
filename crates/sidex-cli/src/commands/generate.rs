@@ -29,12 +29,20 @@ impl GeneratorRegistry {
 }
 
 pub fn exec(args: &GenerateArgs) -> eyre::Result<()> {
-    let (unit, bundle) = load_cwd_unit_and_bundle()?;
+    let (unit, bundle, transformer) = load_cwd_unit_and_bundle()?;
+
+    let null = serde_json::Value::Null;
+    let config = transformer
+        .get_bundle_manifest(bundle)
+        .backend
+        .get(&args.backend)
+        .unwrap_or(&null);
 
     let job = sidex_gen::Job {
         unit: &unit,
         bundle,
         output: &args.output,
+        config,
     };
 
     std::fs::create_dir_all(&args.output)?;

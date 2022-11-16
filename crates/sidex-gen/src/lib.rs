@@ -12,6 +12,8 @@ pub struct Job<'j> {
     pub bundle: ir::BundleIdx,
     /// The output path.
     pub output: &'j Path,
+    /// Configuration for the generator.
+    pub config: &'j serde_json::Value,
 }
 
 /// A code generation backend.

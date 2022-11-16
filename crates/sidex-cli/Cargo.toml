@@ -26,5 +26,6 @@ eyre = "^0.6"
 color-eyre = "^0.6"
 # Required for terminal colors.
 yansi = "^0.5"
+serde_json = "1"
 
 toml = "^0.5"

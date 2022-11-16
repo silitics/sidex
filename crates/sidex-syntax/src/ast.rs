@@ -8,7 +8,7 @@ use std::{
 
 use crate::{
     source::{SourceId, Span},
-    tokens::Token,
+    tokens::{Literal, Token},
 };
 
 /// A stream of tokens.
@@ -370,4 +370,19 @@ pub struct Attr {
     pub name: Identifier,
     /// The free-form arguments of the attribute.
     pub args: Option<TokenStream>,
+}
+
+#[derive(Clone, Debug)]
+pub enum Meta {
+    Identifier(Identifier),
+    Literal(Literal),
+    Assignment {
+        identifier: Identifier,
+        value: Box<Meta>,
+    },
+    Invocation {
+        identifier: Identifier,
+        args: Box<Meta>,
+    },
+    List(Vec<Meta>),
 }

@@ -21,3 +21,7 @@ doc:
 # Run all tests.
 test:
     cargo test
+
+regenerate-ir:
+    cd lib/meta && cargo run --bin sidex -- generate rust ../../crates/sidex-core/src/ir/generated
+    cargo +nightly fmt

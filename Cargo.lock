@@ -923,12 +923,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-attrs-rust"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "sidex-syntax",
+ "syn",
+]
+
+[[package]]
 name = "sidex-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
  "color-eyre",
  "eyre",
+ "serde_json",
  "sidex-core",
  "sidex-gen",
  "sidex-gen-ir",
@@ -960,6 +971,7 @@ dependencies = [
 name = "sidex-gen"
 version = "0.1.0"
 dependencies = [
+ "serde_json",
  "sidex-ir",
  "thiserror",
 ]
@@ -979,7 +991,9 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde",
+ "sidex-attrs-rust",
  "sidex-gen",
+ "sidex-syntax",
  "syn",
 ]
 

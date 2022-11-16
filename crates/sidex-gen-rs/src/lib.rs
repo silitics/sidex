@@ -1,9 +1,11 @@
 #![doc = include_str!("../README.md")]
 
+use config::Config;
 use context::{BundleCtx, SchemaCtx};
 use plugins::Plugin;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
+use serde::{de::IntoDeserializer, Deserialize};
 use sidex_gen::{ir, Generator, Job};
 
 pub mod config;
@@ -24,11 +26,12 @@ impl RustGenerator {
 
     pub fn generate_bundle_inner(
         &self,
+        cfg: &Config,
         unit: &ir::Unit,
         bundle: ir::BundleIdx,
     ) -> Result<TokenStream, ()> {
         let bundle = &unit[bundle];
-        let bundle_ctx = BundleCtx { unit, bundle };
+        let bundle_ctx = BundleCtx { cfg, unit, bundle };
         let bundle_preambles = self
             .plugins
             .iter()
@@ -81,10 +84,18 @@ impl Generator for RustGenerator {
     fn generate(&self, job: Job) -> Result<(), Box<dyn std::error::Error>> {
         let mod_path = job.output.join("mod.rs");
 
-        let mod_code = self
-            .generate_bundle_inner(job.unit, job.bundle)
-            .map_err(|err| format!("{err:?}"))?
-            .to_string();
+        let config = Option::<Config>::deserialize(job.config.clone().into_deserializer())
+            .unwrap()
+            .unwrap_or_default();
+
+        let mut mod_code = String::new();
+        mod_code.push_str("/* GENERATED WITH SIDEX. DO NOT MODIFY! */\n\n");
+        mod_code.push_str(
+            &self
+                .generate_bundle_inner(&config, job.unit, job.bundle)
+                .map_err(|err| format!("{err:?}"))?
+                .to_string(),
+        );
 
         std::fs::write(&mod_path, mod_code)?;
 

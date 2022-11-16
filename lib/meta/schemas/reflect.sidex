@@ -1,0 +1,255 @@
+/// Uniquely identifies a bundle in a transformation unit.
+#[rust(
+    derive(Copy, PartialEq, Eq, Hash),
+    inner(pub(crate))
+)]
+wrapper BundleIdx: idx
+
+/// Uniquely identifies a schema in bundle.
+#[rust(
+    derive(Copy, PartialEq, Eq, Hash),
+    inner(pub(crate))
+)]
+wrapper SchemaIdx: idx
+
+/// Uniquely identifies a definition in a schema.
+#[rust(
+    derive(Copy, PartialEq, Eq, Hash),
+    inner(pub(crate))
+)]
+wrapper DefIdx: idx
+
+/// Uniquely identifies a type variable in a definition.
+#[rust(
+    derive(Copy, PartialEq, Eq, Hash),
+    inner(pub(crate))
+)]
+wrapper TypeVarIdx: idx
+
+/// A transformation unit is a collection of schemas organized into bundles.
+#[rust(derive(Default), attr(non_exhaustive))]
+record Unit {
+    /// The bundles of the unit.
+    bundles: [Bundle],
+}
+
+/// A bundle is a flat collection of schemas evolving together.
+#[rust(attr(non_exhaustive))]
+record Bundle {
+    /// The index of the bundle.
+    idx: BundleIdx,
+    /// The metadata of the bundle.
+    metadata: Metadata,
+    /// The dependencies of the bundle.
+    dependencies: [Dependency],
+    /// The schemas of the bundle.
+    schemas: [Schema],
+}
+
+
+/// A dependency of a bundle.
+#[rust(attr(non_exhaustive))]
+record Dependency {
+    /// The name of the dependency.
+    name: string,
+    /// The bundle.
+    bundle: BundleIdx,
+}
+
+/// Metadata of a bundle.
+#[rust(attr(non_exhaustive))]
+record Metadata {
+    /// The name of the bundle.
+    name: string,
+    /// The version of the bundle.
+    version: string,
+    /// The optional description of the bundle.
+    description?: string,
+    /// The optional authors of the bundle.
+    authors?: [string],
+}
+
+/// A schema is a collection of definitions.
+///
+/// Note that imports have already been processed and resolved.
+#[rust(attr(non_exhaustive))]
+record Schema {
+    /// The index of the schema.
+    idx: SchemaIdx,
+    /// The name of the schema.
+    name: string,
+    /// The documentation of the schema.
+    docs: string,
+    /// The attributes of the schema.
+    attrs: [Attr],
+    /// The definitions of the schema.
+    defs: [Def],
+}
+
+/// A definition.
+#[rust(attr(non_exhaustive))]
+record Def {
+    /// The name of the definition.
+    name: string,
+    /// The documentation of the definition.
+    docs: string,
+    /// The type variables of the definition.
+    vars: [TypeVar],
+    /// The attributes of the definition.
+    attrs: [Attr],
+    /// The kind of the definition.
+    kind: DefKind,
+}
+
+/// A type variable of a definition.
+#[rust(attr(non_exhaustive))]
+record TypeVar {
+    /// Name of the type variable.
+    name: string,
+}
+
+/// A definition kind.
+variant DefKind {
+    /// Definition of a type alias.
+    TypeAlias: TypeAliasDef,
+    /// Definition of an opaque type.
+    OpaqueType: OpaqueTypeDef,
+    /// Definition of a record type.
+    RecordType: RecordTypeDef,
+    /// Definition of a variant type.
+    VariantType: VariantTypeDef,
+    /// Definition of a wrapper type.
+    WrapperType: WrapperTypeDef,
+    /// Definition of a service.
+    Service: ServiceDef,
+}
+
+/// A definition of a type alias.
+#[rust(attr(non_exhaustive))]
+record TypeAliasDef {
+    /// The type that is aliased.
+    aliased: Type,
+}
+
+/// A definition of an opaque type.
+#[rust(attr(non_exhaustive))]
+record OpaqueTypeDef {}
+
+/// A definition of a record type.
+#[rust(attr(non_exhaustive))]
+record RecordTypeDef {
+    /// The fields of the record type.
+    fields: [Field],
+}
+
+/// A field of a record type.
+#[rust(attr(non_exhaustive))]
+record Field {
+    /// The name of the field.
+    name: string,
+    /// The documentation of the field.
+    docs: string,
+    /// The attributes of the field.
+    attrs: [Attr],
+    /// The type of the field.
+    typ: Type,
+    /// Indicates whether the field is optional.
+    is_optional: bool,
+}
+
+/// A definition of a variant type.
+#[rust(attr(non_exhaustive))]
+record VariantTypeDef {
+    /// The variants of the variant type.
+    variants: [Variant],
+}
+
+/// A variant of a variant type.
+#[rust(attr(non_exhaustive))]
+record Variant {
+    /// The name of the variant.
+    name: string,
+    /// The documentation of the variant.
+    docs: string,
+    /// The attributes of the variant.
+    attrs: [Attr],
+    /// The optional type of the variant.
+    typ?: Type,
+}
+
+/// A definition of a wrapper type.
+#[rust(attr(non_exhaustive))]
+record WrapperTypeDef {
+    /// The type that is wrapped.
+    wrapped: Type,
+}
+
+/// A definition of a service.
+#[rust(attr(non_exhaustive))]
+record ServiceDef {
+    /// The methods provided by the service.
+    methods: [Method],
+}
+
+/// A method of a service definition.
+#[rust(attr(non_exhaustive))]
+record Method {
+    /// The name of the method.
+    name: string,
+    /// The documentation of the method.
+    docs: string,
+    /// The attributes of the method.
+    attrs: [Attr],
+    /// The parameters of the method.
+    parameters: [MethodParam],
+    /// The optional return type of the method.
+    returns?: Type,
+}
+
+/// A parameter of a method.
+#[rust(attr(non_exhaustive))]
+record MethodParam {
+    /// The name of the parameter.
+    name: string,
+    /// The type of the parameter.
+    typ: Type,
+    /// Indicates whether the parameter is optional.
+    is_optional: bool,
+}
+
+/// An abstract type.
+variant Type {
+    /// A type to be determined via substitution of the respective type variable.
+    TypeVar: TypeVarType,
+    /// An instantiation of a type defined in some schema.
+    Instance: InstanceType,
+}
+
+/// A type to be determined via substitution of the respective type variable.
+#[rust(attr(non_exhaustive))]
+record TypeVarType {
+    /// The index of the type variable in the enclosing definition.
+    idx: TypeVarIdx,
+}
+
+/// An instantiation of a type defined in some schema of some bundle.
+#[rust(attr(non_exhaustive))]
+record InstanceType {
+    /// The bundle containing the schema containing the definition.
+    bundle: BundleIdx,
+    /// The schema containing the definition.
+    schema: SchemaIdx,
+    /// The actual definition.
+    def: DefIdx,
+    /// Substitutions for the type variables of the definition.
+    subst: [Type],
+}
+
+/// An attribute.
+#[rust(attr(non_exhaustive))]
+record Attr {
+    /// The name of the attribute.
+    name: string,
+    /// The free-form arguments of the attribute.
+    args?: string,
+}

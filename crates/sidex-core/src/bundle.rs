@@ -29,7 +29,7 @@ pub struct Manifest {
     /// Generator-specific configurations.
     #[serde(default)]
     #[serde(skip_serializing_if = "HashMap::is_empty")]
-    generators: HashMap<String, serde_json::Value>,
+    pub backend: HashMap<String, serde_json::Value>,
 }
 
 impl Manifest {
@@ -38,7 +38,7 @@ impl Manifest {
         Self {
             metadata,
             dependencies: Default::default(),
-            generators: Default::default(),
+            backend: Default::default(),
         }
     }
 
@@ -56,7 +56,7 @@ impl Manifest {
         &self,
         key: &str,
     ) -> Result<C, ConfigParseError> {
-        self.generators.get(key).map_or_else(
+        self.backend.get(key).map_or_else(
             || Ok(C::default()),
             |value| serde_json::from_value(value.clone()).map_err(ConfigParseError),
         )

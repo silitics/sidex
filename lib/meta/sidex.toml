@@ -1,0 +1,8 @@
+[bundle]
+name = "meta"
+version = "1"
+description = "Sidex specific schemas."
+authors = ["Silitics GmbH <info@silitics.com>"]
+
+[backend.rust]
+default-derive = ["::serde::Serialize", "::serde::Deserialize", "Clone, Debug"]
