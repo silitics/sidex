@@ -3,19 +3,19 @@ pub mod reflect {
     use serde::{Deserialize, Serialize};
 
     /// Uniquely identifies a bundle in a transformation unit.
-    #[derive(Deserialize, Serialize, Debug, Copy, Clone)]
+    #[derive(Deserialize, Serialize, Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub struct BundleIdx(pub(crate) usize);
 
     /// Uniquely identifies a schema in bundle.
-    #[derive(Deserialize, Serialize, Debug, Copy, Clone)]
+    #[derive(Deserialize, Serialize, Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub struct SchemaIdx(pub(crate) usize);
 
     /// Uniquely identifies a definition in a schema.
-    #[derive(Deserialize, Serialize, Debug, Copy, Clone)]
+    #[derive(Deserialize, Serialize, Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub struct DefIdx(pub(crate) usize);
 
     /// Uniquely identifies a type variable in a definition.
-    #[derive(Deserialize, Serialize, Debug, Copy, Clone)]
+    #[derive(Deserialize, Serialize, Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub struct TypeVarIdx(pub(crate) usize);
 
     /// A transformation unit is a collection of schemas organized into bundles.

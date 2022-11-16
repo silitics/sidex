@@ -63,7 +63,7 @@ impl RustGenerator {
                     })
                     .collect::<Result<Vec<_>, _>>()?;
                 Ok(quote! {
-                    mod #name {
+                    pub mod #name {
                         #(#schema_preambles)*
                         #(#defs)*
                     }

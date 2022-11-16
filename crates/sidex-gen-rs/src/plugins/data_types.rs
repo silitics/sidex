@@ -9,27 +9,75 @@ pub struct Types;
 impl Plugin for Types {
     fn visit_def(&self, ctx: &SchemaCtx, def: &Def) -> Result<proc_macro2::TokenStream, ()> {
         let name = format_ident!("{}", def.name);
+        let docs = &def.docs;
         let vars = ctx.generic_type_vars(def);
+        let vis = quote! { pub };
         match &def.kind {
-            DefKind::TypeAlias(_) => Ok(quote! { type #name #vars = (); }),
+            DefKind::TypeAlias(alias) => {
+                let aliased = ctx.resolve_type(def, &alias.aliased);
+                Ok(quote! {
+                    #[doc = #docs]
+                    #vis type #name #vars = #aliased;
+                })
+            }
             DefKind::OpaqueType(_) => Ok(quote! { type #name #vars = (); }),
-            DefKind::RecordType(_) => {
+            DefKind::RecordType(typ) => {
+                let fields = typ
+                    .fields
+                    .iter()
+                    .map(|field| {
+                        let name = format_ident!("{}", &field.name);
+                        let docs = &field.docs;
+                        let mut typ = ctx.resolve_type(def, &field.typ);
+                        if field.is_optional {
+                            typ = quote! { ::std::option::Option<#typ> };
+                        }
+                        quote! {
+                            #[doc = #docs]
+                            #vis #name: #typ,
+                        }
+                    })
+                    .collect::<Vec<_>>();
                 Ok(quote! {
-                    struct #name #vars {
-                        // Fields ...
+                    #[doc = #docs]
+                    #vis struct #name #vars {
+                        #(#fields)*
                     }
                 })
             }
-            DefKind::VariantType(_) => {
+            DefKind::VariantType(typ) => {
+                let variants = typ
+                    .variants
+                    .iter()
+                    .map(|variant| {
+                        let name = format_ident!("{}", &variant.name);
+                        let docs = &variant.docs;
+                        if let Some(typ) = &variant.typ {
+                            let typ = ctx.resolve_type(def, typ);
+                            quote! {
+                                #[doc = #docs]
+                                #name(#typ),
+                            }
+                        } else {
+                            quote! {
+                                #[doc = #docs]
+                                #name,
+                            }
+                        }
+                    })
+                    .collect::<Vec<_>>();
                 Ok(quote! {
-                    enum #name #vars {
-                        // Fields ...
+                    #[doc = #docs]
+                    #vis enum #name #vars {
+                        #(#variants)*
                     }
                 })
             }
-            DefKind::WrapperType(_) => {
+            DefKind::WrapperType(typ) => {
+                let wrapped = ctx.resolve_type(def, &typ.wrapped);
                 Ok(quote! {
-                    struct #name #vars (());
+                    #[doc = #docs]
+                    #vis struct #name #vars (#wrapped);
                 })
             }
             DefKind::Service(_) => {
