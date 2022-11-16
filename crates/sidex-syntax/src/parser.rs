@@ -318,9 +318,10 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
             def_with_inner_parser(keywords::SERVICE, service_def_inner_parser()),
             just(keywords::OPAQUE)
                 .ignore_then(name_parser())
-                .map(|name| {
+                .then(type_vars_parser())
+                .map(|(name, vars)| {
                     (
-                        (name, Default::default()),
+                        (name, vars),
                         ast::DefKind::OpaqueType(ast::OpaqueTypeDef {}),
                     )
                 }),
