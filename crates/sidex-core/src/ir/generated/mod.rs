@@ -43,7 +43,7 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Dependency {
         #[doc = "The name of the dependency.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The bundle.\n"]
         pub bundle: BundleIdx,
     }
@@ -51,13 +51,13 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Metadata {
         #[doc = "The name of the bundle.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The version of the bundle.\n"]
-        pub version: String,
+        pub version: ::std::string::String,
         #[doc = "The optional description of the bundle.\n"]
-        pub description: ::std::option::Option<String>,
+        pub description: ::std::option::Option<::std::string::String>,
         #[doc = "The optional authors of the bundle.\n"]
-        pub authors: ::std::option::Option<::std::vec::Vec<String>>,
+        pub authors: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     }
     #[doc = "A schema is a collection of definitions.\n\nNote that imports have already been processed and resolved.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
@@ -65,9 +65,9 @@ pub mod reflect {
         #[doc = "The index of the schema.\n"]
         pub idx: SchemaIdx,
         #[doc = "The name of the schema.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The documentation of the schema.\n"]
-        pub docs: String,
+        pub docs: ::std::string::String,
         #[doc = "The attributes of the schema.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The definitions of the schema.\n"]
@@ -77,9 +77,9 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Def {
         #[doc = "The name of the definition.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The documentation of the definition.\n"]
-        pub docs: String,
+        pub docs: ::std::string::String,
         #[doc = "The type variables of the definition.\n"]
         pub vars: ::std::vec::Vec<TypeVar>,
         #[doc = "The attributes of the definition.\n"]
@@ -91,7 +91,7 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct TypeVar {
         #[doc = "Name of the type variable.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
     }
     #[doc = "A definition kind.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
@@ -128,9 +128,9 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Field {
         #[doc = "The name of the field.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The documentation of the field.\n"]
-        pub docs: String,
+        pub docs: ::std::string::String,
         #[doc = "The attributes of the field.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The type of the field.\n"]
@@ -148,9 +148,9 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Variant {
         #[doc = "The name of the variant.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The documentation of the variant.\n"]
-        pub docs: String,
+        pub docs: ::std::string::String,
         #[doc = "The attributes of the variant.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The optional type of the variant.\n"]
@@ -172,9 +172,9 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Method {
         #[doc = "The name of the method.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The documentation of the method.\n"]
-        pub docs: String,
+        pub docs: ::std::string::String,
         #[doc = "The attributes of the method.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The parameters of the method.\n"]
@@ -186,7 +186,7 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct MethodParam {
         #[doc = "The name of the parameter.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The type of the parameter.\n"]
         pub typ: Type,
         #[doc = "Indicates whether the parameter is optional.\n"]
@@ -222,8 +222,8 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Attr {
         #[doc = "The name of the attribute.\n"]
-        pub name: String,
+        pub name: ::std::string::String,
         #[doc = "The free-form arguments of the attribute.\n"]
-        pub args: ::std::option::Option<String>,
+        pub args: ::std::option::Option<::std::string::String>,
     }
 }

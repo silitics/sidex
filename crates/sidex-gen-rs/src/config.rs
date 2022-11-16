@@ -1,76 +1,51 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
     #[serde(default)]
     pub derive: Vec<String>,
+    #[serde(default)]
+    pub types: TypesConfig,
 }
 
-// pub struct Config {
-//     pub containers: Containers,
-// }
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct TypesConfig {
+    pub table: HashMap<String, String>,
+}
 
-// pub struct Containers {
-//     pub sequence: String,
-//     pub map: String,
-// }
-
-// #[derive(Clone)]
-// pub struct RustPath(syn::Path);
-
-// impl std::fmt::Display for RustPath {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         let path = &self.0;
-//         f.write_str(&quote!(#path).to_string())
-//     }
-// }
-
-// impl std::fmt::Debug for RustPath {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         f.debug_tuple("SynPath").field(&self.to_string()).finish()
-//     }
-// }
-
-// impl serde::Serialize for RustPath {
-//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-//     where
-//         S: serde::Serializer,
-//     {
-//         serializer.serialize_str(&self.to_string())
-//     }
-// }
-
-// pub struct SynVisitor<T: syn::parse::Parse>(PhantomData<T>);
-
-// impl<T: syn::parse::Parse> SynVisitor<T> {
-//     pub fn new() -> Self {
-//         Self(PhantomData)
-//     }
-// }
-
-// impl<'de, T: syn::parse::Parse> serde::de::Visitor<'de> for SynVisitor<T> {
-//     type Value = T;
-
-//     fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-//         f.write_fmt(format_args!(
-//             "Expected Rust code of type {:?}.",
-//             std::any::type_name::<T>()
-//         ))
-//     }
-
-//     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-//     where
-//         E: serde::de::Error,
-//     {
-//         syn::parse_str(v).map_err(|_| E::invalid_value(serde::de::Unexpected::Str(v),
-// &self))     }
-// }
-
-// impl<'de> serde::Deserialize<'de> for RustPath {
-//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-//     where
-//         D: serde::Deserializer<'de>,
-//     {
-//         Ok(RustPath(deserializer.deserialize_str(SynVisitor::new())?))
-//     }
-// }
+impl TypesConfig {
+    pub fn populate_table_with_builtins(&mut self) {
+        macro_rules! populate_table {
+            ($( $sidex_path:literal => $rust_path:ty ,)*) => {
+                $(
+                    if !self.table.contains_key($sidex_path) {
+                        self.table.insert(
+                            $sidex_path.to_owned(), stringify!($rust_path).to_owned()
+                        );
+                    }
+                )*
+            };
+        }
+        populate_table! {
+            "::std::builtins::string" => ::std::string::String,
+            "::std::builtins::bytes" => ::std::vec::Vec<u8>,
+            "::std::builtins::i8" => i8,
+            "::std::builtins::i16" => i16,
+            "::std::builtins::i32" => i32,
+            "::std::builtins::i64" => i64,
+            "::std::builtins::u8" => u8,
+            "::std::builtins::u16" => u16,
+            "::std::builtins::u32" => u32,
+            "::std::builtins::u64" => u64,
+            "::std::builtins::idx" => usize,
+            "::std::builtins::f32" => f32,
+            "::std::builtins::f64" => f64,
+            "::std::builtins::bool" => bool,
+            "::std::builtins::unit" => (),
+            "::std::builtins::Sequence" => ::std::vec::Vec,
+            "::std::builtins::Map" => ::std::collections::HashMap,
+        };
+    }
+}

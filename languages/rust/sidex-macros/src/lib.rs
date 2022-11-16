@@ -30,7 +30,9 @@ pub fn include_bundle(tokens: TokenStream) -> TokenStream {
 
     let generator = RustGenerator::new();
 
-    let cfg = Config::default();
+    let mut cfg = Config::default();
+
+    cfg.types.populate_table_with_builtins();
 
     let inner = generator
         .generate_bundle_inner(&cfg, &unit, bundle)

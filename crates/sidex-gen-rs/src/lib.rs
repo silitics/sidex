@@ -84,9 +84,11 @@ impl Generator for RustGenerator {
     fn generate(&self, job: Job) -> Result<(), Box<dyn std::error::Error>> {
         let mod_path = job.output.join("mod.rs");
 
-        let config = Option::<Config>::deserialize(job.config.clone().into_deserializer())
+        let mut config = Option::<Config>::deserialize(job.config.clone().into_deserializer())
             .unwrap()
             .unwrap_or_default();
+
+        config.types.populate_table_with_builtins();
 
         let mut mod_code = String::new();
         mod_code.push_str("/* GENERATED WITH SIDEX. DO NOT MODIFY! */\n\n");
