@@ -10,9 +10,9 @@ pub mod utils;
 #[clap(
     name = "sidex",
     version,
-    about = "A format- and language-agnostic data modeling and API definition language.",
+    about = "A format- and language-agnostic data modeling and API definition framework.",
     long_about = concat!(
-        "A format- and language-agnostic data modeling and API definition language.\n\n",
+        "A format- and language-agnostic data modeling and API definition framework.\n\n",
         "For more information visit: https://oss.silitics.com/sidex/."
     ),
 )]
