@@ -1,29 +1,17 @@
 /// Uniquely identifies a bundle in a transformation unit.
-#[rust(
-    derive(Copy, PartialEq, Eq, Hash),
-    inner(pub(crate))
-)]
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper BundleIdx: idx
 
 /// Uniquely identifies a schema in bundle.
-#[rust(
-    derive(Copy, PartialEq, Eq, Hash),
-    inner(pub(crate))
-)]
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper SchemaIdx: idx
 
 /// Uniquely identifies a definition in a schema.
-#[rust(
-    derive(Copy, PartialEq, Eq, Hash),
-    inner(pub(crate))
-)]
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper DefIdx: idx
 
 /// Uniquely identifies a type variable in a definition.
-#[rust(
-    derive(Copy, PartialEq, Eq, Hash),
-    inner(pub(crate))
-)]
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper TypeVarIdx: idx
 
 /// A transformation unit is a collection of schemas organized into bundles.
