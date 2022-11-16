@@ -1,0 +1,4 @@
+//! Extension for representing values of unknown type.
+
+/// A value of unknown type.
+opaque Any

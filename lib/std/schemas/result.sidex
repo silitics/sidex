@@ -1,0 +1,9 @@
+//! Extension for representing result.
+
+/// A result which is either a value of type `T` or an error of type `E`.
+variant Result<T, E> {
+    /// A value of type `T`.
+    Ok: T,
+    /// An error of type `E`.
+    Err: E
+}

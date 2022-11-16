@@ -1,5 +1,5 @@
 [bundle]
-name = "sidex"
+name = "std"
 version = "1"
-description = "A Sidex bundle for the builtins."
+description = "Sidex standard library."
 authors = ["Silitics GmbH <info@silitics.com>"]

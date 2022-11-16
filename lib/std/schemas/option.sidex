@@ -1,0 +1,9 @@
+//! Extension for representing optionals.
+
+/// An optional value of type `T`.
+variant Option<T> {
+    /// No value.
+    None,
+    /// Some value of type `T`.
+    Some: T
+}
