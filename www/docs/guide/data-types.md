@@ -219,7 +219,7 @@ The builtin types are:
 In every schema, there is an implicit import:
 
 ```sidex
-import ::sidex::builtins::*
+import ::std::builtins::*
 ```
 
 ### Syntactic Sugar
@@ -227,11 +227,11 @@ import ::sidex::builtins::*
 Most data modeling frameworks treat sequences or maps as special cases. In Sidex, there is syntactic sugar for them, however, they are defined using generic opaque types. For notational convenience, the following syntactic sugar is supported:
 
 ```sidex
-() ⇒ ::sidex::builtins::unit
+() ⇒ ::std::builtins::unit
 
-[T] ⇒ ::sidex::builtins::Sequence<T>
+[T] ⇒ ::std::builtins::Sequence<T>
 
-[K: V] ⇒ ::sidex::builtins::Map<K, V>
+[K: V] ⇒ ::std::builtins::Map<K, V>
 ```
 
 Hence, you can use `[T]` and `[K: V]` for sequence and map types respectively.
