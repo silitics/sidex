@@ -5,5 +5,8 @@
 #[json(type = "string")]
 opaque Uuid  // This is an opaque user-defined type.
 
-/// An *unique identifier* for a person.
+/// An unique identifier for a person.
 wrapper PersonId: Uuid  // This is a wrapper type.
+
+/// A unique identifier for a task.
+wrapper TaskId: Uuid
