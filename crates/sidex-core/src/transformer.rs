@@ -476,8 +476,8 @@ impl Transformer {
         }
     }
 
-    pub fn transform(&self) -> ir::Unit {
-        ir::Unit {
+    pub fn transform(&self) -> ir::Collection {
+        ir::Collection {
             bundles: self
                 .loaded
                 .par_iter()

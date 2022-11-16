@@ -14,9 +14,9 @@ wrapper DefIdx: idx
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper TypeVarIdx: idx
 
-/// A transformation unit is a collection of schemas organized into bundles.
+/// A collection of bundles.
 #[rust(derive(Default), attr(non_exhaustive))]
-record Unit {
+record Collection {
     /// The bundles of the unit.
     bundles: [Bundle],
 }
@@ -33,7 +33,6 @@ record Bundle {
     /// The schemas of the bundle.
     schemas: [Schema],
 }
-
 
 /// A dependency of a bundle.
 #[rust(attr(non_exhaustive))]

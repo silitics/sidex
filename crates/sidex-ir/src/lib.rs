@@ -1,14 +1,14 @@
 #![doc = include_str!("../README.md")]
 //!
-//! The root structure of the SIR is a unit ([`Unit`]) consisting of
-//! multiple bundles ([`Bundle`]). These bundles, in turn, consist of multiple schemas
-//! ([`Schema`]) containing the actual type and service definitions ([`Def`]).
+//! The root structure of the SIR is a collection ([`Collection`]) of bundles
+//! ([`Bundle`]). These bundles, in turn, consist of multiple schemas ([`Schema`])
+//! containing the actual type and service definitions ([`Def`]).
 //!
-//! A code generator usually takes a [`Unit`] and generates code for a bundle identified
-//! by a given [`BundleIdx`].
+//! A code generator usually takes a [`Collection`] and generates code for a bundle
+//! identified by a given [`BundleIdx`].
 //!
-//! Note that the data structures in this crate have been generated with Sidex from the
-//! [`reflect`](https://github.com/silitics/sidex/blob/main/lib/meta/schemas/reflect.sidex)
+//! Note that the data structures in this crate have been generated with Sidex itself from
+//! the [`reflect`](https://github.com/silitics/sidex/blob/main/lib/meta/schemas/reflect.sidex)
 //! schema.
 
 // Re-export the `ir` module from `sidex_core`.

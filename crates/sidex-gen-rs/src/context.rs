@@ -9,7 +9,7 @@ use crate::config::Config;
 #[derive(Clone)]
 pub struct BundleCtx<'cx> {
     pub cfg: &'cx Config,
-    pub unit: &'cx ir::Unit,
+    pub unit: &'cx ir::Collection,
     pub bundle: &'cx ir::Bundle,
 }
 

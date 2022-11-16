@@ -21,9 +21,9 @@ pub mod reflect {
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
     pub struct TypeVarIdx(pub(crate) usize);
-    #[doc = "A transformation unit is a collection of schemas organized into bundles.\n"]
+    #[doc = "A collection of bundles.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Default)]
-    pub struct Unit {
+    pub struct Collection {
         #[doc = "The bundles of the unit.\n"]
         pub bundles: ::std::vec::Vec<Bundle>,
     }

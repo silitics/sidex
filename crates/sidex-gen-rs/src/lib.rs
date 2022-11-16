@@ -27,7 +27,7 @@ impl RustGenerator {
     pub fn generate_bundle_inner(
         &self,
         cfg: &Config,
-        unit: &ir::Unit,
+        unit: &ir::Collection,
         bundle: ir::BundleIdx,
     ) -> Result<TokenStream, ()> {
         let bundle = &unit[bundle];
