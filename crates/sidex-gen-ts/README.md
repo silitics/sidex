@@ -1,0 +1,1 @@
+# Sidex: TypeScript Code Generation

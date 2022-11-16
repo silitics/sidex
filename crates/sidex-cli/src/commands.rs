@@ -1,4 +1,4 @@
-//! Subcommands of the CLI.
+//! Commands of the CLI.
 
 pub mod check;
 pub mod generate;

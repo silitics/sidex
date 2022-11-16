@@ -9,4 +9,5 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex-core = { path = "../sidex-core", version = "^0.1" }
+thiserror = "1.0"
+sidex-ir = { path = "../sidex-ir", version = "^0.2" }

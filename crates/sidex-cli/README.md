@@ -1,3 +1,3 @@
 # Sidex CLI
 
-Command line interface for [Sidex](https://github.com/silitics/sidex).
+The [Sidex](https://oss.silitics.com/sidex/) command line tool.

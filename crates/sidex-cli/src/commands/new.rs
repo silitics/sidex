@@ -2,8 +2,8 @@
 
 use clap::Parser;
 use sidex_core::{
+    bundle::{Manifest, MANIFEST_NAME, SCHEMAS_DIR},
     ir,
-    model::{Manifest, MANIFEST_NAME, SCHEMAS_DIR},
 };
 
 #[derive(Parser, Debug)]
@@ -12,20 +12,17 @@ pub struct NewArgs {
     name: String,
 }
 
-pub fn exec(new_args: &NewArgs) -> eyre::Result<()> {
+pub fn exec(args: &NewArgs) -> eyre::Result<()> {
     let cwd = std::env::current_dir()?;
 
-    let manifest_dir = cwd.join(&new_args.name);
-    let modules_dir = manifest_dir.join(SCHEMAS_DIR);
+    let bundle_dir = cwd.join(&args.name);
+    let schemas_dir = bundle_dir.join(SCHEMAS_DIR);
 
-    std::fs::create_dir_all(modules_dir)?;
+    std::fs::create_dir_all(schemas_dir)?;
 
-    let manifest_path = manifest_dir.join(MANIFEST_NAME);
+    let manifest_path = bundle_dir.join(MANIFEST_NAME);
 
-    let manifest = Manifest::new(ir::Metadata::new(
-        new_args.name.to_owned(),
-        "0.1.0".to_owned(),
-    ));
+    let manifest = Manifest::new(ir::Metadata::new(args.name.to_owned(), "0.1.0".to_owned()));
 
     std::fs::write(manifest_path, &toml::to_vec(&manifest).unwrap())?;
 

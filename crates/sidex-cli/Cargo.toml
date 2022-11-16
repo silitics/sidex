@@ -1,6 +1,6 @@
 [package]
 name = "sidex-cli"
-description = "Command line interface for Sidex."
+description = "The Sidex command line tool."
 version = "0.1.0"
 edition.workspace = true
 authors.workspace = true
@@ -15,10 +15,12 @@ path = "src/main.rs"
 [dependencies]
 # Rust framework for Sidex.
 sidex-core = { path = "../sidex-core", version = "^0.1" }
+sidex-gen = { path = "../sidex-gen", version = "0.1" }
+sidex-gen-ir = { path = "../sidex-gen-ir", version = "^0.1" }
 sidex-gen-rs = { path = "../sidex-gen-rs", version = "^0.1" }
 sidex-gen-ts = { path = "../sidex-gen-ts", version = "^0.1" }
 # Required for parsing the command line arguments.
-clap = { version = "^3.2", features = ["derive"] }
+clap = { version = "4.0", features = ["derive"] }
 # Required for nice and colorful error reporting.
 eyre = "^0.6"
 color-eyre = "^0.6"

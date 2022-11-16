@@ -2,7 +2,7 @@ use dashmap::DashMap;
 use ropey::Rope;
 use sidex_syntax::{
     source::SourceStorage,
-    tokens::{self, tokenize, Token},
+    tokens::{self, tokenize},
 };
 use tower_lsp::{
     jsonrpc,
@@ -115,11 +115,13 @@ impl LanguageServer for Srv {
                 let start = token.start() - line_start;
                 let token_type = match &token.kind {
                     tokens::TokenKind::Keyword(_) => Some(0),
-                    tokens::TokenKind::Literal(literal) => match literal {
-                        tokens::Literal::Numeric { .. } => Some(1),
-                        tokens::Literal::String(_) => Some(2),
-                        tokens::Literal::Boolean(_) => Some(0),
-                    },
+                    tokens::TokenKind::Literal(literal) => {
+                        match literal {
+                            tokens::Literal::Numeric { .. } => Some(1),
+                            tokens::Literal::String(_) => Some(2),
+                            tokens::Literal::Boolean(_) => Some(0),
+                        }
+                    }
                     _ => None,
                 }?;
                 let semantic_token = SemanticToken {
@@ -188,9 +190,11 @@ async fn main() {
     let stdin = tokio::io::stdin();
     let stdout = tokio::io::stdout();
 
-    let (service, socket) = LspService::build(|client| Srv {
-        client,
-        state: Default::default(),
+    let (service, socket) = LspService::build(|client| {
+        Srv {
+            client,
+            state: Default::default(),
+        }
     })
     .finish();
 

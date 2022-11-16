@@ -1,101 +1,93 @@
+#![doc = include_str!("../README.md")]
+
+use context::{BundleCtx, SchemaCtx};
+use plugins::Plugin;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use sidex_gen::ir;
+use sidex_gen::{ir, Generator, Job};
 
 pub mod config;
+pub mod context;
+pub mod plugins;
 
-pub struct Generator {
-    unit: ir::Unit,
+/// Implements [`Generator`] for Rust.
+pub struct RustGenerator {
+    plugins: Vec<Box<dyn Plugin>>,
 }
 
-impl Generator {
-    pub fn generate_type(
+impl RustGenerator {
+    pub fn new() -> Self {
+        Self {
+            plugins: vec![Box::new(plugins::data_types::Types)],
+        }
+    }
+
+    pub fn generate_bundle_inner(
         &self,
-        model_idx: ir::BundleIdx,
-        schema_idx: ir::SchemaIdx,
-        def_idx: ir::DefIdx,
-        typ: &ir::Type,
-    ) -> TokenStream {
-        match typ {
-            ir::Type::TypeVar(_) => todo!(),
-            ir::Type::Instance(_) => todo!(),
-            // ir::Type::Sequence(typ) => {
-            //     let element_ty = self.generate_type(model_idx, schema_idx, def_idx,
-            // &typ.element);     quote!(::std::vec::Vec< #element_ty >)
-            // }
-            // ir::Type::Map(_) => todo!(),
-        }
-    }
-
-    pub fn generate_schema(&self) {}
-
-    pub fn generate_model(&self, model_idx: ir::BundleIdx) -> TokenStream {
-        let model = &self.unit[model_idx];
-
-        let mut rs_modules = Vec::new();
-        for schema in &model.schemas {
-            let rs_mod_name = format_ident!("{}", schema.name);
-            rs_modules.push(quote! {
-                mod #rs_mod_name {
-                    // #(#rs_items)*
-                }
-            });
-        }
-
-        quote! {
-            #(#rs_modules)*
-        }
+        unit: &ir::Unit,
+        bundle: ir::BundleIdx,
+    ) -> Result<TokenStream, ()> {
+        let bundle = &unit[bundle];
+        let bundle_ctx = BundleCtx { unit, bundle };
+        let bundle_preambles = self
+            .plugins
+            .iter()
+            .map(|plugin| plugin.visit_bundle(&bundle_ctx))
+            .collect::<Result<Vec<_>, _>>()?;
+        let schemas = bundle
+            .schemas
+            .iter()
+            .map(|schema| {
+                let schema_ctx = SchemaCtx {
+                    bundle_ctx: bundle_ctx.clone(),
+                    schema,
+                };
+                let name = format_ident!("{}", &schema.name);
+                let schema_preambles = self
+                    .plugins
+                    .iter()
+                    .map(|plugin| plugin.visit_schema(&schema_ctx))
+                    .collect::<Result<Vec<_>, _>>()?;
+                let defs = schema
+                    .defs
+                    .iter()
+                    .map(|def| {
+                        let parts = self
+                            .plugins
+                            .iter()
+                            .map(|plugin| plugin.visit_def(&schema_ctx, def))
+                            .collect::<Result<Vec<_>, _>>()?;
+                        Ok(quote! {
+                            #(#parts)*
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                Ok(quote! {
+                    mod #name {
+                        #(#schema_preambles)*
+                        #(#defs)*
+                    }
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(quote! {
+            #(#bundle_preambles)*
+            #(#schemas)*
+        })
     }
 }
 
-// use std::ops::Deref;
+impl Generator for RustGenerator {
+    fn generate(&self, job: Job) -> Result<(), Box<dyn std::error::Error>> {
+        let mod_path = job.output.join("mod.rs");
 
-// use proc_macro2::TokenStream;
-// use quote::{format_ident, quote};
-// use sidex_gen::hir;
+        let mod_code = self
+            .generate_bundle_inner(job.unit, job.bundle)
+            .map_err(|err| format!("{err:?}"))?
+            .to_string();
 
-// pub struct Generator {}
+        std::fs::write(&mod_path, mod_code)?;
 
-// pub fn generate_code(unit: &hir::Unit, model: hir::ModelId) -> TokenStream {
-//     let model = unit.get_model(model);
-//     let mut rs_modules = Vec::new();
-//     for (name, module) in model.modules() {
-//         let module = unit.get_module(module);
-//         let rs_mod_name = format_ident!("{}", name);
-//         let rs_items = module
-//             .defs
-//             .iter()
-//             .filter_map(|(name, def)| {
-//                 let def = unit.get_def(*def);
-//                 let ident = format_ident!("{}", name.deref());
-//                 match def.kind {
-//                     hir::DefKind::StructDef(_) => Some(quote! {
-//                         pub struct #ident {}
-//                     }),
-//                     hir::DefKind::EnumDef(_) => Some(quote! {
-//                         pub enum #ident {}
-//                     }),
-//                     hir::DefKind::OpaqueDef(_) => Some(quote! {
-//                         type #ident = ();
-//                     }),
-//                     hir::DefKind::AliasDef(_) => Some(quote! {
-//                         type #ident = ();
-//                     }),
-//                     hir::DefKind::FunDef(_) => Some(quote! {
-//                         type #ident = fn() -> ();
-//                     }),
-//                     _ => todo!(),
-//                 }
-//             })
-//             .collect::<Vec<_>>();
-//         rs_modules.push(quote! {
-//             mod #rs_mod_name {
-//                 #(#rs_items)*
-//             }
-//         });
-//     }
-
-//     quote! {
-//         #(#rs_modules)*
-//     }
-// }
+        Ok(())
+    }
+}

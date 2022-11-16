@@ -30,19 +30,24 @@ pub mod reflect {
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct Bundle {
-        /// The manifest of the bundle.
-        pub manifest: Manifest,
+        /// The index of the bundle.
+        pub idx: BundleIdx,
+        /// The metadata of the bundle.
+        pub metadata: Metadata,
+        /// The dependencies of the bundle.
+        pub dependencies: Vec<Dependency>,
         /// The schemas of the bundle.
         pub schemas: Vec<Schema>,
     }
 
-    /// A bundle manifest.
+    /// A dependency of a bundle.
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
-    pub struct Manifest {
-        /// The metadata of the bundle.
-        #[serde(rename = "bundle")]
-        pub metadata: Metadata,
+    pub struct Dependency {
+        /// The name of the dependency.
+        pub name: String,
+        /// The bundle.
+        pub bundle: BundleIdx,
     }
 
     /// Metadata of a bundle.
@@ -67,6 +72,8 @@ pub mod reflect {
     #[derive(Deserialize, Serialize, Debug, Clone)]
     #[non_exhaustive]
     pub struct Schema {
+        /// The index of the schema.
+        pub idx: SchemaIdx,
         /// The name of the schema.
         pub name: String,
         /// The documentation of the schema.
@@ -205,8 +212,8 @@ pub mod reflect {
         pub attrs: Vec<Attr>,
         /// The parameters of the method.
         pub parameters: Vec<MethodParam>,
-        /// The return type of the method.
-        pub returns: Type,
+        /// The optional return type of the method.
+        pub returns: Option<Type>,
     }
 
     /// A parameter of a method.
