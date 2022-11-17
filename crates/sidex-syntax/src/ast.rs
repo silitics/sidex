@@ -8,7 +8,7 @@ use std::{
 
 use crate::{
     source::{SourceId, Span},
-    tokens::{Literal, Token},
+    tokens::Token,
 };
 
 /// A stream of tokens.
@@ -135,6 +135,21 @@ pub struct Path {
     pub segments: Vec<Identifier>,
     /// Indicates whether the path is absolute, i.e., starts with `::`.
     pub is_absolute: bool,
+}
+
+impl std::fmt::Display for Path {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.is_absolute {
+            f.write_str("::")?;
+        }
+        for idx in 0..self.segments.len() {
+            f.write_str(self.segments[idx].as_str())?;
+            if idx < self.segments.len() - 1 {
+                f.write_str("::")?;
+            }
+        }
+        Ok(())
+    }
 }
 
 /// A schema is a collection of items.
@@ -367,22 +382,25 @@ pub struct MapTypeExpr {
 #[non_exhaustive]
 pub struct Attr {
     /// The name of the attribute.
-    pub name: Identifier,
-    /// The free-form arguments of the attribute.
-    pub args: Option<TokenStream>,
+    pub kind: AttrKind,
 }
 
 #[derive(Clone, Debug)]
-pub enum Meta {
-    Identifier(Identifier),
-    Literal(Literal),
-    Assignment {
-        identifier: Identifier,
-        value: Box<Meta>,
-    },
-    Invocation {
-        identifier: Identifier,
-        args: Box<Meta>,
-    },
-    List(Vec<Meta>),
+pub enum AttrKind {
+    Path(Path),
+    List(AttrList),
+    Assign(AttrAssign),
+    Tokens(TokenStream),
+}
+
+#[derive(Clone, Debug)]
+pub struct AttrList {
+    pub path: Path,
+    pub elements: Vec<Attr>,
+}
+
+#[derive(Clone, Debug)]
+pub struct AttrAssign {
+    pub path: Path,
+    pub value: Box<Attr>,
 }

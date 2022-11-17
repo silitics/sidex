@@ -1,5 +1,5 @@
 [package]
-name = "sidex-attrs-rust"
+name = "sidex-attrs-json"
 version = "0.1.0"
 edition.workspace = true
 authors.workspace = true
@@ -8,8 +8,3 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-proc-macro2 = "1"
-quote = "1"
-syn = "1"
-
-sidex-ir = { path = "../sidex-ir" }

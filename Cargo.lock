@@ -923,12 +923,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-attrs"
+version = "0.1.0"
+dependencies = [
+ "sidex-ir",
+]
+
+[[package]]
+name = "sidex-attrs-json"
+version = "0.1.0"
+
+[[package]]
 name = "sidex-attrs-rust"
 version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
- "sidex-syntax",
+ "sidex-ir",
  "syn",
 ]
 

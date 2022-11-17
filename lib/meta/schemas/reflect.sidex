@@ -71,6 +71,8 @@ record Schema {
     attrs: [Attr],
     /// The definitions of the schema.
     defs: [Def],
+    /// The text source of the schema.
+    source?: string,
 }
 
 /// A definition.
@@ -204,8 +206,17 @@ record MethodParam {
     is_optional: bool,
 }
 
-/// An abstract type.
-variant Type {
+/// A type.
+#[rust(attr(non_exhaustive))]
+record Type {
+    /// The kind of the type.
+    kind: TypeKind,
+    /// The span of the type expression.
+    span?: Span,
+}
+
+/// An abstract type kind.
+variant TypeKind {
     /// A type to be determined via substitution of the respective type variable.
     TypeVar: TypeVarType,
     /// An instantiation of a type defined in some schema.
@@ -235,8 +246,55 @@ record InstanceType {
 /// An attribute.
 #[rust(attr(non_exhaustive))]
 record Attr {
-    /// The name of the attribute.
-    name: string,
-    /// The free-form arguments of the attribute.
-    args?: string,
+    /// The kind of the attribute.
+    kind: AttrKind,
+    /// The span of the attribute.
+    span?: Span,
+}
+
+/// A span specifying a range in a text source.
+#[rust(attr(non_exhaustive))]
+record Span {
+    /// The start offset.
+    start: idx,
+    /// The included end offset.
+    end: idx,
+}
+
+/// A token.
+#[rust(attr(non_exhaustive))]
+record Token {
+    /// The token itself.
+    token: string,
+    /// The span of the token.
+    span?: Span,
+}
+
+/// A stream of tokens.
+wrapper TokenStream: [Token]
+
+/// A `::` separated path of identifiers.
+wrapper Path: string
+
+/// A compile-time structured attribute.
+variant AttrKind {
+    /// A `::` separated path.
+    Path: Path,
+    /// A list of `,` separated attributes.
+    List: AttrList,
+    /// An assign attribute.
+    Assign: AttrAssign,
+    /// A stream of tokens.
+    Tokens: TokenStream,
+}
+
+record AttrList {
+    path: Path,
+    elements: [Attr],
+}
+
+record AttrAssign {
+    path: Path,
+    #[rust(box)]
+    value: Attr,
 }

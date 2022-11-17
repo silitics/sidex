@@ -2,9 +2,8 @@ use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use sidex_attrs_rust::TypeAttrs;
+use sidex_attrs_rust::{FieldAttrs, TypeAttrs};
 use sidex_gen::ir::{Def, DefKind};
-use sidex_syntax::parse_meta;
 
 use super::Plugin;
 use crate::context::SchemaCtx;
@@ -24,17 +23,12 @@ impl Plugin for Types {
             .iter()
             .map(|path| TokenStream::from_str(path).unwrap())
             .collect::<Vec<_>>();
-        for attr in &def.attrs {
-            if attr.name == "rust" {
-                if let Some(args) = &attr.args {
-                    let meta = parse_meta(args).unwrap();
-                    let type_attrs = TypeAttrs::try_from(meta)?;
-                    for derive_trait in type_attrs.derive.positive {
-                        derive_traits.push(derive_trait);
-                    }
-                }
-            }
+
+        let type_attrs = TypeAttrs::try_from(def.attrs.as_slice())?;
+        for derive_trait in type_attrs.derive.positive {
+            derive_traits.push(derive_trait);
         }
+
         let derive = if derive_traits.is_empty() {
             quote! {}
         } else {
@@ -59,15 +53,19 @@ impl Plugin for Types {
                         let name = format_ident!("{}", &field.name);
                         let docs = &field.docs;
                         let mut typ = ctx.resolve_type(def, &field.typ);
-                        if field.is_optional {
-                            typ = quote! { ::std::option::Option<#typ> };
+                        let attrs = FieldAttrs::try_from(field.attrs.as_slice())?;
+                        if attrs.boxed {
+                            typ = quote! { ::std::boxed::Box< #typ > }
                         }
-                        quote! {
+                        if field.is_optional {
+                            typ = quote! { ::std::option::Option< #typ > };
+                        }
+                        Ok(quote! {
                             #[doc = #docs]
                             #vis #name: #typ,
-                        }
+                        })
                     })
-                    .collect::<Vec<_>>();
+                    .collect::<Result<Vec<_>, _>>()?;
                 Ok(quote! {
                     #[doc = #docs]
                     #derive

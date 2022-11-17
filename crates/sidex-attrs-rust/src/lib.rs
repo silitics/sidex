@@ -1,8 +1,8 @@
-use std::{ops::Deref, str::FromStr};
+use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use sidex_syntax::ast;
+use sidex_ir as ir;
 
 /// `type = "<PATH>"`
 pub struct Type {
@@ -44,6 +44,51 @@ impl ToTokens for Visibility {
 pub struct FieldAttrs {
     pub visibility: Visibility,
     pub attrs: Vec<TokenStream>,
+    pub boxed: bool,
+}
+
+impl TryFrom<&[ir::Attr]> for FieldAttrs {
+    type Error = ();
+
+    fn try_from(value: &[ir::Attr]) -> Result<Self, Self::Error> {
+        let visibility = Visibility::Pub;
+        let attrs = Vec::new();
+        let mut boxed = false;
+
+        let stack = value
+            .iter()
+            .filter_map(|attr| {
+                match &attr.kind {
+                    ir::AttrKind::List(list) => {
+                        if list.path.as_str() == "rust" {
+                            Some(list.elements.iter())
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            })
+            .flatten()
+            .collect::<Vec<_>>();
+
+        for attr in stack {
+            match &attr.kind {
+                ir::AttrKind::Path(path) => {
+                    if path.as_str() == "box" {
+                        boxed = true
+                    }
+                }
+                _ => continue,
+            }
+        }
+
+        Ok(Self {
+            visibility,
+            attrs,
+            boxed,
+        })
+    }
 }
 
 pub struct Inner {
@@ -55,40 +100,40 @@ pub struct TypeAttrs {
     pub derive: Derive,
 }
 
-impl TryFrom<ast::Meta> for TypeAttrs {
+impl TryFrom<&[ir::Attr]> for TypeAttrs {
     type Error = ();
 
-    fn try_from(value: ast::Meta) -> Result<Self, Self::Error> {
+    fn try_from(value: &[ir::Attr]) -> Result<Self, Self::Error> {
         let mut attrs = TypeAttrs::default();
 
-        let mut stack = vec![&value];
+        let mut stack = value
+            .iter()
+            .filter_map(|attr| {
+                match &attr.kind {
+                    ir::AttrKind::List(list) => {
+                        if list.path.as_str() == "rust" {
+                            Some(list.elements.iter())
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            })
+            .flatten()
+            .collect::<Vec<_>>();
         while let Some(top) = stack.pop() {
-            match top {
-                ast::Meta::List(other) => stack.extend(other),
-                ast::Meta::Invocation { identifier, args } => {
-                    match identifier.as_str() {
+            match &top.kind {
+                ir::AttrKind::List(list) => {
+                    match list.path.as_str() {
                         "derive" => {
-                            match args.deref() {
-                                ast::Meta::Identifier(identifier) => {
+                            for element in &list.elements {
+                                if let ir::AttrKind::Path(path) = &element.kind {
                                     attrs
                                         .derive
                                         .positive
-                                        .push(TokenStream::from_str(identifier.as_str()).unwrap());
+                                        .push(TokenStream::from_str(path.as_str()).unwrap())
                                 }
-                                ast::Meta::List(traits) => {
-                                    for t in traits {
-                                        match t {
-                                            ast::Meta::Identifier(identifier) => {
-                                                attrs.derive.positive.push(
-                                                    TokenStream::from_str(identifier.as_str())
-                                                        .unwrap(),
-                                                );
-                                            }
-                                            _ => continue,
-                                        }
-                                    }
-                                }
-                                _ => continue,
                             }
                         }
                         _ => continue,

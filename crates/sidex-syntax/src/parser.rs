@@ -61,25 +61,59 @@ fn token_stream_parser(
 }
 
 /// Create a parser for parsing attributes.
-fn attrs_parser() -> impl Parser<TokenKind, Vec<ast::Attr>, Error = Simple<TokenKind, Span>> + Clone
-{
-    let attr = just(punctuations::Hash::ALONE)
-        .ignore_then(
-            name_parser()
+fn attr_parser() -> impl Parser<TokenKind, ast::Attr, Error = Simple<TokenKind, Span>> + Clone {
+    recursive(|attr_parser| {
+        choice((
+            path_parser()
+                .then_ignore(just(punctuations::Equals::ALONE))
+                .then(attr_parser.clone())
+                .map(|(path, value)| {
+                    ast::Attr {
+                        kind: ast::AttrKind::Assign(ast::AttrAssign {
+                            path,
+                            value: Box::new(value),
+                        }),
+                    }
+                }),
+            path_parser()
                 .then(
-                    token_stream_parser()
+                    attr_parser
+                        .clone()
+                        .separated_by(choice((
+                            just(punctuations::Comma::ALONE),
+                            just(punctuations::Comma::COMPOSED),
+                        )))
+                        .allow_trailing()
                         .delimited_by(
                             just(delimiters::Parenthesis::OPEN),
                             just(delimiters::Parenthesis::CLOSE),
-                        )
-                        .or_not(),
+                        ),
                 )
-                .delimited_by(
-                    just(delimiters::Bracket::OPEN),
-                    just(delimiters::Bracket::CLOSE),
-                ),
-        )
-        .map(|(name, args)| ast::Attr { name, args });
+                .map(|(path, elements)| {
+                    ast::Attr {
+                        kind: ast::AttrKind::List(ast::AttrList { path, elements }),
+                    }
+                }),
+            path_parser().map(|path| {
+                ast::Attr {
+                    kind: ast::AttrKind::Path(path),
+                }
+            }),
+            token_stream_parser().map(|stream| {
+                ast::Attr {
+                    kind: ast::AttrKind::Tokens(stream),
+                }
+            }),
+        ))
+    })
+}
+
+fn attrs_parser() -> impl Parser<TokenKind, Vec<ast::Attr>, Error = Simple<TokenKind, Span>> + Clone
+{
+    let attr = just(punctuations::Hash::ALONE).ignore_then(attr_parser().delimited_by(
+        just(delimiters::Bracket::OPEN),
+        just(delimiters::Bracket::CLOSE),
+    ));
 
     attr.repeated()
 }
@@ -445,84 +479,84 @@ pub fn parse(storage: &SourceStorage, source: &Source) -> Option<ast::Schema> {
     schema
 }
 
-fn meta_parser() -> impl Parser<TokenKind, ast::Meta, Error = Simple<TokenKind, Span>> + Clone {
-    recursive(|meta_parser| {
-        choice((
-            name_parser()
-                .then_ignore(just(punctuations::Equals::ALONE))
-                .then(meta_parser.clone())
-                .map(|(name, value)| {
-                    ast::Meta::Assignment {
-                        identifier: name,
-                        value: Box::new(value),
-                    }
-                }),
-            name_parser()
-                .then(meta_parser.clone().delimited_by(
-                    just(delimiters::Parenthesis::OPEN),
-                    just(delimiters::Parenthesis::CLOSE),
-                ))
-                .map(|(name, args)| {
-                    ast::Meta::Invocation {
-                        identifier: name,
-                        args: Box::new(args),
-                    }
-                }),
-            name_parser().map(|name| ast::Meta::Identifier(name)),
-            filter_map(|span, token: TokenKind| {
-                match token {
-                    TokenKind::Literal(literal) => Ok(ast::Meta::Literal(literal)),
-                    _ => Err(Simple::custom(span, "Expected literal.")),
-                }
-            }),
-        ))
-        .separated_by(just(punctuations::Comma::ALONE))
-        .allow_trailing()
-        .map(|x| ast::Meta::List(x))
-    })
-}
+// fn meta_parser() -> impl Parser<TokenKind, ast::Meta, Error = Simple<TokenKind, Span>>
+// + Clone {     recursive(|meta_parser| {
+//         choice((
+//             name_parser()
+//                 .then_ignore(just(punctuations::Equals::ALONE))
+//                 .then(meta_parser.clone())
+//                 .map(|(name, value)| {
+//                     ast::Meta::Assignment {
+//                         identifier: name,
+//                         value: Box::new(value),
+//                     }
+//                 }),
+//             name_parser()
+//                 .then(meta_parser.clone().delimited_by(
+//                     just(delimiters::Parenthesis::OPEN),
+//                     just(delimiters::Parenthesis::CLOSE),
+//                 ))
+//                 .map(|(name, args)| {
+//                     ast::Meta::Invocation {
+//                         identifier: name,
+//                         args: Box::new(args),
+//                     }
+//                 }),
+//             name_parser().map(|name| ast::Meta::Identifier(name)),
+//             filter_map(|span, token: TokenKind| {
+//                 match token {
+//                     TokenKind::Literal(literal) => Ok(ast::Meta::Literal(literal)),
+//                     _ => Err(Simple::custom(span, "Expected literal.")),
+//                 }
+//             }),
+//         ))
+//         .separated_by(just(punctuations::Comma::ALONE))
+//         .allow_trailing()
+//         .map(|x| ast::Meta::List(x))
+//     })
+// }
 
-/// Internal parsing function.
-fn _parse_meta(source: &Source, tokens: Vec<Token>) -> (Option<ast::Meta>, Vec<SyntaxError>) {
-    let stream = Stream::from_iter(
-        source.end(),
-        tokens
-            .into_iter()
-            .filter(|token| !matches!(token.kind, TokenKind::Comment { .. }))
-            .map(|token| (token.kind, token.span)),
-    );
+// /// Internal parsing function.
+// fn _parse_meta(source: &Source, tokens: Vec<Token>) -> (Option<ast::Meta>,
+// Vec<SyntaxError>) {     let stream = Stream::from_iter(
+//         source.end(),
+//         tokens
+//             .into_iter()
+//             .filter(|token| !matches!(token.kind, TokenKind::Comment { .. }))
+//             .map(|token| (token.kind, token.span)),
+//     );
 
-    let (module, errors) = meta_parser().parse_recovery(stream);
+//     let (module, errors) = meta_parser().parse_recovery(stream);
 
-    (
-        module,
-        errors
-            .into_iter()
-            .map(|error| SyntaxError(error.map(|t| t.to_string())))
-            .collect(),
-    )
-}
+//     (
+//         module,
+//         errors
+//             .into_iter()
+//             .map(|error| SyntaxError(error.map(|t| t.to_string())))
+//             .collect(),
+//     )
+// }
 
-pub fn parse_meta(source: &str) -> Option<ast::Meta> {
-    let mut storage = SourceStorage::new();
-    let id = storage.insert(source.to_owned(), None);
-    let source = &storage[id];
-    let (tokens, lexer_errors) = tokenize(source);
+// pub fn parse_meta(source: &str) -> Option<ast::Meta> {
+//     let mut storage = SourceStorage::new();
+//     let id = storage.insert(source.to_owned(), None);
+//     let source = &storage[id];
+//     let (tokens, lexer_errors) = tokenize(source);
 
-    let (meta, parse_errors) = match tokens {
-        Some(tokens) => _parse_meta(source, tokens),
-        None => (None, Default::default()),
-    };
+//     let (meta, parse_errors) = match tokens {
+//         Some(tokens) => _parse_meta(source, tokens),
+//         None => (None, Default::default()),
+//     };
 
-    // 🚧 TODO: Return errors instead of printing them here.
-    reporting::eprint_errors(
-        &storage,
-        source.id(),
-        lexer_errors.iter().chain(parse_errors.iter()),
-    );
+//     // 🚧 TODO: Return errors instead of printing them here.
+//     reporting::eprint_errors(
+//         &storage,
+//         source.id(),
+//         lexer_errors.iter().chain(parse_errors.iter()),
+//     );
 
-    meta
-}
+//     meta
+// }
 
 #[cfg(test)]
 mod tests {

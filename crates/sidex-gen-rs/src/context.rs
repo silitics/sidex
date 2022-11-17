@@ -27,12 +27,12 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn resolve_type(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
-        match typ {
-            ir::Type::TypeVar(var) => {
+        match &typ.kind {
+            ir::TypeKind::TypeVar(var) => {
                 let var = format_ident!("{}", def[var.idx].name);
                 quote! { #var }
             }
-            ir::Type::Instance(instance) => {
+            ir::TypeKind::Instance(instance) => {
                 let bundle = &self.bundle_ctx.unit[instance.bundle];
                 let schema = &bundle[instance.schema];
                 let def = &schema[instance.def];

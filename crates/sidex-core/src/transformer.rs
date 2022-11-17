@@ -270,9 +270,12 @@ impl<'t, 'd> Resolver<'t, 'd> {
                         .iter()
                         .position(|var| var.name.as_str() == name)
                     {
-                        return ir::Type::TypeVar(ir::TypeVarType {
-                            idx: ir::TypeVarIdx(var_idx),
-                        });
+                        return ir::Type {
+                            kind: ir::TypeKind::TypeVar(ir::TypeVarType {
+                                idx: ir::TypeVarIdx(var_idx),
+                            }),
+                            span: None,
+                        };
                     }
                 }
                 let entry = self.resolve_path(&instance.path);
@@ -286,16 +289,19 @@ impl<'t, 'd> Resolver<'t, 'd> {
                             &self.transformer.loaded[bundle.0].schemas[schema.0].defs[def.0];
                         assert_eq!(type_def.vars.len(), instance.subst.len());
 
-                        ir::Type::Instance(ir::InstanceType {
-                            bundle,
-                            schema,
-                            def,
-                            subst: instance
-                                .subst
-                                .iter()
-                                .map(|subst| self.resolve_type_expr(enclosing, subst))
-                                .collect(),
-                        })
+                        return ir::Type {
+                            kind: ir::TypeKind::Instance(ir::InstanceType {
+                                bundle,
+                                schema,
+                                def,
+                                subst: instance
+                                    .subst
+                                    .iter()
+                                    .map(|subst| self.resolve_type_expr(enclosing, subst))
+                                    .collect(),
+                            }),
+                            span: None,
+                        };
                     }
                     _ => panic!("Invalid path."),
                 }
@@ -306,12 +312,15 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().0];
                 let sequence_def = builtins_schema.def_by_name.get("Sequence").unwrap();
 
-                ir::Type::Instance(ir::InstanceType {
-                    bundle: std_bundle.idx,
-                    schema: builtins_schema.idx,
-                    def: *sequence_def,
-                    subst: vec![self.resolve_type_expr(enclosing, &sequence.element)],
-                })
+                ir::Type {
+                    kind: ir::TypeKind::Instance(ir::InstanceType {
+                        bundle: std_bundle.idx,
+                        schema: builtins_schema.idx,
+                        def: *sequence_def,
+                        subst: vec![self.resolve_type_expr(enclosing, &sequence.element)],
+                    }),
+                    span: None,
+                }
             }
             ast::TypeExpr::Map(map) => {
                 let std_bundle = &self.transformer.loaded[STD_BUNDLE.0];
@@ -319,15 +328,18 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().0];
                 let map_def = builtins_schema.def_by_name.get("Map").unwrap();
 
-                ir::Type::Instance(ir::InstanceType {
-                    bundle: std_bundle.idx,
-                    schema: builtins_schema.idx,
-                    def: *map_def,
-                    subst: vec![
-                        self.resolve_type_expr(enclosing, &map.key),
-                        self.resolve_type_expr(enclosing, &map.value),
-                    ],
-                })
+                ir::Type {
+                    kind: ir::TypeKind::Instance(ir::InstanceType {
+                        bundle: std_bundle.idx,
+                        schema: builtins_schema.idx,
+                        def: *map_def,
+                        subst: vec![
+                            self.resolve_type_expr(enclosing, &map.key),
+                            self.resolve_type_expr(enclosing, &map.value),
+                        ],
+                    }),
+                    span: None,
+                }
             }
             ast::TypeExpr::Unit => {
                 let std_bundle = &self.transformer.loaded[STD_BUNDLE.0];
@@ -335,27 +347,54 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().0];
                 let unit_def = builtins_schema.def_by_name.get("unit").unwrap();
 
-                ir::Type::Instance(ir::InstanceType {
-                    bundle: std_bundle.idx,
-                    schema: builtins_schema.idx,
-                    def: *unit_def,
-                    subst: vec![],
-                })
+                ir::Type {
+                    kind: ir::TypeKind::Instance(ir::InstanceType {
+                        bundle: std_bundle.idx,
+                        schema: builtins_schema.idx,
+                        def: *unit_def,
+                        subst: vec![],
+                    }),
+                    span: None,
+                }
             }
         }
     }
 }
 
+fn transform_attr(attr: &ast::Attr) -> ir::Attr {
+    let kind = match &attr.kind {
+        ast::AttrKind::Path(path) => ir::AttrKind::Path(ir::Path(path.to_string())),
+        ast::AttrKind::List(list) => {
+            ir::AttrKind::List(ir::AttrList {
+                path: ir::Path(list.path.to_string()),
+                elements: list.elements.iter().map(transform_attr).collect(),
+            })
+        }
+        ast::AttrKind::Assign(assign) => {
+            ir::AttrKind::Assign(ir::AttrAssign {
+                path: ir::Path(assign.path.to_string()),
+                value: Box::new(transform_attr(&assign.value)),
+            })
+        }
+        ast::AttrKind::Tokens(tokens) => {
+            ir::AttrKind::Tokens(ir::TokenStream(
+                tokens
+                    .iter()
+                    .map(|token| {
+                        ir::Token {
+                            token: token.to_string(),
+                            span: None,
+                        }
+                    })
+                    .collect(),
+            ))
+        }
+    };
+    ir::Attr { kind, span: None }
+}
+
 fn transform_attrs(attrs: &[ast::Attr]) -> Vec<ir::Attr> {
-    attrs
-        .iter()
-        .map(|attr| {
-            ir::Attr {
-                name: attr.name.as_str().to_owned(),
-                args: attr.args.as_ref().map(ToString::to_string),
-            }
-        })
-        .collect()
+    attrs.iter().map(transform_attr).collect()
 }
 
 impl Transformer {
@@ -530,6 +569,7 @@ impl Transformer {
                                     name: schema.name.clone(),
                                     docs: schema.docs.clone(),
                                     attrs: Default::default(),
+                                    source: None,
                                     defs: schema
                                         .defs
                                         .iter()
@@ -648,19 +688,7 @@ impl Transformer {
                                                         }
                                                     })
                                                     .collect(),
-                                                attrs: def
-                                                    .attrs
-                                                    .iter()
-                                                    .map(|attr| {
-                                                        ir::Attr {
-                                                            name: attr.name.as_str().to_owned(),
-                                                            args: attr
-                                                                .args
-                                                                .as_ref()
-                                                                .map(|args| args.to_string()),
-                                                        }
-                                                    })
-                                                    .collect(),
+                                                attrs: transform_attrs(&def.attrs),
                                                 kind,
                                             }
                                         })

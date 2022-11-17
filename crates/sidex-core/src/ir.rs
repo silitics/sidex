@@ -111,3 +111,9 @@ impl IndexMut<TypeVarIdx> for Def {
         &mut self.vars[index.0]
     }
 }
+
+impl Path {
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}

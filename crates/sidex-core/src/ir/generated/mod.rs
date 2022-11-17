@@ -72,6 +72,8 @@ pub mod reflect {
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The definitions of the schema.\n"]
         pub defs: ::std::vec::Vec<Def>,
+        #[doc = "The text source of the schema.\n"]
+        pub source: ::std::option::Option<::std::string::String>,
     }
     #[doc = "A definition.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
@@ -192,9 +194,17 @@ pub mod reflect {
         #[doc = "Indicates whether the parameter is optional.\n"]
         pub is_optional: bool,
     }
-    #[doc = "An abstract type.\n"]
+    #[doc = "A type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
-    pub enum Type {
+    pub struct Type {
+        #[doc = "The kind of the type.\n"]
+        pub kind: TypeKind,
+        #[doc = "The span of the type expression.\n"]
+        pub span: ::std::option::Option<Span>,
+    }
+    #[doc = "An abstract type kind.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub enum TypeKind {
         #[doc = "A type to be determined via substitution of the respective type variable.\n"]
         TypeVar(TypeVarType),
         #[doc = "An instantiation of a type defined in some schema.\n"]
@@ -221,9 +231,59 @@ pub mod reflect {
     #[doc = "An attribute.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Attr {
-        #[doc = "The name of the attribute.\n"]
-        pub name: ::std::string::String,
-        #[doc = "The free-form arguments of the attribute.\n"]
-        pub args: ::std::option::Option<::std::string::String>,
+        #[doc = "The kind of the attribute.\n"]
+        pub kind: AttrKind,
+        #[doc = "The span of the attribute.\n"]
+        pub span: ::std::option::Option<Span>,
+    }
+    #[doc = "A span specifying a range in a text source.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct Span {
+        #[doc = "The start offset.\n"]
+        pub start: usize,
+        #[doc = "The included end offset.\n"]
+        pub end: usize,
+    }
+    #[doc = "A token.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct Token {
+        #[doc = "The token itself.\n"]
+        pub token: ::std::string::String,
+        #[doc = "The span of the token.\n"]
+        pub span: ::std::option::Option<Span>,
+    }
+    #[doc = "A stream of tokens.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct TokenStream(pub(crate) ::std::vec::Vec<Token>);
+    #[doc = "A `::` separated path of identifiers.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct Path(pub(crate) ::std::string::String);
+    #[doc = "A compile-time structured attribute.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub enum AttrKind {
+        #[doc = "A `::` separated path.\n"]
+        Path(Path),
+        #[doc = "A list of `,` separated attributes.\n"]
+        List(AttrList),
+        #[doc = "An assign attribute.\n"]
+        Assign(AttrAssign),
+        #[doc = "A stream of tokens.\n"]
+        Tokens(TokenStream),
+    }
+    #[doc = ""]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct AttrList {
+        #[doc = ""]
+        pub path: Path,
+        #[doc = ""]
+        pub elements: ::std::vec::Vec<Attr>,
+    }
+    #[doc = ""]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct AttrAssign {
+        #[doc = ""]
+        pub path: Path,
+        #[doc = ""]
+        pub value: ::std::boxed::Box<Attr>,
     }
 }
