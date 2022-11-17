@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
+use sidex_attrs::TryFromAttrs;
 use sidex_attrs_rust::{FieldAttrs, TypeAttrs};
 use sidex_gen::ir::{Def, DefKind};
 
@@ -53,13 +54,15 @@ impl Plugin for Types {
                         let name = format_ident!("{}", &field.name);
                         let docs = &field.docs;
                         let mut typ = ctx.resolve_type(def, &field.typ);
-                        let attrs = FieldAttrs::try_from(field.attrs.as_slice())?;
-                        if attrs.boxed {
-                            typ = quote! { ::std::boxed::Box< #typ > }
+                        let attrs = FieldAttrs::try_from_attrs(&field.attrs).map_err(|_| ())?;
+                        for wrapper in attrs.wrappers {
+                            let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
+                            typ = quote! { #wrapper < #typ > }
                         }
                         if field.is_optional {
                             typ = quote! { ::std::option::Option< #typ > };
                         }
+                        let vis = &attrs.visibility;
                         Ok(quote! {
                             #[doc = #docs]
                             #vis #name: #typ,

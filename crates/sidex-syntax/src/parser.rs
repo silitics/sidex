@@ -79,10 +79,7 @@ fn attr_parser() -> impl Parser<TokenKind, ast::Attr, Error = Simple<TokenKind, 
                 .then(
                     attr_parser
                         .clone()
-                        .separated_by(choice((
-                            just(punctuations::Comma::ALONE),
-                            just(punctuations::Comma::COMPOSED),
-                        )))
+                        .separated_by(just(punctuations::Comma::ALONE))
                         .allow_trailing()
                         .delimited_by(
                             just(delimiters::Parenthesis::OPEN),

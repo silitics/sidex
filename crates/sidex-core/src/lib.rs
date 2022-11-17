@@ -2,6 +2,7 @@
 
 pub mod builtins;
 pub mod bundle;
+pub mod diagnostics;
 pub mod ir;
 pub mod transformer;
 pub mod utils;

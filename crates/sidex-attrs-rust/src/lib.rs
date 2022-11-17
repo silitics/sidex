@@ -2,6 +2,8 @@ use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
+use sidex_attrs::{accept, reject, TryApplyAttr, TryFromAttr};
+use sidex_diagnostics::Diagnostic;
 use sidex_ir as ir;
 
 /// `type = "<PATH>"`
@@ -15,16 +17,43 @@ pub struct Derive {
     pub positive: Vec<TokenStream>,
 }
 
-/// `attr(...)`
-pub struct Attr {
-    pub attribute: TokenStream,
-}
-
+/// A *visibility*.
+#[derive(Clone, Copy, Debug, Default)]
 pub enum Visibility {
+    /// Visibility `pub`.
+    #[default]
     Pub,
     Crate,
     Super,
     Private,
+}
+
+impl TryFromAttr for Visibility {
+    fn try_from_attr(attr: &ir::Attr) -> Result<Self, sidex_attrs::Error> {
+        match &attr.kind {
+            ir::AttrKind::Path(path) => {
+                match path.as_str() {
+                    "pub" => accept!(Self::Pub),
+                    "private" => accept!(Self::Private),
+                    _ => {}
+                }
+            }
+            ir::AttrKind::List(list) if list.path.as_str() == "pub" && list.elements.len() == 1 => {
+                if let ir::AttrKind::Path(path) = &list.elements[0].kind {
+                    match path.as_str() {
+                        "crate" => accept!(Self::Crate),
+                        "super" => accept!(Self::Super),
+                        _ => {}
+                    }
+                }
+            }
+            _ => {}
+        };
+        reject!(
+            attr,
+            "Expected visibility: `pub`, `pub(crate)`, `pub(super)`, or `private`."
+        )
+    }
 }
 
 impl ToTokens for Visibility {
@@ -40,54 +69,66 @@ impl ToTokens for Visibility {
     }
 }
 
-/// `wrap = "<PATH>"`
-pub struct FieldAttrs {
-    pub visibility: Visibility,
-    pub attrs: Vec<TokenStream>,
-    pub boxed: bool,
+#[derive(Clone, Debug)]
+pub struct Wrapper {
+    pub wrapper: String,
 }
 
-impl TryFrom<&[ir::Attr]> for FieldAttrs {
-    type Error = ();
+impl Wrapper {
+    fn new<S: ToString>(wrapper: S) -> Self {
+        Self {
+            wrapper: wrapper.to_string(),
+        }
+    }
+}
 
-    fn try_from(value: &[ir::Attr]) -> Result<Self, Self::Error> {
-        let visibility = Visibility::Pub;
-        let attrs = Vec::new();
-        let mut boxed = false;
-
-        let stack = value
-            .iter()
-            .filter_map(|attr| {
-                match &attr.kind {
-                    ir::AttrKind::List(list) => {
-                        if list.path.as_str() == "rust" {
-                            Some(list.elements.iter())
-                        } else {
-                            None
-                        }
-                    }
-                    _ => None,
+impl TryFromAttr for Wrapper {
+    fn try_from_attr(attr: &ir::Attr) -> Result<Self, sidex_attrs::Error> {
+        match &attr.kind {
+            ir::AttrKind::Path(path) => {
+                match path.as_str() {
+                    "box" => accept!(Self::new("::std::boxed::Box")),
+                    "arc" => accept!(Self::new("::std::sync::Arc")),
+                    "rc" => accept!(Self::new("::std::rc::Rc")),
+                    _ => {}
                 }
-            })
-            .flatten()
-            .collect::<Vec<_>>();
+            }
+            ir::AttrKind::Assign(assign) if assign.path.as_str() == "wrap" => {
+                if let ir::AttrKind::Path(path) = &assign.value.kind {
+                    accept!(Self::new(path.as_str()))
+                }
+            }
+            _ => {}
+        }
+        reject!(
+            attr,
+            "Expected wrap attribute: `box`, `arc`, `rc`, or `wrap = \"<PATH>\"."
+        )
+    }
+}
 
-        for attr in stack {
-            match &attr.kind {
-                ir::AttrKind::Path(path) => {
-                    if path.as_str() == "box" {
-                        boxed = true
+#[derive(Clone, Debug, Default)]
+pub struct FieldAttrs {
+    pub visibility: Visibility,
+    pub wrappers: Vec<Wrapper>,
+}
+
+impl TryApplyAttr for FieldAttrs {
+    fn try_apply_attr(&mut self, attr: &ir::Attr) -> Result<(), sidex_attrs::Error> {
+        if let ir::AttrKind::List(list) = &attr.kind {
+            if list.path.as_str() == "rust" {
+                for attr in &list.elements {
+                    if let Ok(visibility) = Visibility::try_from_attr(attr) {
+                        self.visibility = visibility;
+                    } else if let Ok(wrapper) = Wrapper::try_from_attr(attr) {
+                        self.wrappers.push(wrapper)
+                    } else {
+                        reject!(attr, "Expected Rust field attributes.")
                     }
                 }
-                _ => continue,
             }
         }
-
-        Ok(Self {
-            visibility,
-            attrs,
-            boxed,
-        })
+        accept!()
     }
 }
 

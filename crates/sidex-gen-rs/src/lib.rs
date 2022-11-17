@@ -1,4 +1,7 @@
 #![doc = include_str!("../README.md")]
+//!
+//! **ℹ️ Note:** Use this crate as a starting point for customizing Sidex's Rust code
+//! generator to your needs.
 
 use config::Config;
 use context::{BundleCtx, SchemaCtx};

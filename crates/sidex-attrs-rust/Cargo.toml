@@ -13,3 +13,5 @@ quote = "1"
 syn = "1"
 
 sidex-ir = { path = "../sidex-ir" }
+sidex-attrs = { path = "../sidex-attrs" }
+sidex-diagnostics = { path = "../sidex-diagnostics" }

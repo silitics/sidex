@@ -859,6 +859,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "scoped-tls"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1cf6437eb19a8f4a6cc0f7dca544973b0b78843adbfeb3683d1a94a0024a294"
+
+[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -926,6 +932,7 @@ dependencies = [
 name = "sidex-attrs"
 version = "0.1.0"
 dependencies = [
+ "sidex-diagnostics",
  "sidex-ir",
 ]
 
@@ -939,6 +946,8 @@ version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
+ "sidex-attrs",
+ "sidex-diagnostics",
  "sidex-ir",
  "syn",
 ]
@@ -970,7 +979,9 @@ dependencies = [
  "insta",
  "lazy_static",
  "once_cell",
+ "parking_lot",
  "rayon",
+ "scoped-tls",
  "serde",
  "serde_json",
  "sidex-syntax",
@@ -979,10 +990,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-diagnostics"
+version = "0.1.0"
+dependencies = [
+ "sidex-core",
+]
+
+[[package]]
 name = "sidex-gen"
 version = "0.1.0"
 dependencies = [
  "serde_json",
+ "sidex-attrs",
+ "sidex-diagnostics",
  "sidex-ir",
  "thiserror",
 ]
@@ -1002,6 +1022,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde",
+ "sidex-attrs",
  "sidex-attrs-rust",
  "sidex-gen",
  "sidex-syntax",
@@ -1021,7 +1042,6 @@ dependencies = [
 name = "sidex-ir"
 version = "0.2.0"
 dependencies = [
- "serde",
  "sidex-core",
 ]
 

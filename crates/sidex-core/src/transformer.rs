@@ -361,6 +361,22 @@ impl<'t, 'd> Resolver<'t, 'd> {
     }
 }
 
+fn transform_token_stream(stream: &ast::TokenStream) -> ir::TokenStream {
+    let mut next_token = String::new();
+    let mut ir_tokens = Vec::new();
+    for token in stream.iter() {
+        next_token.push_str(&token.to_string());
+        if token.is_separated() {
+            ir_tokens.push(ir::Token {
+                token: next_token.clone(),
+                span: None,
+            });
+            next_token.clear();
+        }
+    }
+    ir::TokenStream(ir_tokens)
+}
+
 fn transform_attr(attr: &ast::Attr) -> ir::Attr {
     let kind = match &attr.kind {
         ast::AttrKind::Path(path) => ir::AttrKind::Path(ir::Path(path.to_string())),
@@ -376,19 +392,7 @@ fn transform_attr(attr: &ast::Attr) -> ir::Attr {
                 value: Box::new(transform_attr(&assign.value)),
             })
         }
-        ast::AttrKind::Tokens(tokens) => {
-            ir::AttrKind::Tokens(ir::TokenStream(
-                tokens
-                    .iter()
-                    .map(|token| {
-                        ir::Token {
-                            token: token.to_string(),
-                            span: None,
-                        }
-                    })
-                    .collect(),
-            ))
-        }
+        ast::AttrKind::Tokens(tokens) => ir::AttrKind::Tokens(transform_token_stream(tokens)),
     };
     ir::Attr { kind, span: None }
 }

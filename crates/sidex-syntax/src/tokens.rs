@@ -453,7 +453,7 @@ impl Token {
     }
 
     /// Token is separated by a space from its successor.
-    pub(crate) fn is_separated(&self) -> bool {
+    pub fn is_separated(&self) -> bool {
         match self.kind {
             TokenKind::Punctuation(symbol) => !symbol.is_composed,
             _ => true,

@@ -16,5 +16,6 @@ proc-macro2 = "^1"
 quote = "^1"
 serde = "1"
 syn = { version = "^1", features = ["extra-traits"] }
+sidex-attrs = { path = "../sidex-attrs" }
 sidex-attrs-rust = { path = "../sidex-attrs-rust" }
 sidex-syntax = { path = "../sidex-syntax" }

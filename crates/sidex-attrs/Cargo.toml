@@ -9,3 +9,4 @@ homepage.workspace = true
 
 [dependencies]
 sidex-ir = { path = "../sidex-ir" }
+sidex-diagnostics = { path = "../sidex-diagnostics"}
