@@ -23,7 +23,7 @@ mod generated;
 #[doc(hidden)]
 pub use generated::reflect::*;
 
-impl Collection {
+impl Unit {
     /// Create a new empty unit.
     pub fn new() -> Self {
         Self::default()
@@ -42,7 +42,7 @@ impl Metadata {
     }
 }
 
-impl Index<BundleIdx> for Collection {
+impl Index<BundleIdx> for Unit {
     type Output = Bundle;
 
     fn index(&self, index: BundleIdx) -> &Self::Output {
@@ -50,13 +50,13 @@ impl Index<BundleIdx> for Collection {
     }
 }
 
-impl IndexMut<BundleIdx> for Collection {
+impl IndexMut<BundleIdx> for Unit {
     fn index_mut(&mut self, index: BundleIdx) -> &mut Self::Output {
         &mut self.bundles[index.0]
     }
 }
 
-impl Index<InstanceType> for Collection {
+impl Index<InstanceType> for Unit {
     type Output = Def;
 
     fn index(&self, index: InstanceType) -> &Self::Output {
@@ -64,7 +64,7 @@ impl Index<InstanceType> for Collection {
     }
 }
 
-impl IndexMut<InstanceType> for Collection {
+impl IndexMut<InstanceType> for Unit {
     fn index_mut(&mut self, index: InstanceType) -> &mut Self::Output {
         &mut self[index.bundle][index.schema][index.def]
     }

@@ -519,8 +519,9 @@ impl Transformer {
         }
     }
 
-    pub fn transform(&self) -> ir::Collection {
-        ir::Collection {
+    pub fn transform(&self) -> ir::Unit {
+        ir::Unit {
+            sources: Vec::new(),
             bundles: self
                 .loaded
                 .par_iter()

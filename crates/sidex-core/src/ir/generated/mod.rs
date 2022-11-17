@@ -1,7 +1,12 @@
 /* GENERATED WITH SIDEX. DO NOT MODIFY! */
 
 pub mod reflect {
-    #[doc = "Uniquely identifies a bundle in a transformation unit.\n"]
+    #[doc = "Uniquely identifies a source in a unit.\n"]
+    #[derive(
+        :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
+    )]
+    pub struct SourceIdx(pub(crate) usize);
+    #[doc = "Uniquely identifies a bundle in a unit.\n"]
     #[derive(
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
@@ -21,11 +26,21 @@ pub mod reflect {
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
     pub struct TypeVarIdx(pub(crate) usize);
-    #[doc = "A collection of bundles.\n"]
+    #[doc = "A *unit* is a collection of bundles.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Default)]
-    pub struct Collection {
+    pub struct Unit {
         #[doc = "The bundles of the unit.\n"]
         pub bundles: ::std::vec::Vec<Bundle>,
+        #[doc = "The sources of the unit.\n"]
+        pub sources: ::std::vec::Vec<Source>,
+    }
+    #[doc = "A *source* is simply a chunk of text.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct Source {
+        #[doc = "The text of the source.\n"]
+        pub text: ::std::string::String,
+        #[doc = "The origin of the source, e.g., a filesystem path.\n"]
+        pub origin: ::std::option::Option<::std::string::String>,
     }
     #[doc = "A bundle is a flat collection of schemas evolving together.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
@@ -72,8 +87,8 @@ pub mod reflect {
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The definitions of the schema.\n"]
         pub defs: ::std::vec::Vec<Def>,
-        #[doc = "The text source of the schema.\n"]
-        pub source: ::std::option::Option<::std::string::String>,
+        #[doc = "The source of the schema.\n"]
+        pub source: ::std::option::Option<SourceIdx>,
     }
     #[doc = "A definition.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
@@ -236,12 +251,14 @@ pub mod reflect {
         #[doc = "The span of the attribute.\n"]
         pub span: ::std::option::Option<Span>,
     }
-    #[doc = "A span specifying a range in a text source.\n"]
+    #[doc = "A *span* identifies a range of text in a source.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Span {
-        #[doc = "The start offset.\n"]
+        #[doc = "The source.\n"]
+        pub src: SourceIdx,
+        #[doc = "The start character.\n"]
         pub start: usize,
-        #[doc = "The included end offset.\n"]
+        #[doc = "The included end character.\n"]
         pub end: usize,
     }
     #[doc = "A token.\n"]

@@ -10,7 +10,7 @@ pub use sidex_ir as ir;
 #[derive(Debug)]
 pub struct Job<'j> {
     /// The unit to generate code for.
-    pub unit: &'j ir::Collection,
+    pub unit: &'j ir::Unit,
     /// The bundle of the unit to generate code for.
     pub bundle: ir::BundleIdx,
     /// The output path.

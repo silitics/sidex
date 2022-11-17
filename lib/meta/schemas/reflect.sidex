@@ -1,4 +1,8 @@
-/// Uniquely identifies a bundle in a transformation unit.
+/// Uniquely identifies a source in a unit.
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
+wrapper SourceIdx: idx
+
+/// Uniquely identifies a bundle in a unit.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper BundleIdx: idx
 
@@ -14,11 +18,21 @@ wrapper DefIdx: idx
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper TypeVarIdx: idx
 
-/// A collection of bundles.
+/// A *unit* is a collection of bundles.
 #[rust(derive(Default), attr(non_exhaustive))]
-record Collection {
+record Unit {
     /// The bundles of the unit.
     bundles: [Bundle],
+    /// The sources of the unit.
+    sources: [Source]
+}
+
+/// A *source* is simply a chunk of text.
+record Source {
+    /// The text of the source.
+    text: string,
+    /// The origin of the source, e.g., a filesystem path.
+    origin?: string,
 }
 
 /// A bundle is a flat collection of schemas evolving together.
@@ -71,8 +85,8 @@ record Schema {
     attrs: [Attr],
     /// The definitions of the schema.
     defs: [Def],
-    /// The text source of the schema.
-    source?: string,
+    /// The source of the schema.
+    source?: SourceIdx,
 }
 
 /// A definition.
@@ -252,12 +266,14 @@ record Attr {
     span?: Span,
 }
 
-/// A span specifying a range in a text source.
+/// A *span* identifies a range of text in a source.
 #[rust(attr(non_exhaustive))]
 record Span {
-    /// The start offset.
+    /// The source.
+    src: SourceIdx,
+    /// The start character.
     start: idx,
-    /// The included end offset.
+    /// The included end character.
     end: idx,
 }
 
