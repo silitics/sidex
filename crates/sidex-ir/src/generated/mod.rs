@@ -328,15 +328,11 @@ pub mod reflect {
     }
     impl Schema {
         #[doc = "Creates a new [`Schema`]."]
-        pub fn new(
-            idx: SchemaIdx,
-            name: ::std::string::String,
-            docs: ::std::string::String,
-        ) -> Self {
+        pub fn new(idx: SchemaIdx, name: ::std::string::String) -> Self {
             Self {
                 idx,
                 name,
-                docs,
+                docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
                 defs: ::std::default::Default::default(),
                 source: ::std::default::Default::default(),
@@ -420,15 +416,11 @@ pub mod reflect {
     }
     impl Def {
         #[doc = "Creates a new [`Def`]."]
-        pub fn new(
-            name: ::std::string::String,
-            docs: ::std::string::String,
-            kind: DefKind,
-        ) -> Self {
+        pub fn new(name: ::std::string::String, kind: DefKind) -> Self {
             Self {
                 name,
-                docs,
                 kind,
+                docs: ::std::default::Default::default(),
                 vars: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
             }
@@ -608,18 +600,13 @@ pub mod reflect {
     }
     impl Field {
         #[doc = "Creates a new [`Field`]."]
-        pub fn new(
-            name: ::std::string::String,
-            docs: ::std::string::String,
-            typ: Type,
-            is_optional: bool,
-        ) -> Self {
+        pub fn new(name: ::std::string::String, typ: Type) -> Self {
             Self {
                 name,
-                docs,
                 typ,
-                is_optional,
+                docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
+                is_optional: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `name`."]
@@ -718,10 +705,10 @@ pub mod reflect {
     }
     impl Variant {
         #[doc = "Creates a new [`Variant`]."]
-        pub fn new(name: ::std::string::String, docs: ::std::string::String) -> Self {
+        pub fn new(name: ::std::string::String) -> Self {
             Self {
                 name,
-                docs,
+                docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
                 typ: ::std::default::Default::default(),
             }
@@ -837,10 +824,10 @@ pub mod reflect {
     }
     impl Method {
         #[doc = "Creates a new [`Method`]."]
-        pub fn new(name: ::std::string::String, docs: ::std::string::String) -> Self {
+        pub fn new(name: ::std::string::String) -> Self {
             Self {
                 name,
-                docs,
+                docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
                 parameters: ::std::default::Default::default(),
                 returns: ::std::default::Default::default(),
@@ -910,11 +897,11 @@ pub mod reflect {
     }
     impl MethodParam {
         #[doc = "Creates a new [`MethodParam`]."]
-        pub fn new(name: ::std::string::String, typ: Type, is_optional: bool) -> Self {
+        pub fn new(name: ::std::string::String, typ: Type) -> Self {
             Self {
                 name,
                 typ,
-                is_optional,
+                is_optional: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `name`."]
