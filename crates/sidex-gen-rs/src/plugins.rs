@@ -3,6 +3,7 @@ use sidex_gen::ir;
 
 use crate::context::{BundleCtx, SchemaCtx};
 
+pub mod builder;
 pub mod data_types;
 
 pub trait Plugin {

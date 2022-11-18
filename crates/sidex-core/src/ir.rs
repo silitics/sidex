@@ -23,25 +23,6 @@ mod generated;
 #[doc(hidden)]
 pub use generated::reflect::*;
 
-impl Unit {
-    /// Create a new empty unit.
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
-impl Metadata {
-    /// Create a new metadata struct with the given name and version.
-    pub fn new(name: String, version: String) -> Self {
-        Self {
-            name,
-            version,
-            description: Default::default(),
-            authors: Default::default(),
-        }
-    }
-}
-
 impl Index<BundleIdx> for Unit {
     type Output = Bundle;
 

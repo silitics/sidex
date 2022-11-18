@@ -1,7 +1,11 @@
 //! Code generation context.
 
+use std::str::FromStr;
+
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote, ToTokens};
+use sidex_attrs::TryFromAttrs;
+use sidex_attrs_rust::{FieldAttrs, Visibility};
 use sidex_gen::ir;
 
 use crate::config::Config;
@@ -19,11 +23,71 @@ pub struct SchemaCtx<'cx> {
     pub schema: &'cx ir::Schema,
 }
 
-impl<'cx> SchemaCtx<'cx> {
-    pub fn generic_type_vars(&self, def: &ir::Def) -> TokenStream {
-        let vars = def.vars.iter().map(|var| format_ident!("{}", var.name));
+pub struct TypeInfo {
+    pub ident: syn::Ident,
+    pub vis: syn::Visibility,
+    pub generics: TokenStream,
+}
 
-        quote! { < #(#vars , )* > }
+pub struct FieldInfo {
+    pub name: syn::Ident,
+    pub typ: syn::Type,
+    pub vis: Visibility,
+}
+
+impl<'cx> SchemaCtx<'cx> {
+    pub fn field_info(&self, def: &ir::Def, field: &ir::Field) -> FieldInfo {
+        let name = format_ident!("{}", &field.name);
+        let mut typ = self.resolve_type(def, &field.typ);
+        let attrs = FieldAttrs::try_from_attrs(&field.attrs)
+            .map_err(|_| ())
+            .unwrap();
+        for wrapper in attrs.wrappers {
+            let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
+            typ = quote! { #wrapper < #typ > }
+        }
+        if field.is_optional {
+            typ = quote! { ::std::option::Option< #typ > };
+        }
+        let vis = attrs.visibility.clone();
+        FieldInfo {
+            name,
+            typ: syn::parse2::<syn::Type>(typ).unwrap(),
+            vis,
+        }
+    }
+
+    pub fn type_info(&self, def: &ir::Def) -> TypeInfo {
+        let ident = format_ident!("{}", def.name);
+        let generics = self.generic_type_vars(def);
+        let vis = syn::parse_str::<syn::Visibility>("pub").unwrap();
+        TypeInfo {
+            ident,
+            vis,
+            generics,
+        }
+    }
+
+    pub fn resolve_type_var(&self, def: &ir::Def, var: &ir::TypeVarType) -> syn::Ident {
+        format_ident!("{}", def[var.idx].name)
+    }
+
+    pub fn generic_type_vars(&self, def: &ir::Def) -> TokenStream {
+        if def.vars.is_empty() {
+            quote! {}
+        } else {
+            let vars = def.vars.iter().map(|var| format_ident!("{}", var.name));
+
+            quote! { < #(#vars , )* > }
+        }
+    }
+
+    pub fn fully_qualified_type_name(&self, instance: &ir::InstanceType) -> String {
+        let bundle = &self.bundle_ctx.unit[instance.bundle];
+        let schema = &bundle[instance.schema];
+        let def = &schema[instance.def];
+
+        format!("::{}::{}::{}", bundle.metadata.name, schema.name, def.name)
     }
 
     pub fn resolve_type(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {

@@ -19,7 +19,7 @@ wrapper DefIdx: idx
 wrapper TypeVarIdx: idx
 
 /// A *unit* is a collection of bundles.
-#[rust(derive(Default), attr(non_exhaustive))]
+#[rust(attr(non_exhaustive))]
 record Unit {
     /// The bundles of the unit.
     bundles: [Bundle],

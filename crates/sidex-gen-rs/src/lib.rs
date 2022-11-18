@@ -23,7 +23,10 @@ pub struct RustGenerator {
 impl RustGenerator {
     pub fn new() -> Self {
         Self {
-            plugins: vec![Box::new(plugins::data_types::Types)],
+            plugins: vec![
+                Box::new(plugins::data_types::Types),
+                Box::new(plugins::builder::Builder),
+            ],
         }
     }
 
