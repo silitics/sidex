@@ -1,4 +1,60 @@
 #![doc = include_str!("../README.md")]
+//!
+//! ## Diagnostics
+//!
+//! *Diagnostics* such as errors, warnings, or hints are represented by [`Diagnostic`].
+//! Every such diagnostic consists of a message and a severity ([`Severity`]) which is
+//! either [`Error`][Severity::Error], [`Warning`][Severity::Warning], or
+//! [`Hint`][Severity::Hint]. In addition, diagnostics track:
+//!
+//! - The [`Location`] where they have been created (useful for debugging).
+//! - The [`Location`] where they have been emitted (useful for debugging).
+//! - A list of [errors][std::error::Error] which have been attached to the diagnostic.
+//! - An optional [`ir::Span`] indicating the primary source span the diagnostic is about.
+//! - A list of [labels][Label] indicating contextual source spans the diagnostic is
+//!   about.
+//!
+//! Here is an example for the creation of an error diagnostic:
+//!
+//! ```
+//! # use sidex_diagnostics::Diagnostic;
+//! Diagnostic::error("This is a custom error message!");
+//! ```
+//!
+//! For convenience, diagnostics can also be created from any [`Error`][std::error::Error]
+//! with the [`Into`] conversion trait. In particular, this enable the usage of `?` to
+//! turn arbitrary errors which may occur into diagnostics. Note that the resulting
+//! diagnostics do not have a primary source span. In fact, they represent an error
+//! independent of any Sidex source file.
+//!
+//!
+//! ## Emitting Diagnostics
+//!
+//! Diagnostics are *emitted* with the [`emit`][Diagnostic::emit] method. Emitting
+//! requires an active *diagnostic context* ([`DiagnosticCtx`]). A diagnostic context is
+//! responsible for collecting multiple diagnostics. Here is an example:
+//!
+//! ```
+//! # use sidex_diagnostics::{Diagnostic, DiagnosticCtx};
+//! let ctx = DiagnosticCtx::new();
+//! ctx.exec(|| Diagnostic::error("This is a custom error message!").emit());
+//! ```
+//!
+//! Merely creating a diagnostic will do nothing if the diagnostic is not emitted. Among
+//! other things, this means that intermittent error diagnostics can be handled as usual
+//! via [`Result`] without them being collected and displayed.
+//!
+//! Trying to emit a diagnostic outside of an active diagnostic context will panic.
+//!
+//! Most functionality of Sidex assumes to be executed in an active diagnostic context.
+//!
+//!
+//! ## Reports
+//!
+//! To display diagnostics a *report* [`Report`] is produced from a context.
+//!
+//! A report can then be rendered to the standard error output using its
+//! [`eprint`][Report::eprint] method.
 
 use std::{fmt::Debug, panic::Location};
 
@@ -22,37 +78,7 @@ struct DiagnosticCtxInner {
     has_error: bool,
 }
 
-/// A *diagnostic report* is a collection of diagnostic records.
-pub struct Report {
-    inner: DiagnosticCtxInner,
-}
-
-impl Report {
-    pub fn diagnostics(&self) -> impl Iterator<Item = &Diagnostic> {
-        self.inner.diagnostics.iter()
-    }
-
-    pub fn has_error(&self) -> bool {
-        self.inner.has_error
-    }
-
-    fn write_to<W: std::io::Write>(&self, sources: &ir::SourceStorage, writer: &mut W) {
-        let mut cache = render::Cache::new(sources);
-        for diagnostic in self.diagnostics() {
-            let _ = render::render(&mut cache, diagnostic, writer);
-        }
-    }
-
-    pub fn eprint(&self, sources: &ir::SourceStorage) {
-        self.write_to(sources, &mut std::io::stderr());
-    }
-
-    pub fn print(&self, sources: &ir::SourceStorage) {
-        self.write_to(sources, &mut std::io::stdout());
-    }
-}
-
-/// A *diagnostic context* for emitting diagnostics records.
+/// A *diagnostic context* for collecting diagnostics.
 #[derive(Default)]
 pub struct DiagnosticCtx {
     /// The mutex-guarded inner fields.
@@ -60,6 +86,7 @@ pub struct DiagnosticCtx {
 }
 
 impl DiagnosticCtx {
+    /// Creates a new diagnosis context.
     pub fn new() -> Self {
         Self::default()
     }
@@ -67,10 +94,10 @@ impl DiagnosticCtx {
     /// Adds a diagnostic to the context.
     ///
     /// Consumers of the API should use [`Diagnostic::emit`]
-    fn emit(&self, diagnostic: Diagnostic) -> RecordId {
+    fn emit(&self, diagnostic: Diagnostic) -> DiagnosticIdx {
         let mut inner = self.inner.lock();
         inner.has_error |= diagnostic.is_error();
-        let id = RecordId(inner.diagnostics.len());
+        let id = DiagnosticIdx(inner.diagnostics.len());
         inner.diagnostics.push(diagnostic);
         id
     }
@@ -80,6 +107,7 @@ impl DiagnosticCtx {
         CTX.set(self, || closure())
     }
 
+    /// Turns the context into a report.
     pub fn report(self) -> Report {
         Report {
             inner: self.inner.into_inner(),
@@ -87,11 +115,51 @@ impl DiagnosticCtx {
     }
 }
 
-/// A *record id* uniquely identifying a diagnostic record in a diagnostic context.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub struct RecordId(usize);
+/// A *diagnostic report* is a collection of diagnostics.
+///
+/// Can only be created via a diagnosis context.
+pub struct Report {
+    inner: DiagnosticCtxInner,
+}
 
-impl RecordId {
+impl Report {
+    /// The diagnostics of the report.
+    pub fn diagnostics(&self) -> impl Iterator<Item = &Diagnostic> {
+        self.inner.diagnostics.iter()
+    }
+
+    /// Indicates whether there has been an error.
+    pub fn has_error(&self) -> bool {
+        self.inner.has_error
+    }
+
+    /// Writes the complete report to the given *writer*.
+    fn write_to<W: std::io::Write>(&self, sources: &ir::SourceStorage, mut writer: W) {
+        let mut cache = render::Cache::new(sources);
+        for diagnostic in self.diagnostics() {
+            let _ = render::render(&mut cache, diagnostic, &mut writer);
+        }
+    }
+
+    /// Prints the report on the standard error output.
+    pub fn eprint(&self, sources: &ir::SourceStorage) {
+        self.write_to(sources, std::io::stderr());
+    }
+
+    /// Prints the report on the standard output.
+    pub fn print(&self, sources: &ir::SourceStorage) {
+        self.write_to(sources, std::io::stdout());
+    }
+}
+
+/// A *diagnostic index* uniquely identifying a diagnostic in a diagnostic context.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct DiagnosticIdx(usize);
+
+impl DiagnosticIdx {
+    /// Tries to retrieve the diagnostic from the active context.
+    ///
+    /// Invokes the closure with [`None`] if there is no active context.
     fn with<R, C: FnOnce(Option<&Diagnostic>) -> R>(&self, closure: C) -> R {
         if CTX.is_set() {
             CTX.with(|ctx| {
@@ -104,15 +172,15 @@ impl RecordId {
     }
 }
 
-impl From<Diagnostic> for RecordId {
+impl From<Diagnostic> for DiagnosticIdx {
     fn from(diagnostic: Diagnostic) -> Self {
         diagnostic.emit()
     }
 }
 
-impl std::error::Error for RecordId {}
+impl std::error::Error for DiagnosticIdx {}
 
-impl std::fmt::Display for RecordId {
+impl std::fmt::Display for DiagnosticIdx {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.with(|diagnostic| {
             if let Some(diagnostic) = diagnostic {
@@ -132,8 +200,8 @@ pub enum Severity {
     Error,
     /// The diagnostic is a warning.
     Warning,
-    /// The diagnostic is a note.
-    Note,
+    /// The diagnostic is a hint.
+    Hint,
 }
 
 impl std::fmt::Display for Severity {
@@ -142,30 +210,7 @@ impl std::fmt::Display for Severity {
     }
 }
 
-#[derive(Debug)]
-pub struct Label {
-    span: ir::Span,
-    message: String,
-}
-
-impl Label {
-    pub fn new<M: ToString>(span: ir::Span, message: M) -> Self {
-        Self {
-            span,
-            message: message.to_string(),
-        }
-    }
-
-    pub fn span(&self) -> &ir::Span {
-        &self.span
-    }
-
-    pub fn message(&self) -> &str {
-        self.message.as_str()
-    }
-}
-
-/// A *diagnostic record* with a *severity* and a *message*.
+/// A *diagnostic* with a *severity* and a *message*.
 #[derive(Debug)]
 pub struct Diagnostic {
     /// The diagnostic severity.
@@ -178,9 +223,9 @@ pub struct Diagnostic {
     emitted_at: Option<Location<'static>>,
     /// Errors attached to the diagnostic.
     errors: Vec<anyhow::Error>,
-    /// The span the record corresponds to.
+    /// The primary source span the diagnostic is about.
     span: Option<ir::Span>,
-    /// Labels attached to the record.
+    /// Labels attached to contextually relevant source spans.
     labels: Vec<Label>,
 }
 
@@ -232,11 +277,11 @@ impl Diagnostic {
         Self::new(Severity::Warning, message)
     }
 
-    /// Creates a new note diagnostic with the given *message*.
+    /// Creates a new hint diagnostic with the given *message*.
     #[must_use]
     #[track_caller]
-    pub fn note<M: ToString>(message: M) -> Self {
-        Self::new(Severity::Note, message)
+    pub fn hint<M: ToString>(message: M) -> Self {
+        Self::new(Severity::Hint, message)
     }
 
     /// The errors attached to the diagnostic.
@@ -269,12 +314,12 @@ impl Diagnostic {
         self
     }
 
-    /// Attaches a label to the diagnostic record.
+    /// Attaches a label to the diagnostic.
     pub fn attach_label(&mut self, label: Label) {
         self.labels.push(label)
     }
 
-    /// Attaches a label to the diagnostic record.
+    /// Attaches a label to the diagnostic.
     #[must_use]
     pub fn with_label(mut self, label: Label) -> Self {
         self.attach_label(label);
@@ -287,22 +332,13 @@ impl Diagnostic {
     ///
     /// This function panics when called outside of a diagnostic context.
     #[track_caller]
-    pub fn emit(mut self) -> RecordId {
+    pub fn emit(mut self) -> DiagnosticIdx {
         self.emitted_at = Some(Location::caller().clone());
         if CTX.is_set() {
             CTX.with(|ctx| ctx.emit(self))
         } else {
             panic!("Cannot emit diagnostic outside of diagnostic context!");
         }
-    }
-
-    /// Format the diagnostic.
-    pub(crate) fn _fmt(
-        &self,
-        _unit: &ir::Unit,
-        _writer: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        todo!()
     }
 }
 
@@ -326,8 +362,34 @@ impl<E: 'static + Send + Sync + std::error::Error> From<E> for Diagnostic {
     }
 }
 
-/// An *error* is a diagnostic record.
-pub type Error = Diagnostic;
+/// A *diagnostic label* attached to a source span.
+#[derive(Debug)]
+pub struct Label {
+    /// The source span.
+    span: ir::Span,
+    /// The message.
+    message: String,
+}
 
-/// A result type based on [`Error`].
-pub type Result<T> = std::result::Result<T, Error>;
+impl Label {
+    /// Creates a new label.
+    pub fn new<M: ToString>(span: ir::Span, message: M) -> Self {
+        Self {
+            span,
+            message: message.to_string(),
+        }
+    }
+
+    /// The span of the label.
+    pub fn span(&self) -> &ir::Span {
+        &self.span
+    }
+
+    /// The message of the label.
+    pub fn message(&self) -> &str {
+        self.message.as_str()
+    }
+}
+
+/// A result type with [`Diagnostic`] as error type.
+pub type Result<T> = std::result::Result<T, Diagnostic>;

@@ -158,7 +158,7 @@ pub struct TypeAttrs {
 }
 
 impl TryFrom<&[ir::Attr]> for TypeAttrs {
-    type Error = sidex_diagnostics::Error;
+    type Error = sidex_diagnostics::Diagnostic;
 
     fn try_from(value: &[ir::Attr]) -> std::result::Result<Self, Self::Error> {
         let mut attrs = TypeAttrs::default();

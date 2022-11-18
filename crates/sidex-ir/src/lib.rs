@@ -257,3 +257,19 @@ impl Source {
         Span::new(self.idx, pos, pos + 1)
     }
 }
+
+pub trait Spanned {
+    fn span(&self) -> Span;
+}
+
+impl Spanned for Span {
+    fn span(&self) -> Span {
+        self.clone()
+    }
+}
+
+impl Spanned for &Span {
+    fn span(&self) -> Span {
+        (*self).clone()
+    }
+}

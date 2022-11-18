@@ -14,7 +14,7 @@ ariadne = "0.1"  # PRIVATE
 scoped-tls = "1"  # PRIVATE
 # Required for locks and other concurreny primitives.
 parking_lot = "0.12"  # PRIVATE
-# Required for handling error types.
-anyhow = "1"
+# Required for wrapping and handling generic errors.
+anyhow = "1"  # PRIVATE
 # Required for Sidex IR data structures.
 sidex-ir = { path = "../sidex-ir" }  # PUBLIC

@@ -6,15 +6,20 @@ use sidex_ir as ir;
 
 use crate::{Diagnostic, Severity};
 
+/// Source identifier for identifying an Ariadne source in [`Cache`].
 type SourceId = Option<ir::SourceIdx>;
 
+/// A source cache for Ariadne based on [`ir::SourceStorage`].
 pub(crate) struct Cache<'s> {
+    /// The underlying source storage.
     sources: &'s ir::SourceStorage,
+    /// The cache for [`ariadne::Source`].
     cache: HashMap<SourceId, ariadne::Source>,
 }
 
 impl<'s> Cache<'s> {
-    pub fn new(sources: &'s ir::SourceStorage) -> Self {
+    /// Creates a new cache from the given source storage.
+    pub(crate) fn new(sources: &'s ir::SourceStorage) -> Self {
         Self {
             sources,
             cache: Default::default(),
@@ -45,9 +50,13 @@ impl<'s> ariadne::Cache<SourceId> for Cache<'s> {
     }
 }
 
+/// A source span implementing [`ariadne::Span`].
 struct Span {
+    /// The source id of the span.
     src: SourceId,
+    /// The first character of the span.
     start: usize,
+    /// The last character of the span.
     end: usize,
 }
 
@@ -77,19 +86,24 @@ impl ariadne::Span for Span {
     }
 }
 
-pub(crate) fn report_kind(severity: &Severity) -> ariadne::ReportKind {
+/// Converts a diagnostic severity to [`ariadne::ReportKind`].
+///
+/// We cannot implement a conversion trait because [`ariadne`] is a private dependency.
+fn to_report_kind(severity: &Severity) -> ariadne::ReportKind {
     match severity {
         Severity::Error => ariadne::ReportKind::Error,
         Severity::Warning => ariadne::ReportKind::Warning,
-        Severity::Note => ariadne::ReportKind::Advice,
+        Severity::Hint => ariadne::ReportKind::Advice,
     }
 }
 
+/// Renders a diagnostic to the given *writer* using the given *cache*.
 pub(crate) fn render<'u, W: std::io::Write>(
     cache: &mut Cache<'u>,
     diagnostic: &Diagnostic,
-    writer: &mut W,
+    mut writer: W,
 ) -> std::io::Result<()> {
+    // 1️⃣ Print the main part of the diagnostic with Ariadne.
     let src_id = diagnostic.span.as_ref().map(|span| span.src);
     let offset = diagnostic
         .span
@@ -97,21 +111,30 @@ pub(crate) fn render<'u, W: std::io::Write>(
         .map(|span| span.start)
         .unwrap_or_default();
     let mut builder =
-        ariadne::Report::<Span>::build(report_kind(&diagnostic.severity), src_id, offset)
-            .with_message(diagnostic.message());
+        ariadne::Report::<Span>::build(to_report_kind(&diagnostic.severity), src_id, offset);
+    builder.set_message(diagnostic.message());
     builder.add_labels(diagnostic.labels.iter().map(|label| {
         ariadne::Label::new(label.span().clone().into()).with_message(&label.message)
     }));
-    let mut note = String::new();
+    builder.finish().write(cache, &mut writer)?;
+
+    // 2️⃣ Print the associated errors.
     if !diagnostic.errors.is_empty() {
-        note.push_str("Associated Errors:\n");
-        for error in diagnostic.errors() {
-            note.push_str("\n");
-            note.push_str(&error.to_string());
+        write!(writer, "\nAssociated Errors:")?;
+        for (idx, error) in diagnostic.errors().enumerate() {
+            write!(writer, "\n   {}: {}", idx, error)?;
         }
-    }
-    if !note.is_empty() {
-        builder.set_note(note);
-    }
-    builder.finish().write(cache, writer)
+        write!(writer, "\n\n")?;
+    };
+
+    // 3️⃣ Print further useful information.
+    write!(
+        writer,
+        "\nCreated At:\n   {}:{}:{}\n\n",
+        diagnostic.created_at.file(),
+        diagnostic.created_at.line(),
+        diagnostic.created_at.column()
+    )?;
+
+    Ok(())
 }
