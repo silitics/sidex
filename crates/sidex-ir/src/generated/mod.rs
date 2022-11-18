@@ -1,6 +1,6 @@
 /* GENERATED WITH SIDEX. DO NOT MODIFY! */
 
-pub mod reflect {
+pub mod ir {
     #[doc = "Uniquely identifies a source in a unit.\n"]
     #[derive(
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,

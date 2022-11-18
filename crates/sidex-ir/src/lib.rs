@@ -18,7 +18,7 @@ use std::{
 
 mod generated;
 
-pub use generated::reflect::*;
+pub use generated::ir::*;
 
 impl From<usize> for BundleIdx {
     fn from(idx: usize) -> Self {
