@@ -2,443 +2,785 @@
 source: crates/sidex-syntax/src/tokens.rs
 expression: result
 ---
-(
-    Some(
-        [
-            Token {
-                kind: Doc {
-                    doc: " The main API service.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
+Some(
+    [
+        Token {
+            kind: Keyword(
+                IMPORT,
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 0..26,
+                    start: 0,
+                    end: 6,
                 },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 7,
+                    end: 8,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 8,
+                    end: 9,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "data",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 9,
+                    end: 13,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 13,
+                    end: 14,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 14,
+                    end: 15,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "ids",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 15,
+                    end: 18,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " The main API service.",
+                kind: Preceding,
             },
-            Token {
-                kind: Keyword(
-                    SERVICE,
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 20,
+                    end: 46,
+                },
+            ),
+        },
+        Token {
+            kind: Keyword(
+                SERVICE,
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 46,
+                    end: 53,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "ListManager",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 54,
+                    end: 65,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Brace,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 26..33,
+                    start: 66,
+                    end: 67,
                 },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " Lookup a person by it's id.",
+                kind: Preceding,
             },
-            Token {
-                kind: Identifier(
-                    "ListManager",
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 72,
+                    end: 104,
+                },
+            ),
+        },
+        Token {
+            kind: Keyword(
+                FUN,
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 108,
+                    end: 111,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "get_person_by_id",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 112,
+                    end: 128,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 34..45,
+                    start: 128,
+                    end: 129,
                 },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Brace,
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "id",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
                     ),
+                    start: 129,
+                    end: 131,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 131,
+                    end: 132,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "ids",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 133,
+                    end: 136,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 136,
+                    end: 137,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 137,
+                    end: 138,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "PersonId",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 138,
+                    end: 146,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 46..47,
+                    start: 146,
+                    end: 147,
                 },
-            },
-            Token {
-                kind: Doc {
-                    doc: " Lookup a person by it's id.",
-                    kind: Preceding,
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Minus,
+                    is_composed: true,
                 },
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 52..84,
+                    start: 148,
+                    end: 149,
                 },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: AngleClose,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 149,
+                    end: 150,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 151,
+                    end: 152,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 152,
+                    end: 153,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "data",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 153,
+                    end: 157,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 157,
+                    end: 158,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 158,
+                    end: 159,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "person",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 159,
+                    end: 165,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 165,
+                    end: 166,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 166,
+                    end: 167,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "GetPersonResult",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 167,
+                    end: 182,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " Change completion status.",
+                kind: Preceding,
             },
-            Token {
-                kind: Keyword(
-                    FUN,
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 188,
+                    end: 218,
+                },
+            ),
+        },
+        Token {
+            kind: Keyword(
+                FUN,
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 222,
+                    end: 225,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "set_completed",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 226,
+                    end: 239,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 88..91,
+                    start: 239,
+                    end: 240,
                 },
-            },
-            Token {
-                kind: Identifier(
-                    "get_person_by_id",
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "id",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 240,
+                    end: 242,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 242,
+                    end: 243,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "ids",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 244,
+                    end: 247,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 247,
+                    end: 248,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 248,
+                    end: 249,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "TaskId",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 249,
+                    end: 255,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 255,
+                    end: 256,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "completed",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 257,
+                    end: 266,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: QuestionMark,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 266,
+                    end: 267,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 267,
+                    end: 268,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "bool",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 269,
+                    end: 273,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 92..108,
+                    start: 273,
+                    end: 274,
                 },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Parenthesis,
-                    ),
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Brace,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 108..109,
+                    start: 275,
+                    end: 276,
                 },
-            },
-            Token {
-                kind: Identifier(
-                    "id",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 109..111,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 111..112,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "ids",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 113..116,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: true,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 116..117,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 117..118,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "PersonId",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 118..126,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 126..127,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Minus,
-                        is_composed: true,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 128..129,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: AngleClose,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 129..130,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "GetPersonResult",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 131..146,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " Change completion status.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 152..182,
-                },
-            },
-            Token {
-                kind: Keyword(
-                    FUN,
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 186..189,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "set_completed",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 190..203,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 203..204,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "id",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 204..206,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 206..207,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "ids",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 208..211,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: true,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 211..212,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 212..213,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "TaskId",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 213..219,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 219..220,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "completed",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 221..230,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: QuestionMark,
-                        is_composed: true,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 230..231,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 231..232,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "bool",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 233..237,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 237..238,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 239..240,
-                },
-            },
-        ],
-    ),
-    [],
+            ),
+        },
+    ],
 )

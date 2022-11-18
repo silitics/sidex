@@ -11,7 +11,7 @@ use plugins::Plugin;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use serde::{de::IntoDeserializer, Deserialize};
-use sidex_gen::{ir, Generator, Job};
+use sidex_gen::{diagnostics, diagnostics::Result, ir, Generator, Job};
 
 pub mod config;
 pub mod context;
@@ -35,14 +35,14 @@ impl RustGenerator {
         cfg: &Config,
         unit: &ir::Unit,
         bundle: ir::BundleIdx,
-    ) -> Result<TokenStream, ()> {
+    ) -> diagnostics::Result<TokenStream> {
         let bundle = &unit[bundle];
         let bundle_ctx = BundleCtx { cfg, unit, bundle };
         let bundle_preambles = self
             .plugins
             .iter()
             .map(|plugin| plugin.visit_bundle(&bundle_ctx))
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Result<Vec<_>>>()?;
         let schemas = bundle
             .schemas
             .iter()
@@ -56,7 +56,7 @@ impl RustGenerator {
                     .plugins
                     .iter()
                     .map(|plugin| plugin.visit_schema(&schema_ctx))
-                    .collect::<Result<Vec<_>, _>>()?;
+                    .collect::<Result<Vec<_>>>()?;
                 let defs = schema
                     .defs
                     .iter()
@@ -65,12 +65,12 @@ impl RustGenerator {
                             .plugins
                             .iter()
                             .map(|plugin| plugin.visit_def(&schema_ctx, def))
-                            .collect::<Result<Vec<_>, _>>()?;
+                            .collect::<Result<Vec<_>>>()?;
                         Ok(quote! {
                             #(#parts)*
                         })
                     })
-                    .collect::<Result<Vec<_>, _>>()?;
+                    .collect::<Result<Vec<_>>>()?;
                 Ok(quote! {
                     pub mod #name {
                         #(#schema_preambles)*
@@ -78,7 +78,7 @@ impl RustGenerator {
                     }
                 })
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Result<Vec<_>>>()?;
         Ok(quote! {
             #(#bundle_preambles)*
             #(#schemas)*
@@ -87,7 +87,7 @@ impl RustGenerator {
 }
 
 impl Generator for RustGenerator {
-    fn generate(&self, job: Job) -> Result<(), Box<dyn std::error::Error>> {
+    fn generate(&self, job: Job) -> diagnostics::Result<()> {
         let mod_path = job.output.join("mod.rs");
 
         let mut config = Option::<Config>::deserialize(job.config.clone().into_deserializer())
@@ -109,8 +109,7 @@ impl Generator for RustGenerator {
         mod_code.push_str("/* GENERATED WITH SIDEX. DO NOT MODIFY! */\n\n");
         mod_code.push_str(
             &generator
-                .generate_bundle_inner(&config, job.unit, job.bundle)
-                .map_err(|err| format!("{err:?}"))?
+                .generate_bundle_inner(&config, job.unit, job.bundle)?
                 .to_string(),
         );
 

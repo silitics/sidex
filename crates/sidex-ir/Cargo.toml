@@ -8,4 +8,5 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
+# Required for serializing and deserializing Sidex IR.
+serde = { version = "1", features = ["derive"] }  # PUBLIC

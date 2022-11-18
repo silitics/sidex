@@ -14,6 +14,8 @@ ariadne = "0.1"  # PRIVATE
 chumsky = "0.8"  # PRIVATE
 # Required for defining error types.
 thiserror = "1"  # PRIVATE
+sidex-ir = { path = "../sidex-ir" }
+sidex-diagnostics = { path = "../sidex-diagnostics" }
 
 [dev-dependencies]
 # Required for snapshot testing.

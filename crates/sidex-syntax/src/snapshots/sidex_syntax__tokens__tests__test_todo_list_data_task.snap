@@ -2,715 +2,883 @@
 source: crates/sidex-syntax/src/tokens.rs
 expression: result
 ---
-(
-    Some(
-        [
-            Token {
-                kind: Doc {
-                    doc: " Data structures for tasks.",
-                    kind: Inline,
-                },
-                span: Span {
-                    src: SourceId(
+Some(
+    [
+        Token {
+            kind: Doc {
+                doc: " Data structures for tasks.",
+                kind: Inline,
+            },
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 0..31,
+                    start: 0,
+                    end: 31,
                 },
+            ),
+        },
+        Token {
+            kind: Keyword(
+                IMPORT,
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 32,
+                    end: 38,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "ids",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 39,
+                    end: 42,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 42,
+                    end: 43,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 43,
+                    end: 44,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "PersonId",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 44,
+                    end: 52,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " The status of a task.",
+                kind: Preceding,
             },
-            Token {
-                kind: Keyword(
-                    IMPORT,
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 54,
+                    end: 80,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Hash,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 80,
+                    end: 81,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Bracket,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 32..38,
+                    start: 81,
+                    end: 82,
                 },
-            },
-            Token {
-                kind: Identifier(
-                    "ids",
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "json",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 82,
+                    end: 86,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 39..42,
+                    start: 86,
+                    end: 87,
                 },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: true,
-                    },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "tagged",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 87,
+                    end: 93,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 42..43,
+                    start: 93,
+                    end: 94,
                 },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "plain",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 94,
+                    end: 99,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 43..44,
+                    start: 99,
+                    end: 100,
                 },
-            },
-            Token {
-                kind: Identifier(
-                    "PersonId",
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 44..52,
+                    start: 100,
+                    end: 101,
                 },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The status of a task.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 54..80,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Hash,
-                        is_composed: false,
-                    },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Bracket,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 80..81,
+                    start: 101,
+                    end: 102,
                 },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Bracket,
+            ),
+        },
+        Token {
+            kind: Keyword(
+                VARIANT,
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
                     ),
+                    start: 103,
+                    end: 110,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "Status",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 111,
+                    end: 117,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Brace,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 81..82,
+                    start: 118,
+                    end: 119,
                 },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " The task is still pending.",
+                kind: Preceding,
             },
-            Token {
-                kind: Identifier(
-                    "json",
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 124,
+                    end: 155,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "Pending",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 159,
+                    end: 166,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 166,
+                    end: 167,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " The task is currently in progress.",
+                kind: Preceding,
+            },
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 172,
+                    end: 211,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "InProgress",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 215,
+                    end: 225,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 225,
+                    end: 226,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " The task has been completed.",
+                kind: Preceding,
+            },
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 231,
+                    end: 264,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "Done",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 268,
+                    end: 272,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 272,
+                    end: 273,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Brace,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 82..86,
+                    start: 274,
+                    end: 275,
                 },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " A task.",
+                kind: Preceding,
             },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Parenthesis,
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
                     ),
+                    start: 277,
+                    end: 289,
+                },
+            ),
+        },
+        Token {
+            kind: Keyword(
+                RECORD,
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 289,
+                    end: 295,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "Task",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 296,
+                    end: 300,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Brace,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 86..87,
+                    start: 301,
+                    end: 302,
                 },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " The name of the task.",
+                kind: Preceding,
             },
-            Token {
-                kind: Identifier(
-                    "tagged",
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 307,
+                    end: 333,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "name",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 337,
+                    end: 341,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 341,
+                    end: 342,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "string",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 343,
+                    end: 349,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 349,
+                    end: 350,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " The status of the task.",
+                kind: Preceding,
+            },
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 355,
+                    end: 383,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "status",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 387,
+                    end: 393,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 393,
+                    end: 394,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "Status",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 395,
+                    end: 401,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 401,
+                    end: 402,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " An optional description of the task.",
+                kind: Preceding,
+            },
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 407,
+                    end: 448,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "description",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 452,
+                    end: 463,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: QuestionMark,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 463,
+                    end: 464,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 464,
+                    end: 465,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "string",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 466,
+                    end: 472,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 472,
+                    end: 473,
+                },
+            ),
+        },
+        Token {
+            kind: Doc {
+                doc: " An optional person assigned to the task.",
+                kind: Preceding,
+            },
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 482,
+                    end: 527,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "assigned_to",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 531,
+                    end: 542,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: QuestionMark,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 542,
+                    end: 543,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 543,
+                    end: 544,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                "PersonId",
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 545,
+                    end: 553,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 553,
+                    end: 554,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Brace,
                 ),
-                span: Span {
-                    src: SourceId(
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
                         0,
                     ),
-                    range: 87..93,
+                    start: 555,
+                    end: 556,
                 },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 93..94,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "plain",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 94..99,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 99..100,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Parenthesis,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 100..101,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Bracket,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 101..102,
-                },
-            },
-            Token {
-                kind: Keyword(
-                    VARIANT,
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 103..110,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Status",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 111..117,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 118..119,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The task is still pending.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 124..155,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Pending",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 159..166,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 166..167,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The task is currently in progress.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 172..211,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "InProgress",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 215..225,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 225..226,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The task has been completed.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 231..264,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Done",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 268..272,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 272..273,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 274..275,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " A task.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 277..289,
-                },
-            },
-            Token {
-                kind: Keyword(
-                    RECORD,
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 289..295,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Task",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 296..300,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Open(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 301..302,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The name of the task.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 307..333,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "name",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 337..341,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 341..342,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "string",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 343..349,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 349..350,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " The status of the task.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 355..383,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "status",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 387..393,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 393..394,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "Status",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 395..401,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 401..402,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " An optional description of the task.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 407..448,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "description",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 452..463,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: QuestionMark,
-                        is_composed: true,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 463..464,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 464..465,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "string",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 466..472,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 472..473,
-                },
-            },
-            Token {
-                kind: Doc {
-                    doc: " An optional person assigned to the task.",
-                    kind: Preceding,
-                },
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 482..527,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "assigned_to",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 531..542,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: QuestionMark,
-                        is_composed: true,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 542..543,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Colon,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 543..544,
-                },
-            },
-            Token {
-                kind: Identifier(
-                    "PersonId",
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 545..553,
-                },
-            },
-            Token {
-                kind: Punctuation(
-                    PunctuationSymbol {
-                        kind: Comma,
-                        is_composed: false,
-                    },
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 553..554,
-                },
-            },
-            Token {
-                kind: Delimiter(
-                    Close(
-                        Brace,
-                    ),
-                ),
-                span: Span {
-                    src: SourceId(
-                        0,
-                    ),
-                    range: 555..556,
-                },
-            },
-        ],
-    ),
-    [],
+            ),
+        },
+    ],
 )

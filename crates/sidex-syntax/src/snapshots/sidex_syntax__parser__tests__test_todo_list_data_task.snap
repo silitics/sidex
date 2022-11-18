@@ -9,12 +9,15 @@ Some(
             [
                 Node {
                     inner: " Data structures for tasks.",
-                    span: Span {
-                        src: SourceId(
-                            0,
-                        ),
-                        range: 0..31,
-                    },
+                    span: Span(
+                        Span {
+                            src: SourceIdx(
+                                0,
+                            ),
+                            start: 0,
+                            end: 31,
+                        },
+                    ),
                 },
             ],
         ),
@@ -27,23 +30,29 @@ Some(
                                 Identifier(
                                     Node {
                                         inner: "ids",
-                                        span: Span {
-                                            src: SourceId(
-                                                0,
-                                            ),
-                                            range: 39..42,
-                                        },
+                                        span: Span(
+                                            Span {
+                                                src: SourceIdx(
+                                                    0,
+                                                ),
+                                                start: 39,
+                                                end: 42,
+                                            },
+                                        ),
                                     },
                                 ),
                                 Identifier(
                                     Node {
                                         inner: "PersonId",
-                                        span: Span {
-                                            src: SourceId(
-                                                0,
-                                            ),
-                                            range: 44..52,
-                                        },
+                                        span: Span(
+                                            Span {
+                                                src: SourceIdx(
+                                                    0,
+                                                ),
+                                                start: 44,
+                                                end: 52,
+                                            },
+                                        ),
                                     },
                                 ),
                             ],
@@ -57,94 +66,110 @@ Some(
                     name: Identifier(
                         Node {
                             inner: "Status",
-                            span: Span {
-                                src: SourceId(
-                                    0,
-                                ),
-                                range: 111..117,
-                            },
+                            span: Span(
+                                Span {
+                                    src: SourceIdx(
+                                        0,
+                                    ),
+                                    start: 111,
+                                    end: 117,
+                                },
+                            ),
                         },
                     ),
                     docs: Docs(
                         [
                             Node {
                                 inner: " The status of a task.",
-                                span: Span {
-                                    src: SourceId(
-                                        0,
-                                    ),
-                                    range: 54..80,
-                                },
+                                span: Span(
+                                    Span {
+                                        src: SourceIdx(
+                                            0,
+                                        ),
+                                        start: 54,
+                                        end: 80,
+                                    },
+                                ),
                             },
                         ],
                     ),
                     vars: [],
                     attrs: [
                         Attr {
-                            name: Identifier(
-                                Node {
-                                    inner: "json",
-                                    span: Span {
-                                        src: SourceId(
-                                            0,
-                                        ),
-                                        range: 82..86,
+                            kind: List(
+                                AttrList {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: "json",
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 82,
+                                                            end: 86,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
                                     },
-                                },
-                            ),
-                            args: Some(
-                                TokenStream(
-                                    [
-                                        Token {
-                                            kind: Identifier(
-                                                "tagged",
+                                    elements: [
+                                        Attr {
+                                            kind: List(
+                                                AttrList {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "tagged",
+                                                                    span: Span(
+                                                                        Span {
+                                                                            src: SourceIdx(
+                                                                                0,
+                                                                            ),
+                                                                            start: 87,
+                                                                            end: 93,
+                                                                        },
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    elements: [
+                                                        Attr {
+                                                            kind: Path(
+                                                                Path {
+                                                                    segments: [
+                                                                        Identifier(
+                                                                            Node {
+                                                                                inner: "plain",
+                                                                                span: Span(
+                                                                                    Span {
+                                                                                        src: SourceIdx(
+                                                                                            0,
+                                                                                        ),
+                                                                                        start: 94,
+                                                                                        end: 99,
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                    is_absolute: false,
+                                                                },
+                                                            ),
+                                                        },
+                                                    ],
+                                                },
                                             ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 87..93,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Delimiter(
-                                                Open(
-                                                    Parenthesis,
-                                                ),
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 93..94,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Identifier(
-                                                "plain",
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 94..99,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Delimiter(
-                                                Close(
-                                                    Parenthesis,
-                                                ),
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 99..100,
-                                            },
                                         },
                                     ],
-                                ),
+                                },
                             ),
                         },
                     ],
@@ -155,24 +180,30 @@ Some(
                                     name: Identifier(
                                         Node {
                                             inner: "Pending",
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 159..166,
-                                            },
+                                            span: Span(
+                                                Span {
+                                                    src: SourceIdx(
+                                                        0,
+                                                    ),
+                                                    start: 159,
+                                                    end: 166,
+                                                },
+                                            ),
                                         },
                                     ),
                                     docs: Docs(
                                         [
                                             Node {
                                                 inner: " The task is still pending.",
-                                                span: Span {
-                                                    src: SourceId(
-                                                        0,
-                                                    ),
-                                                    range: 124..155,
-                                                },
+                                                span: Span(
+                                                    Span {
+                                                        src: SourceIdx(
+                                                            0,
+                                                        ),
+                                                        start: 124,
+                                                        end: 155,
+                                                    },
+                                                ),
                                             },
                                         ],
                                     ),
@@ -183,24 +214,30 @@ Some(
                                     name: Identifier(
                                         Node {
                                             inner: "InProgress",
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 215..225,
-                                            },
+                                            span: Span(
+                                                Span {
+                                                    src: SourceIdx(
+                                                        0,
+                                                    ),
+                                                    start: 215,
+                                                    end: 225,
+                                                },
+                                            ),
                                         },
                                     ),
                                     docs: Docs(
                                         [
                                             Node {
                                                 inner: " The task is currently in progress.",
-                                                span: Span {
-                                                    src: SourceId(
-                                                        0,
-                                                    ),
-                                                    range: 172..211,
-                                                },
+                                                span: Span(
+                                                    Span {
+                                                        src: SourceIdx(
+                                                            0,
+                                                        ),
+                                                        start: 172,
+                                                        end: 211,
+                                                    },
+                                                ),
                                             },
                                         ],
                                     ),
@@ -211,24 +248,30 @@ Some(
                                     name: Identifier(
                                         Node {
                                             inner: "Done",
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 268..272,
-                                            },
+                                            span: Span(
+                                                Span {
+                                                    src: SourceIdx(
+                                                        0,
+                                                    ),
+                                                    start: 268,
+                                                    end: 272,
+                                                },
+                                            ),
                                         },
                                     ),
                                     docs: Docs(
                                         [
                                             Node {
                                                 inner: " The task has been completed.",
-                                                span: Span {
-                                                    src: SourceId(
-                                                        0,
-                                                    ),
-                                                    range: 231..264,
-                                                },
+                                                span: Span(
+                                                    Span {
+                                                        src: SourceIdx(
+                                                            0,
+                                                        ),
+                                                        start: 231,
+                                                        end: 264,
+                                                    },
+                                                ),
                                             },
                                         ],
                                     ),
@@ -245,24 +288,30 @@ Some(
                     name: Identifier(
                         Node {
                             inner: "Task",
-                            span: Span {
-                                src: SourceId(
-                                    0,
-                                ),
-                                range: 296..300,
-                            },
+                            span: Span(
+                                Span {
+                                    src: SourceIdx(
+                                        0,
+                                    ),
+                                    start: 296,
+                                    end: 300,
+                                },
+                            ),
                         },
                     ),
                     docs: Docs(
                         [
                             Node {
                                 inner: " A task.",
-                                span: Span {
-                                    src: SourceId(
-                                        0,
-                                    ),
-                                    range: 277..289,
-                                },
+                                span: Span(
+                                    Span {
+                                        src: SourceIdx(
+                                            0,
+                                        ),
+                                        start: 277,
+                                        end: 289,
+                                    },
+                                ),
                             },
                         ],
                     ),
@@ -275,24 +324,30 @@ Some(
                                     name: Identifier(
                                         Node {
                                             inner: "name",
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 337..341,
-                                            },
+                                            span: Span(
+                                                Span {
+                                                    src: SourceIdx(
+                                                        0,
+                                                    ),
+                                                    start: 337,
+                                                    end: 341,
+                                                },
+                                            ),
                                         },
                                     ),
                                     docs: Docs(
                                         [
                                             Node {
                                                 inner: " The name of the task.",
-                                                span: Span {
-                                                    src: SourceId(
-                                                        0,
-                                                    ),
-                                                    range: 307..333,
-                                                },
+                                                span: Span(
+                                                    Span {
+                                                        src: SourceIdx(
+                                                            0,
+                                                        ),
+                                                        start: 307,
+                                                        end: 333,
+                                                    },
+                                                ),
                                             },
                                         ],
                                     ),
@@ -304,12 +359,15 @@ Some(
                                                     Identifier(
                                                         Node {
                                                             inner: "string",
-                                                            span: Span {
-                                                                src: SourceId(
-                                                                    0,
-                                                                ),
-                                                                range: 343..349,
-                                                            },
+                                                            span: Span(
+                                                                Span {
+                                                                    src: SourceIdx(
+                                                                        0,
+                                                                    ),
+                                                                    start: 343,
+                                                                    end: 349,
+                                                                },
+                                                            ),
                                                         },
                                                     ),
                                                 ],
@@ -324,24 +382,30 @@ Some(
                                     name: Identifier(
                                         Node {
                                             inner: "status",
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 387..393,
-                                            },
+                                            span: Span(
+                                                Span {
+                                                    src: SourceIdx(
+                                                        0,
+                                                    ),
+                                                    start: 387,
+                                                    end: 393,
+                                                },
+                                            ),
                                         },
                                     ),
                                     docs: Docs(
                                         [
                                             Node {
                                                 inner: " The status of the task.",
-                                                span: Span {
-                                                    src: SourceId(
-                                                        0,
-                                                    ),
-                                                    range: 355..383,
-                                                },
+                                                span: Span(
+                                                    Span {
+                                                        src: SourceIdx(
+                                                            0,
+                                                        ),
+                                                        start: 355,
+                                                        end: 383,
+                                                    },
+                                                ),
                                             },
                                         ],
                                     ),
@@ -353,12 +417,15 @@ Some(
                                                     Identifier(
                                                         Node {
                                                             inner: "Status",
-                                                            span: Span {
-                                                                src: SourceId(
-                                                                    0,
-                                                                ),
-                                                                range: 395..401,
-                                                            },
+                                                            span: Span(
+                                                                Span {
+                                                                    src: SourceIdx(
+                                                                        0,
+                                                                    ),
+                                                                    start: 395,
+                                                                    end: 401,
+                                                                },
+                                                            ),
                                                         },
                                                     ),
                                                 ],
@@ -373,24 +440,30 @@ Some(
                                     name: Identifier(
                                         Node {
                                             inner: "description",
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 452..463,
-                                            },
+                                            span: Span(
+                                                Span {
+                                                    src: SourceIdx(
+                                                        0,
+                                                    ),
+                                                    start: 452,
+                                                    end: 463,
+                                                },
+                                            ),
                                         },
                                     ),
                                     docs: Docs(
                                         [
                                             Node {
                                                 inner: " An optional description of the task.",
-                                                span: Span {
-                                                    src: SourceId(
-                                                        0,
-                                                    ),
-                                                    range: 407..448,
-                                                },
+                                                span: Span(
+                                                    Span {
+                                                        src: SourceIdx(
+                                                            0,
+                                                        ),
+                                                        start: 407,
+                                                        end: 448,
+                                                    },
+                                                ),
                                             },
                                         ],
                                     ),
@@ -402,12 +475,15 @@ Some(
                                                     Identifier(
                                                         Node {
                                                             inner: "string",
-                                                            span: Span {
-                                                                src: SourceId(
-                                                                    0,
-                                                                ),
-                                                                range: 466..472,
-                                                            },
+                                                            span: Span(
+                                                                Span {
+                                                                    src: SourceIdx(
+                                                                        0,
+                                                                    ),
+                                                                    start: 466,
+                                                                    end: 472,
+                                                                },
+                                                            ),
                                                         },
                                                     ),
                                                 ],
@@ -422,24 +498,30 @@ Some(
                                     name: Identifier(
                                         Node {
                                             inner: "assigned_to",
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 531..542,
-                                            },
+                                            span: Span(
+                                                Span {
+                                                    src: SourceIdx(
+                                                        0,
+                                                    ),
+                                                    start: 531,
+                                                    end: 542,
+                                                },
+                                            ),
                                         },
                                     ),
                                     docs: Docs(
                                         [
                                             Node {
                                                 inner: " An optional person assigned to the task.",
-                                                span: Span {
-                                                    src: SourceId(
-                                                        0,
-                                                    ),
-                                                    range: 482..527,
-                                                },
+                                                span: Span(
+                                                    Span {
+                                                        src: SourceIdx(
+                                                            0,
+                                                        ),
+                                                        start: 482,
+                                                        end: 527,
+                                                    },
+                                                ),
                                             },
                                         ],
                                     ),
@@ -451,12 +533,15 @@ Some(
                                                     Identifier(
                                                         Node {
                                                             inner: "PersonId",
-                                                            span: Span {
-                                                                src: SourceId(
-                                                                    0,
-                                                                ),
-                                                                range: 545..553,
-                                                            },
+                                                            span: Span(
+                                                                Span {
+                                                                    src: SourceIdx(
+                                                                        0,
+                                                                    ),
+                                                                    start: 545,
+                                                                    end: 553,
+                                                                },
+                                                            ),
                                                         },
                                                     ),
                                                 ],

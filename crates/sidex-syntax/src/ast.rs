@@ -6,10 +6,9 @@ use std::{
     sync::Arc,
 };
 
-use crate::{
-    source::{SourceId, Span},
-    tokens::Token,
-};
+use sidex_ir as ir;
+
+use crate::{span::Span, tokens::Token};
 
 /// A stream of tokens.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -87,18 +86,18 @@ impl<T> Node<T> {
     }
 
     /// The source id of the node.
-    pub fn src(this: &Self) -> &SourceId {
-        this.span.src()
+    pub fn src(this: &Self) -> &ir::SourceIdx {
+        &this.span.0.src
     }
 
     /// The start position of the node.
     pub fn start(this: &Self) -> usize {
-        this.span.start()
+        this.span.0.start
     }
 
     /// The end position of the node.
     pub fn end(this: &Self) -> usize {
-        this.span.end()
+        this.span.0.end
     }
 }
 

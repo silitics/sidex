@@ -1,9 +1,7 @@
 use dashmap::DashMap;
 use ropey::Rope;
-use sidex_syntax::{
-    source::SourceStorage,
-    tokens::{self, tokenize},
-};
+use sidex_ir as ir;
+use sidex_syntax::tokens::{self, tokenize};
 use tower_lsp::{
     jsonrpc,
     lsp_types::{
@@ -100,13 +98,12 @@ impl LanguageServer for Srv {
 
         let rope = Rope::from_str(source.value().as_str());
 
-        let mut storage = SourceStorage::new();
+        let mut storage = ir::SourceStorage::new();
         let id = storage.insert(source.value().clone(), None);
 
         let mut previous_line = 0;
         let mut previous_start = 0;
         let tokens = tokenize(&storage[id])
-            .0
             .unwrap()
             .iter()
             .filter_map(|token| {

@@ -3,7 +3,7 @@ use std::str::FromStr;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use sidex_attrs::{accept, reject, TryApplyAttr, TryFromAttr};
-use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::{Diagnostic, Result};
 use sidex_ir as ir;
 
 /// `type = "<PATH>"`
@@ -13,7 +13,7 @@ pub struct Type {
 }
 
 impl TryFromAttr for Type {
-    fn try_from_attr(attr: &ir::Attr) -> sidex_attrs::Result<Self> {
+    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
         match &attr.kind {
             ir::AttrKind::Assign(assign) => {
                 if assign.path.as_str() == "type" {
@@ -45,7 +45,7 @@ pub enum Visibility {
 }
 
 impl TryFromAttr for Visibility {
-    fn try_from_attr(attr: &ir::Attr) -> Result<Self, sidex_attrs::Error> {
+    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
         match &attr.kind {
             ir::AttrKind::Path(path) => {
                 match path.as_str() {
@@ -99,7 +99,7 @@ impl Wrapper {
 }
 
 impl TryFromAttr for Wrapper {
-    fn try_from_attr(attr: &ir::Attr) -> Result<Self, sidex_attrs::Error> {
+    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
         match &attr.kind {
             ir::AttrKind::Path(path) => {
                 match path.as_str() {
@@ -130,7 +130,7 @@ pub struct FieldAttrs {
 }
 
 impl TryApplyAttr for FieldAttrs {
-    fn try_apply_attr(&mut self, attr: &ir::Attr) -> Result<(), sidex_attrs::Error> {
+    fn try_apply_attr(&mut self, attr: &ir::Attr) -> Result<()> {
         if let ir::AttrKind::List(list) = &attr.kind {
             if list.path.as_str() == "rust" {
                 for attr in &list.elements {
@@ -158,9 +158,9 @@ pub struct TypeAttrs {
 }
 
 impl TryFrom<&[ir::Attr]> for TypeAttrs {
-    type Error = ();
+    type Error = sidex_diagnostics::Error;
 
-    fn try_from(value: &[ir::Attr]) -> Result<Self, Self::Error> {
+    fn try_from(value: &[ir::Attr]) -> std::result::Result<Self, Self::Error> {
         let mut attrs = TypeAttrs::default();
 
         let mut stack = value

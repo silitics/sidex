@@ -19,6 +19,7 @@ sidex-gen = { path = "../sidex-gen", version = "0.1" }
 sidex-gen-ir = { path = "../sidex-gen-ir", version = "^0.1" }
 sidex-gen-rs = { path = "../sidex-gen-rs", version = "^0.1" }
 sidex-gen-ts = { path = "../sidex-gen-ts", version = "^0.1" }
+sidex-diagnostics = { path = "../sidex-diagnostics" }
 # Required for parsing the command line arguments.
 clap = { version = "4.0", features = ["derive"] }
 # Required for nice and colorful error reporting.

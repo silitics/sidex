@@ -58,7 +58,7 @@ pub mod ir {
         #[doc = "The bundles of the unit.\n"]
         pub bundles: ::std::vec::Vec<Bundle>,
         #[doc = "The sources of the unit.\n"]
-        pub sources: ::std::vec::Vec<Source>,
+        pub sources: SourceStorage,
     }
     impl Unit {
         #[doc = "Creates a new [`Unit`]."]
@@ -79,6 +79,35 @@ pub mod ir {
             self
         }
         #[doc = "Sets the value of `sources`."]
+        pub fn set_sources(&mut self, sources: SourceStorage) -> &mut Self {
+            self.sources = sources;
+            self
+        }
+        #[doc = "Sets the value of `sources`."]
+        pub fn with_sources(mut self, sources: SourceStorage) -> Self {
+            self.sources = sources;
+            self
+        }
+    }
+    impl ::std::default::Default for Unit {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[doc = "A storage for sources.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct SourceStorage {
+        #[doc = ""]
+        pub sources: ::std::vec::Vec<Source>,
+    }
+    impl SourceStorage {
+        #[doc = "Creates a new [`SourceStorage`]."]
+        pub fn new() -> Self {
+            Self {
+                sources: ::std::default::Default::default(),
+            }
+        }
+        #[doc = "Sets the value of `sources`."]
         pub fn set_sources(&mut self, sources: ::std::vec::Vec<Source>) -> &mut Self {
             self.sources = sources;
             self
@@ -89,7 +118,7 @@ pub mod ir {
             self
         }
     }
-    impl ::std::default::Default for Unit {
+    impl ::std::default::Default for SourceStorage {
         fn default() -> Self {
             Self::new()
         }
@@ -97,6 +126,8 @@ pub mod ir {
     #[doc = "A *source* is simply a chunk of text.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Source {
+        #[doc = "The source index of the source.\n"]
+        pub idx: SourceIdx,
         #[doc = "The text of the source.\n"]
         pub text: ::std::string::String,
         #[doc = "The origin of the source, e.g., a filesystem path.\n"]
@@ -104,11 +135,22 @@ pub mod ir {
     }
     impl Source {
         #[doc = "Creates a new [`Source`]."]
-        pub fn new(text: ::std::string::String) -> Self {
+        pub fn new(idx: SourceIdx, text: ::std::string::String) -> Self {
             Self {
+                idx,
                 text,
                 origin: ::std::default::Default::default(),
             }
+        }
+        #[doc = "Sets the value of `idx`."]
+        pub fn set_idx(&mut self, idx: SourceIdx) -> &mut Self {
+            self.idx = idx;
+            self
+        }
+        #[doc = "Sets the value of `idx`."]
+        pub fn with_idx(mut self, idx: SourceIdx) -> Self {
+            self.idx = idx;
+            self
         }
         #[doc = "Sets the value of `text`."]
         pub fn set_text(&mut self, text: ::std::string::String) -> &mut Self {
@@ -1107,7 +1149,7 @@ pub mod ir {
         }
     }
     #[doc = "A *span* identifies a range of text in a source.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
     #[non_exhaustive]
     pub struct Span {
         #[doc = "The source.\n"]

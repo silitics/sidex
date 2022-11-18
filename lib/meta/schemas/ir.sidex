@@ -24,11 +24,19 @@ record Unit {
     /// The bundles of the unit.
     bundles: [Bundle],
     /// The sources of the unit.
+    #[builder(default)]
+    sources: SourceStorage,
+}
+
+/// A storage for sources.
+record SourceStorage {
     sources: [Source]
 }
 
 /// A *source* is simply a chunk of text.
 record Source {
+    /// The source index of the source.
+    idx: SourceIdx,
     /// The text of the source.
     text: string,
     /// The origin of the source, e.g., a filesystem path.
@@ -274,7 +282,10 @@ record Attr {
 }
 
 /// A *span* identifies a range of text in a source.
-#[rust(attr(non_exhaustive))]
+#[rust(
+    derive(PartialEq, Eq, Hash),
+    attr(non_exhaustive)
+)]
 record Span {
     /// The source.
     src: SourceIdx,

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sidex_syntax::source::SourceStorage;
+use sidex_ir as ir;
 
 use crate::bundle::{self, BundleSource};
 
@@ -28,7 +28,7 @@ macro_rules! std_bundle_schemas {
     }};
 }
 
-pub fn std_bundle(storage: &mut SourceStorage) -> BundleSource {
+pub fn std_bundle(storage: &mut ir::SourceStorage) -> BundleSource {
     let manifest = bundle::try_parse_manifest(read_std_bundle_file!("sidex.toml"))
         .expect("Manifest of Sidex standard library should be valid.");
     let schemas = std_bundle_schemas!(storage, ["any", "builtins", "option", "result"]);

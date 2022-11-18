@@ -12,11 +12,10 @@ use std::{
 };
 
 use chumsky::{prelude::*, Stream};
+use sidex_diagnostics::{Diagnostic, Label};
+use sidex_ir as ir;
 
-use crate::{
-    errors::SyntaxError,
-    source::{Source, SourceId, Span},
-};
+use crate::span::Span;
 
 /// A delimiter symbol like `(`, `[`, or `{`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -438,8 +437,8 @@ pub struct Token {
 
 impl Token {
     /// The id of the source the token originates from.
-    pub fn src(&self) -> &SourceId {
-        self.span.src()
+    pub fn src(&self) -> &ir::SourceIdx {
+        &self.span.0.src
     }
 
     /// The start position of the token.
@@ -564,36 +563,72 @@ fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char, Span>> {
     .then_ignore(end())
 }
 
+pub(crate) fn diagnostic_from_error(error: Simple<String, Span>) -> Diagnostic {
+    match error.reason() {
+        chumsky::error::SimpleReason::Unclosed { span, delimiter } => {
+            Diagnostic::error(format!("Unclosed delimiter {}.", delimiter))
+                .with_span(Some(error.span().into()))
+                .with_label(Label::new(
+                    span.clone().into(),
+                    format!("Unclosed delimiter {}.", delimiter),
+                ))
+                .with_label(Label::new(
+                    error.span().into(),
+                    format!(
+                        "Must be closed before {}.",
+                        error.found().unwrap_or(&"end of file".to_string())
+                    ),
+                ))
+        }
+        chumsky::error::SimpleReason::Unexpected => {
+            Diagnostic::error(if error.found().is_some() {
+                "Unexpected token in input.".to_owned()
+            } else {
+                "Unexpected end of input.".to_owned()
+            })
+            .with_span(Some(error.span().into()))
+            .with_label(Label::new(
+                error.span().into(),
+                format!(
+                    "Unexpected token {}",
+                    error.found().unwrap_or(&"end of file".to_string())
+                ),
+            ))
+        }
+        chumsky::error::SimpleReason::Custom(msg) => {
+            Diagnostic::error(msg).with_span(Some(error.span().into()))
+        }
+    }
+}
+
 /// Tokenize a source.
-pub fn tokenize(source: &Source) -> (Option<Vec<Token>>, Vec<SyntaxError>) {
+pub fn tokenize(source: &ir::Source) -> Option<Vec<Token>> {
     let stream = Stream::from_iter(
-        source.end(),
+        Span::from(source.end()),
         source
             .text
             .chars()
             .enumerate()
-            .map(|(pos, c)| (c, source.span_at(pos))),
+            .map(|(pos, c)| (c, source.span_at(pos).into())),
     );
     let (tokens, errors) = lexer().parse_recovery(stream);
-    (
-        tokens,
-        errors
-            .into_iter()
-            .map(|error| SyntaxError(error.map(|c| c.to_string())))
-            .collect(),
-    )
+
+    for error in errors {
+        diagnostic_from_error(error.map(|c| c.to_string())).emit();
+    }
+
+    tokens
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::source::SourceStorage;
 
     macro_rules! make_test_from_file {
         ($name:ident, $path:literal) => {
             #[test]
             fn $name() {
-                let mut storage = SourceStorage::new();
+                let mut storage = ir::SourceStorage::new();
                 let id = storage.insert(include_str!($path).to_owned(), None);
                 let result = tokenize(&storage[id]);
                 insta::assert_debug_snapshot!(stringify!($name), result);

@@ -9,12 +9,15 @@ Some(
             [
                 Node {
                     inner: " Identifiers used across the application.",
-                    span: Span {
-                        src: SourceId(
-                            0,
-                        ),
-                        range: 0..45,
-                    },
+                    span: Span(
+                        Span {
+                            src: SourceIdx(
+                                0,
+                            ),
+                            start: 0,
+                            end: 45,
+                        },
+                    ),
                 },
             ],
         ),
@@ -24,141 +27,185 @@ Some(
                     name: Identifier(
                         Node {
                             inner: "Uuid",
-                            span: Span {
-                                src: SourceId(
-                                    0,
-                                ),
-                                range: 156..160,
-                            },
+                            span: Span(
+                                Span {
+                                    src: SourceIdx(
+                                        0,
+                                    ),
+                                    start: 156,
+                                    end: 160,
+                                },
+                            ),
                         },
                     ),
                     docs: Docs(
                         [
                             Node {
                                 inner: " An *universally unique identifier* (UUID).",
-                                span: Span {
-                                    src: SourceId(
-                                        0,
-                                    ),
-                                    range: 46..93,
-                                },
+                                span: Span(
+                                    Span {
+                                        src: SourceIdx(
+                                            0,
+                                        ),
+                                        start: 46,
+                                        end: 93,
+                                    },
+                                ),
                             },
                         ],
                     ),
                     vars: [],
                     attrs: [
                         Attr {
-                            name: Identifier(
-                                Node {
-                                    inner: "rust",
-                                    span: Span {
-                                        src: SourceId(
-                                            0,
-                                        ),
-                                        range: 95..99,
-                                    },
-                                },
-                            ),
-                            args: Some(
-                                TokenStream(
-                                    [
-                                        Token {
-                                            kind: Identifier(
-                                                "type",
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 100..104,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Punctuation(
-                                                PunctuationSymbol {
-                                                    kind: Equals,
-                                                    is_composed: false,
+                            kind: List(
+                                AttrList {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: "rust",
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 95,
+                                                            end: 99,
+                                                        },
+                                                    ),
                                                 },
                                             ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 105..106,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Literal(
-                                                String(
-                                                    "::uuid::Uuid",
-                                                ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    elements: [
+                                        Attr {
+                                            kind: Assign(
+                                                AttrAssign {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "type",
+                                                                    span: Span(
+                                                                        Span {
+                                                                            src: SourceIdx(
+                                                                                0,
+                                                                            ),
+                                                                            start: 100,
+                                                                            end: 104,
+                                                                        },
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    value: Attr {
+                                                        kind: Tokens(
+                                                            TokenStream(
+                                                                [
+                                                                    Token {
+                                                                        kind: Literal(
+                                                                            String(
+                                                                                "::uuid::Uuid",
+                                                                            ),
+                                                                        ),
+                                                                        span: Span(
+                                                                            Span {
+                                                                                src: SourceIdx(
+                                                                                    0,
+                                                                                ),
+                                                                                start: 107,
+                                                                                end: 121,
+                                                                            },
+                                                                        ),
+                                                                    },
+                                                                ],
+                                                            ),
+                                                        ),
+                                                    },
+                                                },
                                             ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 107..121,
-                                            },
                                         },
                                     ],
-                                ),
+                                },
                             ),
                         },
                         Attr {
-                            name: Identifier(
-                                Node {
-                                    inner: "json",
-                                    span: Span {
-                                        src: SourceId(
-                                            0,
-                                        ),
-                                        range: 126..130,
-                                    },
-                                },
-                            ),
-                            args: Some(
-                                TokenStream(
-                                    [
-                                        Token {
-                                            kind: Identifier(
-                                                "type",
-                                            ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 131..135,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Punctuation(
-                                                PunctuationSymbol {
-                                                    kind: Equals,
-                                                    is_composed: false,
+                            kind: List(
+                                AttrList {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: "json",
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 126,
+                                                            end: 130,
+                                                        },
+                                                    ),
                                                 },
                                             ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 136..137,
-                                            },
-                                        },
-                                        Token {
-                                            kind: Literal(
-                                                String(
-                                                    "string",
-                                                ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    elements: [
+                                        Attr {
+                                            kind: Assign(
+                                                AttrAssign {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: "type",
+                                                                    span: Span(
+                                                                        Span {
+                                                                            src: SourceIdx(
+                                                                                0,
+                                                                            ),
+                                                                            start: 131,
+                                                                            end: 135,
+                                                                        },
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    value: Attr {
+                                                        kind: Tokens(
+                                                            TokenStream(
+                                                                [
+                                                                    Token {
+                                                                        kind: Literal(
+                                                                            String(
+                                                                                "string",
+                                                                            ),
+                                                                        ),
+                                                                        span: Span(
+                                                                            Span {
+                                                                                src: SourceIdx(
+                                                                                    0,
+                                                                                ),
+                                                                                start: 138,
+                                                                                end: 146,
+                                                                            },
+                                                                        ),
+                                                                    },
+                                                                ],
+                                                            ),
+                                                        ),
+                                                    },
+                                                },
                                             ),
-                                            span: Span {
-                                                src: SourceId(
-                                                    0,
-                                                ),
-                                                range: 138..146,
-                                            },
                                         },
                                     ],
-                                ),
+                                },
                             ),
                         },
                     ],
@@ -172,24 +219,30 @@ Some(
                     name: Identifier(
                         Node {
                             inner: "PersonId",
-                            span: Span {
-                                src: SourceId(
-                                    0,
-                                ),
-                                range: 252..260,
-                            },
+                            span: Span(
+                                Span {
+                                    src: SourceIdx(
+                                        0,
+                                    ),
+                                    start: 250,
+                                    end: 258,
+                                },
+                            ),
                         },
                     ),
                     docs: Docs(
                         [
                             Node {
-                                inner: " An *unique identifier* for a person.",
-                                span: Span {
-                                    src: SourceId(
-                                        0,
-                                    ),
-                                    range: 203..244,
-                                },
+                                inner: " An unique identifier for a person.",
+                                span: Span(
+                                    Span {
+                                        src: SourceIdx(
+                                            0,
+                                        ),
+                                        start: 203,
+                                        end: 242,
+                                    },
+                                ),
                             },
                         ],
                     ),
@@ -204,12 +257,79 @@ Some(
                                             Identifier(
                                                 Node {
                                                     inner: "Uuid",
-                                                    span: Span {
-                                                        src: SourceId(
-                                                            0,
-                                                        ),
-                                                        range: 262..266,
-                                                    },
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 260,
+                                                            end: 264,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    subst: [],
+                                },
+                            ),
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Identifier(
+                        Node {
+                            inner: "TaskId",
+                            span: Span(
+                                Span {
+                                    src: SourceIdx(
+                                        0,
+                                    ),
+                                    start: 338,
+                                    end: 344,
+                                },
+                            ),
+                        },
+                    ),
+                    docs: Docs(
+                        [
+                            Node {
+                                inner: " A unique identifier for a task.",
+                                span: Span(
+                                    Span {
+                                        src: SourceIdx(
+                                            0,
+                                        ),
+                                        start: 294,
+                                        end: 330,
+                                    },
+                                ),
+                            },
+                        ],
+                    ),
+                    vars: [],
+                    attrs: [],
+                    kind: WrapperType(
+                        WrapperTypeDef {
+                            wrapped: Instance(
+                                InstanceTypeExpr {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: "Uuid",
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 346,
+                                                            end: 350,
+                                                        },
+                                                    ),
                                                 },
                                             ),
                                         ],

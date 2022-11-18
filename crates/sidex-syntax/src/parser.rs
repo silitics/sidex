@@ -1,15 +1,14 @@
 //! Chumsky-based parser for Sidex definitions.
 
 use chumsky::{prelude::*, Stream};
+use sidex_ir as ir;
 
 use crate::{
     ast,
-    errors::SyntaxError,
-    reporting,
-    source::{Source, SourceStorage, Span},
+    span::Span,
     tokens::{
-        delimiters, keywords, punctuations, tokenize, Delimiter, DocKind, Punctuation, Token,
-        TokenKind,
+        delimiters, diagnostic_from_error, keywords, punctuations, tokenize, Delimiter, DocKind,
+        Punctuation, Token, TokenKind,
     },
 };
 
@@ -437,9 +436,9 @@ fn schema_parser() -> impl Parser<TokenKind, ast::Schema, Error = Simple<TokenKi
 }
 
 /// Internal parsing function.
-fn parse_schema(source: &Source, tokens: Vec<Token>) -> (Option<ast::Schema>, Vec<SyntaxError>) {
+fn parse_schema(source: &ir::Source, tokens: Vec<Token>) -> Option<ast::Schema> {
     let stream = Stream::from_iter(
-        source.end(),
+        source.end().into(),
         tokens
             .into_iter()
             .filter(|token| !matches!(token.kind, TokenKind::Comment { .. }))
@@ -448,125 +447,29 @@ fn parse_schema(source: &Source, tokens: Vec<Token>) -> (Option<ast::Schema>, Ve
 
     let (module, errors) = schema_parser().parse_recovery(stream);
 
-    (
-        module,
-        errors
-            .into_iter()
-            .map(|error| SyntaxError(error.map(|t| t.to_string())))
-            .collect(),
-    )
+    for error in errors {
+        diagnostic_from_error(error.map(|t| t.to_string())).emit();
+    }
+
+    module
 }
 
 /// Parse a schema.
-pub fn parse(storage: &SourceStorage, source: &Source) -> Option<ast::Schema> {
-    let (tokens, lexer_errors) = tokenize(source);
-
-    let (schema, parse_errors) = match tokens {
-        Some(tokens) => parse_schema(source, tokens),
-        None => (None, Default::default()),
-    };
-
-    // 🚧 TODO: Return errors instead of printing them here.
-    reporting::eprint_errors(
-        storage,
-        source.id(),
-        lexer_errors.iter().chain(parse_errors.iter()),
-    );
-
-    schema
+pub fn parse(source: &ir::Source) -> Option<ast::Schema> {
+    tokenize(source).and_then(|tokens| parse_schema(source, tokens))
 }
-
-// fn meta_parser() -> impl Parser<TokenKind, ast::Meta, Error = Simple<TokenKind, Span>>
-// + Clone {     recursive(|meta_parser| {
-//         choice((
-//             name_parser()
-//                 .then_ignore(just(punctuations::Equals::ALONE))
-//                 .then(meta_parser.clone())
-//                 .map(|(name, value)| {
-//                     ast::Meta::Assignment {
-//                         identifier: name,
-//                         value: Box::new(value),
-//                     }
-//                 }),
-//             name_parser()
-//                 .then(meta_parser.clone().delimited_by(
-//                     just(delimiters::Parenthesis::OPEN),
-//                     just(delimiters::Parenthesis::CLOSE),
-//                 ))
-//                 .map(|(name, args)| {
-//                     ast::Meta::Invocation {
-//                         identifier: name,
-//                         args: Box::new(args),
-//                     }
-//                 }),
-//             name_parser().map(|name| ast::Meta::Identifier(name)),
-//             filter_map(|span, token: TokenKind| {
-//                 match token {
-//                     TokenKind::Literal(literal) => Ok(ast::Meta::Literal(literal)),
-//                     _ => Err(Simple::custom(span, "Expected literal.")),
-//                 }
-//             }),
-//         ))
-//         .separated_by(just(punctuations::Comma::ALONE))
-//         .allow_trailing()
-//         .map(|x| ast::Meta::List(x))
-//     })
-// }
-
-// /// Internal parsing function.
-// fn _parse_meta(source: &Source, tokens: Vec<Token>) -> (Option<ast::Meta>,
-// Vec<SyntaxError>) {     let stream = Stream::from_iter(
-//         source.end(),
-//         tokens
-//             .into_iter()
-//             .filter(|token| !matches!(token.kind, TokenKind::Comment { .. }))
-//             .map(|token| (token.kind, token.span)),
-//     );
-
-//     let (module, errors) = meta_parser().parse_recovery(stream);
-
-//     (
-//         module,
-//         errors
-//             .into_iter()
-//             .map(|error| SyntaxError(error.map(|t| t.to_string())))
-//             .collect(),
-//     )
-// }
-
-// pub fn parse_meta(source: &str) -> Option<ast::Meta> {
-//     let mut storage = SourceStorage::new();
-//     let id = storage.insert(source.to_owned(), None);
-//     let source = &storage[id];
-//     let (tokens, lexer_errors) = tokenize(source);
-
-//     let (meta, parse_errors) = match tokens {
-//         Some(tokens) => _parse_meta(source, tokens),
-//         None => (None, Default::default()),
-//     };
-
-//     // 🚧 TODO: Return errors instead of printing them here.
-//     reporting::eprint_errors(
-//         &storage,
-//         source.id(),
-//         lexer_errors.iter().chain(parse_errors.iter()),
-//     );
-
-//     meta
-// }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::source::SourceStorage;
 
     macro_rules! make_test_from_file {
         ($name:ident, $path:literal) => {
             #[test]
             fn $name() {
-                let mut storage = SourceStorage::new();
+                let mut storage = ir::SourceStorage::new();
                 let id = storage.insert(include_str!($path).to_owned(), None);
-                let result = parse(&storage, &storage[id]);
+                let result = parse(&storage[id]);
                 insta::assert_debug_snapshot!(stringify!($name), result);
             }
         };

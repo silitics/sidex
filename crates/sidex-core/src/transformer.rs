@@ -8,7 +8,6 @@ use std::{
 use rayon::prelude::*;
 use sidex_syntax::{
     ast, parse,
-    source::SourceStorage,
     tokens::{self},
 };
 use thiserror::Error;
@@ -53,7 +52,7 @@ pub struct ParsedSchema {
 
 #[derive(Debug, Clone)]
 pub struct Transformer {
-    pub(crate) storage: SourceStorage,
+    pub storage: ir::SourceStorage,
 
     loaded: Vec<LoadedBundle>,
 
@@ -454,7 +453,7 @@ impl Transformer {
         // Parse the bundle.
         let mut schemas = Vec::new();
         for (name, schema) in source.schemas.iter() {
-            let schema = parse(&self.storage, &self.storage[*schema])
+            let schema = parse(&self.storage[*schema])
                 .ok_or_else(|| Error::Other(format!("Error parsing schema {name:?}.")))?;
             let docs = schema.docs.to_string();
             let (imports, defs) = split_items(schema.items);
@@ -524,9 +523,10 @@ impl Transformer {
                     .expect("Schema path should have a file stem.")
                     .to_string_lossy()
                     .into_owned();
-                let source_id = self
-                    .storage
-                    .insert(std::fs::read_to_string(&schema_path)?, Some(schema_path));
+                let source_id = self.storage.insert(
+                    std::fs::read_to_string(&schema_path)?,
+                    Some(schema_path.to_string_lossy().into_owned()),
+                );
                 schemas.insert(schema_name, source_id);
             }
             self.insert_bundle(BundleSource {

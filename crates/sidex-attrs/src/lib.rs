@@ -17,14 +17,8 @@
 //! This crate defines three traits for converting [`ir::Attr`] to native Rust
 //! structures.
 
-use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::{Diagnostic, Result};
 use sidex_ir as ir;
-
-/// An error that may appear during conversion.
-pub type Error = Diagnostic;
-
-/// A result of a fallible conversion.
-pub type Result<T> = std::result::Result<T, Error>;
 
 /// Tries to apply an attribute to an already existing structure.
 ///

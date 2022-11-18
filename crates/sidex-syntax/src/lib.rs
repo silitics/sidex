@@ -2,10 +2,9 @@
 
 mod parser;
 
+pub(crate) mod span;
+
 pub mod ast;
-pub mod errors;
-pub mod reporting;
-pub mod source;
 pub mod tokens;
 
 pub use parser::parse;

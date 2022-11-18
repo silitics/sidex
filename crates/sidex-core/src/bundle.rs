@@ -6,10 +6,8 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
-use sidex_syntax::source::SourceId;
+use sidex_ir as ir;
 use thiserror::Error;
-
-use crate::ir;
 
 pub const MANIFEST_NAME: &'static str = "sidex.toml";
 pub const SCHEMAS_DIR: &'static str = "schemas";
@@ -76,7 +74,7 @@ pub struct Dependency {
 #[derive(Debug, Clone)]
 pub struct BundleSource {
     pub manifest: Manifest,
-    pub schemas: HashMap<String, SourceId>,
+    pub schemas: HashMap<String, ir::SourceIdx>,
     pub path: Option<PathBuf>,
 }
 

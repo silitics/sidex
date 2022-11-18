@@ -4,7 +4,10 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use sidex_attrs::TryFromAttrs;
 use sidex_attrs_rust::{FieldAttrs, TypeAttrs};
-use sidex_gen::ir::{Def, DefKind};
+use sidex_gen::{
+    diagnostics::Result,
+    ir::{Def, DefKind},
+};
 
 use super::Plugin;
 use crate::context::SchemaCtx;
@@ -12,7 +15,7 @@ use crate::context::SchemaCtx;
 pub struct Types;
 
 impl Plugin for Types {
-    fn visit_def(&self, ctx: &SchemaCtx, def: &Def) -> Result<proc_macro2::TokenStream, ()> {
+    fn visit_def(&self, ctx: &SchemaCtx, def: &Def) -> Result<proc_macro2::TokenStream> {
         let name = format_ident!("{}", def.name);
         let docs = &def.docs;
         let vars = ctx.generic_type_vars(def);
@@ -67,7 +70,7 @@ impl Plugin for Types {
                         let name = format_ident!("{}", &field.name);
                         let docs = &field.docs;
                         let mut typ = ctx.resolve_type(def, &field.typ);
-                        let attrs = FieldAttrs::try_from_attrs(&field.attrs).map_err(|_| ())?;
+                        let attrs = FieldAttrs::try_from_attrs(&field.attrs)?;
                         for wrapper in attrs.wrappers {
                             let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
                             typ = quote! { #wrapper < #typ > }
@@ -81,7 +84,7 @@ impl Plugin for Types {
                             #vis #name: #typ,
                         })
                     })
-                    .collect::<Result<Vec<_>, _>>()?;
+                    .collect::<Result<Vec<_>>>()?;
                 Ok(quote! {
                     #[doc = #docs]
                     #derive

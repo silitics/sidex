@@ -1,5 +1,5 @@
 use quote::{format_ident, quote};
-use sidex_gen::ir;
+use sidex_gen::{diagnostics::Result, ir};
 
 use super::Plugin;
 use crate::context::TypeInfo;
@@ -11,7 +11,7 @@ impl Plugin for Builder {
         &self,
         ctx: &crate::context::SchemaCtx,
         def: &sidex_gen::ir::Def,
-    ) -> Result<proc_macro2::TokenStream, ()> {
+    ) -> Result<proc_macro2::TokenStream> {
         match &def.kind {
             sidex_gen::ir::DefKind::RecordType(record) => {
                 let TypeInfo {

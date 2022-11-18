@@ -16,3 +16,4 @@ url = "^2.2"
 dashmap = "^5.3"
 # Lexer, parser, and ASTs for Sidex schemas.
 sidex-syntax = { version = "0.2", path = "../sidex-syntax" }
+sidex-ir = { path = "../sidex-ir" }

@@ -10,7 +10,7 @@ homepage.workspace = true
 
 [dependencies]
 thiserror = "1"
+serde_json = "1"
 sidex-ir = { path = "../sidex-ir", version = "^0.2" }
 sidex-diagnostics = { path = "../sidex-diagnostics" }
-serde_json = "1"
 sidex-attrs = { path = "../sidex-attrs" }

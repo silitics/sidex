@@ -22,5 +22,5 @@ pub struct Job<'j> {
 /// A code generation backend.
 pub trait Generator {
     /// Generates code.
-    fn generate(&self, job: Job) -> Result<(), Box<dyn std::error::Error>>;
+    fn generate(&self, job: Job) -> diagnostics::Result<()>;
 }
