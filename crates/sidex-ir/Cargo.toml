@@ -8,5 +8,4 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-# The IR structures from `sidex_core` are re-exported in this crate.
-sidex-core = { path = "../sidex-core" }
+serde = { version = "1", features = ["derive"] }

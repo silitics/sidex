@@ -74,13 +74,13 @@ fn split_items(items: Vec<ast::Item>) -> (Vec<ast::Import>, Vec<ast::Def>) {
     (imports, defs)
 }
 
-const STD_BUNDLE: ir::BundleIdx = ir::BundleIdx(0);
+const STD_BUNDLE: ir::BundleIdx = ir::STD_BUNDLE_IDX;
 
 /// Builds the definition table of a schema.
 fn build_def_table(defs: &[ast::Def]) -> HashMap<String, ir::DefIdx> {
     defs.iter()
         .enumerate()
-        .map(|(idx, def)| (def.name.as_str().to_owned(), ir::DefIdx(idx)))
+        .map(|(idx, def)| (def.name.as_str().to_owned(), ir::DefIdx::from(idx)))
         .collect()
 }
 
@@ -111,7 +111,7 @@ pub struct Resolver<'t, 'd> {
 
 impl<'t, 'd> Resolver<'t, 'd> {
     fn populate_defs(&mut self) {
-        let schema = &self.transformer.loaded[self.bundle.0].schemas[self.schema.0];
+        let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema.idx()];
         for (name, def_idx) in schema.def_by_name.iter() {
             if self.table.contains_key(name) {
                 panic!("Duplicate name!");
@@ -128,7 +128,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
     }
 
     fn populate_imports(&mut self) {
-        let schema = &self.transformer.loaded[self.bundle.0].schemas[self.schema.0];
+        let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema.idx()];
         for import in &schema.imports {
             let mut stack = vec![(LookupEntry::Bundle(self.bundle), &import.tree)];
             while let Some((root, tree)) = stack.pop() {
@@ -149,7 +149,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
                         match root {
                             LookupEntry::Bundle(bundle) => {
                                 for (name, idx) in
-                                    self.transformer.loaded[bundle.0].schema_by_name.iter()
+                                    self.transformer.loaded[bundle.idx()].schema_by_name.iter()
                                 {
                                     self.table.entry(name.to_owned()).or_insert_with(|| {
                                         LookupEntry::Schema {
@@ -160,10 +160,10 @@ impl<'t, 'd> Resolver<'t, 'd> {
                                 }
                             }
                             LookupEntry::Schema { bundle, schema } => {
-                                for (name, idx) in self.transformer.loaded[bundle.0].schemas
-                                    [schema.0]
-                                    .def_by_name
-                                    .iter()
+                                for (name, idx) in self.transformer.loaded[bundle.idx()].schemas
+                                    [schema.idx()]
+                                .def_by_name
+                                .iter()
                                 {
                                     self.table.entry(name.to_owned()).or_insert_with(|| {
                                         LookupEntry::Def {
@@ -196,10 +196,10 @@ impl<'t, 'd> Resolver<'t, 'd> {
             }
         }
 
-        let std_bundle = &self.transformer.loaded[STD_BUNDLE.0];
+        let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
 
         let builtins_schema =
-            &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().0];
+            &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
 
         for (name, def) in builtins_schema.def_by_name.iter() {
             self.table.entry(name.to_owned()).or_insert_with(|| {
@@ -219,7 +219,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     LookupEntry::Bundle(*self.dependencies.get(first.as_str()).unwrap())
                 }
                 LookupEntry::Bundle(idx) => {
-                    let schema = self.transformer.loaded[idx.0]
+                    let schema = self.transformer.loaded[idx.idx()]
                         .schema_by_name
                         .get(first.as_str())
                         .unwrap();
@@ -229,7 +229,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     }
                 }
                 LookupEntry::Schema { bundle, schema } => {
-                    let def = self.transformer.loaded[bundle.0].schemas[schema.0]
+                    let def = self.transformer.loaded[bundle.idx()].schemas[schema.idx()]
                         .def_by_name
                         .get(first.as_str())
                         .unwrap();
@@ -242,7 +242,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
                 LookupEntry::Def { .. } => {
                     panic!(
                         "Invalid lookup! {root:?} {segments:?} {}",
-                        self.transformer.loaded[self.bundle.0].schemas[self.schema.0].name
+                        self.transformer.loaded[self.bundle.idx()].schemas[self.schema.idx()].name
                     )
                 }
             };
@@ -276,7 +276,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     {
                         return ir::Type {
                             kind: ir::TypeKind::TypeVar(ir::TypeVarType {
-                                idx: ir::TypeVarIdx(var_idx),
+                                idx: ir::TypeVarIdx::from(var_idx),
                             }),
                             span: None,
                         };
@@ -289,8 +289,8 @@ impl<'t, 'd> Resolver<'t, 'd> {
                         schema,
                         def,
                     } => {
-                        let type_def =
-                            &self.transformer.loaded[bundle.0].schemas[schema.0].defs[def.0];
+                        let type_def = &self.transformer.loaded[bundle.idx()].schemas[schema.idx()]
+                            .defs[def.idx()];
                         assert_eq!(type_def.vars.len(), instance.subst.len());
 
                         return ir::Type {
@@ -311,9 +311,9 @@ impl<'t, 'd> Resolver<'t, 'd> {
                 }
             }
             ast::TypeExpr::Sequence(sequence) => {
-                let std_bundle = &self.transformer.loaded[STD_BUNDLE.0];
+                let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
                 let builtins_schema =
-                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().0];
+                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
                 let sequence_def = builtins_schema.def_by_name.get("Sequence").unwrap();
 
                 ir::Type {
@@ -327,9 +327,9 @@ impl<'t, 'd> Resolver<'t, 'd> {
                 }
             }
             ast::TypeExpr::Map(map) => {
-                let std_bundle = &self.transformer.loaded[STD_BUNDLE.0];
+                let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
                 let builtins_schema =
-                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().0];
+                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
                 let map_def = builtins_schema.def_by_name.get("Map").unwrap();
 
                 ir::Type {
@@ -346,9 +346,9 @@ impl<'t, 'd> Resolver<'t, 'd> {
                 }
             }
             ast::TypeExpr::Unit => {
-                let std_bundle = &self.transformer.loaded[STD_BUNDLE.0];
+                let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
                 let builtins_schema =
-                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().0];
+                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
                 let unit_def = builtins_schema.def_by_name.get("unit").unwrap();
 
                 ir::Type {
@@ -410,27 +410,27 @@ fn transform_token_stream(stream: &ast::TokenStream) -> ir::TokenStream {
         ir_tokens.push(ir::Token {
             kind,
             span: Some(ir::Span {
-                src: ir::SourceIdx(0),
+                src: ir::SourceIdx::from(0),
                 start: start.unwrap(),
                 end: token.end(),
             }),
         });
     }
-    ir::TokenStream(ir_tokens)
+    ir_tokens.into()
 }
 
 fn transform_attr(attr: &ast::Attr) -> ir::Attr {
     let kind = match &attr.kind {
-        ast::AttrKind::Path(path) => ir::AttrKind::Path(ir::Path(path.to_string())),
+        ast::AttrKind::Path(path) => ir::AttrKind::Path(ir::Path::from(path.to_string())),
         ast::AttrKind::List(list) => {
             ir::AttrKind::List(ir::AttrList {
-                path: ir::Path(list.path.to_string()),
+                path: ir::Path::from(list.path.to_string()),
                 elements: list.elements.iter().map(transform_attr).collect(),
             })
         }
         ast::AttrKind::Assign(assign) => {
             ir::AttrKind::Assign(ir::AttrAssign {
-                path: ir::Path(assign.path.to_string()),
+                path: ir::Path::from(assign.path.to_string()),
                 value: Box::new(transform_attr(&assign.value)),
             })
         }
@@ -457,18 +457,18 @@ impl Transformer {
     }
 
     pub fn get_bundle_manifest(&self, idx: ir::BundleIdx) -> &Manifest {
-        &self.loaded[idx.0].source.manifest
+        &self.loaded[idx.idx()].source.manifest
     }
 
     fn get_bundle_by_path(&self, path: &Path) -> Option<&LoadedBundle> {
         let canonical = path.canonicalize().unwrap();
         self.bundle_by_path
             .get(&canonical)
-            .map(|idx| &self.loaded[idx.0])
+            .map(|idx| &self.loaded[idx.idx()])
     }
 
     pub(crate) fn insert_bundle(&mut self, source: BundleSource) -> Result<ir::BundleIdx, Error> {
-        let idx = ir::BundleIdx(self.loaded.len());
+        let idx = ir::BundleIdx::from(self.loaded.len());
         self.bundle_by_name
             .insert(source.manifest.metadata.name.clone(), idx);
         if let Some(path) = &source.path {
@@ -484,7 +484,7 @@ impl Transformer {
             let (imports, defs) = split_items(schema.items);
             let def_by_name = build_def_table(&defs);
             schemas.push(ParsedSchema {
-                idx: ir::SchemaIdx(schemas.len()),
+                idx: ir::SchemaIdx::from(schemas.len()),
                 name: name.clone(),
                 docs,
                 defs,
@@ -499,7 +499,7 @@ impl Transformer {
             schema_by_name: schemas
                 .iter()
                 .enumerate()
-                .map(|(idx, schema)| (schema.name.clone(), ir::SchemaIdx(idx)))
+                .map(|(idx, schema)| (schema.name.clone(), ir::SchemaIdx::from(idx)))
                 .collect(),
             schemas,
         });
@@ -511,7 +511,7 @@ impl Transformer {
         let idx = self.load_bundle(path)?;
         let mut stack = vec![idx];
         while let Some(idx) = stack.pop() {
-            let dependencies = self.loaded[idx.0]
+            let dependencies = self.loaded[idx.idx()]
                 .source
                 .manifest
                 .dependencies()
@@ -530,7 +530,7 @@ impl Transformer {
         let manifest = bundle::try_load_manifest(&path)?;
         let name = &manifest.metadata.name;
         if let Some(idx) = self.bundle_by_name.get(name) {
-            let loaded = &self.loaded[idx.0];
+            let loaded = &self.loaded[idx.idx()];
             if loaded.source.path.as_ref() != Some(&path) {
                 let other_path = &loaded.source.path;
                 Err(Error::Other(format!(
