@@ -1,3 +1,5 @@
+use std::{collections::HashMap, sync::Arc};
+
 use proc_macro2::TokenStream;
 use sidex_gen::ir;
 
@@ -18,4 +20,11 @@ pub trait Plugin {
     fn visit_schema(&self, ctx: &SchemaCtx) -> Result<TokenStream, ()> {
         Ok(Default::default())
     }
+}
+
+pub fn plugins() -> HashMap<String, Arc<dyn 'static + Plugin + Sync>> {
+    let mut plugins: HashMap<String, Arc<dyn 'static + Plugin + Sync>> = HashMap::new();
+    plugins.insert("data-types".to_owned(), Arc::new(data_types::Types));
+    plugins.insert("builder".to_owned(), Arc::new(builder::Builder));
+    plugins
 }

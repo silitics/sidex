@@ -7,6 +7,8 @@ pub struct Config {
     #[serde(default)]
     pub derive: Vec<String>,
     #[serde(default)]
+    pub plugins: Vec<String>,
+    #[serde(default)]
     pub types: TypesConfig,
 }
 

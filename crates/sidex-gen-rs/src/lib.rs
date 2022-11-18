@@ -3,6 +3,8 @@
 //! **ℹ️ Note:** Use this crate as a starting point for customizing Sidex's Rust code
 //! generator to your needs.
 
+use std::sync::Arc;
+
 use config::Config;
 use context::{BundleCtx, SchemaCtx};
 use plugins::Plugin;
@@ -16,17 +18,15 @@ pub mod context;
 pub mod plugins;
 
 /// Implements [`Generator`] for Rust.
+#[derive(Clone)]
 pub struct RustGenerator {
-    plugins: Vec<Box<dyn Plugin>>,
+    plugins: Vec<Arc<dyn 'static + Plugin + Sync>>,
 }
 
 impl RustGenerator {
     pub fn new() -> Self {
         Self {
-            plugins: vec![
-                Box::new(plugins::data_types::Types),
-                Box::new(plugins::builder::Builder),
-            ],
+            plugins: vec![Arc::new(plugins::data_types::Types)],
         }
     }
 
@@ -94,12 +94,21 @@ impl Generator for RustGenerator {
             .unwrap()
             .unwrap_or_default();
 
+        let mut generator = self.clone();
+
+        let all_plugins = plugins::plugins();
+        for plugin in &config.plugins {
+            generator
+                .plugins
+                .push(all_plugins.get(plugin).unwrap().clone());
+        }
+
         config.types.populate_table_with_builtins();
 
         let mut mod_code = String::new();
         mod_code.push_str("/* GENERATED WITH SIDEX. DO NOT MODIFY! */\n\n");
         mod_code.push_str(
-            &self
+            &generator
                 .generate_bundle_inner(&config, job.unit, job.bundle)
                 .map_err(|err| format!("{err:?}"))?
                 .to_string(),
