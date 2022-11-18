@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+#![warn(clippy::pedantic)]
 #![doc = include_str!("../README.md")]
 //!
 //! ## Diagnostics
@@ -51,7 +53,8 @@
 //!
 //! ## Reports
 //!
-//! To display diagnostics a *report* ([`Report`]) is produced from a context.
+//! To display diagnostics, a *report* ([`Report`]) is produced from a context with the
+//! [`report`][DiagnosticCtx::report] method.
 //!
 //! A report can then be rendered to the standard error output using its
 //! [`eprint`][Report::eprint] method.
@@ -87,6 +90,7 @@ pub struct DiagnosticCtx {
 
 impl DiagnosticCtx {
     /// Creates a new diagnosis context.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -104,7 +108,7 @@ impl DiagnosticCtx {
 
     /// Executes the given *closure* within this diagnostic context.
     pub fn exec<R, C: FnOnce() -> R>(&self, closure: C) -> R {
-        CTX.set(self, || closure())
+        CTX.set(self, closure)
     }
 
     /// Turns the context into a report.
@@ -117,7 +121,7 @@ impl DiagnosticCtx {
 
 /// A *diagnostic report* is a collection of diagnostics.
 ///
-/// Can only be created via a diagnosis context.
+/// Note that a report can only be created via a diagnosis context.
 pub struct Report {
     inner: DiagnosticCtxInner,
 }
@@ -129,6 +133,7 @@ impl Report {
     }
 
     /// Indicates whether there has been an error.
+    #[must_use]
     pub fn has_error(&self) -> bool {
         self.inner.has_error
     }
@@ -137,7 +142,7 @@ impl Report {
     fn write_to<W: std::io::Write>(&self, sources: &ir::SourceStorage, mut writer: W) {
         let mut cache = render::Cache::new(sources);
         for diagnostic in self.diagnostics() {
-            let _ = render::render(&mut cache, diagnostic, &mut writer);
+            render::render(&mut cache, diagnostic, &mut writer).ok();
         }
     }
 
@@ -160,7 +165,7 @@ impl DiagnosticIdx {
     /// Tries to retrieve the diagnostic from the active context.
     ///
     /// Invokes the closure with [`None`] if there is no active context.
-    fn with<R, C: FnOnce(Option<&Diagnostic>) -> R>(&self, closure: C) -> R {
+    fn with<R, C: FnOnce(Option<&Diagnostic>) -> R>(self, closure: C) -> R {
         if CTX.is_set() {
             CTX.with(|ctx| {
                 let inner = ctx.inner.lock();
@@ -233,15 +238,15 @@ impl Diagnostic {
     /// Creates a new diagnostic with the given *severity* and *message*.
     #[must_use]
     #[track_caller]
-    pub fn new<M: ToString>(severity: Severity, message: M) -> Self {
+    pub fn new<M: Into<String>>(severity: Severity, message: M) -> Self {
         Self {
             severity,
-            message: message.to_string(),
-            created_at: Location::caller().clone(),
+            message: message.into(),
+            created_at: *Location::caller(),
             emitted_at: None,
-            errors: Default::default(),
+            errors: Vec::new(),
             span: None,
-            labels: Default::default(),
+            labels: Vec::new(),
         }
     }
 
@@ -266,28 +271,27 @@ impl Diagnostic {
     /// Creates a new error diagnostic with the given *message*.
     #[must_use]
     #[track_caller]
-    pub fn error<M: ToString>(message: M) -> Self {
+    pub fn error<M: Into<String>>(message: M) -> Self {
         Self::new(Severity::Error, message)
     }
 
     /// Creates a new warning diagnostic with the given *message*.
     #[must_use]
     #[track_caller]
-    pub fn warning<M: ToString>(message: M) -> Self {
+    pub fn warning<M: Into<String>>(message: M) -> Self {
         Self::new(Severity::Warning, message)
     }
 
     /// Creates a new hint diagnostic with the given *message*.
     #[must_use]
     #[track_caller]
-    pub fn hint<M: ToString>(message: M) -> Self {
+    pub fn hint<M: Into<String>>(message: M) -> Self {
         Self::new(Severity::Hint, message)
     }
 
     /// The errors attached to the diagnostic.
-    #[must_use]
     pub fn errors(&self) -> impl Iterator<Item = &dyn std::error::Error> {
-        self.errors.iter().map(|error| error.as_ref())
+        self.errors.iter().map(AsRef::as_ref)
     }
 
     /// Sets the span of the diagnostic.
@@ -304,7 +308,7 @@ impl Diagnostic {
 
     /// Attaches an error to the diagnostic.
     pub fn attach_error<E: 'static + Send + Sync + std::error::Error>(&mut self, error: E) {
-        self.errors.push(error.into())
+        self.errors.push(error.into());
     }
 
     /// Attaches an error to the diagnostic.
@@ -316,7 +320,7 @@ impl Diagnostic {
 
     /// Attaches a label to the diagnostic.
     pub fn attach_label(&mut self, label: Label) {
-        self.labels.push(label)
+        self.labels.push(label);
     }
 
     /// Attaches a label to the diagnostic.
@@ -332,8 +336,9 @@ impl Diagnostic {
     ///
     /// This function panics when called outside of a diagnostic context.
     #[track_caller]
+    #[allow(clippy::must_use_candidate)]
     pub fn emit(mut self) -> DiagnosticIdx {
-        self.emitted_at = Some(Location::caller().clone());
+        self.emitted_at = Some(*Location::caller());
         if CTX.is_set() {
             CTX.with(|ctx| ctx.emit(self))
         } else {
@@ -358,11 +363,11 @@ impl std::fmt::Display for Diagnostic {
 
 impl<E: 'static + Send + Sync + std::error::Error> From<E> for Diagnostic {
     fn from(error: E) -> Self {
-        Self::error(&error).with_error(error)
+        Self::error(error.to_string()).with_error(error)
     }
 }
 
-/// A *diagnostic label* attached to a source span.
+/// A *diagnostic label* with a source span and a message.
 #[derive(Debug)]
 pub struct Label {
     /// The source span.
@@ -373,19 +378,22 @@ pub struct Label {
 
 impl Label {
     /// Creates a new label.
-    pub fn new<M: ToString>(span: ir::Span, message: M) -> Self {
+    #[must_use]
+    pub fn new<M: Into<String>>(span: ir::Span, message: M) -> Self {
         Self {
             span,
-            message: message.to_string(),
+            message: message.into(),
         }
     }
 
     /// The span of the label.
+    #[must_use]
     pub fn span(&self) -> &ir::Span {
         &self.span
     }
 
     /// The message of the label.
+    #[must_use]
     pub fn message(&self) -> &str {
         self.message.as_str()
     }

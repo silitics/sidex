@@ -22,7 +22,7 @@ impl<'s> Cache<'s> {
     pub(crate) fn new(sources: &'s ir::SourceStorage) -> Self {
         Self {
             sources,
-            cache: Default::default(),
+            cache: HashMap::new(),
         }
     }
 }
@@ -89,7 +89,7 @@ impl ariadne::Span for Span {
 /// Converts a diagnostic severity to [`ariadne::ReportKind`].
 ///
 /// We cannot implement a conversion trait because [`ariadne`] is a private dependency.
-fn to_report_kind(severity: &Severity) -> ariadne::ReportKind {
+fn to_report_kind(severity: Severity) -> ariadne::ReportKind {
     match severity {
         Severity::Error => ariadne::ReportKind::Error,
         Severity::Warning => ariadne::ReportKind::Warning,
@@ -111,7 +111,7 @@ pub(crate) fn render<'u, W: std::io::Write>(
         .map(|span| span.start)
         .unwrap_or_default();
     let mut builder =
-        ariadne::Report::<Span>::build(to_report_kind(&diagnostic.severity), src_id, offset);
+        ariadne::Report::<Span>::build(to_report_kind(diagnostic.severity), src_id, offset);
     builder.set_message(diagnostic.message());
     builder.add_labels(diagnostic.labels.iter().map(|label| {
         ariadne::Label::new(label.span().clone().into()).with_message(&label.message)
