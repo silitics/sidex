@@ -23,9 +23,9 @@
 //!
 //! For convenience, diagnostics can also be created from any [`Error`][std::error::Error]
 //! with the [`Into`] conversion trait. In particular, this enable the usage of `?` to
-//! turn arbitrary errors which may occur into diagnostics. Note that the resulting
-//! diagnostics do not have a primary source span. In fact, they represent an error
-//! independent of any Sidex source file.
+//! turn arbitrary errors which may occur into diagnostics. Note that unless explicitly
+//! set, the resulting diagnostics do not have a primary source span. In fact, they
+//! represent an error independent of any Sidex source file.
 //!
 //!
 //! ## Emitting Diagnostics
@@ -51,7 +51,7 @@
 //!
 //! ## Reports
 //!
-//! To display diagnostics a *report* [`Report`] is produced from a context.
+//! To display diagnostics a *report* ([`Report`]) is produced from a context.
 //!
 //! A report can then be rendered to the standard error output using its
 //! [`eprint`][Report::eprint] method.
