@@ -973,17 +973,15 @@ dependencies = [
 name = "sidex-core"
 version = "0.1.0"
 dependencies = [
- "ariadne",
  "eyre",
  "hashbrown 0.13.1",
  "insta",
  "lazy_static",
  "once_cell",
- "parking_lot",
  "rayon",
- "scoped-tls",
  "serde",
  "serde_json",
+ "sidex-diagnostics",
  "sidex-ir",
  "sidex-syntax",
  "thiserror",
@@ -994,7 +992,9 @@ dependencies = [
 name = "sidex-diagnostics"
 version = "0.1.0"
 dependencies = [
- "sidex-core",
+ "ariadne",
+ "parking_lot",
+ "scoped-tls",
 ]
 
 [[package]]

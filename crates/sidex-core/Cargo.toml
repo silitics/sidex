@@ -23,17 +23,13 @@ lazy_static = "^1.4" # PRIVATE
 hashbrown = "^0.13" # PRIVATE
 # Lexer, parser, and ASTs for Sidex schemas.
 sidex-syntax = { version = "0.2", path = "../sidex-syntax" } # PRIVATE
-sidex-ir = { path = "../sidex-ir" }
+sidex-ir = { path = "../sidex-ir" } # PUBLIC
+sidex-diagnostics = { path = "../sidex-diagnostics" } # PUBLIC
 # Parallel processing of schemas.
 rayon = "1.5"  # PRIVATE
 
 
-# Required for rendering diagnostics.
-ariadne = "0.1"  # PRIVATE
-# Required for theard-local diagnostic contexts.
-scoped-tls = "1"  # PRIVATE
-# Required for locks and other concurreny primitives.
-parking_lot = "0.12"  # PRIVATE
+
 
 [dev-dependencies]
 # Required for snapshot testing.
