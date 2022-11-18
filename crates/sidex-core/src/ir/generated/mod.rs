@@ -6,26 +6,51 @@ pub mod reflect {
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
     pub struct SourceIdx(pub(crate) usize);
+    impl ::std::convert::From<SourceIdx> for usize {
+        fn from(wrapped: SourceIdx) -> Self {
+            wrapped.0
+        }
+    }
     #[doc = "Uniquely identifies a bundle in a unit.\n"]
     #[derive(
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
     pub struct BundleIdx(pub(crate) usize);
+    impl ::std::convert::From<BundleIdx> for usize {
+        fn from(wrapped: BundleIdx) -> Self {
+            wrapped.0
+        }
+    }
     #[doc = "Uniquely identifies a schema in bundle.\n"]
     #[derive(
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
     pub struct SchemaIdx(pub(crate) usize);
+    impl ::std::convert::From<SchemaIdx> for usize {
+        fn from(wrapped: SchemaIdx) -> Self {
+            wrapped.0
+        }
+    }
     #[doc = "Uniquely identifies a definition in a schema.\n"]
     #[derive(
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
     pub struct DefIdx(pub(crate) usize);
+    impl ::std::convert::From<DefIdx> for usize {
+        fn from(wrapped: DefIdx) -> Self {
+            wrapped.0
+        }
+    }
     #[doc = "Uniquely identifies a type variable in a definition.\n"]
     #[derive(
         :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
     )]
     pub struct TypeVarIdx(pub(crate) usize);
+    impl ::std::convert::From<TypeVarIdx> for usize {
+        fn from(wrapped: TypeVarIdx) -> Self {
+            wrapped.0
+        }
+    }
     #[doc = "A *unit* is a collection of bundles.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Default)]
     pub struct Unit {
@@ -265,16 +290,48 @@ pub mod reflect {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Token {
         #[doc = "The token itself.\n"]
-        pub token: ::std::string::String,
+        pub kind: TokenKind,
         #[doc = "The span of the token.\n"]
         pub span: ::std::option::Option<Span>,
+    }
+    #[doc = ""]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub enum TokenKind {
+        #[doc = ""]
+        Punctuation(::std::string::String),
+        #[doc = ""]
+        Delimiter(::std::string::String),
+        #[doc = ""]
+        Literal(Literal),
+        #[doc = ""]
+        Identifier(::std::string::String),
+    }
+    #[doc = ""]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub enum Literal {
+        #[doc = ""]
+        String(::std::string::String),
+        #[doc = ""]
+        Number(::std::string::String),
+        #[doc = ""]
+        Bool(bool),
     }
     #[doc = "A stream of tokens.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct TokenStream(pub(crate) ::std::vec::Vec<Token>);
+    impl ::std::convert::From<TokenStream> for ::std::vec::Vec<Token> {
+        fn from(wrapped: TokenStream) -> Self {
+            wrapped.0
+        }
+    }
     #[doc = "A `::` separated path of identifiers.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct Path(pub(crate) ::std::string::String);
+    impl ::std::convert::From<Path> for ::std::string::String {
+        fn from(wrapped: Path) -> Self {
+            wrapped.0
+        }
+    }
     #[doc = "A compile-time structured attribute.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub enum AttrKind {

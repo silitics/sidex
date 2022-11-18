@@ -281,9 +281,22 @@ record Span {
 #[rust(attr(non_exhaustive))]
 record Token {
     /// The token itself.
-    token: string,
+    kind: TokenKind,
     /// The span of the token.
     span?: Span,
+}
+
+variant TokenKind {
+    Punctuation: string,
+    Delimiter: string,
+    Literal: Literal,
+    Identifier: string,
+}
+
+variant Literal {
+    String: string,
+    Number: string,
+    Bool: bool,
 }
 
 /// A stream of tokens.

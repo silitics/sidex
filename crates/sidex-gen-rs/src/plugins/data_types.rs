@@ -45,7 +45,18 @@ impl Plugin for Types {
                     #vis type #name #vars = #aliased;
                 })
             }
-            DefKind::OpaqueType(_) => Ok(quote! { type #name #vars = (); }),
+            DefKind::OpaqueType(_) => {
+                match &type_attrs.typ {
+                    Some(typ) => {
+                        let typ = TokenStream::from_str(&typ.path).unwrap();
+                        Ok(quote! {
+                            #[doc = #docs]
+                            #vis type #name #vars = #typ;
+                        })
+                    }
+                    None => todo!(),
+                }
+            }
             DefKind::RecordType(typ) => {
                 let fields = typ
                     .fields
@@ -112,6 +123,12 @@ impl Plugin for Types {
                     #[doc = #docs]
                     #derive
                     #vis struct #name #vars (pub(crate) #wrapped);
+
+                    impl ::std::convert::From<#name> for #wrapped {
+                        fn from(wrapped: #name) -> Self {
+                            wrapped.0
+                        }
+                    }
                 })
             }
             DefKind::Service(_) => {

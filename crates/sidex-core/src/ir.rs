@@ -117,3 +117,11 @@ impl Path {
         self.0.as_str()
     }
 }
+
+impl std::ops::Deref for TokenStream {
+    type Target = [Token];
+
+    fn deref(&self) -> &Self::Target {
+        self.0.as_slice()
+    }
+}

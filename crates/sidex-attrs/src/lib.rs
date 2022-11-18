@@ -65,7 +65,7 @@ impl<T: Default + TryApplyAttr> TryFromAttrs for T {
 #[macro_export]
 macro_rules! reject {
     ($attr:expr, $($arg:tt)*) => {
-        return Err(Diagnostic::error(format!($($arg)*)));
+        return Err(Diagnostic::error(format!($($arg)*)))
     };
 }
 
@@ -73,9 +73,28 @@ macro_rules! reject {
 #[macro_export]
 macro_rules! accept {
     () => {
-        return Ok(());
+        return Ok(())
     };
     ($value:expr) => {
-        return Ok($value);
+        return Ok($value)
     };
+}
+
+impl TryFromAttr for String {
+    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
+        match &attr.kind {
+            ir::AttrKind::Tokens(tokens) => {
+                if tokens.len() == 1 {
+                    match &tokens[0].kind {
+                        ir::TokenKind::Literal(ir::Literal::String(string)) => {
+                            accept!(string.clone())
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            _ => {}
+        }
+        reject!(attr, "Expected a string literal.")
+    }
 }

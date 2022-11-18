@@ -6,13 +6,17 @@ use std::{
 };
 
 use rayon::prelude::*;
-use sidex_syntax::{ast, parse, source::SourceStorage};
+use sidex_syntax::{
+    ast, parse,
+    source::SourceStorage,
+    tokens::{self},
+};
 use thiserror::Error;
 
 use crate::{
     builtins,
     bundle::{self, iter_schemas, BundleSource, Manifest},
-    ir,
+    ir::{self, TokenKind},
 };
 
 #[derive(Debug, Error)]
@@ -362,17 +366,55 @@ impl<'t, 'd> Resolver<'t, 'd> {
 }
 
 fn transform_token_stream(stream: &ast::TokenStream) -> ir::TokenStream {
-    let mut next_token = String::new();
+    let mut composed = String::new();
     let mut ir_tokens = Vec::new();
+    let mut start = None;
     for token in stream.iter() {
-        next_token.push_str(&token.to_string());
-        if token.is_separated() {
-            ir_tokens.push(ir::Token {
-                token: next_token.clone(),
-                span: None,
-            });
-            next_token.clear();
+        if start.is_none() {
+            start = Some(token.start())
         }
+        let kind = match &token.kind {
+            tokens::TokenKind::Delimiter(delimiter) => TokenKind::Delimiter(delimiter.to_string()),
+            tokens::TokenKind::Punctuation(punctuation) => {
+                composed.push_str(&punctuation.to_string());
+                if punctuation.is_composed {
+                    continue;
+                }
+                TokenKind::Punctuation(composed.clone())
+            }
+            tokens::TokenKind::Keyword(keyword) => {
+                // Keywords do not bear any special meaning in attributes.
+                TokenKind::Identifier(keyword.to_string())
+            }
+            tokens::TokenKind::Literal(literal) => {
+                match literal {
+                    tokens::Literal::Numeric { .. } => {
+                        TokenKind::Literal(ir::Literal::Number(token.to_string()))
+                    }
+                    tokens::Literal::String(string) => {
+                        TokenKind::Literal(ir::Literal::String(string.as_ref().clone()))
+                    }
+                    tokens::Literal::Boolean(boolean) => {
+                        TokenKind::Literal(ir::Literal::Bool(*boolean))
+                    }
+                }
+            }
+            tokens::TokenKind::Identifier(_) => TokenKind::Identifier(token.to_string()),
+            tokens::TokenKind::Comment { .. } | tokens::TokenKind::Doc { .. } => {
+                // Strip from IR.
+                start = None;
+                continue;
+            }
+        };
+        composed.clear();
+        ir_tokens.push(ir::Token {
+            kind,
+            span: Some(ir::Span {
+                src: ir::SourceIdx(0),
+                start: start.unwrap(),
+                end: token.end(),
+            }),
+        });
     }
     ir::TokenStream(ir_tokens)
 }

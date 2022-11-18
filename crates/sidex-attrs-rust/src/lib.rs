@@ -7,8 +7,24 @@ use sidex_diagnostics::Diagnostic;
 use sidex_ir as ir;
 
 /// `type = "<PATH>"`
+#[derive(Debug, Clone)]
 pub struct Type {
-    pub path: syn::Path,
+    pub path: String,
+}
+
+impl TryFromAttr for Type {
+    fn try_from_attr(attr: &ir::Attr) -> sidex_attrs::Result<Self> {
+        match &attr.kind {
+            ir::AttrKind::Assign(assign) => {
+                if assign.path.as_str() == "type" {
+                    let path = String::try_from_attr(&assign.value)?;
+                    accept!(Self { path })
+                }
+            }
+            _ => {}
+        }
+        reject!(attr, "Expected type attribute.")
+    }
 }
 
 /// `derive(...)`
@@ -122,8 +138,6 @@ impl TryApplyAttr for FieldAttrs {
                         self.visibility = visibility;
                     } else if let Ok(wrapper) = Wrapper::try_from_attr(attr) {
                         self.wrappers.push(wrapper)
-                    } else {
-                        reject!(attr, "Expected Rust field attributes.")
                     }
                 }
             }
@@ -138,6 +152,7 @@ pub struct Inner {
 
 #[derive(Debug, Default)]
 pub struct TypeAttrs {
+    pub typ: Option<Type>,
     pub derive: Derive,
 }
 
@@ -165,6 +180,11 @@ impl TryFrom<&[ir::Attr]> for TypeAttrs {
             .collect::<Vec<_>>();
         while let Some(top) = stack.pop() {
             match &top.kind {
+                ir::AttrKind::Assign(_) => {
+                    if let Ok(typ) = Type::try_from_attr(top) {
+                        attrs.typ = Some(typ)
+                    }
+                }
                 ir::AttrKind::List(list) => {
                     match list.path.as_str() {
                         "derive" => {
