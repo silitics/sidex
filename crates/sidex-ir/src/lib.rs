@@ -11,7 +11,10 @@
 //! the [`reflect`](https://github.com/silitics/sidex/blob/main/lib/meta/schemas/reflect.sidex)
 //! schema.
 
-use std::ops::{Index, IndexMut};
+use std::{
+    fmt::Write,
+    ops::{Index, IndexMut},
+};
 
 mod generated;
 
@@ -172,5 +175,53 @@ impl TypeVarIdx {
 impl From<Vec<Token>> for TokenStream {
     fn from(tokens: Vec<Token>) -> Self {
         Self(tokens)
+    }
+}
+
+impl std::fmt::Display for Attr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.kind {
+            AttrKind::Path(path) => f.write_str(path.as_str()),
+            AttrKind::List(list) => {
+                f.write_str(list.path.as_str())?;
+                f.write_char('(')?;
+                for idx in 0..list.elements.len() {
+                    if idx != 0 {
+                        f.write_str(", ")?;
+                    }
+                    std::fmt::Display::fmt(&list.elements[idx], f)?;
+                }
+                f.write_char(')')
+            }
+            AttrKind::Assign(assign) => {
+                f.write_str(assign.path.as_str())?;
+                f.write_str(" = ")?;
+                std::fmt::Display::fmt(&assign.value, f)
+            }
+            AttrKind::Tokens(tokens) => {
+                for token in tokens.iter() {
+                    match &token.kind {
+                        TokenKind::Punctuation(token)
+                        | TokenKind::Delimiter(token)
+                        | TokenKind::Identifier(token) => {
+                            f.write_str(token)?;
+                        }
+                        TokenKind::Literal(literal) => {
+                            match literal {
+                                Literal::String(string) => {
+                                    f.write_fmt(format_args!("{:?}", string))?;
+                                }
+                                Literal::Number(string) => f.write_str(string)?,
+                                Literal::Bool(boolean) => {
+                                    f.write_str(if *boolean { "true" } else { "false" })?
+                                }
+                            }
+                        }
+                    }
+                    f.write_char(' ')?;
+                }
+                Ok(())
+            }
+        }
     }
 }

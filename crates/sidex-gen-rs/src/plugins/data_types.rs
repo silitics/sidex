@@ -37,6 +37,8 @@ impl Plugin for Types {
                 #[derive( #(#derive_traits, )* )]
             )
         };
+        let meta = type_attrs.attrs.iter().map(|attr| quote! { #[ #attr ] });
+
         match &def.kind {
             DefKind::TypeAlias(alias) => {
                 let aliased = ctx.resolve_type(def, &alias.aliased);
@@ -83,6 +85,7 @@ impl Plugin for Types {
                 Ok(quote! {
                     #[doc = #docs]
                     #derive
+                    #(#meta)*
                     #vis struct #name #vars {
                         #(#fields)*
                     }
@@ -112,6 +115,7 @@ impl Plugin for Types {
                 Ok(quote! {
                     #[doc = #docs]
                     #derive
+                    #(#meta)*
                     #vis enum #name #vars {
                         #(#variants)*
                     }
@@ -122,6 +126,7 @@ impl Plugin for Types {
                 Ok(quote! {
                     #[doc = #docs]
                     #derive
+                    #(#meta)*
                     #vis struct #name #vars (pub(crate) #wrapped);
 
                     impl ::std::convert::From<#name> for #wrapped {

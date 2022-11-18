@@ -274,12 +274,9 @@ impl<'t, 'd> Resolver<'t, 'd> {
                         .iter()
                         .position(|var| var.name.as_str() == name)
                     {
-                        return ir::Type {
-                            kind: ir::TypeKind::TypeVar(ir::TypeVarType {
-                                idx: ir::TypeVarIdx::from(var_idx),
-                            }),
-                            span: None,
-                        };
+                        return ir::Type::new(ir::TypeKind::TypeVar(ir::TypeVarType::new(
+                            ir::TypeVarIdx::from(var_idx),
+                        )));
                     }
                 }
                 let entry = self.resolve_path(&instance.path);
@@ -293,19 +290,15 @@ impl<'t, 'd> Resolver<'t, 'd> {
                             .defs[def.idx()];
                         assert_eq!(type_def.vars.len(), instance.subst.len());
 
-                        return ir::Type {
-                            kind: ir::TypeKind::Instance(ir::InstanceType {
-                                bundle,
-                                schema,
-                                def,
-                                subst: instance
+                        return ir::Type::new(ir::TypeKind::Instance(
+                            ir::InstanceType::new(bundle, schema, def).with_subst(
+                                instance
                                     .subst
                                     .iter()
                                     .map(|subst| self.resolve_type_expr(enclosing, subst))
                                     .collect(),
-                            }),
-                            span: None,
-                        };
+                            ),
+                        ));
                     }
                     _ => panic!("Invalid path."),
                 }
@@ -316,15 +309,10 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
                 let sequence_def = builtins_schema.def_by_name.get("Sequence").unwrap();
 
-                ir::Type {
-                    kind: ir::TypeKind::Instance(ir::InstanceType {
-                        bundle: std_bundle.idx,
-                        schema: builtins_schema.idx,
-                        def: *sequence_def,
-                        subst: vec![self.resolve_type_expr(enclosing, &sequence.element)],
-                    }),
-                    span: None,
-                }
+                ir::Type::new(ir::TypeKind::Instance(
+                    ir::InstanceType::new(std_bundle.idx, builtins_schema.idx, *sequence_def)
+                        .with_subst(vec![self.resolve_type_expr(enclosing, &sequence.element)]),
+                ))
             }
             ast::TypeExpr::Map(map) => {
                 let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
@@ -332,18 +320,13 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
                 let map_def = builtins_schema.def_by_name.get("Map").unwrap();
 
-                ir::Type {
-                    kind: ir::TypeKind::Instance(ir::InstanceType {
-                        bundle: std_bundle.idx,
-                        schema: builtins_schema.idx,
-                        def: *map_def,
-                        subst: vec![
+                ir::Type::new(ir::TypeKind::Instance(
+                    ir::InstanceType::new(std_bundle.idx, builtins_schema.idx, *map_def)
+                        .with_subst(vec![
                             self.resolve_type_expr(enclosing, &map.key),
                             self.resolve_type_expr(enclosing, &map.value),
-                        ],
-                    }),
-                    span: None,
-                }
+                        ]),
+                ))
             }
             ast::TypeExpr::Unit => {
                 let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
@@ -351,15 +334,11 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
                 let unit_def = builtins_schema.def_by_name.get("unit").unwrap();
 
-                ir::Type {
-                    kind: ir::TypeKind::Instance(ir::InstanceType {
-                        bundle: std_bundle.idx,
-                        schema: builtins_schema.idx,
-                        def: *unit_def,
-                        subst: vec![],
-                    }),
-                    span: None,
-                }
+                ir::Type::new(ir::TypeKind::Instance(ir::InstanceType::new(
+                    std_bundle.idx,
+                    builtins_schema.idx,
+                    *unit_def,
+                )))
             }
         }
     }
@@ -407,14 +386,11 @@ fn transform_token_stream(stream: &ast::TokenStream) -> ir::TokenStream {
             }
         };
         composed.clear();
-        ir_tokens.push(ir::Token {
-            kind,
-            span: Some(ir::Span {
-                src: ir::SourceIdx::from(0),
-                start: start.unwrap(),
-                end: token.end(),
-            }),
-        });
+        ir_tokens.push(ir::Token::new(kind).with_span(Some(ir::Span::new(
+            ir::SourceIdx::from(0),
+            start.unwrap(),
+            token.end(),
+        ))));
     }
     ir_tokens.into()
 }
@@ -436,7 +412,7 @@ fn transform_attr(attr: &ast::Attr) -> ir::Attr {
         }
         ast::AttrKind::Tokens(tokens) => ir::AttrKind::Tokens(transform_token_stream(tokens)),
     };
-    ir::Attr { kind, span: None }
+    ir::Attr::new(kind)
 }
 
 fn transform_attrs(attrs: &[ast::Attr]) -> Vec<ir::Attr> {
@@ -562,12 +538,10 @@ impl Transformer {
     }
 
     pub fn transform(&self) -> ir::Unit {
-        ir::Unit {
-            sources: Vec::new(),
-            bundles: self
-                .loaded
+        ir::Unit::new().with_bundles(
+            self.loaded
                 .par_iter()
-                .map(| bundle| {
+                .map(|bundle| {
                     let mut dependencies = Vec::new();
 
                     let mut dependency_table = HashMap::new();
@@ -577,175 +551,150 @@ impl Transformer {
                             bundle.source.path.as_ref().unwrap().join(&dependency.path);
                         let dependency_bundle = self.get_bundle_by_path(&dependency_path).unwrap();
 
-                        dependencies.push(ir::Dependency {
-                            name: name.to_owned(),
-                            bundle: dependency_bundle.idx,
-                        });
+                        dependencies
+                            .push(ir::Dependency::new(name.to_owned(), dependency_bundle.idx));
                         dependency_table.insert(name.to_owned(), dependency_bundle.idx);
                     }
 
                     // Add implicit dependency on `std`.
-                    dependencies.push(ir::Dependency {
-                        name: "std".to_owned(),
-                        bundle: STD_BUNDLE,
-                    });
+                    dependencies.push(ir::Dependency::new("std".to_owned(), STD_BUNDLE));
                     dependency_table.insert("std".to_owned(), STD_BUNDLE);
 
-                    ir::Bundle {
-                        idx: bundle.idx,
-                        metadata: bundle.source.manifest.metadata.clone(),
-                        dependencies,
-                        schemas: bundle
-                            .schemas
-                            .par_iter()
-                            .map(| schema| {
-                                // TODO: build lookup table for schema from imports
-                                let mut resolver = Resolver {
-                                    transformer: &self,
-                                    bundle: bundle.idx,
-                                    schema: schema.idx,
-                                    dependencies: &dependency_table,
-                                    table: Default::default(),
-                                };
-                                // Local definitions take precedence.
-                                resolver.populate_defs();
-                                resolver.populate_imports();
+                    ir::Bundle::new(bundle.idx, bundle.source.manifest.metadata.clone())
+                        .with_dependencies(dependencies)
+                        .with_schemas(
+                            bundle
+                                .schemas
+                                .par_iter()
+                                .map(|schema| {
+                                    // TODO: build lookup table for schema from imports
+                                    let mut resolver = Resolver {
+                                        transformer: &self,
+                                        bundle: bundle.idx,
+                                        schema: schema.idx,
+                                        dependencies: &dependency_table,
+                                        table: Default::default(),
+                                    };
+                                    // Local definitions take precedence.
+                                    resolver.populate_defs();
+                                    resolver.populate_imports();
 
-                                ir::Schema {
-                                    idx: schema.idx,
-                                    name: schema.name.clone(),
-                                    docs: schema.docs.clone(),
-                                    attrs: Default::default(),
-                                    source: None,
-                                    defs: schema
+                                    ir::Schema::new(
+                                        schema.idx,
+                                        schema.name.clone(),
+                                        schema.docs.clone(),
+                                    )
+                                    .with_defs(schema
                                         .defs
                                         .iter()
                                         .map(|def| {
                                             let kind = match &def.kind {
                                                 ast::DefKind::Alias(alias) => {
-                                                    ir::DefKind::TypeAlias(ir::TypeAliasDef {
-                                                        aliased: resolver.resolve_type_expr(
+                                                    ir::DefKind::TypeAlias(ir::TypeAliasDef::new(
+                                                         resolver.resolve_type_expr(
                                                             &def,
                                                             &alias.aliased,
                                                         ),
-                                                    })
+                                                    ))
                                                 }
                                                 ast::DefKind::OpaqueType(_) => {
-                                                    ir::DefKind::OpaqueType(ir::OpaqueTypeDef {})
+                                                    ir::DefKind::OpaqueType(ir::OpaqueTypeDef::new())
                                                 }
                                                 ast::DefKind::RecordType(record) => {
-                                                    ir::DefKind::RecordType(ir::RecordTypeDef {
-                                                        fields: record
+                                                    ir::DefKind::RecordType(ir::RecordTypeDef::new().with_fields(
+                                                        record
                                                             .fields
                                                             .iter()
                                                             .map(|field| {
-                                                                ir::Field {
-                                                                    name: field
+                                                                ir::Field::new(
+                                                                    field
                                                                         .name
                                                                         .as_str()
                                                                         .to_owned(),
-                                                                    docs: field.docs.to_string(),
-                                                                    attrs: transform_attrs(
-                                                                        &field.attrs,
+                                                                    field.docs.to_string(),
+                                                                    resolver
+                                                                    .resolve_type_expr(
+                                                                        def, &field.typ,
                                                                     ),
-                                                                    typ: resolver
-                                                                        .resolve_type_expr(
-                                                                            def, &field.typ,
-                                                                        ),
-                                                                    is_optional: field.is_optional,
+                                                                    field.is_optional).with_attrs(transform_attrs(
+                                                                        &field.attrs,
+                                                                    ))
                                                                 }
-                                                            })
+                                                            )
                                                             .collect(),
-                                                    })
+                                                    ))
                                                 }
                                                 ast::DefKind::VariantType(variant) => {
-                                                    ir::DefKind::VariantType(ir::VariantTypeDef {
-                                                        variants: variant
+                                                    ir::DefKind::VariantType(ir::VariantTypeDef::new().with_variants(
+                                                         variant
                                                             .variants
                                                             .iter()
                                                             .map(|variant| {
-                                                                ir::Variant {
-                                                                    name: variant
+                                                                ir::Variant::new( variant
                                                                         .name
                                                                         .as_str()
                                                                         .to_owned(),
-                                                                    docs: variant.docs.to_string(),
-                                                                    attrs: transform_attrs(
+                                                                        variant.docs.to_string()
+                                                                    ).with_attrs(transform_attrs(
                                                                         &variant.attrs,
-                                                                    ),
-                                                                    typ: variant.typ.as_ref().map(
+                                                                    )).with_typ(variant.typ.as_ref().map(
                                                                         |typ| {
                                                                             resolver
                                                                                 .resolve_type_expr(
                                                                                     def, typ,
                                                                                 )
                                                                         },
-                                                                    ),
-                                                                }
+                                                                    ))
                                                             })
                                                             .collect(),
-                                                    })
+                                                    ))
                                                 }
                                                 ast::DefKind::WrapperType(wrapped) => {
-                                                    ir::DefKind::WrapperType(ir::WrapperTypeDef {
-                                                        wrapped: resolver.resolve_type_expr(
+                                                    ir::DefKind::WrapperType(ir::WrapperTypeDef::new(
+                                                         resolver.resolve_type_expr(
                                                             &def,
                                                             &wrapped.wrapped,
                                                         ),
-                                                    })
+                                                    ))
                                                 }
                                                 ast::DefKind::Service(service) => {
-                                                    ir::DefKind::Service(ir::ServiceDef {
-                                                        methods: service
+                                                    ir::DefKind::Service(ir::ServiceDef::new().with_methods(service
                                                             .methods
                                                             .iter()
                                                             .map(|method| {
-                                                                ir::Method {
-                                                                    name: method
+                                                                ir::Method::new(method
                                                                         .name
                                                                         .as_str()
                                                                         .to_owned(),
-                                                                    docs: method.docs.to_string(),
-                                                                    attrs: transform_attrs(
+                                                                    method.docs.to_string()).with_attrs(transform_attrs(
                                                                         &method.attrs,
-                                                                    ),
-                                                                    parameters: method
+                                                                    )).with_parameters(method
                                                                         .params
                                                                         .iter()
                                                                         .map(|param| {
-                                                                            ir::MethodParam { name: param.name.as_str().to_owned(), typ: resolver.resolve_type_expr(def, &param.typ), is_optional: param.is_optional }
+                                                                            ir::MethodParam::new(param.name.as_str().to_owned(), resolver.resolve_type_expr(def, &param.typ), param.is_optional )
                                                                         })
-                                                                        .collect(),
-                                                                    returns: method.returns.as_ref().map(|typ| resolver.resolve_type_expr(def, typ)),
-                                                                }
+                                                                        .collect()).with_returns(method.returns.as_ref().map(|typ| resolver.resolve_type_expr(def, typ)))
                                                             })
                                                             .collect(),
-                                                    })
+                                                    ))
                                                 }
                                             };
-                                            ir::Def {
-                                                name: def.name.as_str().to_owned(),
-                                                docs: def.docs.to_string(),
-                                                vars: def
+                                            ir::Def::new( def.name.as_str().to_owned(),
+                                                 def.docs.to_string(), kind).with_vars(def
                                                     .vars
                                                     .iter()
                                                     .map(|var| {
-                                                        ir::TypeVar {
-                                                            name: var.name.as_str().to_owned(),
-                                                        }
+                                                        ir::TypeVar::new(var.name.as_str().to_owned())
                                                     })
-                                                    .collect(),
-                                                attrs: transform_attrs(&def.attrs),
-                                                kind,
-                                            }
+                                                    .collect()).with_attrs(transform_attrs(&def.attrs))
                                         })
-                                        .collect(),
-                                }
-                            })
-                            .collect(),
-                    }
+                                        .collect(),)
+                                })
+                                .collect(),
+                        )
                 })
                 .collect(),
-        }
+        )
     }
 }

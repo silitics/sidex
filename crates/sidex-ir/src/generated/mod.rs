@@ -53,6 +53,7 @@ pub mod reflect {
     }
     #[doc = "A *unit* is a collection of bundles.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Unit {
         #[doc = "The bundles of the unit.\n"]
         pub bundles: ::std::vec::Vec<Bundle>,
@@ -135,6 +136,7 @@ pub mod reflect {
     }
     #[doc = "A bundle is a flat collection of schemas evolving together.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Bundle {
         #[doc = "The index of the bundle.\n"]
         pub idx: BundleIdx,
@@ -198,6 +200,7 @@ pub mod reflect {
     }
     #[doc = "A dependency of a bundle.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Dependency {
         #[doc = "The name of the dependency.\n"]
         pub name: ::std::string::String,
@@ -232,6 +235,7 @@ pub mod reflect {
     }
     #[doc = "Metadata of a bundle.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Metadata {
         #[doc = "The name of the bundle.\n"]
         pub name: ::std::string::String,
@@ -307,6 +311,7 @@ pub mod reflect {
     }
     #[doc = "A schema is a collection of definitions.\n\nNote that imports have already been processed and resolved.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Schema {
         #[doc = "The index of the schema.\n"]
         pub idx: SchemaIdx,
@@ -400,6 +405,7 @@ pub mod reflect {
     }
     #[doc = "A definition.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Def {
         #[doc = "The name of the definition.\n"]
         pub name: ::std::string::String,
@@ -480,6 +486,7 @@ pub mod reflect {
     }
     #[doc = "A type variable of a definition.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct TypeVar {
         #[doc = "Name of the type variable.\n"]
         pub name: ::std::string::String,
@@ -518,6 +525,7 @@ pub mod reflect {
     }
     #[doc = "A definition of a type alias.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct TypeAliasDef {
         #[doc = "The type that is aliased.\n"]
         pub aliased: Type,
@@ -540,6 +548,7 @@ pub mod reflect {
     }
     #[doc = "A definition of an opaque type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct OpaqueTypeDef {}
     impl OpaqueTypeDef {
         #[doc = "Creates a new [`OpaqueTypeDef`]."]
@@ -554,6 +563,7 @@ pub mod reflect {
     }
     #[doc = "A definition of a record type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct RecordTypeDef {
         #[doc = "The fields of the record type.\n"]
         pub fields: ::std::vec::Vec<Field>,
@@ -583,6 +593,7 @@ pub mod reflect {
     }
     #[doc = "A field of a record type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Field {
         #[doc = "The name of the field.\n"]
         pub name: ::std::string::String,
@@ -664,6 +675,7 @@ pub mod reflect {
     }
     #[doc = "A definition of a variant type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct VariantTypeDef {
         #[doc = "The variants of the variant type.\n"]
         pub variants: ::std::vec::Vec<Variant>,
@@ -693,6 +705,7 @@ pub mod reflect {
     }
     #[doc = "A variant of a variant type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Variant {
         #[doc = "The name of the variant.\n"]
         pub name: ::std::string::String,
@@ -756,6 +769,7 @@ pub mod reflect {
     }
     #[doc = "A definition of a wrapper type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct WrapperTypeDef {
         #[doc = "The type that is wrapped.\n"]
         pub wrapped: Type,
@@ -778,6 +792,7 @@ pub mod reflect {
     }
     #[doc = "A definition of a service.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct ServiceDef {
         #[doc = "The methods provided by the service.\n"]
         pub methods: ::std::vec::Vec<Method>,
@@ -807,6 +822,7 @@ pub mod reflect {
     }
     #[doc = "A method of a service definition.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Method {
         #[doc = "The name of the method.\n"]
         pub name: ::std::string::String,
@@ -883,6 +899,7 @@ pub mod reflect {
     }
     #[doc = "A parameter of a method.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct MethodParam {
         #[doc = "The name of the parameter.\n"]
         pub name: ::std::string::String,
@@ -933,6 +950,7 @@ pub mod reflect {
     }
     #[doc = "A type.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Type {
         #[doc = "The kind of the type.\n"]
         pub kind: TypeKind,
@@ -978,6 +996,7 @@ pub mod reflect {
     }
     #[doc = "A type to be determined via substitution of the respective type variable.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct TypeVarType {
         #[doc = "The index of the type variable in the enclosing definition.\n"]
         pub idx: TypeVarIdx,
@@ -1000,6 +1019,7 @@ pub mod reflect {
     }
     #[doc = "An instantiation of a type defined in some schema of some bundle.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct InstanceType {
         #[doc = "The bundle containing the schema containing the definition.\n"]
         pub bundle: BundleIdx,
@@ -1063,6 +1083,7 @@ pub mod reflect {
     }
     #[doc = "An attribute.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Attr {
         #[doc = "The kind of the attribute.\n"]
         pub kind: AttrKind,
@@ -1100,6 +1121,7 @@ pub mod reflect {
     }
     #[doc = "A *span* identifies a range of text in a source.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Span {
         #[doc = "The source.\n"]
         pub src: SourceIdx,
@@ -1146,6 +1168,7 @@ pub mod reflect {
     }
     #[doc = "A token.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[non_exhaustive]
     pub struct Token {
         #[doc = "The token itself.\n"]
         pub kind: TokenKind,

@@ -154,6 +154,7 @@ pub struct Inner {
 pub struct TypeAttrs {
     pub typ: Option<Type>,
     pub derive: Derive,
+    pub attrs: Vec<TokenStream>,
 }
 
 impl TryFrom<&[ir::Attr]> for TypeAttrs {
@@ -196,6 +197,11 @@ impl TryFrom<&[ir::Attr]> for TypeAttrs {
                                         .push(TokenStream::from_str(path.as_str()).unwrap())
                                 }
                             }
+                        }
+                        "attr" => {
+                            attrs
+                                .attrs
+                                .push(TokenStream::from_str(&list.elements[0].to_string()).unwrap())
                         }
                         _ => continue,
                     }
