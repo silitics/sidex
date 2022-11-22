@@ -116,6 +116,9 @@ pub(crate) fn render<'u, W: std::io::Write>(
     builder.add_labels(diagnostic.labels.iter().map(|label| {
         ariadne::Label::new(label.span().clone().into()).with_message(&label.message)
     }));
+    if let Some(help) = &diagnostic.help {
+        builder.set_help(help);
+    }
     builder.finish().write(cache, &mut writer)?;
 
     // 2️⃣ Print the associated errors.

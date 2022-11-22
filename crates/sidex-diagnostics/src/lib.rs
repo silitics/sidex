@@ -15,12 +15,14 @@
 //! - An optional [`ir::Span`] indicating the primary source span the diagnostic is about.
 //! - A list of [labels][Label] indicating contextual source spans the diagnostic is
 //!   about.
+//! - An optional help message with additional information.
 //!
 //! Here is an example for the creation of an error diagnostic:
 //!
 //! ```
 //! # use sidex_diagnostics::Diagnostic;
-//! Diagnostic::error("This is a custom error message!");
+//! Diagnostic::error("This is a custom error message!")
+//!     .with_help("Try X instead of Y.");
 //! ```
 //!
 //! For convenience, diagnostics can also be created from any [`Error`][std::error::Error]
@@ -40,6 +42,7 @@
 //! # use sidex_diagnostics::{Diagnostic, DiagnosticCtx};
 //! let ctx = DiagnosticCtx::new();
 //! ctx.exec(|| Diagnostic::error("This is a custom error message!").emit());
+//! assert_eq!(ctx.report().diagnostics().count(), 1);
 //! ```
 //!
 //! Merely creating a diagnostic will do nothing if the diagnostic is not emitted. Among
@@ -89,7 +92,7 @@ pub struct DiagnosticCtx {
 }
 
 impl DiagnosticCtx {
-    /// Creates a new diagnosis context.
+    /// Creates a new diagnostic context.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -220,7 +223,7 @@ impl std::fmt::Display for Severity {
 pub struct Diagnostic {
     /// The diagnostic severity.
     severity: Severity,
-    /// The message.
+    /// The diagnostic message.
     message: String,
     /// The location where the diagnostic has been created.
     created_at: Location<'static>,
@@ -230,8 +233,10 @@ pub struct Diagnostic {
     errors: Vec<anyhow::Error>,
     /// The primary source span the diagnostic is about.
     span: Option<ir::Span>,
-    /// Labels attached to contextually relevant source spans.
+    /// Labels indicating contextual source spans the diagnostic is about.
     labels: Vec<Label>,
+    /// An optional help message.
+    help: Option<String>,
 }
 
 impl Diagnostic {
@@ -247,6 +252,7 @@ impl Diagnostic {
             errors: Vec::new(),
             span: None,
             labels: Vec::new(),
+            help: None,
         }
     }
 
@@ -289,7 +295,7 @@ impl Diagnostic {
         Self::new(Severity::Hint, message)
     }
 
-    /// The errors attached to the diagnostic.
+    /// Iterator over the errors attached to the diagnostic.
     pub fn errors(&self) -> impl Iterator<Item = &dyn std::error::Error> {
         self.errors.iter().map(AsRef::as_ref)
     }
@@ -318,15 +324,22 @@ impl Diagnostic {
         self
     }
 
-    /// Attaches a label to the diagnostic.
-    pub fn attach_label(&mut self, label: Label) {
+    /// Adds a label to the diagnostic.
+    pub fn add_label(&mut self, label: Label) {
         self.labels.push(label);
     }
 
-    /// Attaches a label to the diagnostic.
+    /// Adds a label to the diagnostic.
     #[must_use]
     pub fn with_label(mut self, label: Label) -> Self {
-        self.attach_label(label);
+        self.add_label(label);
+        self
+    }
+
+    /// Sets the help message of the diagnostic.
+    #[must_use]
+    pub fn with_help<M: Into<String>>(mut self, message: M) -> Self {
+        self.help = Some(message.into());
         self
     }
 
@@ -350,9 +363,9 @@ impl Diagnostic {
 impl std::fmt::Display for Diagnostic {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("{}: {}", self.severity(), self.message()))?;
-        f.write_fmt(format_args!("\nCreated At: {}", self.created_at))?;
+        f.write_fmt(format_args!("\nCreated At: {}\n", self.created_at))?;
         if !self.errors.is_empty() {
-            f.write_str("\n==== ATTACHED ERRORS ===")?;
+            f.write_str("\n=== ATTACHED ERRORS ===")?;
             for error in &self.errors {
                 std::fmt::Display::fmt(error, f)?;
             }
