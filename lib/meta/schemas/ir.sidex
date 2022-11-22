@@ -30,6 +30,7 @@ record Unit {
 
 /// A storage for sources.
 record SourceStorage {
+    /// The sources.
     sources: [Source]
 }
 
@@ -78,6 +79,20 @@ record Metadata {
     authors?: [string],
 }
 
+/// An *identifier* with an optional span.
+record Identifier {
+    /// The identifier.
+    identifier: string,
+    /// The optional span of the identifier.
+    span?: Span,
+}
+
+/// Documentation attached to an item.
+record Docs {
+    /// The text of the documentation.
+    text: string,
+}
+
 /// A schema is a collection of definitions.
 ///
 /// Note that imports have already been processed and resolved.
@@ -88,8 +103,7 @@ record Schema {
     /// The name of the schema.
     name: string,
     /// The documentation of the schema.
-    #[builder(default)]
-    docs: string,
+    docs?: Docs,
     /// The attributes of the schema.
     attrs: [Attr],
     /// The definitions of the schema.
@@ -102,10 +116,9 @@ record Schema {
 #[rust(attr(non_exhaustive))]
 record Def {
     /// The name of the definition.
-    name: string,
+    name: Identifier,
     /// The documentation of the definition.
-    #[builder(default)]
-    docs: string,
+    docs?: Docs,
     /// The type variables of the definition.
     vars: [TypeVar],
     /// The attributes of the definition.
@@ -117,8 +130,8 @@ record Def {
 /// A type variable of a definition.
 #[rust(attr(non_exhaustive))]
 record TypeVar {
-    /// Name of the type variable.
-    name: string,
+    /// The name of the type variable.
+    name: Identifier,
 }
 
 /// A definition kind.
@@ -159,10 +172,9 @@ record RecordTypeDef {
 #[rust(attr(non_exhaustive))]
 record Field {
     /// The name of the field.
-    name: string,
+    name: Identifier,
     /// The documentation of the field.
-    #[builder(default)]
-    docs: string,
+    docs?: Docs,
     /// The attributes of the field.
     attrs: [Attr],
     /// The type of the field.
@@ -183,10 +195,9 @@ record VariantTypeDef {
 #[rust(attr(non_exhaustive))]
 record Variant {
     /// The name of the variant.
-    name: string,
+    name: Identifier,
     /// The documentation of the variant.
-    #[builder(default)]
-    docs: string,
+    docs?: Docs,
     /// The attributes of the variant.
     attrs: [Attr],
     /// The optional type of the variant.
@@ -211,10 +222,9 @@ record ServiceDef {
 #[rust(attr(non_exhaustive))]
 record Method {
     /// The name of the method.
-    name: string,
+    name: Identifier,
     /// The documentation of the method.
-    #[builder(default)]
-    docs: string,
+    docs?: Docs,
     /// The attributes of the method.
     attrs: [Attr],
     /// The parameters of the method.
@@ -227,7 +237,7 @@ record Method {
 #[rust(attr(non_exhaustive))]
 record MethodParam {
     /// The name of the parameter.
-    name: string,
+    name: Identifier,
     /// The type of the parameter.
     typ: Type,
     /// Indicates whether the parameter is optional.

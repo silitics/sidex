@@ -97,7 +97,7 @@ pub mod ir {
     #[doc = "A storage for sources.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     pub struct SourceStorage {
-        #[doc = ""]
+        #[doc = "The sources.\n"]
         pub sources: ::std::vec::Vec<Source>,
     }
     impl SourceStorage {
@@ -351,6 +351,65 @@ pub mod ir {
             self
         }
     }
+    #[doc = "An *identifier* with an optional span.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct Identifier {
+        #[doc = "The identifier.\n"]
+        pub identifier: ::std::string::String,
+        #[doc = "The optional span of the identifier.\n"]
+        pub span: ::std::option::Option<Span>,
+    }
+    impl Identifier {
+        #[doc = "Creates a new [`Identifier`]."]
+        pub fn new(identifier: ::std::string::String) -> Self {
+            Self {
+                identifier,
+                span: ::std::default::Default::default(),
+            }
+        }
+        #[doc = "Sets the value of `identifier`."]
+        pub fn set_identifier(&mut self, identifier: ::std::string::String) -> &mut Self {
+            self.identifier = identifier;
+            self
+        }
+        #[doc = "Sets the value of `identifier`."]
+        pub fn with_identifier(mut self, identifier: ::std::string::String) -> Self {
+            self.identifier = identifier;
+            self
+        }
+        #[doc = "Sets the value of `span`."]
+        pub fn set_span(&mut self, span: ::std::option::Option<Span>) -> &mut Self {
+            self.span = span;
+            self
+        }
+        #[doc = "Sets the value of `span`."]
+        pub fn with_span(mut self, span: ::std::option::Option<Span>) -> Self {
+            self.span = span;
+            self
+        }
+    }
+    #[doc = "Documentation attached to an item.\n"]
+    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    pub struct Docs {
+        #[doc = "The text of the documentation.\n"]
+        pub text: ::std::string::String,
+    }
+    impl Docs {
+        #[doc = "Creates a new [`Docs`]."]
+        pub fn new(text: ::std::string::String) -> Self {
+            Self { text }
+        }
+        #[doc = "Sets the value of `text`."]
+        pub fn set_text(&mut self, text: ::std::string::String) -> &mut Self {
+            self.text = text;
+            self
+        }
+        #[doc = "Sets the value of `text`."]
+        pub fn with_text(mut self, text: ::std::string::String) -> Self {
+            self.text = text;
+            self
+        }
+    }
     #[doc = "A schema is a collection of definitions.\n\nNote that imports have already been processed and resolved.\n"]
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     #[non_exhaustive]
@@ -360,7 +419,7 @@ pub mod ir {
         #[doc = "The name of the schema.\n"]
         pub name: ::std::string::String,
         #[doc = "The documentation of the schema.\n"]
-        pub docs: ::std::string::String,
+        pub docs: ::std::option::Option<Docs>,
         #[doc = "The attributes of the schema.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The definitions of the schema.\n"]
@@ -401,12 +460,12 @@ pub mod ir {
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn set_docs(&mut self, docs: ::std::string::String) -> &mut Self {
+        pub fn set_docs(&mut self, docs: ::std::option::Option<Docs>) -> &mut Self {
             self.docs = docs;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn with_docs(mut self, docs: ::std::string::String) -> Self {
+        pub fn with_docs(mut self, docs: ::std::option::Option<Docs>) -> Self {
             self.docs = docs;
             self
         }
@@ -446,9 +505,9 @@ pub mod ir {
     #[non_exhaustive]
     pub struct Def {
         #[doc = "The name of the definition.\n"]
-        pub name: ::std::string::String,
+        pub name: Identifier,
         #[doc = "The documentation of the definition.\n"]
-        pub docs: ::std::string::String,
+        pub docs: ::std::option::Option<Docs>,
         #[doc = "The type variables of the definition.\n"]
         pub vars: ::std::vec::Vec<TypeVar>,
         #[doc = "The attributes of the definition.\n"]
@@ -458,7 +517,7 @@ pub mod ir {
     }
     impl Def {
         #[doc = "Creates a new [`Def`]."]
-        pub fn new(name: ::std::string::String, kind: DefKind) -> Self {
+        pub fn new(name: Identifier, kind: DefKind) -> Self {
             Self {
                 name,
                 kind,
@@ -468,22 +527,22 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
+        pub fn set_name(&mut self, name: Identifier) -> &mut Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
+        pub fn with_name(mut self, name: Identifier) -> Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn set_docs(&mut self, docs: ::std::string::String) -> &mut Self {
+        pub fn set_docs(&mut self, docs: ::std::option::Option<Docs>) -> &mut Self {
             self.docs = docs;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn with_docs(mut self, docs: ::std::string::String) -> Self {
+        pub fn with_docs(mut self, docs: ::std::option::Option<Docs>) -> Self {
             self.docs = docs;
             self
         }
@@ -522,21 +581,21 @@ pub mod ir {
     #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
     #[non_exhaustive]
     pub struct TypeVar {
-        #[doc = "Name of the type variable.\n"]
-        pub name: ::std::string::String,
+        #[doc = "The name of the type variable.\n"]
+        pub name: Identifier,
     }
     impl TypeVar {
         #[doc = "Creates a new [`TypeVar`]."]
-        pub fn new(name: ::std::string::String) -> Self {
+        pub fn new(name: Identifier) -> Self {
             Self { name }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
+        pub fn set_name(&mut self, name: Identifier) -> &mut Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
+        pub fn with_name(mut self, name: Identifier) -> Self {
             self.name = name;
             self
         }
@@ -630,9 +689,9 @@ pub mod ir {
     #[non_exhaustive]
     pub struct Field {
         #[doc = "The name of the field.\n"]
-        pub name: ::std::string::String,
+        pub name: Identifier,
         #[doc = "The documentation of the field.\n"]
-        pub docs: ::std::string::String,
+        pub docs: ::std::option::Option<Docs>,
         #[doc = "The attributes of the field.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The type of the field.\n"]
@@ -642,7 +701,7 @@ pub mod ir {
     }
     impl Field {
         #[doc = "Creates a new [`Field`]."]
-        pub fn new(name: ::std::string::String, typ: Type) -> Self {
+        pub fn new(name: Identifier, typ: Type) -> Self {
             Self {
                 name,
                 typ,
@@ -652,22 +711,22 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
+        pub fn set_name(&mut self, name: Identifier) -> &mut Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
+        pub fn with_name(mut self, name: Identifier) -> Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn set_docs(&mut self, docs: ::std::string::String) -> &mut Self {
+        pub fn set_docs(&mut self, docs: ::std::option::Option<Docs>) -> &mut Self {
             self.docs = docs;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn with_docs(mut self, docs: ::std::string::String) -> Self {
+        pub fn with_docs(mut self, docs: ::std::option::Option<Docs>) -> Self {
             self.docs = docs;
             self
         }
@@ -737,9 +796,9 @@ pub mod ir {
     #[non_exhaustive]
     pub struct Variant {
         #[doc = "The name of the variant.\n"]
-        pub name: ::std::string::String,
+        pub name: Identifier,
         #[doc = "The documentation of the variant.\n"]
-        pub docs: ::std::string::String,
+        pub docs: ::std::option::Option<Docs>,
         #[doc = "The attributes of the variant.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The optional type of the variant.\n"]
@@ -747,7 +806,7 @@ pub mod ir {
     }
     impl Variant {
         #[doc = "Creates a new [`Variant`]."]
-        pub fn new(name: ::std::string::String) -> Self {
+        pub fn new(name: Identifier) -> Self {
             Self {
                 name,
                 docs: ::std::default::Default::default(),
@@ -756,22 +815,22 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
+        pub fn set_name(&mut self, name: Identifier) -> &mut Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
+        pub fn with_name(mut self, name: Identifier) -> Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn set_docs(&mut self, docs: ::std::string::String) -> &mut Self {
+        pub fn set_docs(&mut self, docs: ::std::option::Option<Docs>) -> &mut Self {
             self.docs = docs;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn with_docs(mut self, docs: ::std::string::String) -> Self {
+        pub fn with_docs(mut self, docs: ::std::option::Option<Docs>) -> Self {
             self.docs = docs;
             self
         }
@@ -854,9 +913,9 @@ pub mod ir {
     #[non_exhaustive]
     pub struct Method {
         #[doc = "The name of the method.\n"]
-        pub name: ::std::string::String,
+        pub name: Identifier,
         #[doc = "The documentation of the method.\n"]
-        pub docs: ::std::string::String,
+        pub docs: ::std::option::Option<Docs>,
         #[doc = "The attributes of the method.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The parameters of the method.\n"]
@@ -866,7 +925,7 @@ pub mod ir {
     }
     impl Method {
         #[doc = "Creates a new [`Method`]."]
-        pub fn new(name: ::std::string::String) -> Self {
+        pub fn new(name: Identifier) -> Self {
             Self {
                 name,
                 docs: ::std::default::Default::default(),
@@ -876,22 +935,22 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
+        pub fn set_name(&mut self, name: Identifier) -> &mut Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
+        pub fn with_name(mut self, name: Identifier) -> Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn set_docs(&mut self, docs: ::std::string::String) -> &mut Self {
+        pub fn set_docs(&mut self, docs: ::std::option::Option<Docs>) -> &mut Self {
             self.docs = docs;
             self
         }
         #[doc = "Sets the value of `docs`."]
-        pub fn with_docs(mut self, docs: ::std::string::String) -> Self {
+        pub fn with_docs(mut self, docs: ::std::option::Option<Docs>) -> Self {
             self.docs = docs;
             self
         }
@@ -931,7 +990,7 @@ pub mod ir {
     #[non_exhaustive]
     pub struct MethodParam {
         #[doc = "The name of the parameter.\n"]
-        pub name: ::std::string::String,
+        pub name: Identifier,
         #[doc = "The type of the parameter.\n"]
         pub typ: Type,
         #[doc = "Indicates whether the parameter is optional.\n"]
@@ -939,7 +998,7 @@ pub mod ir {
     }
     impl MethodParam {
         #[doc = "Creates a new [`MethodParam`]."]
-        pub fn new(name: ::std::string::String, typ: Type) -> Self {
+        pub fn new(name: Identifier, typ: Type) -> Self {
             Self {
                 name,
                 typ,
@@ -947,12 +1006,12 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
+        pub fn set_name(&mut self, name: Identifier) -> &mut Self {
             self.name = name;
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
+        pub fn with_name(mut self, name: Identifier) -> Self {
             self.name = name;
             self
         }

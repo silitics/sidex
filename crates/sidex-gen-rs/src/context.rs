@@ -37,7 +37,7 @@ pub struct FieldInfo {
 
 impl<'cx> SchemaCtx<'cx> {
     pub fn field_info(&self, def: &ir::Def, field: &ir::Field) -> FieldInfo {
-        let name = format_ident!("{}", &field.name);
+        let name = format_ident!("{}", &field.name.as_str());
         let mut typ = self.resolve_type(def, &field.typ);
         let attrs = FieldAttrs::try_from_attrs(&field.attrs)
             .map_err(|_| ())
@@ -58,7 +58,7 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn type_info(&self, def: &ir::Def) -> TypeInfo {
-        let ident = format_ident!("{}", def.name);
+        let ident = format_ident!("{}", def.name.as_str());
         let generics = self.generic_type_vars(def);
         let vis = syn::parse_str::<syn::Visibility>("pub").unwrap();
         TypeInfo {
@@ -69,14 +69,17 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn resolve_type_var(&self, def: &ir::Def, var: &ir::TypeVarType) -> syn::Ident {
-        format_ident!("{}", def[var.idx].name)
+        format_ident!("{}", def[var.idx].name.as_str())
     }
 
     pub fn generic_type_vars(&self, def: &ir::Def) -> TokenStream {
         if def.vars.is_empty() {
             quote! {}
         } else {
-            let vars = def.vars.iter().map(|var| format_ident!("{}", var.name));
+            let vars = def
+                .vars
+                .iter()
+                .map(|var| format_ident!("{}", var.name.as_str()));
 
             quote! { < #(#vars , )* > }
         }
@@ -87,13 +90,18 @@ impl<'cx> SchemaCtx<'cx> {
         let schema = &bundle[instance.schema];
         let def = &schema[instance.def];
 
-        format!("::{}::{}::{}", bundle.metadata.name, schema.name, def.name)
+        format!(
+            "::{}::{}::{}",
+            bundle.metadata.name,
+            schema.name,
+            def.name.as_str()
+        )
     }
 
     pub fn resolve_type(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
         match &typ.kind {
             ir::TypeKind::TypeVar(var) => {
-                let var = format_ident!("{}", def[var.idx].name);
+                let var = format_ident!("{}", def[var.idx].name.as_str());
                 quote! { #var }
             }
             ir::TypeKind::Instance(instance) => {
@@ -101,15 +109,19 @@ impl<'cx> SchemaCtx<'cx> {
                 let schema = &bundle[instance.schema];
                 let def = &schema[instance.def];
 
-                let qualified_path =
-                    format!("::{}::{}::{}", bundle.metadata.name, schema.name, def.name);
+                let qualified_path = format!(
+                    "::{}::{}::{}",
+                    bundle.metadata.name,
+                    schema.name,
+                    def.name.as_str()
+                );
 
                 let typ = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path) {
                     let rust_path = syn::parse_str::<syn::TypePath>(path).unwrap();
                     rust_path.to_token_stream()
                 } else {
                     if instance.bundle == self.bundle_ctx.bundle.idx {
-                        let def_name = format_ident!("{}", &def.name);
+                        let def_name = format_ident!("{}", &def.name.as_str());
                         if instance.schema == self.schema.idx {
                             quote! { #def_name }
                         } else {

@@ -16,8 +16,12 @@ pub struct Types;
 
 impl Plugin for Types {
     fn visit_def(&self, ctx: &SchemaCtx, def: &Def) -> Result<proc_macro2::TokenStream> {
-        let name = format_ident!("{}", def.name);
-        let docs = &def.docs;
+        let name = format_ident!("{}", def.name.as_str());
+        let docs = def
+            .docs
+            .as_ref()
+            .map(|docs| docs.as_str())
+            .unwrap_or_default();
         let vars = ctx.generic_type_vars(def);
         let vis = quote! { pub };
         let mut derive_traits = ctx
@@ -67,8 +71,12 @@ impl Plugin for Types {
                     .fields
                     .iter()
                     .map(|field| {
-                        let name = format_ident!("{}", &field.name);
-                        let docs = &field.docs;
+                        let name = format_ident!("{}", &field.name.as_str());
+                        let docs = field
+                            .docs
+                            .as_ref()
+                            .map(|docs| docs.as_str())
+                            .unwrap_or_default();
                         let mut typ = ctx.resolve_type(def, &field.typ);
                         let attrs = FieldAttrs::try_from_attrs(&field.attrs)?;
                         for wrapper in attrs.wrappers {
@@ -99,8 +107,12 @@ impl Plugin for Types {
                     .variants
                     .iter()
                     .map(|variant| {
-                        let name = format_ident!("{}", &variant.name);
-                        let docs = &variant.docs;
+                        let name = format_ident!("{}", &variant.name.as_str());
+                        let docs = variant
+                            .docs
+                            .as_ref()
+                            .map(|docs| docs.as_str())
+                            .unwrap_or_default();
                         if let Some(typ) = &variant.typ {
                             let typ = ctx.resolve_type(def, typ);
                             quote! {

@@ -273,3 +273,15 @@ impl Spanned for &Span {
         (*self).clone()
     }
 }
+
+impl Identifier {
+    pub fn as_str(&self) -> &str {
+        self.identifier.as_str()
+    }
+}
+
+impl Docs {
+    pub fn as_str(&self) -> &str {
+        self.text.as_str()
+    }
+}

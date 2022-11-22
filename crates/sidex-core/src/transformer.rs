@@ -582,7 +582,7 @@ impl Transformer {
                                     ir::Schema::new(
                                         schema.idx,
                                         schema.name.clone(),
-                                    ).with_docs(schema.docs.clone(),)
+                                    ).with_docs(Some(ir::Docs::new(schema.docs.clone())))
                                     .with_defs(schema
                                         .defs
                                         .iter()
@@ -606,15 +606,15 @@ impl Transformer {
                                                             .iter()
                                                             .map(|field| {
                                                                 ir::Field::new(
-                                                                    field
+                                                                    ir::Identifier::new(field
                                                                         .name
                                                                         .as_str()
-                                                                        .to_owned(),
+                                                                        .to_owned()),
                                                                     resolver
                                                                     .resolve_type_expr(
                                                                         def, &field.typ,
                                                                     )
-                                                                    ).with_docs(field.docs.to_string()).with_attrs(transform_attrs(
+                                                                    ).with_docs(Some(ir::Docs::new(field.docs.to_string()))).with_attrs(transform_attrs(
                                                                         &field.attrs,
                                                                     )).with_is_optional(field.is_optional)
                                                                 }
@@ -628,11 +628,11 @@ impl Transformer {
                                                             .variants
                                                             .iter()
                                                             .map(|variant| {
-                                                                ir::Variant::new( variant
+                                                                ir::Variant::new( ir::Identifier::new(variant
                                                                         .name
                                                                         .as_str()
-                                                                        .to_owned(),
-                                                                    ).with_docs(variant.docs.to_string()).with_attrs(transform_attrs(
+                                                                        .to_owned()),
+                                                                    ).with_docs(Some(ir::Docs::new(variant.docs.to_string()))).with_attrs(transform_attrs(
                                                                         &variant.attrs,
                                                                     )).with_typ(variant.typ.as_ref().map(
                                                                         |typ| {
@@ -659,17 +659,17 @@ impl Transformer {
                                                             .methods
                                                             .iter()
                                                             .map(|method| {
-                                                                ir::Method::new(method
+                                                                ir::Method::new(ir::Identifier::new(method
                                                                         .name
                                                                         .as_str()
-                                                                        .to_owned(),
-                                                                    ).with_docs(method.docs.to_string()).with_attrs(transform_attrs(
+                                                                        .to_owned()),
+                                                                    ).with_docs(Some(ir::Docs::new(method.docs.to_string()))).with_attrs(transform_attrs(
                                                                         &method.attrs,
                                                                     )).with_parameters(method
                                                                         .params
                                                                         .iter()
                                                                         .map(|param| {
-                                                                            ir::MethodParam::new(param.name.as_str().to_owned(), resolver.resolve_type_expr(def, &param.typ) ).with_is_optional(param.is_optional)
+                                                                            ir::MethodParam::new(ir::Identifier::new(param.name.as_str().to_owned()), resolver.resolve_type_expr(def, &param.typ) ).with_is_optional(param.is_optional)
                                                                         })
                                                                         .collect()).with_returns(method.returns.as_ref().map(|typ| resolver.resolve_type_expr(def, typ)))
                                                             })
@@ -677,11 +677,11 @@ impl Transformer {
                                                     ))
                                                 }
                                             };
-                                            ir::Def::new( def.name.as_str().to_owned(), kind).with_docs(def.docs.to_string()).with_vars(def
+                                            ir::Def::new( ir::Identifier::new(def.name.as_str().to_owned()), kind).with_docs(Some(ir::Docs::new(def.docs.to_string()))).with_vars(def
                                                     .vars
                                                     .iter()
                                                     .map(|var| {
-                                                        ir::TypeVar::new(var.name.as_str().to_owned())
+                                                        ir::TypeVar::new(ir::Identifier::new(var.name.as_str().to_owned()))
                                                     })
                                                     .collect()).with_attrs(transform_attrs(&def.attrs))
                                         })
