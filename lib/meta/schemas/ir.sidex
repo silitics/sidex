@@ -282,15 +282,6 @@ record InstanceType {
     subst: [Type],
 }
 
-/// An attribute.
-#[rust(attr(non_exhaustive))]
-record Attr {
-    /// The kind of the attribute.
-    kind: AttrKind,
-    /// The span of the attribute.
-    span?: Span,
-}
-
 /// A *span* identifies a range of text in a source.
 #[rust(
     derive(PartialEq, Eq, Hash),
@@ -327,31 +318,48 @@ variant Literal {
     Bool: bool,
 }
 
-/// A stream of tokens.
-wrapper TokenStream: [Token]
-
 /// A `::` separated path of identifiers.
 wrapper Path: string
 
-/// A compile-time structured attribute.
+/// A stream of tokens.
+wrapper TokenStream: [Token]
+
+/// An attribute.
+#[rust(attr(non_exhaustive))]
+record Attr {
+    /// The kind of the attribute.
+    kind: AttrKind,
+    /// The span of the attribute.
+    span?: Span,
+}
+
+/// The four kinds of attributes.
 variant AttrKind {
     /// A `::` separated path.
     Path: Path,
-    /// A list of `,` separated attributes.
+    /// A list attribute of the form `<PATH> ( <ARGS> )` where `<ARGS>` is a
+    /// `,`-separated sequence of arguments.
     List: AttrList,
-    /// An assign attribute.
+    /// An assign attribute of the form `<PATH> = <ATTR>` where `<ATTR>` is an attribute.
     Assign: AttrAssign,
-    /// A stream of tokens.
+    /// A stream of tokens (if the other alternatives do not apply).
     Tokens: TokenStream,
 }
 
+/// A list attribute of the form `<PATH> ( <ARGS> )` where `<ARGS>` is a `,`-separated
+/// sequence of arguments.
 record AttrList {
+    /// The path of the attribute.
     path: Path,
-    elements: [Attr],
+    /// The arguments of the attribute.
+    args: [Attr],
 }
 
+/// An assign attribute of the form `<PATH> = <ATTR>` where `<ATTR>` is an attribute.
 record AttrAssign {
+    /// The path of the attribute.
     path: Path,
+    /// The assigned value.
     #[rust(box)]
     value: Attr,
 }

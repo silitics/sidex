@@ -12,6 +12,7 @@
 //! schema.
 
 use std::{
+    collections::HashMap,
     fmt::Write,
     ops::{Index, IndexMut},
 };
@@ -185,11 +186,11 @@ impl std::fmt::Display for Attr {
             AttrKind::List(list) => {
                 f.write_str(list.path.as_str())?;
                 f.write_char('(')?;
-                for idx in 0..list.elements.len() {
+                for idx in 0..list.args.len() {
                     if idx != 0 {
                         f.write_str(", ")?;
                     }
-                    std::fmt::Display::fmt(&list.elements[idx], f)?;
+                    std::fmt::Display::fmt(&list.args[idx], f)?;
                 }
                 f.write_char(')')
             }
@@ -259,18 +260,18 @@ impl Source {
 }
 
 pub trait Spanned {
-    fn span(&self) -> Span;
+    fn span(&self) -> Option<Span>;
 }
 
 impl Spanned for Span {
-    fn span(&self) -> Span {
-        self.clone()
+    fn span(&self) -> Option<Span> {
+        Some(self.clone())
     }
 }
 
-impl Spanned for &Span {
-    fn span(&self) -> Span {
-        (*self).clone()
+impl Spanned for Attr {
+    fn span(&self) -> Option<Span> {
+        self.span.clone()
     }
 }
 
@@ -283,5 +284,100 @@ impl Identifier {
 impl Docs {
     pub fn as_str(&self) -> &str {
         self.text.as_str()
+    }
+}
+
+impl Type {
+    pub fn substitute(&self, substitutions: &HashMap<TypeVarIdx, Type>) -> Type {
+        match &self.kind {
+            TypeKind::TypeVar(var) => substitutions.get(&var.idx).unwrap_or(self).clone(),
+            TypeKind::Instance(instance) => {
+                Type {
+                    kind: TypeKind::Instance(InstanceType {
+                        subst: instance
+                            .subst
+                            .iter()
+                            .map(|typ| typ.substitute(substitutions))
+                            .collect(),
+                        ..instance.clone()
+                    }),
+                    ..self.clone()
+                }
+            }
+        }
+    }
+}
+
+impl Unit {
+    pub fn is_concrete(&self, typ: &Type) -> bool {
+        match &typ.kind {
+            TypeKind::TypeVar(_) => false,
+            TypeKind::Instance(instance) => instance.subst.iter().all(|typ| self.is_concrete(typ)),
+        }
+    }
+
+    pub fn is_alias_free(&self, typ: &Type) -> bool {
+        match &typ.kind {
+            TypeKind::TypeVar(_) => true,
+            TypeKind::Instance(instance) => {
+                let def = &self[instance.bundle][instance.schema][instance.def];
+                match &def.kind {
+                    DefKind::TypeAlias(_) => false,
+                    _ => instance.subst.iter().all(|typ| self.is_alias_free(typ)),
+                }
+            }
+        }
+    }
+
+    pub fn apply_subst(&self, typ: &Type, subst: &[Type]) -> Type {
+        let substitutions = subst
+            .iter()
+            .enumerate()
+            .map(|(idx, subst)| (TypeVarIdx::from(idx), subst.clone()))
+            .collect();
+        typ.substitute(&substitutions)
+    }
+
+    pub fn resolve_aliases(&self, typ: &Type) -> Type {
+        match &typ.kind {
+            TypeKind::TypeVar(_) => typ.clone(),
+            TypeKind::Instance(instance) => {
+                let def = &self[instance.bundle][instance.schema][instance.def];
+                match &def.kind {
+                    DefKind::TypeAlias(alias) => {
+                        let aliased = self.apply_subst(&alias.aliased, &instance.subst);
+                        self.resolve_aliases(&aliased)
+                    }
+                    _ => {
+                        // Recursively resolve aliases.
+                        Type {
+                            kind: TypeKind::Instance(InstanceType {
+                                subst: instance
+                                    .subst
+                                    .iter()
+                                    .map(|typ| self.resolve_aliases(typ))
+                                    .collect(),
+                                ..instance.clone()
+                            }),
+                            ..typ.clone()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn record_type(&self, typ: &Type) -> Option<&RecordTypeDef> {
+        match &typ.kind {
+            TypeKind::TypeVar(_) => None,
+            TypeKind::Instance(instance) => {
+                let def = &self[instance.bundle][instance.schema][instance.def];
+                match &def.kind {
+                    DefKind::TypeAlias(alias) => self.record_type(&alias.aliased),
+                    DefKind::RecordType(record) => Some(record),
+                    _ => None,
+                }
+            }
+        }
     }
 }

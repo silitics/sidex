@@ -3,7 +3,7 @@
 pub mod ir {
     #[doc = "Uniquely identifies a source in a unit.\n"]
     #[derive(
-        :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
+        Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize, Copy, PartialEq, Eq, Hash,
     )]
     pub struct SourceIdx(pub(crate) usize);
     impl ::std::convert::From<SourceIdx> for usize {
@@ -13,7 +13,7 @@ pub mod ir {
     }
     #[doc = "Uniquely identifies a bundle in a unit.\n"]
     #[derive(
-        :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
+        Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize, Copy, PartialEq, Eq, Hash,
     )]
     pub struct BundleIdx(pub(crate) usize);
     impl ::std::convert::From<BundleIdx> for usize {
@@ -23,7 +23,7 @@ pub mod ir {
     }
     #[doc = "Uniquely identifies a schema in bundle.\n"]
     #[derive(
-        :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
+        Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize, Copy, PartialEq, Eq, Hash,
     )]
     pub struct SchemaIdx(pub(crate) usize);
     impl ::std::convert::From<SchemaIdx> for usize {
@@ -33,7 +33,7 @@ pub mod ir {
     }
     #[doc = "Uniquely identifies a definition in a schema.\n"]
     #[derive(
-        :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
+        Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize, Copy, PartialEq, Eq, Hash,
     )]
     pub struct DefIdx(pub(crate) usize);
     impl ::std::convert::From<DefIdx> for usize {
@@ -43,7 +43,7 @@ pub mod ir {
     }
     #[doc = "Uniquely identifies a type variable in a definition.\n"]
     #[derive(
-        :: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, Copy, PartialEq, Eq, Hash,
+        Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize, Copy, PartialEq, Eq, Hash,
     )]
     pub struct TypeVarIdx(pub(crate) usize);
     impl ::std::convert::From<TypeVarIdx> for usize {
@@ -52,7 +52,7 @@ pub mod ir {
         }
     }
     #[doc = "A *unit* is a collection of bundles.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Unit {
         #[doc = "The bundles of the unit.\n"]
@@ -95,7 +95,7 @@ pub mod ir {
         }
     }
     #[doc = "A storage for sources.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub struct SourceStorage {
         #[doc = "The sources.\n"]
         pub sources: ::std::vec::Vec<Source>,
@@ -124,7 +124,7 @@ pub mod ir {
         }
     }
     #[doc = "A *source* is simply a chunk of text.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub struct Source {
         #[doc = "The source index of the source.\n"]
         pub idx: SourceIdx,
@@ -177,7 +177,7 @@ pub mod ir {
         }
     }
     #[doc = "A bundle is a flat collection of schemas evolving together.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Bundle {
         #[doc = "The index of the bundle.\n"]
@@ -241,7 +241,7 @@ pub mod ir {
         }
     }
     #[doc = "A dependency of a bundle.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Dependency {
         #[doc = "The name of the dependency.\n"]
@@ -276,7 +276,7 @@ pub mod ir {
         }
     }
     #[doc = "Metadata of a bundle.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Metadata {
         #[doc = "The name of the bundle.\n"]
@@ -352,7 +352,7 @@ pub mod ir {
         }
     }
     #[doc = "An *identifier* with an optional span.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub struct Identifier {
         #[doc = "The identifier.\n"]
         pub identifier: ::std::string::String,
@@ -389,7 +389,7 @@ pub mod ir {
         }
     }
     #[doc = "Documentation attached to an item.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub struct Docs {
         #[doc = "The text of the documentation.\n"]
         pub text: ::std::string::String,
@@ -411,7 +411,7 @@ pub mod ir {
         }
     }
     #[doc = "A schema is a collection of definitions.\n\nNote that imports have already been processed and resolved.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Schema {
         #[doc = "The index of the schema.\n"]
@@ -501,7 +501,7 @@ pub mod ir {
         }
     }
     #[doc = "A definition.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Def {
         #[doc = "The name of the definition.\n"]
@@ -578,7 +578,7 @@ pub mod ir {
         }
     }
     #[doc = "A type variable of a definition.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct TypeVar {
         #[doc = "The name of the type variable.\n"]
@@ -601,7 +601,7 @@ pub mod ir {
         }
     }
     #[doc = "A definition kind.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub enum DefKind {
         #[doc = "Definition of a type alias.\n"]
         TypeAlias(TypeAliasDef),
@@ -617,7 +617,7 @@ pub mod ir {
         Service(ServiceDef),
     }
     #[doc = "A definition of a type alias.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct TypeAliasDef {
         #[doc = "The type that is aliased.\n"]
@@ -640,7 +640,7 @@ pub mod ir {
         }
     }
     #[doc = "A definition of an opaque type.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct OpaqueTypeDef {}
     impl OpaqueTypeDef {
@@ -655,7 +655,7 @@ pub mod ir {
         }
     }
     #[doc = "A definition of a record type.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct RecordTypeDef {
         #[doc = "The fields of the record type.\n"]
@@ -685,7 +685,7 @@ pub mod ir {
         }
     }
     #[doc = "A field of a record type.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Field {
         #[doc = "The name of the field.\n"]
@@ -762,7 +762,7 @@ pub mod ir {
         }
     }
     #[doc = "A definition of a variant type.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct VariantTypeDef {
         #[doc = "The variants of the variant type.\n"]
@@ -792,7 +792,7 @@ pub mod ir {
         }
     }
     #[doc = "A variant of a variant type.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Variant {
         #[doc = "The name of the variant.\n"]
@@ -856,7 +856,7 @@ pub mod ir {
         }
     }
     #[doc = "A definition of a wrapper type.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct WrapperTypeDef {
         #[doc = "The type that is wrapped.\n"]
@@ -879,7 +879,7 @@ pub mod ir {
         }
     }
     #[doc = "A definition of a service.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct ServiceDef {
         #[doc = "The methods provided by the service.\n"]
@@ -909,7 +909,7 @@ pub mod ir {
         }
     }
     #[doc = "A method of a service definition.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Method {
         #[doc = "The name of the method.\n"]
@@ -986,7 +986,7 @@ pub mod ir {
         }
     }
     #[doc = "A parameter of a method.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct MethodParam {
         #[doc = "The name of the parameter.\n"]
@@ -1037,7 +1037,7 @@ pub mod ir {
         }
     }
     #[doc = "A type.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Type {
         #[doc = "The kind of the type.\n"]
@@ -1075,7 +1075,7 @@ pub mod ir {
         }
     }
     #[doc = "An abstract type kind.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub enum TypeKind {
         #[doc = "A type to be determined via substitution of the respective type variable.\n"]
         TypeVar(TypeVarType),
@@ -1083,7 +1083,7 @@ pub mod ir {
         Instance(InstanceType),
     }
     #[doc = "A type to be determined via substitution of the respective type variable.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct TypeVarType {
         #[doc = "The index of the type variable in the enclosing definition.\n"]
@@ -1106,7 +1106,7 @@ pub mod ir {
         }
     }
     #[doc = "An instantiation of a type defined in some schema of some bundle.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct InstanceType {
         #[doc = "The bundle containing the schema containing the definition.\n"]
@@ -1169,46 +1169,8 @@ pub mod ir {
             self
         }
     }
-    #[doc = "An attribute.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
-    #[non_exhaustive]
-    pub struct Attr {
-        #[doc = "The kind of the attribute.\n"]
-        pub kind: AttrKind,
-        #[doc = "The span of the attribute.\n"]
-        pub span: ::std::option::Option<Span>,
-    }
-    impl Attr {
-        #[doc = "Creates a new [`Attr`]."]
-        pub fn new(kind: AttrKind) -> Self {
-            Self {
-                kind,
-                span: ::std::default::Default::default(),
-            }
-        }
-        #[doc = "Sets the value of `kind`."]
-        pub fn set_kind(&mut self, kind: AttrKind) -> &mut Self {
-            self.kind = kind;
-            self
-        }
-        #[doc = "Sets the value of `kind`."]
-        pub fn with_kind(mut self, kind: AttrKind) -> Self {
-            self.kind = kind;
-            self
-        }
-        #[doc = "Sets the value of `span`."]
-        pub fn set_span(&mut self, span: ::std::option::Option<Span>) -> &mut Self {
-            self.span = span;
-            self
-        }
-        #[doc = "Sets the value of `span`."]
-        pub fn with_span(mut self, span: ::std::option::Option<Span>) -> Self {
-            self.span = span;
-            self
-        }
-    }
     #[doc = "A *span* identifies a range of text in a source.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize, PartialEq, Eq, Hash)]
     #[non_exhaustive]
     pub struct Span {
         #[doc = "The source.\n"]
@@ -1255,7 +1217,7 @@ pub mod ir {
         }
     }
     #[doc = "A token.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     #[non_exhaustive]
     pub struct Token {
         #[doc = "The token itself.\n"]
@@ -1293,7 +1255,7 @@ pub mod ir {
         }
     }
     #[doc = ""]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub enum TokenKind {
         #[doc = ""]
         Punctuation(::std::string::String),
@@ -1305,7 +1267,7 @@ pub mod ir {
         Identifier(::std::string::String),
     }
     #[doc = ""]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub enum Literal {
         #[doc = ""]
         String(::std::string::String),
@@ -1314,48 +1276,86 @@ pub mod ir {
         #[doc = ""]
         Bool(bool),
     }
-    #[doc = "A stream of tokens.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
-    pub struct TokenStream(pub(crate) ::std::vec::Vec<Token>);
-    impl ::std::convert::From<TokenStream> for ::std::vec::Vec<Token> {
-        fn from(wrapped: TokenStream) -> Self {
-            wrapped.0
-        }
-    }
     #[doc = "A `::` separated path of identifiers.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub struct Path(pub(crate) ::std::string::String);
     impl ::std::convert::From<Path> for ::std::string::String {
         fn from(wrapped: Path) -> Self {
             wrapped.0
         }
     }
-    #[doc = "A compile-time structured attribute.\n"]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[doc = "A stream of tokens.\n"]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
+    pub struct TokenStream(pub(crate) ::std::vec::Vec<Token>);
+    impl ::std::convert::From<TokenStream> for ::std::vec::Vec<Token> {
+        fn from(wrapped: TokenStream) -> Self {
+            wrapped.0
+        }
+    }
+    #[doc = "An attribute.\n"]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
+    #[non_exhaustive]
+    pub struct Attr {
+        #[doc = "The kind of the attribute.\n"]
+        pub kind: AttrKind,
+        #[doc = "The span of the attribute.\n"]
+        pub span: ::std::option::Option<Span>,
+    }
+    impl Attr {
+        #[doc = "Creates a new [`Attr`]."]
+        pub fn new(kind: AttrKind) -> Self {
+            Self {
+                kind,
+                span: ::std::default::Default::default(),
+            }
+        }
+        #[doc = "Sets the value of `kind`."]
+        pub fn set_kind(&mut self, kind: AttrKind) -> &mut Self {
+            self.kind = kind;
+            self
+        }
+        #[doc = "Sets the value of `kind`."]
+        pub fn with_kind(mut self, kind: AttrKind) -> Self {
+            self.kind = kind;
+            self
+        }
+        #[doc = "Sets the value of `span`."]
+        pub fn set_span(&mut self, span: ::std::option::Option<Span>) -> &mut Self {
+            self.span = span;
+            self
+        }
+        #[doc = "Sets the value of `span`."]
+        pub fn with_span(mut self, span: ::std::option::Option<Span>) -> Self {
+            self.span = span;
+            self
+        }
+    }
+    #[doc = "The four kinds of attributes.\n"]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub enum AttrKind {
         #[doc = "A `::` separated path.\n"]
         Path(Path),
-        #[doc = "A list of `,` separated attributes.\n"]
+        #[doc = "A list attribute of the form `<PATH> ( <ARGS> )` where `<ARGS>` is a\n`,`-separated sequence of arguments.\n"]
         List(AttrList),
-        #[doc = "An assign attribute.\n"]
+        #[doc = "An assign attribute of the form `<PATH> = <ATTR>` where `<ATTR>` is an attribute.\n"]
         Assign(AttrAssign),
-        #[doc = "A stream of tokens.\n"]
+        #[doc = "A stream of tokens (if the other alternatives do not apply).\n"]
         Tokens(TokenStream),
     }
-    #[doc = ""]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[doc = "A list attribute of the form `<PATH> ( <ARGS> )` where `<ARGS>` is a `,`-separated\nsequence of arguments.\n"]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub struct AttrList {
-        #[doc = ""]
+        #[doc = "The path of the attribute.\n"]
         pub path: Path,
-        #[doc = ""]
-        pub elements: ::std::vec::Vec<Attr>,
+        #[doc = "The arguments of the attribute.\n"]
+        pub args: ::std::vec::Vec<Attr>,
     }
     impl AttrList {
         #[doc = "Creates a new [`AttrList`]."]
         pub fn new(path: Path) -> Self {
             Self {
                 path,
-                elements: ::std::default::Default::default(),
+                args: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `path`."]
@@ -1368,23 +1368,23 @@ pub mod ir {
             self.path = path;
             self
         }
-        #[doc = "Sets the value of `elements`."]
-        pub fn set_elements(&mut self, elements: ::std::vec::Vec<Attr>) -> &mut Self {
-            self.elements = elements;
+        #[doc = "Sets the value of `args`."]
+        pub fn set_args(&mut self, args: ::std::vec::Vec<Attr>) -> &mut Self {
+            self.args = args;
             self
         }
-        #[doc = "Sets the value of `elements`."]
-        pub fn with_elements(mut self, elements: ::std::vec::Vec<Attr>) -> Self {
-            self.elements = elements;
+        #[doc = "Sets the value of `args`."]
+        pub fn with_args(mut self, args: ::std::vec::Vec<Attr>) -> Self {
+            self.args = args;
             self
         }
     }
-    #[doc = ""]
-    #[derive(:: serde :: Serialize, :: serde :: Deserialize, Clone, Debug)]
+    #[doc = "An assign attribute of the form `<PATH> = <ATTR>` where `<ATTR>` is an attribute.\n"]
+    #[derive(Clone, Debug, :: serde :: Serialize, :: serde :: Deserialize)]
     pub struct AttrAssign {
-        #[doc = ""]
+        #[doc = "The path of the attribute.\n"]
         pub path: Path,
-        #[doc = ""]
+        #[doc = "The assigned value.\n"]
         pub value: ::std::boxed::Box<Attr>,
     }
     impl AttrAssign {
