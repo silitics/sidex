@@ -59,7 +59,7 @@ impl Plugin for Builder {
                             if list.path.as_str() != "builder" {
                                 return false;
                             }
-                            if let ir::AttrKind::Path(path) = &list.elements[0].kind {
+                            if let ir::AttrKind::Path(path) = &list.args[0].kind {
                                 path.as_str() == "default"
                             } else {
                                 false
@@ -110,8 +110,12 @@ impl Plugin for Builder {
                     quote! {}
                 };
 
+                let generics = ctx.generics(def);
+
+                let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+
                 Ok(quote! {
-                    impl #generics #ident #generics {
+                    impl #impl_generics #ident #ty_generics #where_clause {
                         #[doc = #new_doc]
                         pub fn new(#(#constructor_args),*) -> Self {
                             Self {

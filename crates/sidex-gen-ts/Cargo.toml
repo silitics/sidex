@@ -9,8 +9,3 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-# Sidex core data structures and functions.
-sidex-core = { path = "../sidex-core", version = "^0.1" }
-# Required for generating TypeScript code.
-proc-macro2 = "^1"
-quote = "^1"

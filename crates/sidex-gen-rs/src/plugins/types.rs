@@ -2,9 +2,9 @@ use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use sidex_attrs::TryFromAttrs;
 use sidex_attrs_rust::{FieldAttrs, TypeAttrs};
 use sidex_gen::{
+    attrs::TryFromAttrs,
     diagnostics::Result,
     ir::{Def, DefKind},
 };
@@ -48,7 +48,7 @@ impl Plugin for Types {
 
         match &def.kind {
             DefKind::TypeAlias(alias) => {
-                let aliased = ctx.resolve_type(def, &alias.aliased);
+                let aliased = ctx.resolve_type_old(def, &alias.aliased);
                 Ok(quote! {
                     #[doc = #docs]
                     #vis type #name #vars = #aliased;
@@ -77,7 +77,7 @@ impl Plugin for Types {
                             .as_ref()
                             .map(|docs| docs.as_str())
                             .unwrap_or_default();
-                        let mut typ = ctx.resolve_type(def, &field.typ);
+                        let mut typ = ctx.resolve_type_old(def, &field.typ);
                         let attrs = FieldAttrs::try_from_attrs(&field.attrs)?;
                         for wrapper in attrs.wrappers {
                             let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
@@ -114,7 +114,7 @@ impl Plugin for Types {
                             .map(|docs| docs.as_str())
                             .unwrap_or_default();
                         if let Some(typ) = &variant.typ {
-                            let typ = ctx.resolve_type(def, typ);
+                            let typ = ctx.resolve_type_old(def, typ);
                             quote! {
                                 #[doc = #docs]
                                 #name(#typ),
@@ -137,7 +137,7 @@ impl Plugin for Types {
                 })
             }
             DefKind::WrapperType(typ) => {
-                let wrapped = ctx.resolve_type(def, &typ.wrapped);
+                let wrapped = ctx.resolve_type_old(def, &typ.wrapped);
                 Ok(quote! {
                     #[doc = #docs]
                     #derive

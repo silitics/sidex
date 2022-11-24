@@ -935,6 +935,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-any"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "sidex-attrs"
 version = "0.1.0"
 dependencies = [
@@ -945,6 +952,9 @@ dependencies = [
 [[package]]
 name = "sidex-attrs-json"
 version = "0.1.0"
+dependencies = [
+ "sidex-gen",
+]
 
 [[package]]
 name = "sidex-attrs-rust"
@@ -952,9 +962,7 @@ version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
- "sidex-attrs",
- "sidex-diagnostics",
- "sidex-ir",
+ "sidex-gen",
  "syn",
 ]
 
@@ -1032,21 +1040,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde",
- "sidex-attrs",
+ "sidex-attrs-json",
  "sidex-attrs-rust",
  "sidex-gen",
- "sidex-syntax",
  "syn",
 ]
 
 [[package]]
 name = "sidex-gen-ts"
 version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "sidex-core",
-]
 
 [[package]]
 name = "sidex-ir"
@@ -1078,6 +1080,14 @@ dependencies = [
  "sidex-core",
  "sidex-gen-rs",
  "syn",
+]
+
+[[package]]
+name = "sidex-serde"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

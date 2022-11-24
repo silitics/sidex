@@ -135,6 +135,7 @@ record TypeVar {
 }
 
 /// A definition kind.
+#[json(tagged = internally)]
 variant DefKind {
     /// Definition of a type alias.
     TypeAlias: TypeAliasDef,

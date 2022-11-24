@@ -10,12 +10,14 @@ homepage.workspace = true
 
 [dependencies]
 # Required for code generation.
-sidex-gen = { path = "../sidex-gen", version = "^0.1" }
+sidex-gen = { path = "../sidex-gen" }  # PUBLIC
+# Required for parsing `rust` attributes.
+sidex-attrs-rust = { path = "../sidex-attrs-rust" }  # PUBLIC
+# Required for parsing `json` attributes.
+sidex-attrs-json = { path = "../sidex-attrs-json" }  # PUBLIC
 # Required for generating Rust code.
-proc-macro2 = "^1"
-quote = "^1"
-serde = "1"
-syn = { version = "^1", features = ["extra-traits"] }
-sidex-attrs = { path = "../sidex-attrs" }
-sidex-attrs-rust = { path = "../sidex-attrs-rust" }
-sidex-syntax = { path = "../sidex-syntax" }
+proc-macro2 = "1"  # PUBLIC
+quote = "1"  # PUBLIC
+syn = { version = "1", features = ["extra-traits"] }  # PUBLIC
+# Required for deserializing the backend configuration.
+serde = "1"  # PUBLIC

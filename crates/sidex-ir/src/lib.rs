@@ -367,17 +367,22 @@ impl Unit {
         }
     }
 
-    pub fn record_type(&self, typ: &Type) -> Option<&RecordTypeDef> {
+    pub fn type_def(&self, typ: &Type) -> Option<&Def> {
         match &typ.kind {
             TypeKind::TypeVar(_) => None,
             TypeKind::Instance(instance) => {
-                let def = &self[instance.bundle][instance.schema][instance.def];
-                match &def.kind {
-                    DefKind::TypeAlias(alias) => self.record_type(&alias.aliased),
-                    DefKind::RecordType(record) => Some(record),
-                    _ => None,
-                }
+                Some(&self[instance.bundle][instance.schema][instance.def])
             }
         }
+    }
+
+    pub fn record_type(&self, typ: &Type) -> Option<&RecordTypeDef> {
+        self.type_def(typ).and_then(|def| {
+            match &def.kind {
+                DefKind::TypeAlias(alias) => self.record_type(&alias.aliased),
+                DefKind::RecordType(record) => Some(record),
+                _ => None,
+            }
+        })
     }
 }

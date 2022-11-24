@@ -4,11 +4,63 @@ use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote, ToTokens};
-use sidex_attrs::TryFromAttrs;
 use sidex_attrs_rust::{FieldAttrs, Visibility};
-use sidex_gen::ir;
+use sidex_gen::{attrs::TryFromAttrs, ir};
 
 use crate::config::Config;
+
+pub struct RustField {
+    pub ident: syn::Ident,
+    pub name: String,
+    pub ty: syn::Type,
+    pub vis: syn::Visibility,
+    pub is_optional: bool,
+    pub inner_ty: syn::Type,
+}
+
+pub struct RustVariant {
+    pub ident: syn::Ident,
+    pub name: String,
+    pub ty: Option<syn::Type>,
+}
+
+pub struct RustTy {
+    pub ident: syn::Ident,
+    pub name: String,
+}
+
+pub struct RecordType {
+    ident: syn::Ident,
+    name: String,
+    fields: Vec<RustField>,
+}
+
+pub struct Generics<'d> {
+    def: &'d ir::Def,
+    generics: syn::Generics,
+}
+
+impl<'d> Generics<'d> {
+    pub fn new(def: &'d ir::Def) -> Self {
+        let mut generics = syn::Generics::default();
+        for var in &def.vars {
+            let ident = format_ident!("{}", var.name.as_str());
+            let param = syn::GenericParam::Type(ident.into());
+            generics.params.push(param);
+        }
+        Self { def, generics }
+    }
+
+    pub fn split_for_impl(
+        &self,
+    ) -> (
+        syn::ImplGenerics,
+        syn::TypeGenerics,
+        Option<&syn::WhereClause>,
+    ) {
+        self.generics.split_for_impl()
+    }
+}
 
 #[derive(Clone)]
 pub struct BundleCtx<'cx> {
@@ -36,9 +88,54 @@ pub struct FieldInfo {
 }
 
 impl<'cx> SchemaCtx<'cx> {
+    pub fn ty(&self, def: &ir::Def) -> RustTy {
+        RustTy {
+            ident: format_ident!("{}", def.name.as_str()),
+            name: def.name.as_str().to_owned(),
+        }
+    }
+
+    pub fn field(&self, def: &ir::Def, field: &ir::Field) -> RustField {
+        let ident = format_ident!("{}", field.name.as_str());
+        let name = field.name.as_str().to_owned();
+        let mut inner_ty = self.resolve_type(def, &field.typ);
+
+        let attrs = FieldAttrs::try_from_attrs(&field.attrs)
+            .map_err(|_| ())
+            .unwrap();
+        for wrapper in attrs.wrappers {
+            let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
+            inner_ty = syn::parse2(quote! { #wrapper < #inner_ty > }).unwrap()
+        }
+
+        let ty = if field.is_optional {
+            syn::parse2::<syn::Type>(quote! { ::core::option::Option< #inner_ty > }).unwrap()
+        } else {
+            inner_ty.clone()
+        };
+
+        let vis = syn::parse2(attrs.visibility.to_token_stream()).unwrap();
+
+        RustField {
+            ident,
+            name,
+            ty,
+            vis,
+            is_optional: field.is_optional,
+            inner_ty,
+        }
+    }
+
+    pub fn variant(&self, def: &ir::Def, variant: &ir::Variant) -> RustVariant {
+        let ident = format_ident!("{}", variant.name.as_str());
+        let name = variant.name.as_str().to_owned();
+        let ty = variant.typ.as_ref().map(|typ| self.resolve_type(def, typ));
+        RustVariant { ident, name, ty }
+    }
+
     pub fn field_info(&self, def: &ir::Def, field: &ir::Field) -> FieldInfo {
         let name = format_ident!("{}", &field.name.as_str());
-        let mut typ = self.resolve_type(def, &field.typ);
+        let mut typ = self.resolve_type_old(def, &field.typ);
         let attrs = FieldAttrs::try_from_attrs(&field.attrs)
             .map_err(|_| ())
             .unwrap();
@@ -55,6 +152,10 @@ impl<'cx> SchemaCtx<'cx> {
             typ: syn::parse2::<syn::Type>(typ).unwrap(),
             vis,
         }
+    }
+
+    pub fn generics<'d>(&self, def: &'d ir::Def) -> Generics<'d> {
+        Generics::new(def)
     }
 
     pub fn type_info(&self, def: &ir::Def) -> TypeInfo {
@@ -98,7 +199,11 @@ impl<'cx> SchemaCtx<'cx> {
         )
     }
 
-    pub fn resolve_type(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
+    pub fn resolve_type(&self, def: &ir::Def, typ: &ir::Type) -> syn::Type {
+        syn::parse2(self.resolve_type_old(def, typ)).unwrap()
+    }
+
+    pub fn resolve_type_old(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
         match &typ.kind {
             ir::TypeKind::TypeVar(var) => {
                 let var = format_ident!("{}", def[var.idx].name.as_str());
@@ -137,7 +242,7 @@ impl<'cx> SchemaCtx<'cx> {
                 let subst = instance
                     .subst
                     .iter()
-                    .map(|typ| self.resolve_type(def, typ))
+                    .map(|typ| self.resolve_type_old(def, typ))
                     .collect::<Vec<_>>();
 
                 quote! { #typ < #(#subst , )* > }

@@ -5,5 +5,5 @@ description = "Sidex specific schemas."
 authors = ["Silitics GmbH <info@silitics.com>"]
 
 [backend.rust]
-derive = ["::serde::Serialize", "::serde::Deserialize", "Clone", "Debug"]
-plugins = ["builder"]
+derive = ["Clone", "Debug"] #, "::serde::Serialize", "::serde::Deserialize"]
+plugins = ["builder", "serde"]

@@ -26,7 +26,7 @@ pub struct RustGenerator {
 impl RustGenerator {
     pub fn new() -> Self {
         Self {
-            plugins: vec![Arc::new(plugins::data_types::Types)],
+            plugins: vec![Arc::new(plugins::types::Types)],
         }
     }
 

@@ -8,10 +8,8 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
+sidex-gen = { path = "../sidex-gen" }
 proc-macro2 = "1"
 quote = "1"
 syn = "1"
 
-sidex-ir = { path = "../sidex-ir" }
-sidex-attrs = { path = "../sidex-attrs" }
-sidex-diagnostics = { path = "../sidex-diagnostics" }

@@ -400,7 +400,7 @@ fn transform_attr(attr: &ast::Attr) -> ir::Attr {
         ast::AttrKind::List(list) => {
             ir::AttrKind::List(ir::AttrList {
                 path: ir::Path::from(list.path.to_string()),
-                elements: list.elements.iter().map(transform_attr).collect(),
+                args: list.elements.iter().map(transform_attr).collect(),
             })
         }
         ast::AttrKind::Assign(assign) => {

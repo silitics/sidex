@@ -94,7 +94,13 @@ In the following, `...` is the data associated with a variant.
   { "VariantName": ... }
   ```
 
-  where `...` is `null` if there is no associated data.
+  and
+
+  ```json
+  "VariantName"
+  ```
+
+  in case there is no associated data.
 
 - The _adjacently tagged_ representation will result in
 
@@ -112,14 +118,6 @@ In the following, `...` is the data associated with a variant.
 
   where `...` does not extend the object if there is no associated data.
 
-- The _plain_ representation will result in
-
-  ```json
-  "VariantName"
-  ```
-
-  and is only available if no variant has associated data.
-
 Internally tagged representations are limited to variant types which are not generic and where the type of any associated data is a record type without a field of the tag name `tag` enabling the embedding into the JSON object.
 
 The kind of representation can be configured with the following attributes:
@@ -128,7 +126,6 @@ The kind of representation can be configured with the following attributes:
 #[json(tagged=adjacently)]
 #[json(tagged=externally)]
 #[json(tagged=internally)]
-#[json(plain)]
 ```
 
 The adjacently tagged representation is the default.

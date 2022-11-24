@@ -2,9 +2,11 @@ use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use sidex_attrs::{accept, reject, TryApplyAttr, TryFromAttr};
-use sidex_diagnostics::{Diagnostic, Result};
-use sidex_ir as ir;
+use sidex_gen::{
+    attrs::{accept, reject, AttrConvertExt, TryApplyAttr, TryFromAttr},
+    diagnostics::{Diagnostic, Result},
+    ir,
+};
 
 /// `type = "<PATH>"`
 #[derive(Debug, Clone)]
@@ -54,8 +56,8 @@ impl TryFromAttr for Visibility {
                     _ => {}
                 }
             }
-            ir::AttrKind::List(list) if list.path.as_str() == "pub" && list.elements.len() == 1 => {
-                if let ir::AttrKind::Path(path) = &list.elements[0].kind {
+            ir::AttrKind::List(list) if list.path.as_str() == "pub" && list.args.len() == 1 => {
+                if let ir::AttrKind::Path(path) = &list.args[0].kind {
                     match path.as_str() {
                         "crate" => accept!(Self::Crate),
                         "super" => accept!(Self::Super),
@@ -100,26 +102,29 @@ impl Wrapper {
 
 impl TryFromAttr for Wrapper {
     fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
-        match &attr.kind {
-            ir::AttrKind::Path(path) => {
+        attr.expect_path()
+            .and_then(|path| {
                 match path.as_str() {
                     "box" => accept!(Self::new("::std::boxed::Box")),
                     "arc" => accept!(Self::new("::std::sync::Arc")),
                     "rc" => accept!(Self::new("::std::rc::Rc")),
-                    _ => {}
+                    _ => reject!(attr, ""),
                 }
-            }
-            ir::AttrKind::Assign(assign) if assign.path.as_str() == "wrap" => {
-                if let ir::AttrKind::Path(path) = &assign.value.kind {
-                    accept!(Self::new(path.as_str()))
-                }
-            }
-            _ => {}
-        }
-        reject!(
-            attr,
-            "Expected wrap attribute: `box`, `arc`, `rc`, or `wrap = \"<PATH>\"."
-        )
+            })
+            .or_else(|_| -> Result<Self> {
+                accept!(Self::new(
+                    attr.expect_assign_with("wrap")?
+                        .value
+                        .expect_path()?
+                        .as_str()
+                ))
+            })
+            .or_else(|_| {
+                reject!(
+                    attr,
+                    "Expected wrap attribute: `box`, `arc`, `rc`, or `wrap = \"<PATH>\"."
+                )
+            })
     }
 }
 
@@ -133,7 +138,7 @@ impl TryApplyAttr for FieldAttrs {
     fn try_apply_attr(&mut self, attr: &ir::Attr) -> Result<()> {
         if let ir::AttrKind::List(list) = &attr.kind {
             if list.path.as_str() == "rust" {
-                for attr in &list.elements {
+                for attr in &list.args {
                     if let Ok(visibility) = Visibility::try_from_attr(attr) {
                         self.visibility = visibility;
                     } else if let Ok(wrapper) = Wrapper::try_from_attr(attr) {
@@ -158,7 +163,7 @@ pub struct TypeAttrs {
 }
 
 impl TryFrom<&[ir::Attr]> for TypeAttrs {
-    type Error = sidex_diagnostics::Diagnostic;
+    type Error = Diagnostic;
 
     fn try_from(value: &[ir::Attr]) -> std::result::Result<Self, Self::Error> {
         let mut attrs = TypeAttrs::default();
@@ -169,7 +174,7 @@ impl TryFrom<&[ir::Attr]> for TypeAttrs {
                 match &attr.kind {
                     ir::AttrKind::List(list) => {
                         if list.path.as_str() == "rust" {
-                            Some(list.elements.iter())
+                            Some(list.args.iter())
                         } else {
                             None
                         }
@@ -189,7 +194,7 @@ impl TryFrom<&[ir::Attr]> for TypeAttrs {
                 ir::AttrKind::List(list) => {
                     match list.path.as_str() {
                         "derive" => {
-                            for element in &list.elements {
+                            for element in &list.args {
                                 if let ir::AttrKind::Path(path) = &element.kind {
                                     attrs
                                         .derive
@@ -201,7 +206,7 @@ impl TryFrom<&[ir::Attr]> for TypeAttrs {
                         "attr" => {
                             attrs
                                 .attrs
-                                .push(TokenStream::from_str(&list.elements[0].to_string()).unwrap())
+                                .push(TokenStream::from_str(&list.args[0].to_string()).unwrap())
                         }
                         _ => continue,
                     }

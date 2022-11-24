@@ -6,6 +6,8 @@ pub use sidex_diagnostics as diagnostics;
 // Re-export the Sidex Intermediate Representation.
 pub use sidex_ir as ir;
 
+pub mod rename;
+
 /// A code generation job.
 #[derive(Debug)]
 pub struct Job<'j> {

@@ -8,3 +8,4 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
+sidex-gen = { path = "../sidex-gen" }

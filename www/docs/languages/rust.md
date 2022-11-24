@@ -75,6 +75,17 @@ The following attributes can be used to modify visibility:
 ## Interoperability with Serde
 
 [Serde](https://serde.rs) is the de-facto standard for serialization and deserialization in Rust.
+Sidex is fully compatible with the Serde ecosystem.
+With the `serde` plugin of the Rust backend, code for the `Serialize` and `Deserialize` traits can be generated.
+
+Note that there are a few differences to Serde's own derive macros:
+
+- Optional fields of record types are always skipped if they are `None`.
+- A tagged representation of variant types is only generated for human-readable formats. To this end, the JSON `tagged` attribute is used. By default, variant types are adjacently tagged instead of externally tagged.
+
+When serializing with `serde_json` the representation is the standard JSON representation.
+
+In particular, this means that out-of-the-box you can use any Serde supported interchange format with Sidex.
 
 **🚧 TODO:** Explain how Sidex plays together with Serde.
 

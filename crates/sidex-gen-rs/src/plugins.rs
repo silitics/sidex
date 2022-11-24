@@ -6,7 +6,8 @@ use sidex_gen::{diagnostics::Result, ir};
 use crate::context::{BundleCtx, SchemaCtx};
 
 pub mod builder;
-pub mod data_types;
+pub mod serde;
+pub mod types;
 
 pub trait Plugin {
     fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<TokenStream>;
@@ -24,7 +25,8 @@ pub trait Plugin {
 
 pub fn plugins() -> HashMap<String, Arc<dyn 'static + Plugin + Sync>> {
     let mut plugins: HashMap<String, Arc<dyn 'static + Plugin + Sync>> = HashMap::new();
-    plugins.insert("data-types".to_owned(), Arc::new(data_types::Types));
+    plugins.insert("types".to_owned(), Arc::new(types::Types));
     plugins.insert("builder".to_owned(), Arc::new(builder::Builder));
+    plugins.insert("serde".to_owned(), Arc::new(serde::Serde));
     plugins
 }

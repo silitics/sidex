@@ -25,3 +25,6 @@ test:
 regenerate-ir:
     cd lib/meta && cargo run --bin sidex -- generate rust ../../crates/sidex-ir/src/generated
     cargo +nightly fmt
+
+reset-ir:
+    git checkout crates/sidex-ir/src/generated/mod.rs
