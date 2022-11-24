@@ -1,6 +1,8 @@
 //! Plugin generating implementations of [`serde::Serialize`] and [`serde::Deserialize`]
 //! for Sidex types.
 
+use std::any::Any;
+
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use sidex_attrs_json::{
@@ -79,13 +81,14 @@ impl Plugin for Serde {
                     variant_type::de::gen_deserialize_body(ctx, &ty, &ty_json_attrs, &variants)?,
                 )
             }
-            ir::DefKind::WrapperType(_) => {
+            ir::DefKind::WrapperType(typ_def) => {
+                let ty_ident = &ty.ident;
                 (
                     quote! {
                         self.0.serialize(__serializer)
                     },
                     quote! {
-                        todo!()
+                        Ok(#ty_ident(::serde::Deserialize::deserialize(__deserializer)?))
                     },
                 )
             }

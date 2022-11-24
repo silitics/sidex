@@ -34,6 +34,8 @@ pub enum Command {
     Check,
     /// Generate code.
     Generate(commands::generate::GenerateArgs),
+    /// Validate a Sidex IR JSON file.
+    ValidateIr(commands::validate_ir::ValidateIrArgs),
 }
 
 /// Entrypoint of the `sidex` executable.
@@ -46,5 +48,6 @@ pub fn main() -> color_eyre::Result<()> {
         Command::New(new_args) => commands::new::exec(new_args),
         Command::Check => commands::check::exec(),
         Command::Generate(generate_args) => commands::generate::exec(generate_args),
+        Command::ValidateIr(args) => commands::validate_ir::exec(args),
     }
 }

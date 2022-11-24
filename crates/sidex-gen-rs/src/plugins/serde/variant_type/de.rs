@@ -50,8 +50,15 @@ pub(crate) fn gen_deserialize_body(
                             }
                         }
                         JsonTaggedAttr::Internally => {
-                            quote! {
-                                #ty_ident::#ident(__tagged.deserialize_internally_tagged::<#ty, __D::Error>()?)
+                            let is_record = variant.variant.typ.as_ref().map(|typ| ctx.bundle_ctx.unit.resolve_aliases(&typ)).map(|typ| ctx.bundle_ctx.unit.record_type(&typ).is_some()).unwrap_or(false);
+                            if is_record {
+                                quote! {
+                                    #ty_ident::#ident(__tagged.deserialize_internally_tagged::<#ty, __D::Error>()?)
+                                }
+                            } else {
+                                quote! {
+                                    #ty_ident::#ident(__tagged.deserialize_adjacently_tagged::<#ty, __D::Error>(#content_field)?)
+                                }
                             }
                         }
                         _ => TokenStream::default(),

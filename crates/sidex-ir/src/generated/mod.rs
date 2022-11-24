@@ -23,7 +23,9 @@ pub mod ir {
         fn deserialize<__D: ::serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            todo!()
+            Ok(SourceIdx(::serde::Deserialize::deserialize(
+                __deserializer,
+            )?))
         }
     }
     #[doc = "Uniquely identifies a bundle in a unit.\n"]
@@ -48,7 +50,9 @@ pub mod ir {
         fn deserialize<__D: ::serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            todo!()
+            Ok(BundleIdx(::serde::Deserialize::deserialize(
+                __deserializer,
+            )?))
         }
     }
     #[doc = "Uniquely identifies a schema in bundle.\n"]
@@ -73,7 +77,9 @@ pub mod ir {
         fn deserialize<__D: ::serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            todo!()
+            Ok(SchemaIdx(::serde::Deserialize::deserialize(
+                __deserializer,
+            )?))
         }
     }
     #[doc = "Uniquely identifies a definition in a schema.\n"]
@@ -98,7 +104,7 @@ pub mod ir {
         fn deserialize<__D: ::serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            todo!()
+            Ok(DefIdx(::serde::Deserialize::deserialize(__deserializer)?))
         }
     }
     #[doc = "Uniquely identifies a type variable in a definition.\n"]
@@ -123,7 +129,9 @@ pub mod ir {
         fn deserialize<__D: ::serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            todo!()
+            Ok(TypeVarIdx(::serde::Deserialize::deserialize(
+                __deserializer,
+            )?))
         }
     }
     #[doc = "A *unit* is a collection of bundles.\n"]
@@ -8312,7 +8320,7 @@ pub mod ir {
         fn deserialize<__D: ::serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            todo!()
+            Ok(Path(::serde::Deserialize::deserialize(__deserializer)?))
         }
     }
     #[doc = "A stream of tokens.\n"]
@@ -8337,7 +8345,9 @@ pub mod ir {
         fn deserialize<__D: ::serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            todo!()
+            Ok(TokenStream(::serde::Deserialize::deserialize(
+                __deserializer,
+            )?))
         }
     }
     #[doc = "An attribute.\n"]
@@ -8813,7 +8823,7 @@ pub mod ir {
                 match __tagged.tag {
                     __Identifier::__Identifier0 => {
                         ::core::result::Result::Ok(AttrKind::Path(
-                            __tagged.deserialize_internally_tagged::<Path, __D::Error>()?,
+                            __tagged.deserialize_adjacently_tagged::<Path, __D::Error>("path")?,
                         ))
                     }
                     __Identifier::__Identifier1 => {
@@ -8828,7 +8838,9 @@ pub mod ir {
                     }
                     __Identifier::__Identifier3 => {
                         ::core::result::Result::Ok(AttrKind::Tokens(
-                            __tagged.deserialize_internally_tagged::<TokenStream, __D::Error>()?,
+                            __tagged.deserialize_adjacently_tagged::<TokenStream, __D::Error>(
+                                "content",
+                            )?,
                         ))
                     }
                 }
