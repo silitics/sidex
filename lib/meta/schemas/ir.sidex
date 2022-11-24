@@ -256,6 +256,7 @@ record Type {
 }
 
 /// An abstract type kind.
+#[json(tagged = internally)]
 variant TypeKind {
     /// A type to be determined via substitution of the respective type variable.
     TypeVar: TypeVarType,
@@ -306,13 +307,16 @@ record Token {
     span?: Span,
 }
 
+#[json(content = "token")]
 variant TokenKind {
     Punctuation: string,
     Delimiter: string,
+    #[json(content = "literal")]
     Literal: Literal,
     Identifier: string,
 }
 
+#[json(content = "value")]
 variant Literal {
     String: string,
     Number: string,
@@ -335,8 +339,10 @@ record Attr {
 }
 
 /// The four kinds of attributes.
+#[json(tagged = internally)]
 variant AttrKind {
     /// A `::` separated path.
+    #[json(content = "path")]
     Path: Path,
     /// A list attribute of the form `<PATH> ( <ARGS> )` where `<ARGS>` is a
     /// `,`-separated sequence of arguments.

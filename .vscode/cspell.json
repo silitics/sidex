@@ -24,6 +24,7 @@
         "rwlock",
         "serayuzgur",
         "serde",
+        "serdes",
         "sidex",
         "Sidex",
         "silitics",

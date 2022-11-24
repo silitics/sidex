@@ -6,7 +6,10 @@ use sidex_attrs_json::JsonRecordTypeAttrs;
 
 use crate::{
     context::RustTy,
-    plugins::serde::{identifier_enum::gen_identifier_enum, SerdeField},
+    plugins::serde::{
+        identifier_enum::{gen_identifier_enum, IdentifierKind},
+        SerdeField,
+    },
 };
 
 /// Generates the body of [`deserialize`][serde::Deserialize::deserialize].
@@ -49,6 +52,7 @@ fn gen_visitor(
         fields
             .iter()
             .map(|field| ty_json_attrs.field_name(&field.field, &field.json_attrs)),
+        IdentifierKind::Field,
     );
 
     let field_indices = (0..num_fields).collect::<Vec<_>>();

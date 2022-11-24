@@ -105,10 +105,10 @@ In the following, `...` is the data associated with a variant.
 - The _adjacently tagged_ representation will result in
 
   ```json
-  { "tag": "VariantName", "value": ... }
+  { "tag": "VariantName", "content": ... }
   ```
 
-  where the `value` field is not present if there is no associated data.
+  where the `content` field is not present if there is no associated data.
 
 - The _internally tagged_ representation will result in
 

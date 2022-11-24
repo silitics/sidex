@@ -1,9 +1,8 @@
 #![doc = include_str!("../README.md")]
 
 use sidex_gen::{
-    attrs::{accept, reject, AttrConvertExt, TryApplyAttr, TryFromAttrs},
-    diagnostics,
-    ir::{self, Field, Variant},
+    attrs::{accept, reject, AttrConvertExt, TryApplyAttr},
+    diagnostics, ir,
     rename::RenameFunction,
 };
 
@@ -112,7 +111,7 @@ pub struct JsonVariantTypeAttrs {
     pub rename_all: atoms::RenameAllAttr,
     pub tagged: atoms::JsonTaggedAttr,
     pub tag: atoms::TagAttr,
-    pub value: atoms::ContentAttr,
+    pub content: atoms::ContentAttr,
 }
 
 impl JsonVariantTypeAttrs {
@@ -125,7 +124,7 @@ impl JsonVariantTypeAttrs {
             .content
             .as_ref()
             .map(|attr| &attr.0)
-            .unwrap_or(&self.value.0)
+            .unwrap_or(&self.content.0)
             .clone()
     }
 
@@ -146,7 +145,7 @@ impl Default for JsonVariantTypeAttrs {
             rename_all: RenameFunction::PascalCase.into(),
             tagged: atoms::JsonTaggedAttr::Adjacently,
             tag: "tag".into(),
-            value: "value".into(),
+            content: "content".into(),
         }
     }
 }
@@ -161,8 +160,8 @@ impl TryApplyAttr for JsonVariantTypeAttrs {
                     self.tagged = tagged;
                 } else if let Ok(tag) = arg.convert() {
                     self.tag = tag;
-                } else if let Ok(value) = arg.convert() {
-                    self.value = value;
+                } else if let Ok(content) = arg.convert() {
+                    self.content = content;
                 } else {
                     reject!(arg, "Expected a JSON variant type attribute.")
                 }

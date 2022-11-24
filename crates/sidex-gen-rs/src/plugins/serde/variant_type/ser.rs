@@ -109,31 +109,43 @@ fn gen_internally_tagged_body(
             // have to resort to runtime errors and can simply query Sidex for the fields.
 
             let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
-            let inner_record = ctx.bundle_ctx.unit.record_type(&resolved).ok_or_else(|| Diagnostic::error("Associated type must be a record type."))?;
-            let inner_def = ctx.bundle_ctx.unit.type_def(&resolved).expect("We already established that the type is a record type, hence, there must be a definition.");
 
-            let inner_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&inner_def.attrs)?;
+            if let Some(inner_record) = ctx.bundle_ctx.unit.record_type(&resolved) {
+                let inner_def = ctx.bundle_ctx.unit.type_def(&resolved).expect("We already established that the type is a record type, hence, there must be a definition.");
 
-            let num_fields = inner_record.fields.len() + 1;
+                let inner_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&inner_def.attrs)?;
 
-            let serialize_fields = inner_record.fields.iter().map(|field| {
-                let rust_field = ctx.field(&inner_def, field);
-                let json_field_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
-                let ident = &rust_field.ident;
-                let name = inner_json_attrs.field_name(field, &json_field_attrs);
-                Ok(quote!{
-                    ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
+                let num_fields = inner_record.fields.len() + 1;
+
+                let serialize_fields = inner_record.fields.iter().map(|field| {
+                    let rust_field = ctx.field(&inner_def, field);
+                    let json_field_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
+                    let ident = &rust_field.ident;
+                    let name = inner_json_attrs.field_name(field, &json_field_attrs);
+                    Ok(quote!{
+                        ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
+                    })
+                }).collect::<Result<Vec<_>>>()?;
+
+                Ok(quote! {
+                    Self::#ident(__value) => {
+                        let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, #num_fields)?;
+                        #serialize_tag
+                        #(#serialize_fields)*
+                        ::serde::ser::SerializeStruct::end(__struct)
+                    }
                 })
-            }).collect::<Result<Vec<_>>>()?;
-
-            Ok(quote! {
-                Self::#ident(__value) => {
-                    let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, #num_fields)?;
-                    #serialize_tag
-                    #(#serialize_fields)*
-                    ::serde::ser::SerializeStruct::end(__struct)
-                }
-            })
+            } else {
+                let content_name = ty_json_attrs.content_field_name(&variant.json_attrs);
+                Ok(quote! {
+                    Self::#ident(__value) => {
+                        let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, 2)?;
+                        #serialize_tag
+                        ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #content_name, &__value)?;
+                        ::serde::ser::SerializeStruct::end(__struct)
+                    }
+                })
+            }
         } else {
             Ok(quote! {
                 Self::#ident => {

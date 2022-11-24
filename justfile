@@ -15,7 +15,7 @@ fmt:
 
 # Generate the API documentation using Rustdoc.
 doc:
-    cargo +nightly doc --lib --document-private-items
+    cargo +nightly doc --lib --document-private-items --all-features
 
 
 # Run all tests.

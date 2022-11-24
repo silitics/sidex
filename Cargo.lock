@@ -1055,6 +1055,7 @@ name = "sidex-ir"
 version = "0.2.0"
 dependencies = [
  "serde",
+ "sidex-serde",
 ]
 
 [[package]]

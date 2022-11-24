@@ -10,3 +10,5 @@ homepage.workspace = true
 [dependencies]
 # Required for serializing and deserializing Sidex IR.
 serde = { version = "1", features = ["derive"] }  # PUBLIC
+# Required for serializing and deserializing Sidex IR.
+sidex-serde = { path = "../sidex-serde" }

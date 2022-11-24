@@ -76,9 +76,7 @@ impl Plugin for Serde {
                     .collect::<Result<Vec<_>>>()?;
                 (
                     variant_type::ser::gen_serialize_body(ctx, &ty, &ty_json_attrs, &variants)?,
-                    quote! {
-                        todo!()
-                    },
+                    variant_type::de::gen_deserialize_body(ctx, &ty, &ty_json_attrs, &variants)?,
                 )
             }
             ir::DefKind::WrapperType(_) => {
