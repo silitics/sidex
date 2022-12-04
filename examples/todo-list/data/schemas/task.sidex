@@ -3,7 +3,7 @@
 import ids::PersonId
 
 /// The status of a task.
-#[json(tagged(plain))]
+#[json(tagged = externally)]
 variant Status {
     /// The task is still pending.
     Pending,

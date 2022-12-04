@@ -1,3 +1,7 @@
 [bundle]
 name = "data"
 version = "0.1.0"
+
+[backend.rust]
+derive = ["Clone", "Debug"]
+plugins = ["serde"]

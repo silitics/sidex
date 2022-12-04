@@ -1,5 +1,5 @@
 pub mod data {
-    sidex::include_bundle!("examples/todo-list/data");
+    sidex::include_bundle!("../todo-list/data");
 }
 
 fn main() {}

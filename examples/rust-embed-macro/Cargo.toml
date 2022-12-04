@@ -7,6 +7,8 @@ publish = false
 
 [dependencies]
 # Required for the Sidex macro.
-sidex = { path = "../../languages/rust/sidex", features = ["macros"] }
+sidex = { path = "../../crates/sidex", features = ["macros"] }
+sidex-serde = { path = "../../crates/sidex-serde" }
+serde = "1"
 # Used by the Sidex model.
-uuid = "^1.1"
+uuid = { version = "^1.1", features = ["serde"] }
