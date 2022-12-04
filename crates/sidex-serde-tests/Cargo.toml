@@ -1,0 +1,16 @@
+[package]
+name = "sidex-serde-tests"
+version = "0.0.0"
+description = ""
+publish = false
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+serde = "1"
+serde_json = "1"
+sidex = { path = "../sidex", features = ["macros", "serde"] }
+sidex-serde = { path = "../sidex-serde" }
