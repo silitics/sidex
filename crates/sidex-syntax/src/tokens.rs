@@ -493,7 +493,7 @@ fn doc_lexer(
     kind: DocKind,
 ) -> impl Parser<char, TokenKind, Error = Simple<char, Span>> {
     just(start)
-        .ignore_then(take_until(text::newline()))
+        .ignore_then(take_until(choice((text::newline(), end()))))
         .map(move |(doc, _)| {
             TokenKind::Doc {
                 doc: Arc::new(doc.into_iter().collect()),
@@ -550,7 +550,7 @@ fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char, Span>> {
         delimiter_lexer(),
         doc_lexer("//!", DocKind::Inline),
         doc_lexer("///", DocKind::Preceding),
-        comment_lexer("//", text::newline(), CommentKind::Line),
+        comment_lexer("//", choice((text::newline(), end())), CommentKind::Line),
         comment_lexer("/*", just("*/"), CommentKind::Block),
         literal_lexer(),
         punctuation_lexer(),

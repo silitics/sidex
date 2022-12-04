@@ -22,17 +22,18 @@ fn name_parser() -> impl Parser<TokenKind, ast::Identifier, Error = Simple<Token
 
 /// Create a parser for parsing token streams.
 fn token_stream_parser(
-) -> impl Parser<TokenKind, ast::TokenStream, Error = Simple<TokenKind, Span>> + Clone {
-    let token_list = filter(TokenKind::is_not_delimiter)
-        .map_with_span(|kind, span| Token { kind, span })
-        .repeated()
-        .at_least(1);
+) -> impl Parser<TokenKind, Vec<Token>, Error = Simple<TokenKind, Span>> + Clone {
+    let single_token =
+        filter(TokenKind::is_not_delimiter).map_with_span(|kind, span| vec![Token { kind, span }]);
 
     recursive(|token_tree| {
         choice((
-            token_list,
+            single_token,
             // 🚧 TODO: Other delimiters should also be allowed.
             token_tree
+                .repeated()
+                .at_least(1)
+                .flatten()
                 .delimited_by(
                     just(delimiters::Parenthesis::OPEN),
                     just(delimiters::Parenthesis::CLOSE),
@@ -51,12 +52,9 @@ fn token_stream_parser(
                     list
                 }),
         ))
-        .repeated()
-        .at_least(1)
-        .flatten()
     })
     .or_not()
-    .map(|tokens| ast::TokenStream(tokens.unwrap_or_default()))
+    .map(|tokens| tokens.unwrap_or_default())
 }
 
 /// Create a parser for parsing attributes.
@@ -97,7 +95,7 @@ fn attr_parser() -> impl Parser<TokenKind, ast::Attr, Error = Simple<TokenKind, 
             }),
             token_stream_parser().map(|stream| {
                 ast::Attr {
-                    kind: ast::AttrKind::Tokens(stream),
+                    kind: ast::AttrKind::Tokens(ast::TokenStream(stream)),
                 }
             }),
         ))
