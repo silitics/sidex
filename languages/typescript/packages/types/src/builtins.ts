@@ -10,12 +10,12 @@ export type String = string
 /**
  * A Base64-encoded sequence of bytes.
  */
-export type Bytes = Nominal<string, "bytes">
+export type Bytes = Nominal<string, "::std::builtins::bytes">
 
 /**
  * An 8-bit signed integer.
  */
-export type I8 = Nominal<number, "i8">
+export type I8 = Nominal<number, "::std::builtins::i8">
 
 /**
  * Convert any number to an 8-bit signed integer.
@@ -40,7 +40,7 @@ export function isI8(x: number): x is I8 {
 /**
  * A 16-bit signed integer.
  */
-export type I16 = Nominal<number, "i16">
+export type I16 = Nominal<number, "::std::builtins::i16">
 
 /**
  * Convert any number to an 16-bit signed integer.
@@ -65,12 +65,12 @@ export function isI16(x: number): x is I16 {
 /**
  * A 32-bit signed integer.
  */
-export type I32 = Nominal<number, "i32">
+export type I32 = Nominal<number, "::std::builtins::i32">
 
 /**
  * A 64-bit signed integer.
  */
-export type I64 = Nominal<string, "i64">
+export type I64 = Nominal<string, "::std::builtins::i64">
 
 /**
  * A signed integer.
@@ -80,7 +80,7 @@ export type SignedInt = I8 | I16 | I32 | I64
 /**
  * An 8-bit unsigned integer.
  */
-export type U8 = Nominal<number, "u8">
+export type U8 = Nominal<number, "::std::builtins::u8">
 
 /**
  * Convert any number to an 8-bit unsigned integer.
@@ -105,7 +105,7 @@ export function isU8(x: number): x is U8 {
 /**
  * A 16-bit unsigned integer.
  */
-export type U16 = Nominal<number, "u16">
+export type U16 = Nominal<number, "::std::builtins::u16">
 
 /**
  * Convert any number to an 16-bit unsigned integer.
@@ -130,12 +130,12 @@ export function isU16(x: number): x is U16 {
 /**
  * A 32-bit unsigned integer.
  */
-export type U32 = Nominal<number, "u32">
+export type U32 = Nominal<number, "::std::builtins::u32">
 
 /**
  * A 64-bit unsigned integer.
  */
-export type U64 = Nominal<string, "u64">
+export type U64 = Nominal<string, "::std::builtins::u64">
 
 /**
  * An unsigned integer.
@@ -150,7 +150,7 @@ export type Int = SignedInt | UnsignedInt
 /**
  * An index.
  */
-export type Idx = Nominal<number, "idx">
+export type Idx = Nominal<number, "::std::builtins::idx">
 
 /**
  * Convert any number to an index.
@@ -240,9 +240,7 @@ export type ObjectMap<K extends string, V> = { [key in K]?: V }
 /**
  * A map.
  */
-export type AnyMap<K, V> =
-  | EntriesMap<K, V>
-  | (K extends string ? ObjectMap<K, V> : never)
+export type AnyMap<K, V> = K extends string ? ObjectMap<K, V> : EntriesMap<K, V>
 
 /**
  * The entries of the map.
@@ -250,7 +248,7 @@ export type AnyMap<K, V> =
  * @param map
  * @returns
  */
-function entries<K, V>(map: AnyMap<K, V>): [K, V][] {
+export function entries<K, V>(map: AnyMap<K, V>): [K, V][] {
   if (Array.isArray(map)) {
     return map
   } else {
@@ -275,7 +273,7 @@ export function get<K, V>(map: AnyMap<K, V>, key: K): V | undefined {
     const index = getIndexMap(map).get(key)
     return index === undefined ? undefined : (map[index] as [K, V])[1]
   } else {
-    return map[key]
+    return (map as ObjectMap<any, V>)[key]
   }
 }
 
@@ -291,6 +289,6 @@ export function set<K, V>(map: AnyMap<K, V>, key: K, value: V) {
       indexMap.set(key, index)
     }
   } else {
-    return map[key]
+    return (map as ObjectMap<any, V>)[key]
   }
 }

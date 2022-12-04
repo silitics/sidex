@@ -1,19 +1,20 @@
 {
   "name": "sidex",
-  "version": "0.1.0",
-  "description": "",
-  "main": "src/index.ts",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
-    "doc": "typedoc lib/index.ts",
-    "tsc": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dev-dependencies": {
-    "typescript": "^4.8.4"
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "typedoc": "^0.23.17"
-  }
+    "prettier": "latest"
+  },
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@7.17.1"
 }

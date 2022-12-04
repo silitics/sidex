@@ -1,0 +1,21 @@
+{
+  "name": "todo-list-example",
+  "author": "Silitics GmbH <info@silitics.com>",
+  "license": "(MIT or Apache-2.0)",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "doc": "typedoc lib/index.ts",
+    "tsc": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@sidex/types": "workspace:^0.1.0"
+  }
+}
