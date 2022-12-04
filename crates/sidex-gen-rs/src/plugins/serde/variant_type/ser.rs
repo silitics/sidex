@@ -182,7 +182,7 @@ fn gen_externally_tagged_body(ty: &RustTy, variants: &[SerdeVariant]) -> TokenSt
         } else {
             quote! {
                 Self::#ident => {
-                    ::serde::Serialize::serialize_unit_variant(
+                    ::serde::Serializer::serialize_unit_variant(
                         __serializer, #ty_name, #idx, #name
                     )
                 }
