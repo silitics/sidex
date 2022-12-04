@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/*", "languages/rust/*", "examples/rust-embed-macro"]
+members = ["crates/*", "examples/rust-embed-macro"]
 
 [workspace.package]
 # We have no `version` here because the different crates can evolve independently.

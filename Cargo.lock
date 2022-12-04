@@ -839,7 +839,9 @@ dependencies = [
 name = "rust-embed-macro"
 version = "0.1.0"
 dependencies = [
+ "serde",
  "sidex",
+ "sidex-serde",
  "uuid",
 ]
 
@@ -932,6 +934,7 @@ name = "sidex"
 version = "0.1.0"
 dependencies = [
  "sidex-macros",
+ "sidex-serde",
 ]
 
 [[package]]
@@ -964,6 +967,16 @@ dependencies = [
  "quote",
  "sidex-gen",
  "syn",
+]
+
+[[package]]
+name = "sidex-build-rs"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "sidex-core",
+ "sidex-gen",
+ "sidex-gen-rs",
 ]
 
 [[package]]
@@ -1078,6 +1091,7 @@ version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
+ "serde_json",
  "sidex-core",
  "sidex-gen-rs",
  "syn",
@@ -1089,6 +1103,16 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "sidex-serde-tests"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sidex",
+ "sidex-serde",
 ]
 
 [[package]]
@@ -1431,6 +1455,9 @@ name = "uuid"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd6469f4314d5f1ffec476e05f17cc9a78bc7a27a6a857842170bdf8d6f98d2f"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "valuable"
