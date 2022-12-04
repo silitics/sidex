@@ -13,9 +13,9 @@ proc-macro = true
 
 [dependencies]
 # Sidex core data structures and functions.
-sidex-core = { path = "../../../crates/sidex-core", version = "^0.1" }
+sidex-core = { path = "../sidex-core", version = "^0.1" }
 # Sidex code generation for Rust.
-sidex-gen-rs = { path = "../../../crates/sidex-gen-rs", version = "^0.1" }
+sidex-gen-rs = { path = "../sidex-gen-rs", version = "^0.1" }
 # Required for parsing Rust code.
 syn = { version = "^1", features = ["full"] }
 proc-macro2 = "^1"
