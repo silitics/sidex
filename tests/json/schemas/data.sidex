@@ -1,0 +1,45 @@
+record VariantTestRecord {
+    a: u64,
+    b?: string,
+}
+
+#[json(tagged = internally, tag = "tagFieldName", content = "defaultContentField")]
+variant VariantInternallyTagged { // <T> {
+    A,
+    B: u64,
+    #[json(content = "specificContentField")]
+    C: string,
+    #[json(content = "content")]
+    D: VariantTestRecord,
+    E: VariantTestRecord,
+    // F: T,
+}
+
+#[json(tagged = externally)]
+variant VariantExternallyTagged {
+    A,
+    B: u64,
+    C: VariantTestRecord,
+}
+
+#[json(tagged = adjacently, tag = "tagFieldName", content = "defaultContentField")]
+variant VariantAdjacentlyTagged {
+    A,
+    B: u64,
+    #[json(content = "specificContentField")]
+    C: string,
+    #[json(content = "content")]
+    D: VariantTestRecord,
+    E: VariantTestRecord,
+}
+
+record RecordFieldNamesDefault {
+    test_field_1: u64,
+    test_field2: string,
+}
+
+#[json(rename_all = "SCREAMING_SNAKE_CASE")]
+record RecordFieldNamesScreamingSnake {
+    test_field_1: u64,
+    test_field2: string,
+}

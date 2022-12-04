@@ -1,0 +1,7 @@
+{
+    "tagFieldName": "E",
+    "defaultContentField": {
+        "a": 42,
+        "b": "Hello World!"
+    }
+}

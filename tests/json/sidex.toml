@@ -1,0 +1,9 @@
+[bundle]
+name = "json"
+version = "0.0.0"
+description = "Test cases for Sidex's JSON representation."
+authors = ["Silitics GmbH <info@silitics.com>"]
+
+[backend.rust]
+derive = ["Clone", "Debug"]
+plugins = ["serde"]

@@ -1,0 +1,3 @@
+# JSON Test Cases
+
+This directory contains a Sidex bundle and JSON files for testing compliance with Sidex's official JSON format mapping. The bundle defines different data types. For most of these data types, there is a corresponding directory in [`expected`](./expected/) containing potentially multiple JSON files. Tests are performed by deserializing these files into the respective Sidex type and then serializing the result again. If everything is implemented correctly, the resulting JSON should be structurally identical to the original JSON source. For Rust, these tests are implemented in the [`sidex-serde-tests`](../../crates/sidex-serde-tests/) crate.
