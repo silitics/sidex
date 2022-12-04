@@ -71,7 +71,13 @@ impl RustGenerator {
                         })
                     })
                     .collect::<Result<Vec<_>>>()?;
+                let docs = schema
+                    .docs
+                    .as_ref()
+                    .map(|docs| docs.as_str())
+                    .unwrap_or_default();
                 Ok(quote! {
+                    #[doc = #docs]
                     pub mod #name {
                         #(#schema_preambles)*
                         #(#defs)*
