@@ -17,7 +17,7 @@
 //! This crate defines three traits for converting [`ir::Attr`] to native Rust
 //! structures.
 
-use std::{any, fmt, str::FromStr};
+use std::str::FromStr;
 
 #[doc(hidden)]
 pub use sidex_diagnostics as diagnostics;
@@ -65,8 +65,8 @@ impl<T: Default + TryApplyAttr> TryFromAttrs for T {
 macro_rules! reject {
     ($attr:expr, $($arg:tt)*) => {
         {
-            let _ = $attr;
-            return Err($crate::diagnostics::Diagnostic::error(format!($($arg)*)))
+            let attr = $attr;
+            return Err($crate::diagnostics::Diagnostic::error(format!($($arg)*)).with_span(attr.span.clone()))
         }
     };
 }
