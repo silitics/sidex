@@ -71,8 +71,8 @@ Some(
                                     src: SourceIdx(
                                         0,
                                     ),
-                                    start: 111,
-                                    end: 117,
+                                    start: 117,
+                                    end: 123,
                                 },
                             ),
                         },
@@ -119,8 +119,8 @@ Some(
                                     },
                                     elements: [
                                         Attr {
-                                            kind: List(
-                                                AttrList {
+                                            kind: Assign(
+                                                AttrAssign {
                                                     path: Path {
                                                         segments: [
                                                             Identifier(
@@ -140,31 +140,29 @@ Some(
                                                         ],
                                                         is_absolute: false,
                                                     },
-                                                    elements: [
-                                                        Attr {
-                                                            kind: Path(
-                                                                Path {
-                                                                    segments: [
-                                                                        Identifier(
-                                                                            Node {
-                                                                                inner: "plain",
-                                                                                span: Span(
-                                                                                    Span {
-                                                                                        src: SourceIdx(
-                                                                                            0,
-                                                                                        ),
-                                                                                        start: 94,
-                                                                                        end: 99,
-                                                                                    },
-                                                                                ),
-                                                                            },
-                                                                        ),
-                                                                    ],
-                                                                    is_absolute: false,
-                                                                },
-                                                            ),
-                                                        },
-                                                    ],
+                                                    value: Attr {
+                                                        kind: Path(
+                                                            Path {
+                                                                segments: [
+                                                                    Identifier(
+                                                                        Node {
+                                                                            inner: "externally",
+                                                                            span: Span(
+                                                                                Span {
+                                                                                    src: SourceIdx(
+                                                                                        0,
+                                                                                    ),
+                                                                                    start: 96,
+                                                                                    end: 106,
+                                                                                },
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                ],
+                                                                is_absolute: false,
+                                                            },
+                                                        ),
+                                                    },
                                                 },
                                             ),
                                         },
@@ -185,8 +183,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 159,
-                                                    end: 166,
+                                                    start: 165,
+                                                    end: 172,
                                                 },
                                             ),
                                         },
@@ -200,8 +198,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 124,
-                                                        end: 155,
+                                                        start: 130,
+                                                        end: 161,
                                                     },
                                                 ),
                                             },
@@ -219,8 +217,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 215,
-                                                    end: 225,
+                                                    start: 221,
+                                                    end: 231,
                                                 },
                                             ),
                                         },
@@ -234,8 +232,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 172,
-                                                        end: 211,
+                                                        start: 178,
+                                                        end: 217,
                                                     },
                                                 ),
                                             },
@@ -253,8 +251,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 268,
-                                                    end: 272,
+                                                    start: 274,
+                                                    end: 278,
                                                 },
                                             ),
                                         },
@@ -268,8 +266,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 231,
-                                                        end: 264,
+                                                        start: 237,
+                                                        end: 270,
                                                     },
                                                 ),
                                             },
@@ -293,8 +291,8 @@ Some(
                                     src: SourceIdx(
                                         0,
                                     ),
-                                    start: 296,
-                                    end: 300,
+                                    start: 302,
+                                    end: 306,
                                 },
                             ),
                         },
@@ -308,8 +306,8 @@ Some(
                                         src: SourceIdx(
                                             0,
                                         ),
-                                        start: 277,
-                                        end: 289,
+                                        start: 283,
+                                        end: 295,
                                     },
                                 ),
                             },
@@ -329,8 +327,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 337,
-                                                    end: 341,
+                                                    start: 343,
+                                                    end: 347,
                                                 },
                                             ),
                                         },
@@ -344,8 +342,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 307,
-                                                        end: 333,
+                                                        start: 313,
+                                                        end: 339,
                                                     },
                                                 ),
                                             },
@@ -364,8 +362,8 @@ Some(
                                                                     src: SourceIdx(
                                                                         0,
                                                                     ),
-                                                                    start: 343,
-                                                                    end: 349,
+                                                                    start: 349,
+                                                                    end: 355,
                                                                 },
                                                             ),
                                                         },
@@ -387,8 +385,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 387,
-                                                    end: 393,
+                                                    start: 393,
+                                                    end: 399,
                                                 },
                                             ),
                                         },
@@ -402,8 +400,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 355,
-                                                        end: 383,
+                                                        start: 361,
+                                                        end: 389,
                                                     },
                                                 ),
                                             },
@@ -422,8 +420,8 @@ Some(
                                                                     src: SourceIdx(
                                                                         0,
                                                                     ),
-                                                                    start: 395,
-                                                                    end: 401,
+                                                                    start: 401,
+                                                                    end: 407,
                                                                 },
                                                             ),
                                                         },
@@ -445,8 +443,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 452,
-                                                    end: 463,
+                                                    start: 458,
+                                                    end: 469,
                                                 },
                                             ),
                                         },
@@ -460,8 +458,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 407,
-                                                        end: 448,
+                                                        start: 413,
+                                                        end: 454,
                                                     },
                                                 ),
                                             },
@@ -480,8 +478,8 @@ Some(
                                                                     src: SourceIdx(
                                                                         0,
                                                                     ),
-                                                                    start: 466,
-                                                                    end: 472,
+                                                                    start: 472,
+                                                                    end: 478,
                                                                 },
                                                             ),
                                                         },
@@ -503,8 +501,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 531,
-                                                    end: 542,
+                                                    start: 537,
+                                                    end: 548,
                                                 },
                                             ),
                                         },
@@ -518,8 +516,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 482,
-                                                        end: 527,
+                                                        start: 488,
+                                                        end: 533,
                                                     },
                                                 ),
                                             },
@@ -538,8 +536,8 @@ Some(
                                                                     src: SourceIdx(
                                                                         0,
                                                                     ),
-                                                                    start: 545,
-                                                                    end: 553,
+                                                                    start: 551,
+                                                                    end: 559,
                                                                 },
                                                             ),
                                                         },
