@@ -110,7 +110,10 @@ fn gen_internally_tagged_body(
 
             let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
 
-            if let Some(inner_record) = ctx.bundle_ctx.unit.record_type(&resolved) {
+            
+
+            match ctx.bundle_ctx.unit.record_type(&resolved) {
+                Some(inner_record) if variant.json_attrs.content.is_none() => {
                 let inner_def = ctx.bundle_ctx.unit.type_def(&resolved).expect("We already established that the type is a record type, hence, there must be a definition.");
 
                 let inner_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&inner_def.attrs)?;
@@ -122,9 +125,25 @@ fn gen_internally_tagged_body(
                     let json_field_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
                     let ident = &rust_field.ident;
                     let name = inner_json_attrs.field_name(field, &json_field_attrs);
-                    Ok(quote!{
-                        ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
+                    Ok(if rust_field.is_optional {
+                        quote! {
+                            match &__value.#ident {
+                                ::core::option::Option::Some(__value) => {
+                                    ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value)?;
+                                },
+                                ::core::option::Option::None => {
+                                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, #name)?;
+                                }
+                            }
+                        }
+                    } else {
+                        quote! {
+                            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
+                        }
                     })
+                    // Ok(quote!{
+                    //     ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
+                    // })
                 }).collect::<Result<Vec<_>>>()?;
 
                 Ok(quote! {
@@ -135,7 +154,7 @@ fn gen_internally_tagged_body(
                         ::serde::ser::SerializeStruct::end(__struct)
                     }
                 })
-            } else {
+            }, _ => {
                 let content_name = ty_json_attrs.content_field_name(&variant.json_attrs);
                 Ok(quote! {
                     Self::#ident(__value) => {
@@ -145,7 +164,7 @@ fn gen_internally_tagged_body(
                         ::serde::ser::SerializeStruct::end(__struct)
                     }
                 })
-            }
+            }}
         } else {
             Ok(quote! {
                 Self::#ident => {

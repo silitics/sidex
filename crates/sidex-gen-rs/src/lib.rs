@@ -30,6 +30,28 @@ impl RustGenerator {
         }
     }
 
+    pub fn generate_macro(
+        &self,
+        config: &Config,
+        unit: &ir::Unit,
+        bundle: ir::BundleIdx,
+    ) -> diagnostics::Result<TokenStream> {
+        let mut config = config.clone();
+
+        let mut generator = self.clone();
+
+        let all_plugins = plugins::plugins();
+        for plugin in &config.plugins {
+            generator
+                .plugins
+                .push(all_plugins.get(plugin).unwrap().clone());
+        }
+
+        config.types.populate_table_with_builtins();
+
+        generator.generate_bundle_inner(&config, unit, bundle)
+    }
+
     pub fn generate_bundle_inner(
         &self,
         cfg: &Config,
@@ -86,6 +108,7 @@ impl RustGenerator {
             })
             .collect::<Result<Vec<_>>>()?;
         Ok(quote! {
+            extern crate sidex_serde;
             #(#bundle_preambles)*
             #(#schemas)*
         })

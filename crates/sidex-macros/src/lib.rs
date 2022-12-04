@@ -1,6 +1,9 @@
 #![doc = include_str!("../README.md")]
 
-use std::path::PathBuf;
+use std::{
+    env,
+    path::{Path, PathBuf},
+};
 
 use proc_macro::TokenStream;
 use sidex_core::utils::load_unit_and_bundle;
@@ -26,17 +29,31 @@ impl Parse for IncludeSidexArgs {
 pub fn include_bundle(tokens: TokenStream) -> TokenStream {
     let args = parse_macro_input!(tokens as IncludeSidexArgs);
 
-    let (unit, bundle) = load_unit_and_bundle(&args.path).unwrap();
+    let ctx = sidex_core::diagnostics::DiagnosticCtx::new();
 
-    let generator = RustGenerator::new();
+    let out = ctx.exec(|| {
+        let cargo_manifest_dir = env::var_os("CARGO_MANIFEST_DIR").unwrap();
 
-    let mut cfg = Config::default();
+        let bundle_path = Path::new(&cargo_manifest_dir).join(args.path);
 
-    cfg.types.populate_table_with_builtins();
+        let (unit, bundle, transformer) = load_unit_and_bundle(&bundle_path).unwrap();
 
-    let inner = generator
-        .generate_bundle_inner(&cfg, &unit, bundle)
-        .unwrap();
+        let generator = RustGenerator::new();
 
-    inner.into()
+        let null = serde_json::Value::Null;
+        let config = transformer
+            .get_bundle_manifest(bundle)
+            .backend
+            .get("rust")
+            .unwrap_or(&null)
+            .clone();
+
+        let cfg = serde_json::from_value::<Config>(config).unwrap();
+
+        let inner = generator.generate_macro(&cfg, &unit, bundle).unwrap();
+
+        inner
+    });
+
+    out.into()
 }

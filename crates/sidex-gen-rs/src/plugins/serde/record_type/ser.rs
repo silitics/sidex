@@ -15,8 +15,8 @@ pub(crate) fn gen_serialize_body(ty: &RustTy, fields: &[SerdeField]) -> TokenStr
         if field.rust_field.is_optional {
             quote! {
                 match &self.#ident {
-                    ::core::option::Option::Some(_) => {
-                        ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &self.#ident)?;
+                    ::core::option::Option::Some(__value) => {
+                        ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, __value)?;
                     },
                     ::core::option::Option::None => {
                         ::serde::ser::SerializeStruct::skip_field(&mut __struct, #name)?;

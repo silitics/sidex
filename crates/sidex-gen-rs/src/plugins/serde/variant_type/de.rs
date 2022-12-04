@@ -51,7 +51,7 @@ pub(crate) fn gen_deserialize_body(
                         }
                         JsonTaggedAttr::Internally => {
                             let is_record = variant.variant.typ.as_ref().map(|typ| ctx.bundle_ctx.unit.resolve_aliases(&typ)).map(|typ| ctx.bundle_ctx.unit.record_type(&typ).is_some()).unwrap_or(false);
-                            if is_record {
+                            if is_record && variant.json_attrs.content.is_none() {
                                 quote! {
                                     #ty_ident::#ident(__tagged.deserialize_internally_tagged::<#ty, __D::Error>()?)
                                 }
