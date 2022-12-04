@@ -4,6 +4,7 @@
 // use serde::Serialize;
 
 pub mod de;
+pub mod ser;
 
 // struct F32(f32);
 
