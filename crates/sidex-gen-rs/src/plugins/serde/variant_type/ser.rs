@@ -110,7 +110,7 @@ fn gen_internally_tagged_body(
 
             let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
 
-            
+
 
             match ctx.bundle_ctx.unit.record_type(&resolved) {
                 Some(inner_record) if variant.json_attrs.content.is_none() => {

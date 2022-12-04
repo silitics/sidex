@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-book:
+  build-website:
     name: Build Website
     runs-on: ubuntu-latest
     concurrency:
