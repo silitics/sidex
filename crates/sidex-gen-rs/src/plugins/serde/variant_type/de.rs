@@ -80,8 +80,8 @@ pub(crate) fn gen_deserialize_body(
     let body = if !matches!(ty_json_attrs.tagged, JsonTaggedAttr::Externally) {
         let tag_field = ty_json_attrs.tag_field_name();
         quote! {
-            if ::serde::Deserializer::is_human_readable(&__deserializer) {
-                let __tagged = ::sidex_serde::de::tagged::deserialize_tagged_variant::<__Identifier, __D>(__deserializer, #tag_field)?;
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<__Identifier, __D>(__deserializer, #tag_field)?;
                 match __tagged.tag {
                     #(#human_readable_match_arms,)*
                 }
@@ -115,12 +115,12 @@ fn gen_externally_tagged_body(
             let ident = &variant.rust_variant.ident;
             let constructor = if let Some(ty) = &variant.rust_variant.ty {
                 quote! {
-                    let __value = ::serde::de::VariantAccess::newtype_variant::<#ty>(__variant)?;
+                    let __value = __serde::de::VariantAccess::newtype_variant::<#ty>(__variant)?;
                     ::core::result::Result::Ok(#ty_ident::#ident(__value))
                 }
             } else {
                 quote! {
-                    ::serde::de::VariantAccess::unit_variant(__variant)?;
+                    __serde::de::VariantAccess::unit_variant(__variant)?;
                     ::core::result::Result::Ok(#ty_ident::#ident)
                 }
             };
@@ -135,7 +135,7 @@ fn gen_externally_tagged_body(
     quote! {
         struct __Visitor;
 
-        impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+        impl<'de> __serde::de::Visitor<'de> for __Visitor {
             type Value = #ty_ident;
 
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
@@ -148,15 +148,15 @@ fn gen_externally_tagged_body(
             #[inline]
             fn visit_enum<__A>(self, __data: __A) -> ::core::result::Result<Self::Value, __A::Error>
             where
-                __A: ::serde::de::EnumAccess<'de>,
+                __A: __serde::de::EnumAccess<'de>,
             {
-                match ::serde::de::EnumAccess::variant::<__Identifier>(__data)? {
+                match __serde::de::EnumAccess::variant::<__Identifier>(__data)? {
                     #(#match_arms,)*
                 }
             }
         }
 
-        ::serde::Deserializer::deserialize_enum(
+        __serde::Deserializer::deserialize_enum(
             __deserializer,
             #ty_name,
             __VARIANTS,

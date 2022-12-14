@@ -108,7 +108,6 @@ impl RustGenerator {
             })
             .collect::<Result<Vec<_>>>()?;
         Ok(quote! {
-            extern crate sidex_serde;
             #(#bundle_preambles)*
             #(#schemas)*
         })

@@ -3,10 +3,7 @@ use quote::quote;
 use sidex_attrs_json::{
     atoms::JsonTaggedAttr, JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantTypeAttrs,
 };
-use sidex_gen::{
-    attrs::TryFromAttrs,
-    diagnostics::{Diagnostic, Result},
-};
+use sidex_gen::{attrs::TryFromAttrs, diagnostics::Result};
 
 use crate::{
     context::{RustTy, SchemaCtx},
@@ -32,7 +29,7 @@ pub(crate) fn gen_serialize_body(
     let non_human_readable_body = gen_externally_tagged_body(ty, variants);
 
     Ok(quote! {
-        if ::serde::Serializer::is_human_readable(&__serializer) {
+        if __serde::Serializer::is_human_readable(&__serializer) {
             #human_readable_body
         } else {
             #non_human_readable_body
@@ -56,24 +53,24 @@ fn gen_adjacently_tagged_body(
         let content_field = ty_json_attrs.content_field_name(&variant.json_attrs);
 
         let serialize_tag = quote! {
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #ty_tag_field, #name)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, #ty_tag_field, #name)?;
         };
 
         if variant.rust_variant.ty.is_some() {
             quote! {
                 Self::#ident(__value) => {
-                    let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, 2)?;
+                    let mut __struct = __serde::Serializer::serialize_struct(__serializer, #ty_name, 2)?;
                     #serialize_tag
-                    ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #content_field, __value)?;
-                    ::serde::ser::SerializeStruct::end(__struct)
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, #content_field, __value)?;
+                    __serde::ser::SerializeStruct::end(__struct)
                 }
             }
         } else {
             quote! {
                 Self::#ident => {
-                    let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, 1)?;
+                    let mut __struct = __serde::Serializer::serialize_struct(__serializer, #ty_name, 1)?;
                     #serialize_tag
-                    ::serde::ser::SerializeStruct::end(__struct)
+                    __serde::ser::SerializeStruct::end(__struct)
                 }
             }
         }
@@ -101,7 +98,7 @@ fn gen_internally_tagged_body(
         let name = &variant.name;
 
         let serialize_tag = quote! {
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #ty_tag_field, #name)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, #ty_tag_field, #name)?;
         };
 
         if let Some(typ) = &variant.variant.typ {
@@ -129,48 +126,48 @@ fn gen_internally_tagged_body(
                         quote! {
                             match &__value.#ident {
                                 ::core::option::Option::Some(__value) => {
-                                    ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value)?;
+                                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value)?;
                                 },
                                 ::core::option::Option::None => {
-                                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, #name)?;
+                                    __serde::ser::SerializeStruct::skip_field(&mut __struct, #name)?;
                                 }
                             }
                         }
                     } else {
                         quote! {
-                            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
+                            __serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
                         }
                     })
                     // Ok(quote!{
-                    //     ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
+                    //     __serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &__value.#ident)?;
                     // })
                 }).collect::<Result<Vec<_>>>()?;
 
                 Ok(quote! {
                     Self::#ident(__value) => {
-                        let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, #num_fields)?;
+                        let mut __struct = __serde::Serializer::serialize_struct(__serializer, #ty_name, #num_fields)?;
                         #serialize_tag
                         #(#serialize_fields)*
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                 })
             }, _ => {
                 let content_name = ty_json_attrs.content_field_name(&variant.json_attrs);
                 Ok(quote! {
                     Self::#ident(__value) => {
-                        let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, 2)?;
+                        let mut __struct = __serde::Serializer::serialize_struct(__serializer, #ty_name, 2)?;
                         #serialize_tag
-                        ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #content_name, &__value)?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::serialize_field(&mut __struct, #content_name, &__value)?;
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                 })
             }}
         } else {
             Ok(quote! {
                 Self::#ident => {
-                    let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, 1)?;
+                    let mut __struct = __serde::Serializer::serialize_struct(__serializer, #ty_name, 1)?;
                     #serialize_tag
-                    ::serde::ser::SerializeStruct::end(__struct)
+                    __serde::ser::SerializeStruct::end(__struct)
                 }
             })
         }
@@ -193,7 +190,7 @@ fn gen_externally_tagged_body(ty: &RustTy, variants: &[SerdeVariant]) -> TokenSt
         if variant.rust_variant.ty.is_some() {
             quote! {
                 Self::#ident(__value) => {
-                    ::serde::Serializer::serialize_newtype_variant(
+                    __serde::Serializer::serialize_newtype_variant(
                         __serializer, #ty_name, #idx, #name, __value
                     )
                 }
@@ -201,7 +198,7 @@ fn gen_externally_tagged_body(ty: &RustTy, variants: &[SerdeVariant]) -> TokenSt
         } else {
             quote! {
                 Self::#ident => {
-                    ::serde::Serializer::serialize_unit_variant(
+                    __serde::Serializer::serialize_unit_variant(
                         __serializer, #ty_name, #idx, #name
                     )
                 }

@@ -1,4 +1,4 @@
-# Sidex: Serde Runtime Helpers
+# Sidex: Serde Interoperability Helpers
 
 This crate is part of [Sidex](https://oss.silitics.com/sidex/). It contains runtime helpers for [Serde](https://serde.rs/) interoperability.
 

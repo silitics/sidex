@@ -16,22 +16,22 @@ pub(crate) fn gen_serialize_body(ty: &RustTy, fields: &[SerdeField]) -> TokenStr
             quote! {
                 match &self.#ident {
                     ::core::option::Option::Some(__value) => {
-                        ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, __value)?;
+                        __serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, __value)?;
                     },
                     ::core::option::Option::None => {
-                        ::serde::ser::SerializeStruct::skip_field(&mut __struct, #name)?;
+                        __serde::ser::SerializeStruct::skip_field(&mut __struct, #name)?;
                     }
                 }
             }
         } else {
             quote! {
-                ::serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &self.#ident)?;
+                __serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &self.#ident)?;
             }
         }
     });
     quote! {
-        let mut __struct = ::serde::Serializer::serialize_struct(__serializer, #ty_name, #num_fields)?;
+        let mut __struct = __serde::Serializer::serialize_struct(__serializer, #ty_name, #num_fields)?;
         #(#serialize_fields)*
-        ::serde::ser::SerializeStruct::end(__struct)
+        __serde::ser::SerializeStruct::end(__struct)
     }
 }

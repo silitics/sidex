@@ -1,10 +1,9 @@
 //! Plugin generating implementations of [`serde::Serialize`] and [`serde::Deserialize`]
 //! for Sidex types.
 
-use std::any::Any;
-
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
+use quote::quote;
+use serde::Deserialize;
 use sidex_attrs_json::{
     JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs, JsonVariantTypeAttrs,
 };
@@ -17,6 +16,19 @@ mod identifier_enum;
 mod record_type;
 mod variant_type;
 mod wrapper_type;
+
+#[derive(Debug, Clone, Deserialize)]
+pub(crate) struct SerdePluginConfig {
+    pub sidex_serde_path: String,
+}
+
+impl Default for SerdePluginConfig {
+    fn default() -> Self {
+        Self {
+            sidex_serde_path: "::sidex::serde".to_owned(),
+        }
+    }
+}
 
 pub(crate) struct SerdeField<'ir> {
     pub field: &'ir ir::Field,
@@ -88,7 +100,7 @@ impl Plugin for Serde {
                         self.0.serialize(__serializer)
                     },
                     quote! {
-                        Ok(#ty_ident(::serde::Deserialize::deserialize(__deserializer)?))
+                        Ok(#ty_ident(__serde::Deserialize::deserialize(__deserializer)?))
                     },
                 )
             }
@@ -105,17 +117,28 @@ impl Plugin for Serde {
         let vars = ctx.generic_type_vars(def);
         Ok(quote! {
             #[automatically_derived]
-            impl #vars ::serde::Serialize for #ty_ident #vars {
-                fn serialize<__S: ::serde::Serializer>(&self, __serializer: __S) -> ::std::result::Result<__S::Ok, __S::Error> {
+            impl #vars __serde::Serialize for #ty_ident #vars {
+                fn serialize<__S: __serde::Serializer>(&self, __serializer: __S) -> ::std::result::Result<__S::Ok, __S::Error> {
                     #serialize_body
                 }
             }
             #[automatically_derived]
-            impl<'de> ::serde::Deserialize<'de> for #ty_ident #vars {
-                fn deserialize<__D: ::serde::Deserializer<'de>>(__deserializer: __D) -> ::std::result::Result<Self, __D::Error> {
+            impl<'de> __serde::Deserialize<'de> for #ty_ident #vars {
+                fn deserialize<__D: __serde::Deserializer<'de>>(__deserializer: __D) -> ::std::result::Result<Self, __D::Error> {
                     #deserialize_body
                 }
             }
+        })
+    }
+
+    fn visit_schema(&self, ctx: &SchemaCtx) -> Result<TokenStream> {
+        let plugin_cfg = ctx
+            .bundle_ctx
+            .get_plugin_config::<SerdePluginConfig>("serde");
+        let sidex_serde_path: syn::Path = syn::parse_str(&plugin_cfg.sidex_serde_path).unwrap();
+        Ok(quote! {
+            use #sidex_serde_path as __sidex_serde;
+            use ::serde as __serde;
         })
     }
 }

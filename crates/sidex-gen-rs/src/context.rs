@@ -4,6 +4,7 @@ use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote, ToTokens};
+use serde::{de::IntoDeserializer, Deserialize};
 use sidex_attrs_rust::{FieldAttrs, Visibility};
 use sidex_gen::{attrs::TryFromAttrs, ir};
 
@@ -67,6 +68,16 @@ pub struct BundleCtx<'cx> {
     pub cfg: &'cx Config,
     pub unit: &'cx ir::Unit,
     pub bundle: &'cx ir::Bundle,
+}
+
+impl<'cx> BundleCtx<'cx> {
+    pub fn get_plugin_config<T: Default + for<'de> Deserialize<'de>>(&self, name: &str) -> T {
+        self.cfg
+            .plugin
+            .get(name)
+            .map(|plugin_cfg| T::deserialize(plugin_cfg.clone().into_deserializer()).unwrap())
+            .unwrap_or_default()
+    }
 }
 
 #[derive(Clone)]

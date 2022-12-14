@@ -13,4 +13,3 @@ homepage.workspace = true
 serde = "1"
 serde_json = "1"
 sidex = { path = "../sidex", features = ["macros", "serde"] }
-sidex-serde = { path = "../sidex-serde" }

@@ -29,7 +29,7 @@ pub(crate) fn gen_deserialize_body(
     quote! {
         #visitor
         #fields_array_const
-        ::serde::Deserializer::deserialize_struct(
+        __serde::Deserializer::deserialize_struct(
             __deserializer,
             #ty_name,
             __FIELDS,
@@ -93,7 +93,7 @@ fn gen_visitor(
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field(#name)
+                                <__A::Error as __serde::de::Error>::missing_field(#name)
                             );
                         }
                     };
@@ -117,7 +117,7 @@ fn gen_visitor(
 
         struct __Visitor;
 
-        impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+        impl<'de> __serde::de::Visitor<'de> for __Visitor {
             type Value = #ty_ident;
 
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
@@ -127,15 +127,15 @@ fn gen_visitor(
             #[inline]
             fn visit_seq<__A>(self, mut __seq: __A) -> ::core::result::Result<Self::Value, __A::Error>
             where
-                __A: ::serde::de::SeqAccess<'de>,
+                __A: __serde::de::SeqAccess<'de>,
             {
                 #(
                     // Optional fields are deserialized as `Option<T>` and, hence, need no special treatment.
-                    let #field_vars = match ::serde::de::SeqAccess::next_element::<#field_tys>(&mut __seq)? {
+                    let #field_vars = match __serde::de::SeqAccess::next_element::<#field_tys>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(#field_indices, &#expected_length)
+                                __serde::de::Error::invalid_length(#field_indices, &#expected_length)
                             );
                         }
                     };
@@ -146,23 +146,23 @@ fn gen_visitor(
             #[inline]
             fn visit_map<__A>(self, mut __map: __A) -> ::core::result::Result<Self::Value, __A::Error>
             where
-                __A: ::serde::de::MapAccess<'de>,
+                __A: __serde::de::MapAccess<'de>,
             {
                 #(
                     // We use the inner type here so optional fields end up with only one level of `Option`.
                     let mut #field_vars: ::core::option::Option<#field_inner_tys> = ::core::option::Option::None;
                 )*
-                while let ::core::option::Option::Some(__key) = ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)? {
+                while let ::core::option::Option::Some(__key) = __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)? {
                     match __key {
                         #(
                             __Identifier::#field_variants => {
                                 if ::core::option::Option::is_some(&#field_vars) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(#field_names)
+                                        <__A::Error as __serde::de::Error>::duplicate_field(#field_names)
                                     );
                                 }
                                 #field_vars = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<#field_inner_tys>(&mut __map)?
+                                    __serde::de::MapAccess::next_value::<#field_inner_tys>(&mut __map)?
                                 );
                             },
                         )*
@@ -170,7 +170,7 @@ fn gen_visitor(
                             // Unknown fields are simply ignored.
                             //
                             // 🔮 At a later point in time, we may want attributes to disallow unknown fields.
-                            ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(&mut __map)?;
+                            __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(&mut __map)?;
                         }
                     }
                 };

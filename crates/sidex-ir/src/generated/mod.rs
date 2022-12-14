@@ -1,6 +1,9 @@
 /* GENERATED WITH SIDEX. DO NOT MODIFY! */
 
+#[doc = ""]
 pub mod ir {
+    use :: serde as __serde;
+    use :: sidex_serde as __sidex_serde;
     #[doc = "Uniquely identifies a source in a unit.\n"]
     #[derive(Clone, Debug, Copy, PartialEq, Eq, Hash)]
     pub struct SourceIdx(pub(crate) usize);
@@ -10,8 +13,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for SourceIdx {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for SourceIdx {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
@@ -19,11 +22,11 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for SourceIdx {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for SourceIdx {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(SourceIdx(::serde::Deserialize::deserialize(
+            Ok(SourceIdx(__serde::Deserialize::deserialize(
                 __deserializer,
             )?))
         }
@@ -37,8 +40,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for BundleIdx {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for BundleIdx {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
@@ -46,11 +49,11 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for BundleIdx {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for BundleIdx {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(BundleIdx(::serde::Deserialize::deserialize(
+            Ok(BundleIdx(__serde::Deserialize::deserialize(
                 __deserializer,
             )?))
         }
@@ -64,8 +67,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for SchemaIdx {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for SchemaIdx {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
@@ -73,11 +76,11 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for SchemaIdx {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for SchemaIdx {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(SchemaIdx(::serde::Deserialize::deserialize(
+            Ok(SchemaIdx(__serde::Deserialize::deserialize(
                 __deserializer,
             )?))
         }
@@ -91,8 +94,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for DefIdx {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for DefIdx {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
@@ -100,11 +103,11 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for DefIdx {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for DefIdx {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(DefIdx(::serde::Deserialize::deserialize(__deserializer)?))
+            Ok(DefIdx(__serde::Deserialize::deserialize(__deserializer)?))
         }
     }
     #[doc = "Uniquely identifies a type variable in a definition.\n"]
@@ -116,8 +119,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for TypeVarIdx {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for TypeVarIdx {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
@@ -125,11 +128,11 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for TypeVarIdx {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for TypeVarIdx {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(TypeVarIdx(::serde::Deserialize::deserialize(
+            Ok(TypeVarIdx(__serde::Deserialize::deserialize(
                 __deserializer,
             )?))
         }
@@ -178,28 +181,28 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Unit {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Unit {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = ::serde::Serializer::serialize_struct(__serializer, "Unit", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Unit", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "bundles",
                 &self.bundles,
             )?;
-            ::serde::ser::SerializeStruct::serialize_field(
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "sources",
                 &self.sources,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Unit {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Unit {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["bundles", "sources"];
@@ -212,7 +215,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -222,7 +225,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -232,7 +235,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "bundles" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -245,7 +248,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"bundles" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -254,20 +257,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Unit;
                 fn expecting(
                     &self,
@@ -281,25 +284,25 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Bundle>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
                             );
                         }
                     };
                     let __field1 =
-                        match ::serde::de::SeqAccess::next_element::<SourceStorage>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<SourceStorage>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         1usize,
                                         &"record with 2 fields",
                                     ),
@@ -317,26 +320,26 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::vec::Vec<Bundle>> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<SourceStorage> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "bundles",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Bundle>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Bundle>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -344,19 +347,19 @@ pub mod ir {
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "sources",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<SourceStorage>(
+                                    __serde::de::MapAccess::next_value::<SourceStorage>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -366,7 +369,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("bundles"),
+                                <__A::Error as __serde::de::Error>::missing_field("bundles"),
                             );
                         }
                     };
@@ -374,7 +377,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("sources"),
+                                <__A::Error as __serde::de::Error>::missing_field("sources"),
                             );
                         }
                     };
@@ -385,7 +388,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["bundles", "sources"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Unit", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Unit", __FIELDS, __Visitor)
         }
     }
     #[doc = "A storage for sources.\n"]
@@ -418,24 +421,24 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for SourceStorage {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for SourceStorage {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "SourceStorage", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "SourceStorage", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "sources",
                 &self.sources,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for SourceStorage {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for SourceStorage {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["sources"];
@@ -446,7 +449,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -456,7 +459,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -465,7 +468,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "sources" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -477,7 +480,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"sources" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -485,20 +488,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = SourceStorage;
                 fn expecting(
                     &self,
@@ -512,16 +515,16 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Source>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
                             );
                         }
                     };
@@ -533,30 +536,30 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::vec::Vec<Source>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "sources",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Source>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Source>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -566,7 +569,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("sources"),
+                                <__A::Error as __serde::de::Error>::missing_field("sources"),
                             );
                         }
                     };
@@ -574,7 +577,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["sources"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "SourceStorage",
                 __FIELDS,
@@ -636,33 +639,33 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Source {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Source {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Source", 3usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", &self.text)?;
+                __serde::Serializer::serialize_struct(__serializer, "Source", 3usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", &self.text)?;
             match &self.origin {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(
                         &mut __struct,
                         "origin",
-                        &self.origin,
+                        __value,
                     )?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "origin")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "origin")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Source {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Source {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["idx", "text", "origin"];
@@ -676,7 +679,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -686,7 +689,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -697,7 +700,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -711,7 +714,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -721,20 +724,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Source;
                 fn expecting(
                     &self,
@@ -748,39 +751,39 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<SourceIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<SourceIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 3 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::std::string::String,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
                             );
                         }
                     };
@@ -796,7 +799,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<SourceIdx> =
                         ::core::option::Option::None;
@@ -805,27 +808,27 @@ pub mod ir {
                     let mut __field2: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("idx"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("idx"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<SourceIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<SourceIdx>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("text"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("text"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
@@ -833,19 +836,19 @@ pub mod ir {
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "origin",
                                         ),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -855,7 +858,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("idx"),
+                                <__A::Error as __serde::de::Error>::missing_field("idx"),
                             );
                         }
                     };
@@ -863,7 +866,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("text"),
+                                <__A::Error as __serde::de::Error>::missing_field("text"),
                             );
                         }
                     };
@@ -875,7 +878,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["idx", "text", "origin"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Source", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Source", __FIELDS, __Visitor)
         }
     }
     #[doc = "A bundle is a flat collection of schemas evolving together.\n"]
@@ -943,35 +946,35 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Bundle {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Bundle {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Bundle", 4usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "Bundle", 4usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "metadata",
                 &self.metadata,
             )?;
-            ::serde::ser::SerializeStruct::serialize_field(
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "dependencies",
                 &self.dependencies,
             )?;
-            ::serde::ser::SerializeStruct::serialize_field(
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "schemas",
                 &self.schemas,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Bundle {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Bundle {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] =
@@ -987,7 +990,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -997,7 +1000,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1009,7 +1012,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1024,7 +1027,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1035,20 +1038,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Bundle;
                 fn expecting(
                     &self,
@@ -1062,14 +1065,14 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<BundleIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<BundleIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 4 fields",
                                     ),
@@ -1077,36 +1080,36 @@ pub mod ir {
                             }
                         };
                     let __field1 =
-                        match ::serde::de::SeqAccess::next_element::<Metadata>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<Metadata>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         1usize,
                                         &"record with 4 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Dependency>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Schema>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -1123,7 +1126,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<BundleIdx> =
                         ::core::option::Option::None;
@@ -1134,41 +1137,41 @@ pub mod ir {
                     let mut __field3: ::core::option::Option<::std::vec::Vec<Schema>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("idx"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("idx"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<BundleIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<BundleIdx>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "metadata",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Metadata>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Metadata>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "dependencies",
                                         ),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<
+                                    __serde::de::MapAccess::next_value::<
                                         ::std::vec::Vec<Dependency>,
                                     >(&mut __map)?,
                                 );
@@ -1176,19 +1179,19 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "schemas",
                                         ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Schema>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Schema>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -1198,7 +1201,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("idx"),
+                                <__A::Error as __serde::de::Error>::missing_field("idx"),
                             );
                         }
                     };
@@ -1206,7 +1209,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("metadata"),
+                                <__A::Error as __serde::de::Error>::missing_field("metadata"),
                             );
                         }
                     };
@@ -1214,7 +1217,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("dependencies"),
+                                <__A::Error as __serde::de::Error>::missing_field("dependencies"),
                             );
                         }
                     };
@@ -1222,7 +1225,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("schemas"),
+                                <__A::Error as __serde::de::Error>::missing_field("schemas"),
                             );
                         }
                     };
@@ -1236,7 +1239,7 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["idx", "metadata", "dependencies", "schemas"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Bundle", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Bundle", __FIELDS, __Visitor)
         }
     }
     #[doc = "A dependency of a bundle.\n"]
@@ -1275,21 +1278,21 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Dependency {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Dependency {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Dependency", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "Dependency", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Dependency {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Dependency {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["name", "bundle"];
@@ -1301,7 +1304,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -1311,7 +1314,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1321,7 +1324,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1334,7 +1337,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1343,20 +1346,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Dependency;
                 fn expecting(
                     &self,
@@ -1370,25 +1373,25 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::string::String,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
                             );
                         }
                     };
                     let __field1 =
-                        match ::serde::de::SeqAccess::next_element::<BundleIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<BundleIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         1usize,
                                         &"record with 2 fields",
                                     ),
@@ -1406,24 +1409,24 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<BundleIdx> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
@@ -1431,17 +1434,17 @@ pub mod ir {
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "bundle",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<BundleIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<BundleIdx>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -1451,7 +1454,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -1459,7 +1462,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("bundle"),
+                                <__A::Error as __serde::de::Error>::missing_field("bundle"),
                             );
                         }
                     };
@@ -1470,7 +1473,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["name", "bundle"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Dependency",
                 __FIELDS,
@@ -1555,49 +1558,49 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Metadata {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Metadata {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Metadata", 4usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "Metadata", 4usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "version",
                 &self.version,
             )?;
             match &self.description {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(
                         &mut __struct,
                         "description",
-                        &self.description,
+                        __value,
                     )?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "description")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "description")?;
                 }
             }
             match &self.authors {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(
                         &mut __struct,
                         "authors",
-                        &self.authors,
+                        __value,
                     )?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "authors")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "authors")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Metadata {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Metadata {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] =
@@ -1613,7 +1616,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -1623,7 +1626,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1635,7 +1638,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1650,7 +1653,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1661,20 +1664,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Metadata;
                 fn expecting(
                     &self,
@@ -1688,49 +1691,49 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::string::String,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::std::string::String,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<::std::vec::Vec<::std::string::String>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -1747,7 +1750,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
@@ -1759,17 +1762,17 @@ pub mod ir {
                         ::std::vec::Vec<::std::string::String>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
@@ -1777,13 +1780,13 @@ pub mod ir {
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "version",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
@@ -1791,13 +1794,13 @@ pub mod ir {
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "description",
                                         ),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
@@ -1805,19 +1808,19 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "authors",
                                         ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<
+                                    __serde::de::MapAccess::next_value::<
                                         ::std::vec::Vec<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -1827,7 +1830,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -1835,7 +1838,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("version"),
+                                <__A::Error as __serde::de::Error>::missing_field("version"),
                             );
                         }
                     };
@@ -1849,7 +1852,7 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["name", "version", "description", "authors"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Metadata",
                 __FIELDS,
@@ -1895,36 +1898,32 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Identifier {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Identifier {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Identifier", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "Identifier", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "identifier",
                 &self.identifier,
             )?;
             match &self.span {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "span",
-                        &self.span,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Identifier {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Identifier {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["identifier", "span"];
@@ -1937,7 +1936,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -1947,7 +1946,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1957,7 +1956,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "identifier" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1970,7 +1969,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"identifier" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -1979,20 +1978,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Identifier;
                 fn expecting(
                     &self,
@@ -2006,27 +2005,27 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::string::String,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
                             );
                         }
                     };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
                             );
                         }
                     };
@@ -2041,25 +2040,25 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "identifier",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
@@ -2067,15 +2066,15 @@ pub mod ir {
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("span"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -2085,7 +2084,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("identifier"),
+                                <__A::Error as __serde::de::Error>::missing_field("identifier"),
                             );
                         }
                     };
@@ -2096,7 +2095,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["identifier", "span"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Identifier",
                 __FIELDS,
@@ -2127,19 +2126,19 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Docs {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Docs {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = ::serde::Serializer::serialize_struct(__serializer, "Docs", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", &self.text)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Docs", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", &self.text)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Docs {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Docs {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["text"];
@@ -2150,7 +2149,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -2160,7 +2159,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2169,7 +2168,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "text" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2181,7 +2180,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"text" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2189,20 +2188,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Docs;
                 fn expecting(
                     &self,
@@ -2216,16 +2215,16 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::string::String,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
                             );
                         }
                     };
@@ -2237,28 +2236,28 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("text"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("text"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -2268,7 +2267,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("text"),
+                                <__A::Error as __serde::de::Error>::missing_field("text"),
                             );
                         }
                     };
@@ -2276,7 +2275,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["text"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Docs", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Docs", __FIELDS, __Visitor)
         }
     }
     #[doc = "A schema is a collection of definitions.\n\nNote that imports have already been processed and resolved.\n"]
@@ -2370,47 +2369,43 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Schema {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Schema {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Schema", 6usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+                __serde::Serializer::serialize_struct(__serializer, "Schema", 6usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
             match &self.docs {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "docs",
-                        &self.docs,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
                 }
             }
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "defs", &self.defs)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "defs", &self.defs)?;
             match &self.source {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(
                         &mut __struct,
                         "source",
-                        &self.source,
+                        __value,
                     )?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "source")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "source")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Schema {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Schema {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] =
@@ -2428,7 +2423,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -2438,7 +2433,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2452,7 +2447,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2469,7 +2464,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2482,20 +2477,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Schema;
                 fn expecting(
                     &self,
@@ -2509,71 +2504,71 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<SchemaIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<SchemaIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 6 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::std::string::String,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 6 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 6 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Attr>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 6 fields"),
                             );
                         }
                     };
-                    let __field4 = match ::serde::de::SeqAccess::next_element::<::std::vec::Vec<Def>>(
+                    let __field4 = match __serde::de::SeqAccess::next_element::<::std::vec::Vec<Def>>(
                         &mut __seq,
                     )? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(4usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(4usize, &"record with 6 fields"),
                             );
                         }
                     };
-                    let __field5 = match ::serde::de::SeqAccess::next_element::<
+                    let __field5 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<SourceIdx>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(5usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(5usize, &"record with 6 fields"),
                             );
                         }
                     };
@@ -2592,7 +2587,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<SchemaIdx> =
                         ::core::option::Option::None;
@@ -2606,27 +2601,27 @@ pub mod ir {
                     let mut __field5: ::core::option::Option<SourceIdx> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("idx"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("idx"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<SchemaIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<SchemaIdx>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::string::String>(
+                                    __serde::de::MapAccess::next_value::<::std::string::String>(
                                         &mut __map,
                                     )?,
                                 );
@@ -2634,23 +2629,23 @@ pub mod ir {
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("docs"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("docs"),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "attrs",
                                         ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -2658,11 +2653,11 @@ pub mod ir {
                             __Identifier::__Identifier4 => {
                                 if ::core::option::Option::is_some(&__field4) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("defs"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("defs"),
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Def>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Def>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -2670,17 +2665,17 @@ pub mod ir {
                             __Identifier::__Identifier5 => {
                                 if ::core::option::Option::is_some(&__field5) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "source",
                                         ),
                                     );
                                 }
                                 __field5 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<SourceIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<SourceIdx>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -2690,7 +2685,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("idx"),
+                                <__A::Error as __serde::de::Error>::missing_field("idx"),
                             );
                         }
                     };
@@ -2698,7 +2693,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -2706,7 +2701,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("attrs"),
+                                <__A::Error as __serde::de::Error>::missing_field("attrs"),
                             );
                         }
                     };
@@ -2714,7 +2709,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("defs"),
+                                <__A::Error as __serde::de::Error>::missing_field("defs"),
                             );
                         }
                     };
@@ -2730,7 +2725,7 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["idx", "name", "docs", "attrs", "defs", "source"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Schema", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Schema", __FIELDS, __Visitor)
         }
     }
     #[doc = "A definition.\n"]
@@ -2811,34 +2806,30 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Def {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Def {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = ::serde::Serializer::serialize_struct(__serializer, "Def", 5usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Def", 5usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
             match &self.docs {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "docs",
-                        &self.docs,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
                 }
             }
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "vars", &self.vars)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "vars", &self.vars)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Def {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Def {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] =
@@ -2855,7 +2846,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -2865,7 +2856,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2878,7 +2869,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2894,7 +2885,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -2906,20 +2897,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Def;
                 fn expecting(
                     &self,
@@ -2933,59 +2924,59 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 5 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<TypeVar>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Attr>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
                             );
                         }
                     };
                     let __field4 =
-                        match ::serde::de::SeqAccess::next_element::<DefKind>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<DefKind>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         4usize,
                                         &"record with 5 fields",
                                     ),
@@ -3006,7 +2997,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
@@ -3018,37 +3009,37 @@ pub mod ir {
                     let mut __field4: ::core::option::Option<DefKind> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("docs"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("docs"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("vars"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("vars"),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<TypeVar>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<TypeVar>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -3056,13 +3047,13 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "attrs",
                                         ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -3070,15 +3061,15 @@ pub mod ir {
                             __Identifier::__Identifier4 => {
                                 if ::core::option::Option::is_some(&__field4) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("kind"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("kind"),
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<DefKind>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<DefKind>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -3088,7 +3079,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -3096,7 +3087,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("vars"),
+                                <__A::Error as __serde::de::Error>::missing_field("vars"),
                             );
                         }
                     };
@@ -3104,7 +3095,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("attrs"),
+                                <__A::Error as __serde::de::Error>::missing_field("attrs"),
                             );
                         }
                     };
@@ -3112,7 +3103,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("kind"),
+                                <__A::Error as __serde::de::Error>::missing_field("kind"),
                             );
                         }
                     };
@@ -3126,7 +3117,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["name", "docs", "vars", "attrs", "kind"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Def", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Def", __FIELDS, __Visitor)
         }
     }
     #[doc = "A type variable of a definition.\n"]
@@ -3153,20 +3144,20 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for TypeVar {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for TypeVar {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "TypeVar", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "TypeVar", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for TypeVar {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for TypeVar {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["name"];
@@ -3177,7 +3168,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -3187,7 +3178,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3196,7 +3187,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3208,7 +3199,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3216,20 +3207,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = TypeVar;
                 fn expecting(
                     &self,
@@ -3243,14 +3234,14 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 1 fields",
                                     ),
@@ -3265,26 +3256,26 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -3294,7 +3285,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -3302,7 +3293,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["name"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "TypeVar",
                 __FIELDS,
@@ -3327,103 +3318,103 @@ pub mod ir {
         Service(ServiceDef),
     }
     #[automatically_derived]
-    impl ::serde::Serialize for DefKind {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for DefKind {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if ::serde::Serializer::is_human_readable(&__serializer) {
+            if __serde::Serializer::is_human_readable(&__serializer) {
                 match self {
                     Self::TypeAlias(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "TypeAlias",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "aliased",
                             &__value.aliased,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::OpaqueType(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "DefKind", 1usize)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 1usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "OpaqueType",
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::RecordType(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "RecordType",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "fields",
                             &__value.fields,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::VariantType(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "VariantType",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "variants",
                             &__value.variants,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::WrapperType(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "WrapperType",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "wrapped",
                             &__value.wrapped,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Service(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Service",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "methods",
                             &__value.methods,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                 }
             } else {
                 match self {
                     Self::TypeAlias(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             0u32,
@@ -3432,7 +3423,7 @@ pub mod ir {
                         )
                     }
                     Self::OpaqueType(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             1u32,
@@ -3441,7 +3432,7 @@ pub mod ir {
                         )
                     }
                     Self::RecordType(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             2u32,
@@ -3450,7 +3441,7 @@ pub mod ir {
                         )
                     }
                     Self::VariantType(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             3u32,
@@ -3459,7 +3450,7 @@ pub mod ir {
                         )
                     }
                     Self::WrapperType(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             4u32,
@@ -3468,7 +3459,7 @@ pub mod ir {
                         )
                     }
                     Self::Service(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             5u32,
@@ -3481,8 +3472,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for DefKind {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for DefKind {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &[
@@ -3504,7 +3495,7 @@ pub mod ir {
                 __Identifier5,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -3514,7 +3505,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3524,8 +3515,8 @@ pub mod ir {
                         4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Unsigned(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Unsigned(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
@@ -3533,7 +3524,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "TypeAlias" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3543,7 +3534,7 @@ pub mod ir {
                         "WrapperType" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         "Service" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::unknown_variant(
+                            ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
                                 __IDENTIFIERS,
                             ))
@@ -3555,7 +3546,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"TypeAlias" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3565,21 +3556,21 @@ pub mod ir {
                         b"WrapperType" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         b"Service" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Bytes(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Bytes(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
@@ -3593,8 +3584,8 @@ pub mod ir {
                 "WrapperType",
                 "Service",
             ];
-            if ::serde::Deserializer::is_human_readable(&__deserializer) {
-                let __tagged = ::sidex_serde::de::tagged::deserialize_tagged_variant::<
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
                     __Identifier,
                     __D,
                 >(__deserializer, "tag")?;
@@ -3636,7 +3627,7 @@ pub mod ir {
                 }
             } else {
                 struct __Visitor;
-                impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+                impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = DefKind;
                     fn expecting(
                         &self,
@@ -3650,41 +3641,41 @@ pub mod ir {
                         __data: __A,
                     ) -> ::core::result::Result<Self::Value, __A::Error>
                     where
-                        __A: ::serde::de::EnumAccess<'de>,
+                        __A: __serde::de::EnumAccess<'de>,
                     {
-                        match ::serde::de::EnumAccess::variant::<__Identifier>(__data)? {
+                        match __serde::de::EnumAccess::variant::<__Identifier>(__data)? {
                             (__Identifier::__Identifier0, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     TypeAliasDef,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(DefKind::TypeAlias(__value))
                             }
                             (__Identifier::__Identifier1, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     OpaqueTypeDef,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(DefKind::OpaqueType(__value))
                             }
                             (__Identifier::__Identifier2, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     RecordTypeDef,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(DefKind::RecordType(__value))
                             }
                             (__Identifier::__Identifier3, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     VariantTypeDef,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(DefKind::VariantType(__value))
                             }
                             (__Identifier::__Identifier4, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     WrapperTypeDef,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(DefKind::WrapperType(__value))
                             }
                             (__Identifier::__Identifier5, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     ServiceDef,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(DefKind::Service(__value))
@@ -3692,7 +3683,7 @@ pub mod ir {
                         }
                     }
                 }
-                ::serde::Deserializer::deserialize_enum(
+                __serde::Deserializer::deserialize_enum(
                     __deserializer,
                     "DefKind",
                     __VARIANTS,
@@ -3725,24 +3716,24 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for TypeAliasDef {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for TypeAliasDef {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "TypeAliasDef", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "TypeAliasDef", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "aliased",
                 &self.aliased,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for TypeAliasDef {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for TypeAliasDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["aliased"];
@@ -3753,7 +3744,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -3763,7 +3754,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3772,7 +3763,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "aliased" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3784,7 +3775,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"aliased" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -3792,20 +3783,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = TypeAliasDef;
                 fn expecting(
                     &self,
@@ -3819,13 +3810,13 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
+                    let __field0 = match __serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
                             );
                         }
                     };
@@ -3837,27 +3828,27 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Type> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "aliased",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -3867,7 +3858,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("aliased"),
+                                <__A::Error as __serde::de::Error>::missing_field("aliased"),
                             );
                         }
                     };
@@ -3875,7 +3866,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["aliased"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "TypeAliasDef",
                 __FIELDS,
@@ -3899,19 +3890,19 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for OpaqueTypeDef {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for OpaqueTypeDef {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "OpaqueTypeDef", 0usize)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "OpaqueTypeDef", 0usize)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for OpaqueTypeDef {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for OpaqueTypeDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &[];
@@ -3921,7 +3912,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -3931,7 +3922,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
@@ -3939,7 +3930,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
@@ -3950,27 +3941,27 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = OpaqueTypeDef;
                 fn expecting(
                     &self,
@@ -3984,7 +3975,7 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     ::core::result::Result::Ok(OpaqueTypeDef {})
                 }
@@ -3994,14 +3985,14 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -4011,7 +4002,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &[];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "OpaqueTypeDef",
                 __FIELDS,
@@ -4050,20 +4041,20 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for RecordTypeDef {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for RecordTypeDef {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "RecordTypeDef", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "fields", &self.fields)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "RecordTypeDef", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "fields", &self.fields)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for RecordTypeDef {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for RecordTypeDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["fields"];
@@ -4074,7 +4065,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -4084,7 +4075,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4093,7 +4084,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "fields" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4105,7 +4096,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"fields" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4113,20 +4104,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = RecordTypeDef;
                 fn expecting(
                     &self,
@@ -4140,16 +4131,16 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Field>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
                             );
                         }
                     };
@@ -4161,30 +4152,30 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::vec::Vec<Field>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "fields",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Field>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Field>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -4194,7 +4185,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("fields"),
+                                <__A::Error as __serde::de::Error>::missing_field("fields"),
                             );
                         }
                     };
@@ -4202,7 +4193,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["fields"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "RecordTypeDef",
                 __FIELDS,
@@ -4288,39 +4279,35 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Field {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Field {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Field", 5usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+                __serde::Serializer::serialize_struct(__serializer, "Field", 5usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
             match &self.docs {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "docs",
-                        &self.docs,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
                 }
             }
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", &self.typ)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", &self.typ)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "isOptional",
                 &self.is_optional,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Field {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Field {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] =
@@ -4337,7 +4324,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -4347,7 +4334,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4360,7 +4347,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4376,7 +4363,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4388,20 +4375,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Field;
                 fn expecting(
                     &self,
@@ -4415,55 +4402,55 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 5 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Attr>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
+                    let __field3 = match __serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field4 = match ::serde::de::SeqAccess::next_element::<bool>(&mut __seq)? {
+                    let __field4 = match __serde::de::SeqAccess::next_element::<bool>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(4usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(4usize, &"record with 5 fields"),
                             );
                         }
                     };
@@ -4481,7 +4468,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
@@ -4491,39 +4478,39 @@ pub mod ir {
                     let mut __field3: ::core::option::Option<Type> = ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<bool> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("docs"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("docs"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "attrs",
                                         ),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -4531,27 +4518,27 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("typ"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier4 => {
                                 if ::core::option::Option::is_some(&__field4) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "isOptional",
                                         ),
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<bool>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<bool>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -4561,7 +4548,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -4569,7 +4556,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("attrs"),
+                                <__A::Error as __serde::de::Error>::missing_field("attrs"),
                             );
                         }
                     };
@@ -4577,7 +4564,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("typ"),
+                                <__A::Error as __serde::de::Error>::missing_field("typ"),
                             );
                         }
                     };
@@ -4585,7 +4572,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("isOptional"),
+                                <__A::Error as __serde::de::Error>::missing_field("isOptional"),
                             );
                         }
                     };
@@ -4600,7 +4587,7 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["name", "docs", "attrs", "typ", "isOptional"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Field", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Field", __FIELDS, __Visitor)
         }
     }
     #[doc = "A definition of a variant type.\n"]
@@ -4634,24 +4621,24 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for VariantTypeDef {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for VariantTypeDef {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "VariantTypeDef", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "VariantTypeDef", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "variants",
                 &self.variants,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for VariantTypeDef {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for VariantTypeDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["variants"];
@@ -4662,7 +4649,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -4672,7 +4659,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4681,7 +4668,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "variants" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4693,7 +4680,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"variants" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4701,20 +4688,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = VariantTypeDef;
                 fn expecting(
                     &self,
@@ -4728,16 +4715,16 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Variant>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
                             );
                         }
                     };
@@ -4749,30 +4736,30 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::vec::Vec<Variant>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "variants",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Variant>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Variant>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -4782,7 +4769,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("variants"),
+                                <__A::Error as __serde::de::Error>::missing_field("variants"),
                             );
                         }
                     };
@@ -4790,7 +4777,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["variants"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "VariantTypeDef",
                 __FIELDS,
@@ -4863,45 +4850,37 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Variant {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Variant {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Variant", 4usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+                __serde::Serializer::serialize_struct(__serializer, "Variant", 4usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
             match &self.docs {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "docs",
-                        &self.docs,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
                 }
             }
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
             match &self.typ {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "typ",
-                        &self.typ,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "typ")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "typ")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Variant {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Variant {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["name", "docs", "attrs", "typ"];
@@ -4916,7 +4895,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -4926,7 +4905,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4938,7 +4917,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4953,7 +4932,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -4964,20 +4943,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Variant;
                 fn expecting(
                     &self,
@@ -4991,50 +4970,50 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 4 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Attr>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Type>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -5051,7 +5030,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
@@ -5060,39 +5039,39 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<Type> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("docs"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("docs"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "attrs",
                                         ),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -5100,15 +5079,15 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("typ"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -5118,7 +5097,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -5126,7 +5105,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("attrs"),
+                                <__A::Error as __serde::de::Error>::missing_field("attrs"),
                             );
                         }
                     };
@@ -5139,7 +5118,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["name", "docs", "attrs", "typ"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Variant",
                 __FIELDS,
@@ -5171,24 +5150,24 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for WrapperTypeDef {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for WrapperTypeDef {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "WrapperTypeDef", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "WrapperTypeDef", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "wrapped",
                 &self.wrapped,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for WrapperTypeDef {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for WrapperTypeDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["wrapped"];
@@ -5199,7 +5178,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -5209,7 +5188,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5218,7 +5197,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "wrapped" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5230,7 +5209,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"wrapped" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5238,20 +5217,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = WrapperTypeDef;
                 fn expecting(
                     &self,
@@ -5265,13 +5244,13 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
+                    let __field0 = match __serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
                             );
                         }
                     };
@@ -5283,27 +5262,27 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Type> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "wrapped",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -5313,7 +5292,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("wrapped"),
+                                <__A::Error as __serde::de::Error>::missing_field("wrapped"),
                             );
                         }
                     };
@@ -5321,7 +5300,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["wrapped"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "WrapperTypeDef",
                 __FIELDS,
@@ -5360,24 +5339,24 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for ServiceDef {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for ServiceDef {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "ServiceDef", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "ServiceDef", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "methods",
                 &self.methods,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for ServiceDef {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for ServiceDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["methods"];
@@ -5388,7 +5367,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -5398,7 +5377,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5407,7 +5386,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "methods" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5419,7 +5398,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"methods" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5427,20 +5406,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = ServiceDef;
                 fn expecting(
                     &self,
@@ -5454,16 +5433,16 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Method>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
                             );
                         }
                     };
@@ -5475,30 +5454,30 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<::std::vec::Vec<Method>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "methods",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Method>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Method>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -5508,7 +5487,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("methods"),
+                                <__A::Error as __serde::de::Error>::missing_field("methods"),
                             );
                         }
                     };
@@ -5516,7 +5495,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["methods"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "ServiceDef",
                 __FIELDS,
@@ -5602,50 +5581,46 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Method {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Method {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Method", 5usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+                __serde::Serializer::serialize_struct(__serializer, "Method", 5usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
             match &self.docs {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "docs",
-                        &self.docs,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
                 }
             }
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "parameters",
                 &self.parameters,
             )?;
             match &self.returns {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(
                         &mut __struct,
                         "returns",
-                        &self.returns,
+                        __value,
                     )?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "returns")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "returns")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Method {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Method {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] =
@@ -5662,7 +5637,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -5672,7 +5647,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5685,7 +5660,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5701,7 +5676,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -5713,20 +5688,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Method;
                 fn expecting(
                     &self,
@@ -5740,61 +5715,61 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 5 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<
+                    let __field2 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Attr>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<MethodParam>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
                             );
                         }
                     };
-                    let __field4 = match ::serde::de::SeqAccess::next_element::<
+                    let __field4 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Type>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(4usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(4usize, &"record with 5 fields"),
                             );
                         }
                     };
@@ -5812,7 +5787,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
@@ -5823,39 +5798,39 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<Type> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("docs"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("docs"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "attrs",
                                         ),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
                                         &mut __map,
                                     )?,
                                 );
@@ -5863,13 +5838,13 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "parameters",
                                         ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<
+                                    __serde::de::MapAccess::next_value::<
                                         ::std::vec::Vec<MethodParam>,
                                     >(&mut __map)?,
                                 );
@@ -5877,17 +5852,17 @@ pub mod ir {
                             __Identifier::__Identifier4 => {
                                 if ::core::option::Option::is_some(&__field4) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "returns",
                                         ),
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -5897,7 +5872,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -5905,7 +5880,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("attrs"),
+                                <__A::Error as __serde::de::Error>::missing_field("attrs"),
                             );
                         }
                     };
@@ -5913,7 +5888,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("parameters"),
+                                <__A::Error as __serde::de::Error>::missing_field("parameters"),
                             );
                         }
                     };
@@ -5928,7 +5903,7 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["name", "docs", "attrs", "parameters", "returns"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Method", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Method", __FIELDS, __Visitor)
         }
     }
     #[doc = "A parameter of a method.\n"]
@@ -5983,26 +5958,26 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for MethodParam {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for MethodParam {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "MethodParam", 3usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", &self.typ)?;
-            ::serde::ser::SerializeStruct::serialize_field(
+                __serde::Serializer::serialize_struct(__serializer, "MethodParam", 3usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", &self.typ)?;
+            __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "isOptional",
                 &self.is_optional,
             )?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for MethodParam {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for MethodParam {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["name", "typ", "isOptional"];
@@ -6016,7 +5991,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -6026,7 +6001,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6037,7 +6012,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6051,7 +6026,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6061,20 +6036,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = MethodParam;
                 fn expecting(
                     &self,
@@ -6088,33 +6063,33 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<Identifier>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 3 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
+                    let __field1 = match __serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<bool>(&mut __seq)? {
+                    let __field2 = match __serde::de::SeqAccess::next_element::<bool>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
                             );
                         }
                     };
@@ -6130,50 +6105,50 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Type> = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<bool> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("name"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Identifier>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("typ"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "isOptional",
                                         ),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<bool>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<bool>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -6183,7 +6158,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("name"),
+                                <__A::Error as __serde::de::Error>::missing_field("name"),
                             );
                         }
                     };
@@ -6191,7 +6166,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("typ"),
+                                <__A::Error as __serde::de::Error>::missing_field("typ"),
                             );
                         }
                     };
@@ -6199,7 +6174,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("isOptional"),
+                                <__A::Error as __serde::de::Error>::missing_field("isOptional"),
                             );
                         }
                     };
@@ -6211,7 +6186,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["name", "typ", "isOptional"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "MethodParam",
                 __FIELDS,
@@ -6258,31 +6233,27 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Type {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Type {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = ::serde::Serializer::serialize_struct(__serializer, "Type", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Type", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
             match &self.span {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "span",
-                        &self.span,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Type {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Type {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["kind", "span"];
@@ -6294,7 +6265,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -6304,7 +6275,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6314,7 +6285,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "kind" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6327,7 +6298,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"kind" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6336,20 +6307,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Type;
                 fn expecting(
                     &self,
@@ -6363,28 +6334,28 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<TypeKind>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<TypeKind>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 2 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
                             );
                         }
                     };
@@ -6399,37 +6370,37 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<TypeKind> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("kind"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("kind"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<TypeKind>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<TypeKind>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("span"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -6439,7 +6410,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("kind"),
+                                <__A::Error as __serde::de::Error>::missing_field("kind"),
                             );
                         }
                     };
@@ -6450,7 +6421,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Type", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Type", __FIELDS, __Visitor)
         }
     }
     #[doc = "An abstract type kind.\n"]
@@ -6462,69 +6433,69 @@ pub mod ir {
         Instance(InstanceType),
     }
     #[automatically_derived]
-    impl ::serde::Serialize for TypeKind {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for TypeKind {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if ::serde::Serializer::is_human_readable(&__serializer) {
+            if __serde::Serializer::is_human_readable(&__serializer) {
                 match self {
                     Self::TypeVar(__value) => {
-                        let mut __struct = ::serde::Serializer::serialize_struct(
+                        let mut __struct = __serde::Serializer::serialize_struct(
                             __serializer,
                             "TypeKind",
                             2usize,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "TypeVar",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "idx",
                             &__value.idx,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Instance(__value) => {
-                        let mut __struct = ::serde::Serializer::serialize_struct(
+                        let mut __struct = __serde::Serializer::serialize_struct(
                             __serializer,
                             "TypeKind",
                             5usize,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Instance",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "bundle",
                             &__value.bundle,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "schema",
                             &__value.schema,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "def",
                             &__value.def,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "subst",
                             &__value.subst,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                 }
             } else {
                 match self {
                     Self::TypeVar(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "TypeKind",
                             0u32,
@@ -6533,7 +6504,7 @@ pub mod ir {
                         )
                     }
                     Self::Instance(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "TypeKind",
                             1u32,
@@ -6546,8 +6517,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for TypeKind {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for TypeKind {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["TypeVar", "Instance"];
@@ -6559,7 +6530,7 @@ pub mod ir {
                 __Identifier1,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -6569,14 +6540,14 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Unsigned(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Unsigned(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
@@ -6584,13 +6555,13 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "TypeVar" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         "Instance" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::unknown_variant(
+                            ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
                                 __IDENTIFIERS,
                             ))
@@ -6602,35 +6573,35 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"TypeVar" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         b"Instance" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Bytes(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Bytes(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             const __VARIANTS: &'static [&'static str] = &["TypeVar", "Instance"];
-            if ::serde::Deserializer::is_human_readable(&__deserializer) {
-                let __tagged = ::sidex_serde::de::tagged::deserialize_tagged_variant::<
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
                     __Identifier,
                     __D,
                 >(__deserializer, "tag")?;
@@ -6648,7 +6619,7 @@ pub mod ir {
                 }
             } else {
                 struct __Visitor;
-                impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+                impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = TypeKind;
                     fn expecting(
                         &self,
@@ -6662,17 +6633,17 @@ pub mod ir {
                         __data: __A,
                     ) -> ::core::result::Result<Self::Value, __A::Error>
                     where
-                        __A: ::serde::de::EnumAccess<'de>,
+                        __A: __serde::de::EnumAccess<'de>,
                     {
-                        match ::serde::de::EnumAccess::variant::<__Identifier>(__data)? {
+                        match __serde::de::EnumAccess::variant::<__Identifier>(__data)? {
                             (__Identifier::__Identifier0, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     TypeVarType,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(TypeKind::TypeVar(__value))
                             }
                             (__Identifier::__Identifier1, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     InstanceType,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(TypeKind::Instance(__value))
@@ -6680,7 +6651,7 @@ pub mod ir {
                         }
                     }
                 }
-                ::serde::Deserializer::deserialize_enum(
+                __serde::Deserializer::deserialize_enum(
                     __deserializer,
                     "TypeKind",
                     __VARIANTS,
@@ -6713,20 +6684,20 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for TypeVarType {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for TypeVarType {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "TypeVarType", 1usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "TypeVarType", 1usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for TypeVarType {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for TypeVarType {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["idx"];
@@ -6737,7 +6708,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -6747,7 +6718,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6756,7 +6727,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6768,7 +6739,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6776,20 +6747,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = TypeVarType;
                 fn expecting(
                     &self,
@@ -6803,14 +6774,14 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<TypeVarIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<TypeVarIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 1 fields",
                                     ),
@@ -6825,26 +6796,26 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<TypeVarIdx> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("idx"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("idx"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<TypeVarIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<TypeVarIdx>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -6854,7 +6825,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("idx"),
+                                <__A::Error as __serde::de::Error>::missing_field("idx"),
                             );
                         }
                     };
@@ -6862,7 +6833,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["idx"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "TypeVarType",
                 __FIELDS,
@@ -6935,23 +6906,23 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for InstanceType {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for InstanceType {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "InstanceType", 4usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "schema", &self.schema)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "def", &self.def)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "subst", &self.subst)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "InstanceType", 4usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "schema", &self.schema)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "def", &self.def)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "subst", &self.subst)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for InstanceType {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for InstanceType {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["bundle", "schema", "def", "subst"];
@@ -6966,7 +6937,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -6976,7 +6947,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -6988,7 +6959,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "bundle" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7003,7 +6974,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"bundle" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7014,20 +6985,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = InstanceType;
                 fn expecting(
                     &self,
@@ -7041,14 +7012,14 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<BundleIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<BundleIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 4 fields",
                                     ),
@@ -7056,34 +7027,34 @@ pub mod ir {
                             }
                         };
                     let __field1 =
-                        match ::serde::de::SeqAccess::next_element::<SchemaIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<SchemaIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         1usize,
                                         &"record with 4 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<DefIdx>(&mut __seq)?
+                    let __field2 = match __serde::de::SeqAccess::next_element::<DefIdx>(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field3 = match ::serde::de::SeqAccess::next_element::<
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Type>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -7100,7 +7071,7 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<BundleIdx> =
                         ::core::option::Option::None;
@@ -7110,59 +7081,59 @@ pub mod ir {
                     let mut __field3: ::core::option::Option<::std::vec::Vec<Type>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "bundle",
                                         ),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<BundleIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<BundleIdx>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "schema",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<SchemaIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<SchemaIdx>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("def"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("def"),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<DefIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<DefIdx>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "subst",
                                         ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Type>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Type>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -7172,7 +7143,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("bundle"),
+                                <__A::Error as __serde::de::Error>::missing_field("bundle"),
                             );
                         }
                     };
@@ -7180,7 +7151,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("schema"),
+                                <__A::Error as __serde::de::Error>::missing_field("schema"),
                             );
                         }
                     };
@@ -7188,7 +7159,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("def"),
+                                <__A::Error as __serde::de::Error>::missing_field("def"),
                             );
                         }
                     };
@@ -7196,7 +7167,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("subst"),
+                                <__A::Error as __serde::de::Error>::missing_field("subst"),
                             );
                         }
                     };
@@ -7209,7 +7180,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["bundle", "schema", "def", "subst"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "InstanceType",
                 __FIELDS,
@@ -7265,21 +7236,21 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Span {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Span {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = ::serde::Serializer::serialize_struct(__serializer, "Span", 3usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "src", &self.src)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "start", &self.start)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "end", &self.end)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Span", 3usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "src", &self.src)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "start", &self.start)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "end", &self.end)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Span {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Span {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["src", "start", "end"];
@@ -7293,7 +7264,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -7303,7 +7274,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7314,7 +7285,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "src" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7328,7 +7299,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"src" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7338,20 +7309,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Span;
                 fn expecting(
                     &self,
@@ -7365,35 +7336,35 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<SourceIdx>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<SourceIdx>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 3 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<usize>(&mut __seq)?
+                    let __field1 = match __serde::de::SeqAccess::next_element::<usize>(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
                             );
                         }
                     };
-                    let __field2 = match ::serde::de::SeqAccess::next_element::<usize>(&mut __seq)?
+                    let __field2 = match __serde::de::SeqAccess::next_element::<usize>(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
                             );
                         }
                     };
@@ -7409,50 +7380,50 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<SourceIdx> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<usize> = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<usize> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("src"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("src"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<SourceIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<SourceIdx>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "start",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<usize>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<usize>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("end"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("end"),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<usize>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<usize>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -7462,7 +7433,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("src"),
+                                <__A::Error as __serde::de::Error>::missing_field("src"),
                             );
                         }
                     };
@@ -7470,7 +7441,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("start"),
+                                <__A::Error as __serde::de::Error>::missing_field("start"),
                             );
                         }
                     };
@@ -7478,7 +7449,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("end"),
+                                <__A::Error as __serde::de::Error>::missing_field("end"),
                             );
                         }
                     };
@@ -7490,7 +7461,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["src", "start", "end"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Span", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Span", __FIELDS, __Visitor)
         }
     }
     #[doc = "A token.\n"]
@@ -7532,32 +7503,28 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Token {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Token {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "Token", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
+                __serde::Serializer::serialize_struct(__serializer, "Token", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
             match &self.span {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "span",
-                        &self.span,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Token {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Token {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["kind", "span"];
@@ -7569,7 +7536,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -7579,7 +7546,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7589,7 +7556,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "kind" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7602,7 +7569,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"kind" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7611,20 +7578,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Token;
                 fn expecting(
                     &self,
@@ -7638,28 +7605,28 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<TokenKind>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<TokenKind>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 2 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
                             );
                         }
                     };
@@ -7674,37 +7641,37 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<TokenKind> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("kind"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("kind"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<TokenKind>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<TokenKind>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("span"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -7714,7 +7681,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("kind"),
+                                <__A::Error as __serde::de::Error>::missing_field("kind"),
                             );
                         }
                     };
@@ -7725,7 +7692,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Token", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Token", __FIELDS, __Visitor)
         }
     }
     #[doc = ""]
@@ -7741,78 +7708,78 @@ pub mod ir {
         Identifier(::std::string::String),
     }
     #[automatically_derived]
-    impl ::serde::Serialize for TokenKind {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for TokenKind {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if ::serde::Serializer::is_human_readable(&__serializer) {
+            if __serde::Serializer::is_human_readable(&__serializer) {
                 match self {
                     Self::Punctuation(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Punctuation",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "token",
                             __value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Delimiter(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Delimiter",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "token",
                             __value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Literal(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Literal",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "literal",
                             __value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Identifier(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Identifier",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "token",
                             __value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                 }
             } else {
                 match self {
                     Self::Punctuation(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "TokenKind",
                             0u32,
@@ -7821,7 +7788,7 @@ pub mod ir {
                         )
                     }
                     Self::Delimiter(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "TokenKind",
                             1u32,
@@ -7830,7 +7797,7 @@ pub mod ir {
                         )
                     }
                     Self::Literal(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "TokenKind",
                             2u32,
@@ -7839,7 +7806,7 @@ pub mod ir {
                         )
                     }
                     Self::Identifier(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "TokenKind",
                             3u32,
@@ -7852,8 +7819,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for TokenKind {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for TokenKind {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] =
@@ -7868,7 +7835,7 @@ pub mod ir {
                 __Identifier3,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -7878,7 +7845,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7886,8 +7853,8 @@ pub mod ir {
                         2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Unsigned(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Unsigned(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
@@ -7895,7 +7862,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "Punctuation" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7903,7 +7870,7 @@ pub mod ir {
                         "Literal" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         "Identifier" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::unknown_variant(
+                            ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
                                 __IDENTIFIERS,
                             ))
@@ -7915,7 +7882,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"Punctuation" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -7923,21 +7890,21 @@ pub mod ir {
                         b"Literal" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         b"Identifier" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Bytes(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Bytes(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
@@ -7945,8 +7912,8 @@ pub mod ir {
             }
             const __VARIANTS: &'static [&'static str] =
                 &["Punctuation", "Delimiter", "Literal", "Identifier"];
-            if ::serde::Deserializer::is_human_readable(&__deserializer) {
-                let __tagged = ::sidex_serde::de::tagged::deserialize_tagged_variant::<
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
                     __Identifier,
                     __D,
                 >(__deserializer, "tag")?;
@@ -7984,7 +7951,7 @@ pub mod ir {
                 }
             } else {
                 struct __Visitor;
-                impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+                impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = TokenKind;
                     fn expecting(
                         &self,
@@ -7998,29 +7965,29 @@ pub mod ir {
                         __data: __A,
                     ) -> ::core::result::Result<Self::Value, __A::Error>
                     where
-                        __A: ::serde::de::EnumAccess<'de>,
+                        __A: __serde::de::EnumAccess<'de>,
                     {
-                        match ::serde::de::EnumAccess::variant::<__Identifier>(__data)? {
+                        match __serde::de::EnumAccess::variant::<__Identifier>(__data)? {
                             (__Identifier::__Identifier0, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     ::std::string::String,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(TokenKind::Punctuation(__value))
                             }
                             (__Identifier::__Identifier1, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     ::std::string::String,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(TokenKind::Delimiter(__value))
                             }
                             (__Identifier::__Identifier2, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<Literal>(
+                                let __value = __serde::de::VariantAccess::newtype_variant::<Literal>(
                                     __variant,
                                 )?;
                                 ::core::result::Result::Ok(TokenKind::Literal(__value))
                             }
                             (__Identifier::__Identifier3, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     ::std::string::String,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(TokenKind::Identifier(__value))
@@ -8028,7 +7995,7 @@ pub mod ir {
                         }
                     }
                 }
-                ::serde::Deserializer::deserialize_enum(
+                __serde::Deserializer::deserialize_enum(
                     __deserializer,
                     "TokenKind",
                     __VARIANTS,
@@ -8048,63 +8015,63 @@ pub mod ir {
         Bool(bool),
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Literal {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Literal {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if ::serde::Serializer::is_human_readable(&__serializer) {
+            if __serde::Serializer::is_human_readable(&__serializer) {
                 match self {
                     Self::String(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "String",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "value",
                             __value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Number(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Number",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "value",
                             __value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Bool(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Bool",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "value",
                             __value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                 }
             } else {
                 match self {
                     Self::String(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "Literal",
                             0u32,
@@ -8113,7 +8080,7 @@ pub mod ir {
                         )
                     }
                     Self::Number(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "Literal",
                             1u32,
@@ -8122,7 +8089,7 @@ pub mod ir {
                         )
                     }
                     Self::Bool(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "Literal",
                             2u32,
@@ -8135,8 +8102,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Literal {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Literal {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["String", "Number", "Bool"];
@@ -8149,7 +8116,7 @@ pub mod ir {
                 __Identifier2,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -8159,15 +8126,15 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Unsigned(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Unsigned(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
@@ -8175,14 +8142,14 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "String" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         "Number" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         "Bool" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::unknown_variant(
+                            ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
                                 __IDENTIFIERS,
                             ))
@@ -8194,36 +8161,36 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"String" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         b"Number" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         b"Bool" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Bytes(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Bytes(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             const __VARIANTS: &'static [&'static str] = &["String", "Number", "Bool"];
-            if ::serde::Deserializer::is_human_readable(&__deserializer) {
-                let __tagged = ::sidex_serde::de::tagged::deserialize_tagged_variant::<
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
                     __Identifier,
                     __D,
                 >(__deserializer, "tag")?;
@@ -8252,7 +8219,7 @@ pub mod ir {
                 }
             } else {
                 struct __Visitor;
-                impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+                impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = Literal;
                     fn expecting(
                         &self,
@@ -8266,30 +8233,30 @@ pub mod ir {
                         __data: __A,
                     ) -> ::core::result::Result<Self::Value, __A::Error>
                     where
-                        __A: ::serde::de::EnumAccess<'de>,
+                        __A: __serde::de::EnumAccess<'de>,
                     {
-                        match ::serde::de::EnumAccess::variant::<__Identifier>(__data)? {
+                        match __serde::de::EnumAccess::variant::<__Identifier>(__data)? {
                             (__Identifier::__Identifier0, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     ::std::string::String,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(Literal::String(__value))
                             }
                             (__Identifier::__Identifier1, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     ::std::string::String,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(Literal::Number(__value))
                             }
                             (__Identifier::__Identifier2, __variant) => {
                                 let __value =
-                                    ::serde::de::VariantAccess::newtype_variant::<bool>(__variant)?;
+                                    __serde::de::VariantAccess::newtype_variant::<bool>(__variant)?;
                                 ::core::result::Result::Ok(Literal::Bool(__value))
                             }
                         }
                     }
                 }
-                ::serde::Deserializer::deserialize_enum(
+                __serde::Deserializer::deserialize_enum(
                     __deserializer,
                     "Literal",
                     __VARIANTS,
@@ -8307,8 +8274,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Path {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Path {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
@@ -8316,11 +8283,11 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Path {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Path {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(Path(::serde::Deserialize::deserialize(__deserializer)?))
+            Ok(Path(__serde::Deserialize::deserialize(__deserializer)?))
         }
     }
     #[doc = "A stream of tokens.\n"]
@@ -8332,8 +8299,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for TokenStream {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for TokenStream {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
@@ -8341,11 +8308,11 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for TokenStream {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for TokenStream {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(TokenStream(::serde::Deserialize::deserialize(
+            Ok(TokenStream(__serde::Deserialize::deserialize(
                 __deserializer,
             )?))
         }
@@ -8389,31 +8356,27 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for Attr {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for Attr {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = ::serde::Serializer::serialize_struct(__serializer, "Attr", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Attr", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
             match &self.span {
-                ::core::option::Option::Some(_) => {
-                    ::serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "span",
-                        &self.span,
-                    )?;
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
                 }
                 ::core::option::Option::None => {
-                    ::serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
                 }
             }
-            ::serde::ser::SerializeStruct::end(__struct)
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for Attr {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for Attr {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["kind", "span"];
@@ -8425,7 +8388,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -8435,7 +8398,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8445,7 +8408,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "kind" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8458,7 +8421,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"kind" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8467,20 +8430,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Attr;
                 fn expecting(
                     &self,
@@ -8494,28 +8457,28 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 =
-                        match ::serde::de::SeqAccess::next_element::<AttrKind>(&mut __seq)? {
+                        match __serde::de::SeqAccess::next_element::<AttrKind>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
-                                    ::serde::de::Error::invalid_length(
+                                    __serde::de::Error::invalid_length(
                                         0usize,
                                         &"record with 2 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::core::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
                             );
                         }
                     };
@@ -8530,37 +8493,37 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<AttrKind> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("kind"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("kind"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<AttrKind>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<AttrKind>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("span"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -8570,7 +8533,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("kind"),
+                                <__A::Error as __serde::de::Error>::missing_field("kind"),
                             );
                         }
                     };
@@ -8581,7 +8544,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
-            ::serde::Deserializer::deserialize_struct(__deserializer, "Attr", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(__deserializer, "Attr", __FIELDS, __Visitor)
         }
     }
     #[doc = "The four kinds of attributes.\n"]
@@ -8597,94 +8560,94 @@ pub mod ir {
         Tokens(TokenStream),
     }
     #[automatically_derived]
-    impl ::serde::Serialize for AttrKind {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for AttrKind {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if ::serde::Serializer::is_human_readable(&__serializer) {
+            if __serde::Serializer::is_human_readable(&__serializer) {
                 match self {
                     Self::Path(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "AttrKind", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "AttrKind", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Path",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "path",
                             &__value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::List(__value) => {
-                        let mut __struct = ::serde::Serializer::serialize_struct(
+                        let mut __struct = __serde::Serializer::serialize_struct(
                             __serializer,
                             "AttrKind",
                             3usize,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "List",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "path",
                             &__value.path,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "args",
                             &__value.args,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Assign(__value) => {
-                        let mut __struct = ::serde::Serializer::serialize_struct(
+                        let mut __struct = __serde::Serializer::serialize_struct(
                             __serializer,
                             "AttrKind",
                             3usize,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Assign",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "path",
                             &__value.path,
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "value",
                             &__value.value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                     Self::Tokens(__value) => {
                         let mut __struct =
-                            ::serde::Serializer::serialize_struct(__serializer, "AttrKind", 2)?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                            __serde::Serializer::serialize_struct(__serializer, "AttrKind", 2)?;
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
                             "Tokens",
                         )?;
-                        ::serde::ser::SerializeStruct::serialize_field(
+                        __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "content",
                             &__value,
                         )?;
-                        ::serde::ser::SerializeStruct::end(__struct)
+                        __serde::ser::SerializeStruct::end(__struct)
                     }
                 }
             } else {
                 match self {
                     Self::Path(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "AttrKind",
                             0u32,
@@ -8693,7 +8656,7 @@ pub mod ir {
                         )
                     }
                     Self::List(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "AttrKind",
                             1u32,
@@ -8702,7 +8665,7 @@ pub mod ir {
                         )
                     }
                     Self::Assign(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "AttrKind",
                             2u32,
@@ -8711,7 +8674,7 @@ pub mod ir {
                         )
                     }
                     Self::Tokens(__value) => {
-                        ::serde::Serializer::serialize_newtype_variant(
+                        __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "AttrKind",
                             3u32,
@@ -8724,8 +8687,8 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for AttrKind {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for AttrKind {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["Path", "List", "Assign", "Tokens"];
@@ -8739,7 +8702,7 @@ pub mod ir {
                 __Identifier3,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -8749,7 +8712,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8757,8 +8720,8 @@ pub mod ir {
                         2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Unsigned(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Unsigned(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
@@ -8766,7 +8729,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "Path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8774,7 +8737,7 @@ pub mod ir {
                         "Assign" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         "Tokens" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::unknown_variant(
+                            ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
                                 __IDENTIFIERS,
                             ))
@@ -8786,7 +8749,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"Path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8794,29 +8757,29 @@ pub mod ir {
                         b"Assign" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         b"Tokens" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
-                            ::core::result::Result::Err(::serde::de::Error::invalid_value(
-                                ::serde::de::Unexpected::Bytes(__variant),
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Bytes(__variant),
                                 &__EXPECTING_IDENTIFIERS,
                             ))
                         }
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             const __VARIANTS: &'static [&'static str] = &["Path", "List", "Assign", "Tokens"];
-            if ::serde::Deserializer::is_human_readable(&__deserializer) {
-                let __tagged = ::sidex_serde::de::tagged::deserialize_tagged_variant::<
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
                     __Identifier,
                     __D,
                 >(__deserializer, "tag")?;
@@ -8846,7 +8809,7 @@ pub mod ir {
                 }
             } else {
                 struct __Visitor;
-                impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+                impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = AttrKind;
                     fn expecting(
                         &self,
@@ -8860,28 +8823,28 @@ pub mod ir {
                         __data: __A,
                     ) -> ::core::result::Result<Self::Value, __A::Error>
                     where
-                        __A: ::serde::de::EnumAccess<'de>,
+                        __A: __serde::de::EnumAccess<'de>,
                     {
-                        match ::serde::de::EnumAccess::variant::<__Identifier>(__data)? {
+                        match __serde::de::EnumAccess::variant::<__Identifier>(__data)? {
                             (__Identifier::__Identifier0, __variant) => {
                                 let __value =
-                                    ::serde::de::VariantAccess::newtype_variant::<Path>(__variant)?;
+                                    __serde::de::VariantAccess::newtype_variant::<Path>(__variant)?;
                                 ::core::result::Result::Ok(AttrKind::Path(__value))
                             }
                             (__Identifier::__Identifier1, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     AttrList,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(AttrKind::List(__value))
                             }
                             (__Identifier::__Identifier2, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     AttrAssign,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(AttrKind::Assign(__value))
                             }
                             (__Identifier::__Identifier3, __variant) => {
-                                let __value = ::serde::de::VariantAccess::newtype_variant::<
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
                                     TokenStream,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(AttrKind::Tokens(__value))
@@ -8889,7 +8852,7 @@ pub mod ir {
                         }
                     }
                 }
-                ::serde::Deserializer::deserialize_enum(
+                __serde::Deserializer::deserialize_enum(
                     __deserializer,
                     "AttrKind",
                     __VARIANTS,
@@ -8936,21 +8899,21 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for AttrList {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for AttrList {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "AttrList", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "path", &self.path)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "args", &self.args)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "AttrList", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "path", &self.path)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "args", &self.args)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for AttrList {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for AttrList {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["path", "args"];
@@ -8962,7 +8925,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -8972,7 +8935,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8982,7 +8945,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -8995,7 +8958,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -9004,20 +8967,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = AttrList;
                 fn expecting(
                     &self,
@@ -9031,24 +8994,24 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<Path>(&mut __seq)? {
+                    let __field0 = match __serde::de::SeqAccess::next_element::<Path>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
                             );
                         }
                     };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<Attr>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
                             );
                         }
                     };
@@ -9063,39 +9026,39 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Path> = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("path"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("path"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Path>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Path>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("args"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("args"),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -9105,7 +9068,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("path"),
+                                <__A::Error as __serde::de::Error>::missing_field("path"),
                             );
                         }
                     };
@@ -9113,7 +9076,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("args"),
+                                <__A::Error as __serde::de::Error>::missing_field("args"),
                             );
                         }
                     };
@@ -9124,7 +9087,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["path", "args"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "AttrList",
                 __FIELDS,
@@ -9167,21 +9130,21 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl ::serde::Serialize for AttrAssign {
-        fn serialize<__S: ::serde::Serializer>(
+    impl __serde::Serialize for AttrAssign {
+        fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                ::serde::Serializer::serialize_struct(__serializer, "AttrAssign", 2usize)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "path", &self.path)?;
-            ::serde::ser::SerializeStruct::serialize_field(&mut __struct, "value", &self.value)?;
-            ::serde::ser::SerializeStruct::end(__struct)
+                __serde::Serializer::serialize_struct(__serializer, "AttrAssign", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "path", &self.path)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "value", &self.value)?;
+            __serde::ser::SerializeStruct::end(__struct)
         }
     }
     #[automatically_derived]
-    impl<'de> ::serde::Deserialize<'de> for AttrAssign {
-        fn deserialize<__D: ::serde::Deserializer<'de>>(
+    impl<'de> __serde::Deserialize<'de> for AttrAssign {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             const __IDENTIFIERS: &'static [&'static str] = &["path", "value"];
@@ -9193,7 +9156,7 @@ pub mod ir {
                 __Unknown,
             }
             struct __IdentifierVisitor;
-            impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
                 fn expecting(
                     &self,
@@ -9203,7 +9166,7 @@ pub mod ir {
                 }
                 fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -9213,7 +9176,7 @@ pub mod ir {
                 }
                 fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         "path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -9226,7 +9189,7 @@ pub mod ir {
                     __value: &[u8],
                 ) -> ::core::result::Result<Self::Value, __E>
                 where
-                    __E: ::serde::de::Error,
+                    __E: __serde::de::Error,
                 {
                     match __value {
                         b"path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
@@ -9235,20 +9198,20 @@ pub mod ir {
                     }
                 }
             }
-            impl<'de> ::serde::Deserialize<'de> for __Identifier {
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
                 #[inline]
                 fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
                 where
-                    __D: ::serde::Deserializer<'de>,
+                    __D: __serde::Deserializer<'de>,
                 {
-                    ::serde::Deserializer::deserialize_identifier(
+                    __serde::Deserializer::deserialize_identifier(
                         __deserializer,
                         __IdentifierVisitor,
                     )
                 }
             }
             struct __Visitor;
-            impl<'de> ::serde::de::Visitor<'de> for __Visitor {
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = AttrAssign;
                 fn expecting(
                     &self,
@@ -9262,24 +9225,24 @@ pub mod ir {
                     mut __seq: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::SeqAccess<'de>,
+                    __A: __serde::de::SeqAccess<'de>,
                 {
-                    let __field0 = match ::serde::de::SeqAccess::next_element::<Path>(&mut __seq)? {
+                    let __field0 = match __serde::de::SeqAccess::next_element::<Path>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
                             );
                         }
                     };
-                    let __field1 = match ::serde::de::SeqAccess::next_element::<
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
                         ::std::boxed::Box<Attr>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                ::serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
                             );
                         }
                     };
@@ -9294,41 +9257,41 @@ pub mod ir {
                     mut __map: __A,
                 ) -> ::core::result::Result<Self::Value, __A::Error>
                 where
-                    __A: ::serde::de::MapAccess<'de>,
+                    __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Path> = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::boxed::Box<Attr>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
-                        ::serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
                         match __key {
                             __Identifier::__Identifier0 => {
                                 if ::core::option::Option::is_some(&__field0) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field("path"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("path"),
                                     );
                                 }
                                 __field0 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<Path>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<Path>(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as ::serde::de::Error>::duplicate_field(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
                                             "value",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    ::serde::de::MapAccess::next_value::<::std::boxed::Box<Attr>>(
+                                    __serde::de::MapAccess::next_value::<::std::boxed::Box<Attr>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
                             _ => {
-                                ::serde::de::MapAccess::next_value::<::serde::de::IgnoredAny>(
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
                                 )?;
                             }
@@ -9338,7 +9301,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("path"),
+                                <__A::Error as __serde::de::Error>::missing_field("path"),
                             );
                         }
                     };
@@ -9346,7 +9309,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as ::serde::de::Error>::missing_field("value"),
+                                <__A::Error as __serde::de::Error>::missing_field("value"),
                             );
                         }
                     };
@@ -9357,7 +9320,7 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["path", "value"];
-            ::serde::Deserializer::deserialize_struct(
+            __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "AttrAssign",
                 __FIELDS,

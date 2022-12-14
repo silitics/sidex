@@ -58,7 +58,7 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
         IdentifierKind::Variant => {
             quote! {
                 __variant => ::core::result::Result::Err(
-                    ::serde::de::Error::unknown_variant(__variant, __IDENTIFIERS)
+                    __serde::de::Error::unknown_variant(__variant, __IDENTIFIERS)
                 ),
             }
         }
@@ -73,8 +73,8 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
         IdentifierKind::Variant => {
             quote! {
                 __variant => ::core::result::Result::Err(
-                    ::serde::de::Error::invalid_value(
-                        ::serde::de::Unexpected::Bytes(__variant),
+                    __serde::de::Error::invalid_value(
+                        __serde::de::Unexpected::Bytes(__variant),
                         &__EXPECTING_IDENTIFIERS
                     )
                 ),
@@ -91,8 +91,8 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
         IdentifierKind::Variant => {
             quote! {
                 __variant => ::core::result::Result::Err(
-                    ::serde::de::Error::invalid_value(
-                        ::serde::de::Unexpected::Unsigned(__variant),
+                    __serde::de::Error::invalid_value(
+                        __serde::de::Unexpected::Unsigned(__variant),
                         &__EXPECTING_IDENTIFIERS
                     )
                 ),
@@ -113,7 +113,7 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
 
         struct __IdentifierVisitor;
 
-        impl<'de> ::serde::de::Visitor<'de> for __IdentifierVisitor {
+        impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
             type Value = __Identifier;
 
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
@@ -122,7 +122,7 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
 
             fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
             where
-                __E: ::serde::de::Error,
+                __E: __serde::de::Error,
             {
 
                 match __value {
@@ -135,7 +135,7 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
 
             fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
             where
-                __E: ::serde::de::Error,
+                __E: __serde::de::Error,
             {
                 match __value {
                     #(
@@ -147,7 +147,7 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
 
             fn visit_bytes<__E>(self, __value: &[u8]) -> ::core::result::Result<Self::Value, __E>
             where
-                __E: ::serde::de::Error,
+                __E: __serde::de::Error,
             {
                 match __value {
                     #(
@@ -158,13 +158,13 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
             }
         }
 
-        impl<'de> ::serde::Deserialize<'de> for __Identifier {
+        impl<'de> __serde::Deserialize<'de> for __Identifier {
             #[inline]
             fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
             where
-                __D: ::serde::Deserializer<'de>,
+                __D: __serde::Deserializer<'de>,
             {
-                ::serde::Deserializer::deserialize_identifier(__deserializer, __IdentifierVisitor)
+                __serde::Deserializer::deserialize_identifier(__deserializer, __IdentifierVisitor)
             }
         }
     };

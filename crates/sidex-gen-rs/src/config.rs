@@ -10,6 +10,8 @@ pub struct Config {
     pub plugins: Vec<String>,
     #[serde(default)]
     pub types: TypesConfig,
+    #[serde(default)]
+    pub plugin: HashMap<String, serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
