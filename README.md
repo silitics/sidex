@@ -14,8 +14,6 @@
   <a href="https://crates.io/crates/sidex-cli"><img alt="License: MIT/Apache" src="https://img.shields.io/crates/l/sidex-cli"></a>
 </p>
 
-
-
 > 🚧 **WORK IN PROGRESS** 🚧
 >
 > Sidex **is still under construction**. In particular, the functionality described here may not exist yet, may change considerably in the future, or may even be completely abandoned at a later point in time. We are actively working on the design, features, and vision of Sidex. ⚠️
