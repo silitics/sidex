@@ -81,7 +81,7 @@ With the `serde` plugin of the Rust backend, code for the `Serialize` and `Deser
 Note that there are a few differences to Serde's own derive macros:
 
 - Optional fields of record types are always skipped if they are `None`.
-- A tagged representation of variant types is only generated for human-readable formats. To this end, the JSON `tagged` attribute is used. By default, variant types are adjacently tagged instead of externally tagged.
+- A tagged representation of variant types is only generated for human-readable formats. To this end, the JSON `tagged` attribute is used. By default, variant types are internally tagged instead of externally tagged.
 
 When serializing with `serde_json` the representation is the standard JSON representation.
 
@@ -95,17 +95,6 @@ In particular, this means that out-of-the-box you can use any Serde supported in
 # Derive `Clone` and `Debug` by default for all types
 # without an explicit `derive` attribute.
 derive = ["Clone", "Debug"]
-
-[visibility]
-# The default visibility of types.
-types = "pub"
-# The default visibility of fields.
-fields = "pub"
-
-[wrapping]
-box = "::std::boxed::Box"
-arc = "::std::sync::Arc"
-rc = "::std::rc::Rc"
 
 [mapping]
 "::sidex::builtins::Sequence" = "::std::vec::Vec"

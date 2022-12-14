@@ -173,7 +173,11 @@ This defines a new type <code className="type-name">TaskId</code> which wraps a 
 
 ## Types Aliases
 
-_Type aliases_ are defined with the <code className="keyword">alias</code> keyword. In contrast to wrapper types, they do not introduce a fresh nominal type. All they do is to bind an already existing type definition to another alternative name.
+_Type aliases_ are defined with the <code className="keyword">alias</code> keyword. In contrast to wrapper types, they do not introduce a fresh nominal type. All they do is to bind an already existing type definition to another alternative name. For example:
+
+```sidex
+alias TaskId: Uuid
+```
 
 ## Generic Types
 
@@ -207,9 +211,9 @@ The builtin types are:
 
 - <code className="builtin-type">string</code>: A sequence of Unicode code points.
 - <code className="builtin-type">bytes</code>: A sequence of bytes.
-- <code className="builtin-type">i8</code>, <code className="builtin-type">i16</code>, <code className="builtin-type">i32</code>, <code className="builtin-type">i64</code>: A signed integers of a certain bit width.
-- <code className="builtin-type">u8</code>, <code className="builtin-type">u16</code>, <code className="builtin-type">u32</code>, <code className="builtin-type">u64</code>: An unsigned integers of a certain bit width.
-- <code className="builtin-type">idx</code>: An index into a sequence.
+- <code className="builtin-type">i8</code>, <code className="builtin-type">i16</code>, <code className="builtin-type">i32</code>, <code className="builtin-type">i64</code>: A signed integer of a certain bit width.
+- <code className="builtin-type">u8</code>, <code className="builtin-type">u16</code>, <code className="builtin-type">u32</code>, <code className="builtin-type">u64</code>: An unsigned integer of a certain bit width.
+- <code className="builtin-type">idx</code>: An unsigned index into a sequence.
 - <code className="builtin-type">f32</code>, <code className="builtin-type">f64</code>: An IEEE-754 floating point number.
 - <code className="builtin-type">bool</code>: A boolean.
 - <code className="builtin-type">unit</code>: Indicates the absence of specific data.

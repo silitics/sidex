@@ -28,7 +28,7 @@ For user-defined opaque types, specific language mappings have to be provided.
 
 ## Format Mappings
 
-To exchange data between different languages or processes, it needs to be _serialized_ into some common _interchange format_. To this end, a _format mapping_ from a Sidex definitions to the interchange format is necessary:
+To exchange data between different languages or processes, it needs to be _serialized_ into some common _interchange format_. To this end, a _format mapping_ from Sidex definitions to the interchange format is necessary:
 
 ```plain
 ┌───────────────────┐   Format Mapping    ┌─────────────────────┐
@@ -42,4 +42,4 @@ For user-defined opaque types, specific format mappings have to be provided.
 
 ## Serialization Binding
 
-Once we have fixed a language mapping and a format mapping, we need to bind both together. To this end, code generators generates a _serialization binding_ which is language-specific and format-specific. It takes serialized data as per the format mapping and transforms it into data structures as per the language mapping (known as _deserialization_) and vice versa (known as _serialization_) bridging the gap between an interchange format and native data structures.
+Once we have fixed a language mapping and a format mapping, we need to bind both together. To this end, code generators need to generate a _serialization binding_ which is language-specific and format-specific. It takes serialized data as per the format mapping and transforms it into data structures as per the language mapping (known as _deserialization_) and vice versa (known as _serialization_) bridging the gap between an interchange format and native data structures.

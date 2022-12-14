@@ -118,7 +118,7 @@ In the following, `...` is the data associated with a variant.
 
   where `...` does not extend the object if there is no associated data.
 
-Internally tagged representations are limited to variant types which are not generic and where the type of any associated data is a record type without a field of the tag name `tag` enabling the embedding into the JSON object.
+Internally tagged representations are limited to variants where the associated type is a record type without a field with the same name as the tag (here `tag`) enabling the embedding into the JSON object. When choosing the internally tagged representation, variants with associated types which are not record types are encoded as adjacently tagged. The same is true for variants where the associated type is a type variable.
 
 The kind of representation can be configured with the following attributes:
 
@@ -128,7 +128,7 @@ The kind of representation can be configured with the following attributes:
 #[json(tagged=internally)]
 ```
 
-The adjacently tagged representation is the default.
+The internally tagged representation is the default.
 
 The name of the tag field for the adjacently and internally tagged representations can be configured the `tag` attribute:
 
@@ -198,7 +198,7 @@ The Sidex type <code className="builtin-type">bool</code> is mapped to the JSON 
 
 ### Unit Type
 
-The Sidex type <code className="builtin-type">null</code> is mapped to the JSON `null` type.
+The Sidex type <code className="builtin-type">unit</code> is mapped to the JSON `null` type.
 
 ### Sequence Types
 

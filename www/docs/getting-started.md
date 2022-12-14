@@ -50,7 +50,7 @@ import ::sidex::result::Result
 #[rust(type = "::uuid::Uuid")]  // In Rust this is `::uuid::Uuid`.
 opaque Uuid  // This is an opaque user-defined type.
 
-/// A unique id a person.
+/// A unique id for a person.
 wrapper PersonId: Uuid  // This is a wrapper type.
 
 /// A *role* of a person.

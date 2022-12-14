@@ -8,7 +8,7 @@ const config = {
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
 
-  // We do not care about old browsers not support SVG.
+  // We do not care about old browsers not supporting SVG.
   favicon: "img/logo.svg",
 
   organizationName: "silitics",

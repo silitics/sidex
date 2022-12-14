@@ -17,7 +17,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <p style={{ maxWidth: "80ch", margin: "1.5em auto" }}>
           Sidex is a format- and language-agnostic data modeling and API
-          definition framework with a focus on simplicity, extensibility, and
+          definition framework with a focus on type safety, extensibility, and
           developer ergonomics. Sidex aims to simplify data exchange between
           different programming languages and platforms via potentially multiple
           interchange formats and storage backends.
