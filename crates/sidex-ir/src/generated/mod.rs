@@ -393,6 +393,7 @@ pub mod ir {
     }
     #[doc = "A storage for sources.\n"]
     #[derive(Clone, Debug)]
+    #[non_exhaustive]
     pub struct SourceStorage {
         #[doc = "The sources.\n"]
         pub sources: ::std::vec::Vec<Source>,
@@ -587,21 +588,22 @@ pub mod ir {
     }
     #[doc = "A *source* is simply a chunk of text.\n"]
     #[derive(Clone, Debug)]
+    #[non_exhaustive]
     pub struct Source {
         #[doc = "The source index of the source.\n"]
         pub idx: SourceIdx,
-        #[doc = "The text of the source.\n"]
-        pub text: ::std::string::String,
         #[doc = "The origin of the source, e.g., a filesystem path.\n"]
         pub origin: ::std::option::Option<::std::string::String>,
+        #[doc = "The optional text of the source.\n\nThis field is optional to allow for programmatically generated schemas.\n"]
+        pub text: ::std::option::Option<::std::string::String>,
     }
     impl Source {
         #[doc = "Creates a new [`Source`]."]
-        pub fn new(idx: SourceIdx, text: ::std::string::String) -> Self {
+        pub fn new(idx: SourceIdx) -> Self {
             Self {
                 idx,
-                text,
                 origin: ::std::default::Default::default(),
+                text: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `idx`."]
@@ -612,16 +614,6 @@ pub mod ir {
         #[doc = "Sets the value of `idx`."]
         pub fn with_idx(mut self, idx: SourceIdx) -> Self {
             self.idx = idx;
-            self
-        }
-        #[doc = "Sets the value of `text`."]
-        pub fn set_text(&mut self, text: ::std::string::String) -> &mut Self {
-            self.text = text;
-            self
-        }
-        #[doc = "Sets the value of `text`."]
-        pub fn with_text(mut self, text: ::std::string::String) -> Self {
-            self.text = text;
             self
         }
         #[doc = "Sets the value of `origin`."]
@@ -637,6 +629,19 @@ pub mod ir {
             self.origin = origin;
             self
         }
+        #[doc = "Sets the value of `text`."]
+        pub fn set_text(
+            &mut self,
+            text: ::std::option::Option<::std::string::String>,
+        ) -> &mut Self {
+            self.text = text;
+            self
+        }
+        #[doc = "Sets the value of `text`."]
+        pub fn with_text(mut self, text: ::std::option::Option<::std::string::String>) -> Self {
+            self.text = text;
+            self
+        }
     }
     #[automatically_derived]
     impl __serde::Serialize for Source {
@@ -647,7 +652,6 @@ pub mod ir {
             let mut __struct =
                 __serde::Serializer::serialize_struct(__serializer, "Source", 3usize)?;
             __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", &self.text)?;
             match &self.origin {
                 ::core::option::Option::Some(__value) => {
                     __serde::ser::SerializeStruct::serialize_field(
@@ -660,6 +664,14 @@ pub mod ir {
                     __serde::ser::SerializeStruct::skip_field(&mut __struct, "origin")?;
                 }
             }
+            match &self.text {
+                ::core::option::Option::Some(__value) => {
+                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", __value)?;
+                }
+                ::core::option::Option::None => {
+                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "text")?;
+                }
+            }
             __serde::ser::SerializeStruct::end(__struct)
         }
     }
@@ -668,9 +680,9 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            const __IDENTIFIERS: &'static [&'static str] = &["idx", "text", "origin"];
+            const __IDENTIFIERS: &'static [&'static str] = &["idx", "origin", "text"];
             const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"idx\", \"text\", \"origin\"]";
+                "an identifier in [\"idx\", \"origin\", \"text\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             enum __Identifier {
                 __Identifier0,
@@ -704,8 +716,8 @@ pub mod ir {
                 {
                     match __value {
                         "idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "text" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "origin" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        "origin" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        "text" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -718,8 +730,8 @@ pub mod ir {
                 {
                     match __value {
                         b"idx" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"text" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"origin" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        b"origin" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        b"text" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -766,7 +778,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::std::string::String,
+                        ::core::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -789,8 +801,8 @@ pub mod ir {
                     };
                     ::core::result::Result::Ok(Source {
                         idx: __field0,
-                        text: __field1,
-                        origin: __field2,
+                        origin: __field1,
+                        text: __field2,
                     })
                 }
                 #[inline]
@@ -824,7 +836,9 @@ pub mod ir {
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("text"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "origin",
+                                        ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
@@ -836,9 +850,7 @@ pub mod ir {
                             __Identifier::__Identifier2 => {
                                 if ::core::option::Option::is_some(&__field2) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "origin",
-                                        ),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("text"),
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
@@ -862,22 +874,14 @@ pub mod ir {
                             );
                         }
                     };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("text"),
-                            );
-                        }
-                    };
                     ::core::result::Result::Ok(Source {
                         idx: __field0,
-                        text: __field1,
-                        origin: __field2,
+                        origin: __field1,
+                        text: __field2,
                     })
                 }
             }
-            const __FIELDS: &'static [&'static str] = &["idx", "text", "origin"];
+            const __FIELDS: &'static [&'static str] = &["idx", "origin", "text"];
             __serde::Deserializer::deserialize_struct(__deserializer, "Source", __FIELDS, __Visitor)
         }
     }

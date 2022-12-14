@@ -31,7 +31,15 @@ impl<'s> ariadne::Cache<SourceId> for Cache<'s> {
     fn fetch(&mut self, id: &SourceId) -> Result<&ariadne::Source, Box<dyn std::fmt::Debug + '_>> {
         Ok(self.cache.entry(*id).or_insert_with(|| {
             match id {
-                Some(idx) => ariadne::Source::from(&self.sources[*idx].text),
+                Some(idx) => {
+                    ariadne::Source::from(
+                        self.sources[*idx]
+                            .text
+                            .as_ref()
+                            .map(String::as_str)
+                            .unwrap_or(""),
+                    )
+                }
                 None => ariadne::Source::from(""),
             }
         }))

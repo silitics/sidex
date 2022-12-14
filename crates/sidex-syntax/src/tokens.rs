@@ -603,21 +603,23 @@ pub(crate) fn diagnostic_from_error(error: Simple<String, Span>) -> Diagnostic {
 
 /// Tokenize a source.
 pub fn tokenize(source: &ir::Source) -> Option<Vec<Token>> {
-    let stream = Stream::from_iter(
-        Span::from(source.end()),
-        source
-            .text
-            .chars()
-            .enumerate()
-            .map(|(pos, c)| (c, source.span_at(pos).into())),
-    );
-    let (tokens, errors) = lexer().parse_recovery(stream);
+    if let Some(text) = &source.text {
+        let stream = Stream::from_iter(
+            Span::from(source.end()),
+            text.chars()
+                .enumerate()
+                .map(|(pos, c)| (c, source.span_at(pos).into())),
+        );
+        let (tokens, errors) = lexer().parse_recovery(stream);
 
-    for error in errors {
-        diagnostic_from_error(error.map(|c| c.to_string())).emit();
+        for error in errors {
+            diagnostic_from_error(error.map(|c| c.to_string())).emit();
+        }
+
+        tokens
+    } else {
+        None
     }
-
-    tokens
 }
 
 #[cfg(test)]

@@ -29,19 +29,23 @@ record Unit {
 }
 
 /// A storage for sources.
+#[rust(attr(non_exhaustive))]
 record SourceStorage {
     /// The sources.
     sources: [Source]
 }
 
 /// A *source* is simply a chunk of text.
+#[rust(attr(non_exhaustive))]
 record Source {
     /// The source index of the source.
     idx: SourceIdx,
-    /// The text of the source.
-    text: string,
     /// The origin of the source, e.g., a filesystem path.
     origin?: string,
+    /// The optional text of the source.
+    ///
+    /// This field is optional to allow for programmatically generated schemas.
+    text?: string,
 }
 
 /// A bundle is a flat collection of schemas evolving together.

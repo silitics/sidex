@@ -230,7 +230,7 @@ impl std::fmt::Display for Attr {
 impl SourceStorage {
     /// Inserts a *source* into the storage.
     pub fn insert(&mut self, text: String, origin: Option<String>) -> SourceIdx {
-        self.insert_with(|idx| Source::new(idx, text).with_origin(origin))
+        self.insert_with(|idx| Source::new(idx).with_text(Some(text)).with_origin(origin))
     }
     pub fn insert_with<F: FnOnce(SourceIdx) -> Source>(&mut self, make: F) -> SourceIdx {
         let idx = SourceIdx::from(self.sources.len());
@@ -250,7 +250,12 @@ impl Index<SourceIdx> for SourceStorage {
 impl Source {
     /// The end of the source.
     pub fn end(&self) -> Span {
-        self.span_at(self.text.len())
+        self.span_at(
+            self.text
+                .as_ref()
+                .map(|text| text.chars().count())
+                .unwrap_or(0),
+        )
     }
 
     /// Create a span at the given position.
