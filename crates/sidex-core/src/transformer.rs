@@ -256,7 +256,10 @@ impl<'t, 'd> Resolver<'t, 'd> {
             (LookupEntry::Root, path.segments.as_slice())
         } else {
             let first = path.segments.first().unwrap();
-            let entry = self.table.get(first.as_str()).unwrap();
+            let entry = self
+                .table
+                .get(first.as_str())
+                .unwrap_or_else(|| panic!("Unable to resolve `{}`.", path));
             (entry.clone(), &path.segments[1..])
         };
         self.resolve_segments(root, tail)
