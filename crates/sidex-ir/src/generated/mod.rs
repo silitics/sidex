@@ -1,7 +1,7 @@
 /* GENERATED WITH SIDEX. DO NOT MODIFY! */
 
-#[doc = ""]
 pub mod ir {
+    #![doc = ""]
     use :: serde as __serde;
     use :: sidex_serde as __sidex_serde;
     #[doc = "Uniquely identifies a source in a unit.\n"]

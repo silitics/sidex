@@ -99,8 +99,9 @@ impl RustGenerator {
                     .map(|docs| docs.as_str())
                     .unwrap_or_default();
                 Ok(quote! {
-                    #[doc = #docs]
                     pub mod #name {
+                        #![doc = #docs]
+
                         #(#schema_preambles)*
                         #(#defs)*
                     }
