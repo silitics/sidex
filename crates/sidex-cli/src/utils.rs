@@ -1,9 +1,17 @@
+use std::path::Path;
+
 use color_eyre::Help;
 use eyre::Result;
 use sidex_core::{ir, transformer::Transformer};
 
-pub fn load_cwd_unit_and_bundle() -> Result<(ir::Unit, ir::BundleIdx, Transformer)> {
-    let cwd = std::env::current_dir()?;
+pub fn load_unit_and_bundle(
+    directory: Option<&Path>,
+) -> Result<(ir::Unit, ir::BundleIdx, Transformer)> {
+    let cwd = if let Some(directory) = directory {
+        directory.to_owned()
+    } else {
+        std::env::current_dir()?
+    };
 
     let ctx = sidex_diagnostics::DiagnosticCtx::new();
 

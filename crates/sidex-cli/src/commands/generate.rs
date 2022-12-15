@@ -7,7 +7,7 @@ use sidex_gen::Generator;
 use sidex_gen_ir::IrGenerator;
 use sidex_gen_rs::RustGenerator;
 
-use crate::utils::load_cwd_unit_and_bundle;
+use crate::utils::load_unit_and_bundle;
 
 #[derive(Parser, Debug)]
 pub struct GenerateArgs {
@@ -29,7 +29,7 @@ impl GeneratorRegistry {
 }
 
 pub fn exec(args: &GenerateArgs) -> eyre::Result<()> {
-    let (unit, bundle, transformer) = load_cwd_unit_and_bundle()?;
+    let (unit, bundle, transformer) = load_unit_and_bundle(None)?;
 
     let null = serde_json::Value::Null;
     let config = transformer

@@ -31,7 +31,7 @@ pub enum Command {
     /// Create a new definition.
     New(commands::new::NewArgs),
     /// Check the current definition for validity.
-    Check,
+    Check(commands::check::CheckArgs),
     /// Generate code.
     Generate(commands::generate::GenerateArgs),
     /// Validate a Sidex IR JSON file.
@@ -46,7 +46,7 @@ pub fn main() -> color_eyre::Result<()> {
 
     match &args.command {
         Command::New(new_args) => commands::new::exec(new_args),
-        Command::Check => commands::check::exec(),
+        Command::Check(check_args) => commands::check::exec(check_args),
         Command::Generate(generate_args) => commands::generate::exec(generate_args),
         Command::ValidateIr(args) => commands::validate_ir::exec(args),
     }
