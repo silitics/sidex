@@ -173,7 +173,8 @@ fn type_expr_parser(
                     .allow_trailing()
                     .delimited_by(
                         just(punctuations::AngleOpen::ALONE),
-                        just(punctuations::AngleClose::ALONE),
+                        just(punctuations::AngleClose::ALONE)
+                            .or(just(punctuations::AngleClose::COMPOSED)),
                     )
                     .or_not(),
             )
