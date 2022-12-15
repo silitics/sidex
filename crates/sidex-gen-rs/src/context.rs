@@ -171,7 +171,8 @@ impl<'cx> SchemaCtx<'cx> {
 
     pub fn type_info(&self, def: &ir::Def) -> TypeInfo {
         let ident = format_ident!("{}", def.name.as_str());
-        let generics = self.generic_type_vars(def);
+        let vars = self.generic_type_vars(def);
+        let generics = quote! { < #vars > };
         let vis = syn::parse_str::<syn::Visibility>("pub").unwrap();
         TypeInfo {
             ident,
@@ -193,7 +194,20 @@ impl<'cx> SchemaCtx<'cx> {
                 .iter()
                 .map(|var| format_ident!("{}", var.name.as_str()));
 
-            quote! { < #(#vars , )* > }
+            quote! { #(#vars , )* }
+        }
+    }
+
+    pub fn generic_type_vars_with_bounds(&self, def: &ir::Def, bounds: TokenStream) -> TokenStream {
+        if def.vars.is_empty() {
+            quote! {}
+        } else {
+            let vars = def
+                .vars
+                .iter()
+                .map(|var| format_ident!("{}", var.name.as_str()));
+
+            quote! { #(#vars: #bounds , )* }
         }
     }
 

@@ -16,7 +16,7 @@ pub(crate) type Content<'de> = ours::Content<'de>;
 pub(crate) type Content<'de> = theirs::Content<'de>;
 
 /// Deserializes [`Content`] into `T`.
-pub(crate) fn deserialize_content<'de, T: Deserialize<'de>, E: 'de + serde::de::Error>(
+pub(crate) fn deserialize_content<'de, T: Deserialize<'de>, E: serde::de::Error>(
     content: Content<'de>,
 ) -> Result<T, E> {
     #[cfg(not(feature = "serde-private-content"))]

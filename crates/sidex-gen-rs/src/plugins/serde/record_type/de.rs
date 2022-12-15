@@ -3,9 +3,10 @@
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use sidex_attrs_json::JsonRecordTypeAttrs;
+use sidex_gen::ir;
 
 use crate::{
-    context::RustTy,
+    context::{RustTy, SchemaCtx},
     plugins::serde::{
         identifier_enum::{gen_identifier_enum, IdentifierKind},
         SerdeField,
@@ -14,12 +15,14 @@ use crate::{
 
 /// Generates the body of [`deserialize`][serde::Deserialize::deserialize].
 pub(crate) fn gen_deserialize_body(
+    ctx: &SchemaCtx,
+    def: &ir::Def,
     ty: &RustTy,
     ty_json_attrs: &JsonRecordTypeAttrs,
     fields: &[SerdeField],
 ) -> TokenStream {
     // Generate the `__Visitor` for deserialization.
-    let visitor = gen_visitor(ty, ty_json_attrs, fields);
+    let visitor = gen_visitor(ctx, def, ty, ty_json_attrs, fields);
 
     // Generate the `__FIELDS` array constant with the field names.
     let fields_array_const = gen_fields_array_const(fields);
@@ -33,13 +36,15 @@ pub(crate) fn gen_deserialize_body(
             __deserializer,
             #ty_name,
             __FIELDS,
-            __Visitor,
+            __Visitor { __phantom_vars: ::core::marker::PhantomData },
         )
     }
 }
 
 /// Generates the `__Visitor` for deserialization.
 fn gen_visitor(
+    ctx: &SchemaCtx,
+    def: &ir::Def,
     ty: &RustTy,
     ty_json_attrs: &JsonRecordTypeAttrs,
     fields: &[SerdeField],
@@ -112,13 +117,20 @@ fn gen_visitor(
         })
     };
 
+    let vars = ctx.generic_type_vars(def);
+
+    let vars_with_bounds =
+        ctx.generic_type_vars_with_bounds(def, quote! { __serde::Deserialize<'de> });
+
     quote! {
         #field_identifiers_enum
 
-        struct __Visitor;
+        struct __Visitor < #vars > {
+            __phantom_vars: ::core::marker::PhantomData<fn(&( #vars ))>,
+        }
 
-        impl<'de> __serde::de::Visitor<'de> for __Visitor {
-            type Value = #ty_ident;
+        impl <'de, #vars_with_bounds > __serde::de::Visitor<'de> for __Visitor < #vars > {
+            type Value = #ty_ident < #vars >;
 
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 ::core::fmt::Formatter::write_str(__formatter, #expecting)

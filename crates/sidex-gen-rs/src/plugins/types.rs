@@ -51,7 +51,7 @@ impl Plugin for Types {
                 let aliased = ctx.resolve_type_old(def, &alias.aliased);
                 Ok(quote! {
                     #[doc = #docs]
-                    #vis type #name #vars = #aliased;
+                    #vis type #name < #vars > = #aliased;
                 })
             }
             DefKind::OpaqueType(_) => {
@@ -60,7 +60,7 @@ impl Plugin for Types {
                         let typ = TokenStream::from_str(&typ.path).unwrap();
                         Ok(quote! {
                             #[doc = #docs]
-                            #vis type #name #vars = #typ;
+                            #vis type #name < #vars > = #typ;
                         })
                     }
                     None => todo!(),
@@ -97,7 +97,7 @@ impl Plugin for Types {
                     #[doc = #docs]
                     #derive
                     #(#meta)*
-                    #vis struct #name #vars {
+                    #vis struct #name < #vars > {
                         #(#fields)*
                     }
                 })
@@ -131,7 +131,7 @@ impl Plugin for Types {
                     #[doc = #docs]
                     #derive
                     #(#meta)*
-                    #vis enum #name #vars {
+                    #vis enum #name < #vars > {
                         #(#variants)*
                     }
                 })
@@ -142,7 +142,7 @@ impl Plugin for Types {
                     #[doc = #docs]
                     #derive
                     #(#meta)*
-                    #vis struct #name #vars (pub(crate) #wrapped);
+                    #vis struct #name < #vars > (pub(crate) #wrapped);
 
                     impl ::std::convert::From<#name> for #wrapped {
                         fn from(wrapped: #name) -> Self {

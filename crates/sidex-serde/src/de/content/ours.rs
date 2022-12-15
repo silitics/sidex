@@ -71,9 +71,7 @@ pub enum Content<'de> {
 
 impl<'de> Content<'de> {
     /// Converts the content into a [`Deserializer`].
-    pub fn into_deserializer<E: 'de + serde::de::Error>(
-        self,
-    ) -> impl 'de + Deserializer<'de, Error = E> {
+    pub fn into_deserializer<E: serde::de::Error>(self) -> impl Deserializer<'de, Error = E> {
         ContentDeserializer::new(self)
     }
 }
@@ -163,7 +161,7 @@ macro_rules! impl_content_deserializer_delegate_to_any {
     };
 }
 
-impl<'de, E: 'de + serde::de::Error> Deserializer<'de> for ContentDeserializer<'de, E> {
+impl<'de, E: serde::de::Error> Deserializer<'de> for ContentDeserializer<'de, E> {
     type Error = E;
 
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -354,7 +352,7 @@ impl<'de, E> ContentSeqAccess<'de, E> {
     }
 }
 
-impl<'de, E: 'de + serde::de::Error> serde::de::SeqAccess<'de> for ContentSeqAccess<'de, E> {
+impl<'de, E: serde::de::Error> serde::de::SeqAccess<'de> for ContentSeqAccess<'de, E> {
     type Error = E;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
@@ -386,7 +384,7 @@ impl<'de, E> ContentMapAccess<'de, E> {
     }
 }
 
-impl<'de, E: 'de + serde::de::Error> serde::de::MapAccess<'de> for ContentMapAccess<'de, E> {
+impl<'de, E: serde::de::Error> serde::de::MapAccess<'de> for ContentMapAccess<'de, E> {
     type Error = E;
 
     fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Self::Error>
@@ -431,7 +429,7 @@ impl<'de, E> ContentEnumAccess<'de, E> {
     }
 }
 
-impl<'de, E: 'de + serde::de::Error> serde::de::EnumAccess<'de> for ContentEnumAccess<'de, E> {
+impl<'de, E: serde::de::Error> serde::de::EnumAccess<'de> for ContentEnumAccess<'de, E> {
     type Error = E;
 
     type Variant = ContentVariantAccess<'de, E>;
@@ -461,9 +459,7 @@ impl<'de, E> ContentVariantAccess<'de, E> {
     }
 }
 
-impl<'de, E: 'de + serde::de::Error> serde::de::VariantAccess<'de>
-    for ContentVariantAccess<'de, E>
-{
+impl<'de, E: serde::de::Error> serde::de::VariantAccess<'de> for ContentVariantAccess<'de, E> {
     type Error = E;
 
     fn unit_variant(self) -> Result<(), Self::Error> {

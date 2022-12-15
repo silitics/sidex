@@ -208,13 +208,13 @@ pub struct TaggedVariant<'de, T> {
 }
 
 impl<'de, T> TaggedVariant<'de, T> {
-    pub fn deserialize_internally_tagged<V: Deserialize<'de>, E: 'de + serde::de::Error>(
+    pub fn deserialize_internally_tagged<V: Deserialize<'de>, E: serde::de::Error>(
         self,
     ) -> Result<V, E> {
         deserialize_content(self.content)
     }
 
-    pub fn deserialize_adjacently_tagged<V: Deserialize<'de>, E: 'de + serde::de::Error>(
+    pub fn deserialize_adjacently_tagged<V: Deserialize<'de>, E: serde::de::Error>(
         self,
         content_field: &'static str,
     ) -> Result<V, E> {

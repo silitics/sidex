@@ -41,9 +41,9 @@ mod tests {
 
     #[test]
     fn test_variant_types() {
-        test!(VariantInternallyTagged);
-        test!(VariantExternallyTagged);
-        test!(VariantAdjacentlyTagged);
+        test::<VariantInternallyTagged<i32>>("VariantInternallyTagged");
+        test::<VariantExternallyTagged<i32>>("VariantExternallyTagged");
+        test::<VariantAdjacentlyTagged<i32>>("VariantAdjacentlyTagged");
     }
 
     #[test]

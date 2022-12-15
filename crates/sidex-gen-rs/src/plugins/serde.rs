@@ -69,7 +69,7 @@ impl Plugin for Serde {
 
                 (
                     record_type::ser::gen_serialize_body(&ty, &fields),
-                    record_type::de::gen_deserialize_body(&ty, &ty_json_attrs, &fields),
+                    record_type::de::gen_deserialize_body(ctx, def, &ty, &ty_json_attrs, &fields),
                 )
             }
             ir::DefKind::VariantType(typ_def) => {
@@ -90,7 +90,13 @@ impl Plugin for Serde {
                     .collect::<Result<Vec<_>>>()?;
                 (
                     variant_type::ser::gen_serialize_body(ctx, &ty, &ty_json_attrs, &variants)?,
-                    variant_type::de::gen_deserialize_body(ctx, &ty, &ty_json_attrs, &variants)?,
+                    variant_type::de::gen_deserialize_body(
+                        ctx,
+                        def,
+                        &ty,
+                        &ty_json_attrs,
+                        &variants,
+                    )?,
                 )
             }
             ir::DefKind::WrapperType(typ_def) => {
@@ -115,15 +121,22 @@ impl Plugin for Serde {
         let ty_ident = &ty.ident;
 
         let vars = ctx.generic_type_vars(def);
+
+        let vars_serialize_bounds =
+            ctx.generic_type_vars_with_bounds(def, quote! { __serde::Serialize });
+
+        let vars_deserialize_bounds =
+            ctx.generic_type_vars_with_bounds(def, quote! { __serde::Deserialize<'de> });
+
         Ok(quote! {
             #[automatically_derived]
-            impl #vars __serde::Serialize for #ty_ident #vars {
+            impl < #vars_serialize_bounds > __serde::Serialize for #ty_ident < #vars > {
                 fn serialize<__S: __serde::Serializer>(&self, __serializer: __S) -> ::std::result::Result<__S::Ok, __S::Error> {
                     #serialize_body
                 }
             }
             #[automatically_derived]
-            impl<'de> __serde::Deserialize<'de> for #ty_ident #vars {
+            impl < 'de, #vars_deserialize_bounds > __serde::Deserialize<'de> for #ty_ident < #vars > {
                 fn deserialize<__D: __serde::Deserializer<'de>>(__deserializer: __D) -> ::std::result::Result<Self, __D::Error> {
                     #deserialize_body
                 }

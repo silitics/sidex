@@ -6,6 +6,7 @@ use sidex_attrs_json::{
 use sidex_gen::{
     attrs::TryFromAttrs,
     diagnostics::{Diagnostic, Result},
+    ir,
 };
 
 use crate::{
@@ -18,6 +19,7 @@ use crate::{
 
 pub(crate) fn gen_deserialize_body(
     ctx: &SchemaCtx,
+    def: &ir::Def,
     ty: &RustTy,
     ty_json_attrs: &JsonVariantTypeAttrs,
     variants: &[SerdeVariant],
@@ -31,7 +33,7 @@ pub(crate) fn gen_deserialize_body(
 
     let variants_array_const = gen_variants_array_const(variants);
 
-    let non_human_readable_body = gen_externally_tagged_body(ty, variants, &identifiers);
+    let non_human_readable_body = gen_externally_tagged_body(ctx, def, ty, variants, &identifiers);
 
     let ty_ident = &ty.ident;
 
@@ -101,6 +103,8 @@ pub(crate) fn gen_deserialize_body(
 }
 
 fn gen_externally_tagged_body(
+    ctx: &SchemaCtx,
+    def: &ir::Def,
     ty: &RustTy,
     variants: &[SerdeVariant],
     identifiers: &[syn::Ident],
@@ -132,11 +136,18 @@ fn gen_externally_tagged_body(
             }
         });
 
-    quote! {
-        struct __Visitor;
+    let vars = ctx.generic_type_vars(def);
 
-        impl<'de> __serde::de::Visitor<'de> for __Visitor {
-            type Value = #ty_ident;
+    let vars_with_bounds =
+        ctx.generic_type_vars_with_bounds(def, quote! { __serde::Deserialize<'de> });
+
+    quote! {
+        struct __Visitor < #vars > {
+            __phantom_vars: ::core::marker::PhantomData<fn(&( #vars ))>,
+        }
+
+        impl <'de, #vars_with_bounds > __serde::de::Visitor<'de> for __Visitor < #vars > {
+            type Value = #ty_ident < #vars >;
 
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 ::core::fmt::Formatter::write_str(
@@ -160,7 +171,7 @@ fn gen_externally_tagged_body(
             __deserializer,
             #ty_name,
             __VARIANTS,
-            __Visitor
+            __Visitor { __phantom_vars: ::core::marker::PhantomData }
         )
     }
 }

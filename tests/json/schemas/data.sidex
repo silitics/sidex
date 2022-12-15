@@ -4,7 +4,7 @@ record VariantTestRecord {
 }
 
 #[json(tagged = internally, tag = "tagFieldName", content = "defaultContentField")]
-variant VariantInternallyTagged { // <T> {
+variant VariantInternallyTagged<T> {
     A,
     B: u64,
     #[json(content = "specificContentField")]
@@ -12,18 +12,20 @@ variant VariantInternallyTagged { // <T> {
     #[json(content = "content")]
     D: VariantTestRecord,
     E: VariantTestRecord,
-    // F: T,
+    F: VarRecord<i32>,
+    G: T,
 }
 
 #[json(tagged = externally)]
-variant VariantExternallyTagged {
+variant VariantExternallyTagged<T> {
     A,
     B: u64,
     C: VariantTestRecord,
+    D: T
 }
 
 #[json(tagged = adjacently, tag = "tagFieldName", content = "defaultContentField")]
-variant VariantAdjacentlyTagged {
+variant VariantAdjacentlyTagged<T> {
     A,
     B: u64,
     #[json(content = "specificContentField")]
@@ -31,6 +33,7 @@ variant VariantAdjacentlyTagged {
     #[json(content = "content")]
     D: VariantTestRecord,
     E: VariantTestRecord,
+    F: T,
 }
 
 record RecordFieldNamesDefault {
@@ -42,4 +45,9 @@ record RecordFieldNamesDefault {
 record RecordFieldNamesScreamingSnake {
     test_field_1: u64,
     test_field2: string,
+}
+
+record VarRecord<T> {
+    x: T,
+    y?: string,
 }
