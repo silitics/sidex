@@ -96,10 +96,9 @@ new_assign_attr! {
 /// An attribute of the form `tagged = <TAG-KIND>`.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum JsonTaggedAttr {
-    #[default]
     Adjacently,
     Externally,
-    /// Does not allow generics and only record types.
+    #[default]
     Internally,
 }
 
