@@ -38,7 +38,14 @@
       "beforeText": "^\\s*///",
       "action": {
         "indent": "none",
-        "appendText": "///"
+        "appendText": "/// "
+      }
+    },
+    {
+      "beforeText": "^\\s*//!",
+      "action": {
+        "indent": "none",
+        "appendText": "//! "
       }
     }
   ],
