@@ -77,29 +77,7 @@ impl<'de> Content<'de> {
 
     /// Converts the content into [`Unexpected`].
     pub fn unexpected(&self) -> Unexpected<'_> {
-        match *self {
-            Content::Bool(b) => Unexpected::Bool(b),
-            Content::U8(value) => Unexpected::Unsigned(value as u64),
-            Content::U16(value) => Unexpected::Unsigned(value as u64),
-            Content::U32(value) => Unexpected::Unsigned(value as u64),
-            Content::U64(value) => Unexpected::Unsigned(value),
-            Content::I8(value) => Unexpected::Signed(value as i64),
-            Content::I16(value) => Unexpected::Signed(value as i64),
-            Content::I32(value) => Unexpected::Signed(value as i64),
-            Content::I64(value) => Unexpected::Signed(value),
-            Content::F32(value) => Unexpected::Float(value as f64),
-            Content::F64(value) => Unexpected::Float(value),
-            Content::Char(value) => Unexpected::Char(value),
-            Content::String(ref value) => Unexpected::Str(value),
-            Content::Str(value) => Unexpected::Str(value),
-            Content::ByteBuf(ref value) => Unexpected::Bytes(value),
-            Content::Bytes(value) => Unexpected::Bytes(value),
-            Content::None | Content::Some(_) => Unexpected::Option,
-            Content::Unit => Unexpected::Unit,
-            Content::Newtype(_) => Unexpected::NewtypeStruct,
-            Content::Seq(_) => Unexpected::Seq,
-            Content::Map(_) => Unexpected::Map,
-        }
+        self.into()
     }
 }
 
@@ -282,12 +260,7 @@ impl<'de, E: serde::de::Error> Deserializer<'de> for ContentDeserializer<'de, E>
     where
         V: Visitor<'de>,
     {
-        match self.content {
-            // Deserialize unit structs from empty maps and sequences.
-            Content::Seq(seq) if seq.is_empty() => visitor.visit_unit(),
-            Content::Map(entries) if entries.is_empty() => visitor.visit_unit(),
-            _ => self.deserialize_any(visitor),
-        }
+        self.deserialize_unit(visitor)
     }
 
     fn deserialize_newtype_struct<V>(
