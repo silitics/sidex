@@ -216,9 +216,19 @@ impl<'de, E: serde::de::Error> Deserializer<'de> for ContentDeserializer<'de, E>
     impl_content_deserializer_delegate_to_any!(deserialize_bytes);
     impl_content_deserializer_delegate_to_any!(deserialize_byte_buf);
 
-    impl_content_deserializer_delegate_to_any!(deserialize_option);
-
     impl_content_deserializer_delegate_to_any!(deserialize_unit);
+
+    fn deserialize_option<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Content::None => visitor.visit_none(),
+            Content::Some(value) => visitor.visit_some(value.into_deserializer()),
+            Content::Unit => visitor.visit_unit(),
+            _ => visitor.visit_some(self),
+        }
+    }
 
     fn deserialize_unit_struct<V>(
         self,

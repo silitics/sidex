@@ -2,6 +2,10 @@
 
 use std::cmp;
 
+mod content;
+
+pub mod tagged;
+
 /// Limit for the size hints.
 const SIZE_HINT_LIMIT: usize = 4096;
 
@@ -10,7 +14,3 @@ const SIZE_HINT_LIMIT: usize = 4096;
 fn sanitize_size_hint(hint: Option<usize>) -> usize {
     cmp::min(hint.unwrap_or(0), SIZE_HINT_LIMIT)
 }
-
-mod content;
-
-pub mod tagged;

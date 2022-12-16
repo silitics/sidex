@@ -104,7 +104,12 @@ fn gen_visitor(
                     };
                 }
             } else {
-                TokenStream::default()
+                quote! {
+                    let #var = match #var {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
+                }
             }
         })
         .collect::<Vec<_>>();
@@ -162,7 +167,7 @@ fn gen_visitor(
             {
                 #(
                     // We use the inner type here so optional fields end up with only one level of `Option`.
-                    let mut #field_vars: ::core::option::Option<#field_inner_tys> = ::core::option::Option::None;
+                    let mut #field_vars: ::core::option::Option<#field_tys> = ::core::option::Option::None;
                 )*
                 while let ::core::option::Option::Some(__key) = __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)? {
                     match __key {
@@ -174,7 +179,7 @@ fn gen_visitor(
                                     );
                                 }
                                 #field_vars = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<#field_inner_tys>(&mut __map)?
+                                    __serde::de::MapAccess::next_value::<#field_tys>(&mut __map)?
                                 );
                             },
                         )*
