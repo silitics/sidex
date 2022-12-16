@@ -3,7 +3,7 @@ record VariantTestRecord {
     b?: string,
 }
 
-#[json(tagged = internally, tag = "tagFieldName", content = "defaultContentField")]
+#[json(tag = "tagFieldName", content = "defaultContentField")]
 variant VariantInternallyTagged<T> {
     A,
     B: u64,
@@ -14,6 +14,7 @@ variant VariantInternallyTagged<T> {
     E: VariantTestRecord,
     F: VarRecord<i32>,
     G: T,
+    H: VarRecord<T>,
 }
 
 #[json(tagged = externally)]
