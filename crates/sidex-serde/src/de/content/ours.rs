@@ -273,7 +273,7 @@ impl<'de, E: serde::de::Error> Deserializer<'de> for ContentDeserializer<'de, E>
     {
         match self.content {
             Content::Newtype(v) => visitor.visit_newtype_struct(v.into_deserializer()),
-            _ => self.deserialize_any(visitor),
+            _ => visitor.visit_newtype_struct(self),
         }
     }
 
