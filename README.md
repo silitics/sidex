@@ -9,7 +9,7 @@
 </h4>
 <p align="center">
   <a href="https://crates.io/crates/sidex-cli"><img alt="Sidex CLI Crate" src="https://img.shields.io/crates/v/sidex-cli?label=sidex-cli"></a>
-  <a href="https://github.com/silitics/sidex/actions"><img alt="Tests" src="https://img.shields.io/github/workflow/status/silitics/sidex/Run Checks?label=tests"></a>
+  <a href="https://github.com/silitics/sidex/actions"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/silitics/sidex/run-checks.yml?branch=main&label=tests"></a>
   <a href="https://oss.silitics.com/sidex/docs/getting-started"><img alt="Docs" src="https://img.shields.io/static/v1?label=docs&message=main&color=blue"></a>
   <a href="https://crates.io/crates/sidex-cli"><img alt="License: MIT/Apache" src="https://img.shields.io/crates/l/sidex-cli"></a>
 </p>
