@@ -3,7 +3,7 @@
 use std::marker::PhantomData;
 
 use serde::{
-    de::{Unexpected, Visitor},
+    de::{Expected, Unexpected, Visitor},
     ser::{SerializeMap, SerializeSeq},
     Deserialize, Deserializer, Serialize,
 };
@@ -73,6 +73,33 @@ impl<'de> Content<'de> {
     /// Converts the content into a [`Deserializer`].
     pub fn into_deserializer<E: serde::de::Error>(self) -> impl Deserializer<'de, Error = E> {
         ContentDeserializer::new(self)
+    }
+
+    /// Converts the content into [`Unexpected`].
+    pub fn unexpected(&self) -> Unexpected<'_> {
+        match *self {
+            Content::Bool(b) => Unexpected::Bool(b),
+            Content::U8(value) => Unexpected::Unsigned(value as u64),
+            Content::U16(value) => Unexpected::Unsigned(value as u64),
+            Content::U32(value) => Unexpected::Unsigned(value as u64),
+            Content::U64(value) => Unexpected::Unsigned(value),
+            Content::I8(value) => Unexpected::Signed(value as i64),
+            Content::I16(value) => Unexpected::Signed(value as i64),
+            Content::I32(value) => Unexpected::Signed(value as i64),
+            Content::I64(value) => Unexpected::Signed(value),
+            Content::F32(value) => Unexpected::Float(value as f64),
+            Content::F64(value) => Unexpected::Float(value),
+            Content::Char(value) => Unexpected::Char(value),
+            Content::String(ref value) => Unexpected::Str(value),
+            Content::Str(value) => Unexpected::Str(value),
+            Content::ByteBuf(ref value) => Unexpected::Bytes(value),
+            Content::Bytes(value) => Unexpected::Bytes(value),
+            Content::None | Content::Some(_) => Unexpected::Option,
+            Content::Unit => Unexpected::Unit,
+            Content::Newtype(_) => Unexpected::NewtypeStruct,
+            Content::Seq(_) => Unexpected::Seq,
+            Content::Map(_) => Unexpected::Map,
+        }
     }
 }
 
@@ -149,6 +176,13 @@ impl<'de, E> ContentDeserializer<'de, E> {
     }
 }
 
+impl<'de, E: serde::de::Error> ContentDeserializer<'de, E> {
+    #[cold]
+    fn invalid_type(self, expected: &dyn Expected) -> E {
+        E::invalid_type(self.content.unexpected(), expected)
+    }
+}
+
 /// Generates a `deserialize` method delegating to `deserialize_any`.
 macro_rules! impl_content_deserializer_delegate_to_any {
     ($deserialize:ident) => {
@@ -216,7 +250,17 @@ impl<'de, E: serde::de::Error> Deserializer<'de> for ContentDeserializer<'de, E>
     impl_content_deserializer_delegate_to_any!(deserialize_bytes);
     impl_content_deserializer_delegate_to_any!(deserialize_byte_buf);
 
-    impl_content_deserializer_delegate_to_any!(deserialize_unit);
+    fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Content::Unit => visitor.visit_unit(),
+            Content::Map(map) if map.is_empty() => visitor.visit_unit(),
+            Content::Seq(seq) if seq.is_empty() => visitor.visit_unit(),
+            _ => Err(self.invalid_type(&visitor)),
+        }
+    }
 
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
