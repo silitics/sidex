@@ -143,7 +143,7 @@ impl Default for JsonVariantTypeAttrs {
     fn default() -> Self {
         Self {
             rename_all: RenameFunction::PascalCase.into(),
-            tagged: atoms::JsonTaggedAttr::Adjacently,
+            tagged: atoms::JsonTaggedAttr::Internally,
             tag: "tag".into(),
             content: "content".into(),
         }
