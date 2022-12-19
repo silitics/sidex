@@ -269,7 +269,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Unit;
                 fn expecting(
@@ -388,7 +390,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["bundles", "sources"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Unit", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Unit",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A storage for sources.\n"]
@@ -501,7 +510,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = SourceStorage;
                 fn expecting(
@@ -582,7 +593,9 @@ pub mod ir {
                 __deserializer,
                 "SourceStorage",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -748,7 +761,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Source;
                 fn expecting(
@@ -815,10 +830,12 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<SourceIdx> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::std::string::String> =
-                        ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::std::string::String> =
-                        ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<
+                        ::core::option::Option<::std::string::String>,
+                    > = ::core::option::Option::None;
+                    let mut __field2: ::core::option::Option<
+                        ::core::option::Option<::std::string::String>,
+                    > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -842,9 +859,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<::std::string::String>(
-                                        &mut __map,
-                                    )?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<::std::string::String>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -854,9 +871,9 @@ pub mod ir {
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<::std::string::String>(
-                                        &mut __map,
-                                    )?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<::std::string::String>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -874,6 +891,14 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
+                    let __field2 = match __field2 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Source {
                         idx: __field0,
                         origin: __field1,
@@ -882,7 +907,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["idx", "origin", "text"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Source", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Source",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A bundle is a flat collection of schemas evolving together.\n"]
@@ -1054,7 +1086,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Bundle;
                 fn expecting(
@@ -1243,7 +1277,14 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["idx", "metadata", "dependencies", "schemas"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Bundle", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Bundle",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A dependency of a bundle.\n"]
@@ -1362,7 +1403,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Dependency;
                 fn expecting(
@@ -1481,7 +1524,9 @@ pub mod ir {
                 __deserializer,
                 "Dependency",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -1680,7 +1725,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Metadata;
                 fn expecting(
@@ -1760,10 +1807,11 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::std::string::String> =
-                        ::core::option::Option::None;
+                    let mut __field2: ::core::option::Option<
+                        ::core::option::Option<::std::string::String>,
+                    > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::std::vec::Vec<::std::string::String>,
+                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -1804,9 +1852,9 @@ pub mod ir {
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<::std::string::String>(
-                                        &mut __map,
-                                    )?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<::std::string::String>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier3 => {
@@ -1819,7 +1867,9 @@ pub mod ir {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::vec::Vec<::std::string::String>,
+                                        ::core::option::Option<
+                                            ::std::vec::Vec<::std::string::String>,
+                                        >,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1846,6 +1896,14 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field2 = match __field2 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
+                    let __field3 = match __field3 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Metadata {
                         name: __field0,
                         version: __field1,
@@ -1860,7 +1918,9 @@ pub mod ir {
                 __deserializer,
                 "Metadata",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -1994,7 +2054,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Identifier;
                 fn expecting(
@@ -2048,7 +2110,8 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                        ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -2074,7 +2137,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Span>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -2092,6 +2157,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Identifier {
                         identifier: __field0,
                         span: __field1,
@@ -2103,7 +2172,9 @@ pub mod ir {
                 __deserializer,
                 "Identifier",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -2204,7 +2275,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Docs;
                 fn expecting(
@@ -2279,7 +2352,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["text"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Docs", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Docs",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A schema is a collection of definitions.\n\nNote that imports have already been processed and resolved.\n"]
@@ -2493,7 +2573,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Schema;
                 fn expecting(
@@ -2597,12 +2679,13 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<Docs> = ::core::option::Option::None;
+                    let mut __field2: ::core::option::Option<::core::option::Option<Docs>> =
+                        ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<::std::vec::Vec<Def>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<SourceIdx> =
+                    let mut __field5: ::core::option::Option<::core::option::Option<SourceIdx>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -2637,7 +2720,9 @@ pub mod ir {
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Docs>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier3 => {
@@ -2675,7 +2760,9 @@ pub mod ir {
                                     );
                                 }
                                 __field5 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<SourceIdx>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<SourceIdx>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -2701,6 +2788,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field2 = match __field2 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     let __field3 = match __field3 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
@@ -2717,6 +2808,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field5 = match __field5 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Schema {
                         idx: __field0,
                         name: __field1,
@@ -2729,7 +2824,14 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["idx", "name", "docs", "attrs", "defs", "source"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Schema", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Schema",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A definition.\n"]
@@ -2913,7 +3015,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Def;
                 fn expecting(
@@ -3005,7 +3109,8 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Docs> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                        ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<TypeVar>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<::std::vec::Vec<Attr>> =
@@ -3033,7 +3138,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Docs>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -3087,6 +3194,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     let __field2 = match __field2 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
@@ -3121,7 +3232,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["name", "docs", "vars", "attrs", "kind"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Def", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Def",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A type variable of a definition.\n"]
@@ -3223,7 +3341,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = TypeVar;
                 fn expecting(
@@ -3301,7 +3421,9 @@ pub mod ir {
                 __deserializer,
                 "TypeVar",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -3630,7 +3752,9 @@ pub mod ir {
                     }
                 }
             } else {
-                struct __Visitor;
+                struct __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+                }
                 impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = DefKind;
                     fn expecting(
@@ -3691,7 +3815,9 @@ pub mod ir {
                     __deserializer,
                     "DefKind",
                     __VARIANTS,
-                    __Visitor,
+                    __Visitor {
+                        __phantom_vars: ::core::marker::PhantomData,
+                    },
                 )
             }
         }
@@ -3799,7 +3925,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = TypeAliasDef;
                 fn expecting(
@@ -3874,7 +4002,9 @@ pub mod ir {
                 __deserializer,
                 "TypeAliasDef",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -3964,7 +4094,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = OpaqueTypeDef;
                 fn expecting(
@@ -4010,7 +4142,9 @@ pub mod ir {
                 __deserializer,
                 "OpaqueTypeDef",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -4120,7 +4254,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = RecordTypeDef;
                 fn expecting(
@@ -4201,7 +4337,9 @@ pub mod ir {
                 __deserializer,
                 "RecordTypeDef",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -4391,7 +4529,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Field;
                 fn expecting(
@@ -4476,7 +4616,8 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Docs> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                        ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<Type> = ::core::option::Option::None;
@@ -4502,7 +4643,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Docs>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -4556,6 +4699,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     let __field2 = match __field2 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
@@ -4591,7 +4738,14 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["name", "docs", "attrs", "typ", "isOptional"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Field", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Field",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A definition of a variant type.\n"]
@@ -4704,7 +4858,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = VariantTypeDef;
                 fn expecting(
@@ -4785,7 +4941,9 @@ pub mod ir {
                 __deserializer,
                 "VariantTypeDef",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -4959,7 +5117,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Variant;
                 fn expecting(
@@ -5038,10 +5198,12 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Docs> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                        ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<Type> = ::core::option::Option::None;
+                    let mut __field3: ::core::option::Option<::core::option::Option<Type>> =
+                        ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -5063,7 +5225,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Docs>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -5087,7 +5251,9 @@ pub mod ir {
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Type>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -5105,6 +5271,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     let __field2 = match __field2 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
@@ -5112,6 +5282,10 @@ pub mod ir {
                                 <__A::Error as __serde::de::Error>::missing_field("attrs"),
                             );
                         }
+                    };
+                    let __field3 = match __field3 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
                     };
                     ::core::result::Result::Ok(Variant {
                         name: __field0,
@@ -5126,7 +5300,9 @@ pub mod ir {
                 __deserializer,
                 "Variant",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -5233,7 +5409,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = WrapperTypeDef;
                 fn expecting(
@@ -5308,7 +5486,9 @@ pub mod ir {
                 __deserializer,
                 "WrapperTypeDef",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -5422,7 +5602,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = ServiceDef;
                 fn expecting(
@@ -5503,7 +5685,9 @@ pub mod ir {
                 __deserializer,
                 "ServiceDef",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -5704,7 +5888,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Method;
                 fn expecting(
@@ -5795,12 +5981,14 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Docs> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                        ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<::std::vec::Vec<MethodParam>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<Type> = ::core::option::Option::None;
+                    let mut __field4: ::core::option::Option<::core::option::Option<Type>> =
+                        ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -5822,7 +6010,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Docs>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Docs>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -5862,7 +6052,9 @@ pub mod ir {
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Type>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -5880,6 +6072,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     let __field2 = match __field2 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
@@ -5896,6 +6092,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field4 = match __field4 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Method {
                         name: __field0,
                         docs: __field1,
@@ -5907,7 +6107,14 @@ pub mod ir {
             }
             const __FIELDS: &'static [&'static str] =
                 &["name", "docs", "attrs", "parameters", "returns"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Method", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Method",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A parameter of a method.\n"]
@@ -6052,7 +6259,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = MethodParam;
                 fn expecting(
@@ -6194,7 +6403,9 @@ pub mod ir {
                 __deserializer,
                 "MethodParam",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -6323,7 +6534,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Type;
                 fn expecting(
@@ -6378,7 +6591,8 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<TypeKind> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                        ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -6400,7 +6614,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Span>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -6418,6 +6634,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Type {
                         kind: __field0,
                         span: __field1,
@@ -6425,7 +6645,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Type", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Type",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "An abstract type kind.\n"]
@@ -6622,7 +6849,9 @@ pub mod ir {
                     }
                 }
             } else {
-                struct __Visitor;
+                struct __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+                }
                 impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = TypeKind;
                     fn expecting(
@@ -6659,7 +6888,9 @@ pub mod ir {
                     __deserializer,
                     "TypeKind",
                     __VARIANTS,
-                    __Visitor,
+                    __Visitor {
+                        __phantom_vars: ::core::marker::PhantomData,
+                    },
                 )
             }
         }
@@ -6763,7 +6994,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = TypeVarType;
                 fn expecting(
@@ -6841,7 +7074,9 @@ pub mod ir {
                 __deserializer,
                 "TypeVarType",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -7001,7 +7236,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = InstanceType;
                 fn expecting(
@@ -7188,7 +7425,9 @@ pub mod ir {
                 __deserializer,
                 "InstanceType",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -7325,7 +7564,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Span;
                 fn expecting(
@@ -7465,7 +7706,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["src", "start", "end"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Span", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Span",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "A token.\n"]
@@ -7594,7 +7842,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Token;
                 fn expecting(
@@ -7649,7 +7899,8 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<TokenKind> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                        ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -7671,7 +7922,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Span>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -7689,6 +7942,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Token {
                         kind: __field0,
                         span: __field1,
@@ -7696,7 +7953,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Token", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Token",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = ""]
@@ -7730,7 +7994,7 @@ pub mod ir {
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "token",
-                            __value,
+                            &__value,
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
@@ -7745,7 +8009,7 @@ pub mod ir {
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "token",
-                            __value,
+                            &__value,
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
@@ -7760,7 +8024,7 @@ pub mod ir {
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "literal",
-                            __value,
+                            &__value,
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
@@ -7775,7 +8039,7 @@ pub mod ir {
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "token",
-                            __value,
+                            &__value,
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
@@ -7954,7 +8218,9 @@ pub mod ir {
                     }
                 }
             } else {
-                struct __Visitor;
+                struct __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+                }
                 impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = TokenKind;
                     fn expecting(
@@ -8003,7 +8269,9 @@ pub mod ir {
                     __deserializer,
                     "TokenKind",
                     __VARIANTS,
-                    __Visitor,
+                    __Visitor {
+                        __phantom_vars: ::core::marker::PhantomData,
+                    },
                 )
             }
         }
@@ -8037,7 +8305,7 @@ pub mod ir {
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "value",
-                            __value,
+                            &__value,
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
@@ -8052,7 +8320,7 @@ pub mod ir {
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "value",
-                            __value,
+                            &__value,
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
@@ -8067,7 +8335,7 @@ pub mod ir {
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "value",
-                            __value,
+                            &__value,
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
@@ -8222,7 +8490,9 @@ pub mod ir {
                     }
                 }
             } else {
-                struct __Visitor;
+                struct __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+                }
                 impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = Literal;
                     fn expecting(
@@ -8264,7 +8534,9 @@ pub mod ir {
                     __deserializer,
                     "Literal",
                     __VARIANTS,
-                    __Visitor,
+                    __Visitor {
+                        __phantom_vars: ::core::marker::PhantomData,
+                    },
                 )
             }
         }
@@ -8446,7 +8718,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = Attr;
                 fn expecting(
@@ -8501,7 +8775,8 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<AttrKind> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<Span> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                        ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -8523,7 +8798,9 @@ pub mod ir {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Span>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::core::option::Option<Span>,
+                                    >(&mut __map)?,
                                 );
                             }
                             _ => {
@@ -8541,6 +8818,10 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Attr {
                         kind: __field0,
                         span: __field1,
@@ -8548,7 +8829,14 @@ pub mod ir {
                 }
             }
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
-            __serde::Deserializer::deserialize_struct(__deserializer, "Attr", __FIELDS, __Visitor)
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "Attr",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
     #[doc = "The four kinds of attributes.\n"]
@@ -8812,7 +9100,9 @@ pub mod ir {
                     }
                 }
             } else {
-                struct __Visitor;
+                struct __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+                }
                 impl<'de> __serde::de::Visitor<'de> for __Visitor {
                     type Value = AttrKind;
                     fn expecting(
@@ -8860,7 +9150,9 @@ pub mod ir {
                     __deserializer,
                     "AttrKind",
                     __VARIANTS,
-                    __Visitor,
+                    __Visitor {
+                        __phantom_vars: ::core::marker::PhantomData,
+                    },
                 )
             }
         }
@@ -8983,7 +9275,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = AttrList;
                 fn expecting(
@@ -9095,7 +9389,9 @@ pub mod ir {
                 __deserializer,
                 "AttrList",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
@@ -9214,7 +9510,9 @@ pub mod ir {
                     )
                 }
             }
-            struct __Visitor;
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
                 type Value = AttrAssign;
                 fn expecting(
@@ -9328,7 +9626,9 @@ pub mod ir {
                 __deserializer,
                 "AttrAssign",
                 __FIELDS,
-                __Visitor,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
             )
         }
     }
