@@ -10,3 +10,4 @@ base64 = "0.20"  # PRIVATE
 
 [features]
 serde-private-content = []
+default = []
