@@ -24,7 +24,7 @@ record Unit {
     /// The bundles of the unit.
     bundles: [Bundle],
     /// The sources of the unit.
-    #[builder(default)]
+    #[default]
     sources: SourceStorage,
 }
 
@@ -185,7 +185,7 @@ record Field {
     /// The type of the field.
     typ: Type,
     /// Indicates whether the field is optional.
-    #[builder(default)]
+    #[default]
     is_optional: bool,
 }
 
@@ -246,7 +246,7 @@ record MethodParam {
     /// The type of the parameter.
     typ: Type,
     /// Indicates whether the parameter is optional.
-    #[builder(default)]
+    #[default]
     is_optional: bool,
 }
 

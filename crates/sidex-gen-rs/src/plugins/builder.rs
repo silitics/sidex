@@ -55,15 +55,8 @@ impl Plugin for Builder {
                     };
 
                     let is_default_field = field.attrs.iter().any(|attr| {
-                        if let ir::AttrKind::List(list) = &attr.kind {
-                            if list.path.as_str() != "builder" {
-                                return false;
-                            }
-                            if let ir::AttrKind::Path(path) = &list.args[0].kind {
-                                path.as_str() == "default"
-                            } else {
-                                false
-                            }
+                        if let ir::AttrKind::Path(path) = &attr.kind {
+                            path.as_str() == "default"
                         } else {
                             false
                         }
