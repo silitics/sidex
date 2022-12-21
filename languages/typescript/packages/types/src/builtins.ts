@@ -242,10 +242,9 @@ export type EntriesMap<K, V> = [K, V][]
  */
 export type ObjectMap<K extends string, V> = { [key in K]?: V }
 
-/**
- * A map.
- */
-export type AnyMap<K, V> = K extends string ? ObjectMap<K, V> : EntriesMap<K, V>
+export function entries<K extends string, V>(map: ObjectMap<K, V>): [K, V][]
+
+export function entries<K, V>(map: EntriesMap<K, V>): [K, V][]
 
 /**
  * The entries of the map.
@@ -253,7 +252,7 @@ export type AnyMap<K, V> = K extends string ? ObjectMap<K, V> : EntriesMap<K, V>
  * @param map
  * @returns
  */
-export function entries<K, V>(map: AnyMap<K, V>): [K, V][] {
+export function entries<K, V>(map: any): any {
   if (Array.isArray(map)) {
     return map
   } else {
@@ -273,27 +272,27 @@ function getIndexMap<K, V>(map: EntriesMap<K, V>): Map<K, number> {
   }
 }
 
-export function get<K, V>(map: AnyMap<K, V>, key: K): V | undefined {
-  if (Array.isArray(map)) {
-    const index = getIndexMap(map).get(key)
-    return index === undefined ? undefined : (map[index] as [K, V])[1]
-  } else {
-    return (map as ObjectMap<any, V>)[key]
-  }
-}
+// export function get<K, V>(map: AnyMap<K, V>, key: K): V | undefined {
+//   if (Array.isArray(map)) {
+//     const index = getIndexMap(map).get(key)
+//     return index === undefined ? undefined : (map[index] as [K, V])[1]
+//   } else {
+//     return (map as ObjectMap<any, V>)[key]
+//   }
+// }
 
-export function set<K, V>(map: AnyMap<K, V>, key: K, value: V) {
-  if (Array.isArray(map)) {
-    const indexMap = getIndexMap(map)
-    const existingIndex = indexMap.get(key)
-    if (existingIndex !== undefined) {
-      map[existingIndex] = [key, value]
-    } else {
-      const index = map.length
-      map.push([key, value])
-      indexMap.set(key, index)
-    }
-  } else {
-    return (map as ObjectMap<any, V>)[key]
-  }
-}
+// export function set<K, V>(map: AnyMap<K, V>, key: K, value: V) {
+//   if (Array.isArray(map)) {
+//     const indexMap = getIndexMap(map)
+//     const existingIndex = indexMap.get(key)
+//     if (existingIndex !== undefined) {
+//       map[existingIndex] = [key, value]
+//     } else {
+//       const index = map.length
+//       map.push([key, value])
+//       indexMap.set(key, index)
+//     }
+//   } else {
+//     return (map as ObjectMap<any, V>)[key]
+//   }
+// }
