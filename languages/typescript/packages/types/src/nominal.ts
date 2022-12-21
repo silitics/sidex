@@ -11,14 +11,20 @@ export type Nominal<T, P extends string> = T & { [SIDEX_PATH_SYMBOL]: P }
 /**
  * The structural type of a nominal type `T`.
  */
-export type Structural<T> = T extends string
+export type Structural<T> = T extends undefined
+  ? undefined
+  : T extends boolean
+  ? boolean
+  : T extends null
+  ? null
+  : T extends string
   ? string
   : T extends number
   ? number
   : T extends boolean
   ? boolean
-  : T extends any[]
-  ? T[number][]
+  : T extends Array<infer U>
+  ? U[]
   : T extends (...args: infer Args) => infer Return
   ? (...args: Args) => Return
   : Omit<T, typeof SIDEX_PATH_SYMBOL>
