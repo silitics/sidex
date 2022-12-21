@@ -28,3 +28,7 @@ regenerate-ir:
 
 reset-ir:
     git checkout crates/sidex-ir/src/generated/mod.rs
+
+
+install-dev:
+    cd crates/sidex-cli && cargo install --path .
