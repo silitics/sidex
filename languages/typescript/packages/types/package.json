@@ -2,9 +2,10 @@
   "name": "@sidex/types",
   "author": "Silitics GmbH <info@silitics.com>",
   "license": "(MIT or Apache-2.0)",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "doc": "typedoc lib/index.ts",
     "tsc": "tsc",
