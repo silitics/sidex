@@ -1069,6 +1069,16 @@ dependencies = [
 [[package]]
 name = "sidex-gen-ts"
 version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "sidex-attrs-json",
+ "sidex-attrs-rust",
+ "sidex-gen",
+ "syn",
+]
 
 [[package]]
 name = "sidex-ir"
