@@ -257,7 +257,7 @@ export function entries<K, V>(map: AnyMap<K, V>): [K, V][] {
   if (Array.isArray(map)) {
     return map
   } else {
-    return Object.entries(map) as [K, V][]
+    return Object.entries(map) as unknown as [K, V][]
   }
 }
 

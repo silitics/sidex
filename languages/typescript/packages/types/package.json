@@ -2,7 +2,7 @@
   "name": "@sidex/types",
   "author": "Silitics GmbH <info@silitics.com>",
   "license": "(MIT or Apache-2.0)",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "src/index.ts",
   "scripts": {
