@@ -9,3 +9,16 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
+# Required for code generation.
+sidex-gen = { path = "../sidex-gen" }  # PUBLIC
+# Required for parsing `rust` attributes.
+sidex-attrs-rust = { path = "../sidex-attrs-rust" }  # PUBLIC
+# Required for parsing `json` attributes.
+sidex-attrs-json = { path = "../sidex-attrs-json" }  # PUBLIC
+# Required for generating TypeScript code.
+proc-macro2 = "1"  # PUBLIC
+quote = "1"  # PUBLIC
+syn = { version = "1", features = ["extra-traits"] }  # PUBLIC
+# Required for deserializing the backend configuration.
+serde = "1"  # PUBLIC
+serde_json = "1"

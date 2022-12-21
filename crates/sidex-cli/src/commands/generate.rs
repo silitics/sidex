@@ -6,6 +6,7 @@ use clap::Parser;
 use sidex_gen::Generator;
 use sidex_gen_ir::IrGenerator;
 use sidex_gen_rs::RustGenerator;
+use sidex_gen_ts::TsGenerator;
 
 use crate::utils::load_unit_and_bundle;
 
@@ -24,6 +25,7 @@ impl GeneratorRegistry {
         let mut registry: HashMap<_, Box<dyn Generator>> = HashMap::new();
         registry.insert("ir".to_owned(), Box::new(IrGenerator));
         registry.insert("rust".to_owned(), Box::new(RustGenerator::new()));
+        registry.insert("ts".to_owned(), Box::new(TsGenerator::new()));
         Self { registry }
     }
 }

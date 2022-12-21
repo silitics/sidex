@@ -22,13 +22,14 @@ impl TryApplyAttr for OpaqueTypeAttrs {
             list.args
                 .iter()
                 .map(|arg| {
-                    if let Ok(typ) = attr.convert() {
+                    if let Ok(typ) = arg.convert() {
                         self.typ = Some(typ);
                         accept!(())
-                    } else if let Ok(schema) = attr.convert() {
+                    } else if let Ok(schema) = arg.convert() {
                         self.schema = Some(schema);
                         accept!(())
                     } else {
+                        eprint!("{arg:?}");
                         reject!(arg, "Expect JSON opaque type attribute.")
                     }
                 })
