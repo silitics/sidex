@@ -16,6 +16,6 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@sidex/types": "workspace:^0.1.0"
+    "@sidex/types": "workspace:*"
   }
 }
