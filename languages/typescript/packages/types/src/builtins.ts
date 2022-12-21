@@ -223,7 +223,7 @@ function toNumber(x: Numeric): number {
 export type Bool = boolean
 
 /**
- * 
+ *
  */
 export type Unit = null
 
