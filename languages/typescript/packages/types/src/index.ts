@@ -1,2 +1,4 @@
 export * as builtins from "./builtins"
-export type { Nominal, Structural } from "./nominal"
+
+export * from "./builtins"
+export * from "./nominal"

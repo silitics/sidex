@@ -2,20 +2,10 @@
   "name": "@sidex/types",
   "author": "Silitics GmbH <info@silitics.com>",
   "license": "(MIT or Apache-2.0)",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "files": ["src", "dist"],
   "main": "./dist/index.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.js"
-    },
-    "./*": {
-      "import": "./dist/*.js",
-      "types": "./dist/*.d.ts"
-    }
-  },
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
