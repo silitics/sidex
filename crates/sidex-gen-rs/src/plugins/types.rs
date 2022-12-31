@@ -151,9 +151,9 @@ impl Plugin for Types {
                     }
                 })
             }
-            DefKind::Service(_) => {
-                // Service definitions are handled by a separate plugin.
-                Ok(Default::default())
+            _ => {
+                // Service definitions and derived types are handled separately.
+                return Ok(TokenStream::default());
             }
         }
     }

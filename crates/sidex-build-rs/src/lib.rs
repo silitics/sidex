@@ -1,6 +1,7 @@
 use std::{error::Error, fs, path::Path};
 
 use sidex_core::transformer::Transformer;
+use sidex_derive_mutation::derive_mutations;
 use sidex_gen::Generator;
 use sidex_gen_rs::RustGenerator;
 
@@ -22,7 +23,9 @@ pub fn build(bundle_path: &Path, output_path: &Path) {
 
     ctx.report().eprint(&transformer.storage);
 
-    let (unit, bundle) = result.unwrap();
+    let (mut unit, bundle) = result.unwrap();
+
+    derive_mutations(&mut unit);
 
     // let out_path = Path::new(&out_dir).join("generated");
     fs::create_dir_all(&output_path).unwrap();

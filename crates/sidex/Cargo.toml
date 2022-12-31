@@ -9,6 +9,7 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
+thiserror = "1"
 # Procedural macros for Sidex.
 sidex-macros = { path = "../sidex-macros", version = "^0.1", optional = true }
 sidex-serde = { path = "../sidex-serde", optional = true }

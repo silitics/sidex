@@ -299,6 +299,7 @@ gen_code_keywords![
     (RECORD, "record", "The `record` keyword."),
     (VARIANT, "variant", "The `variant` keyword."),
     (WRAPPER, "wrapper", "The `wrapper` keyword."),
+    (DERIVED, "derived", "The `derived` keyword."),
     (FUN, "fun", "The `fun` keyword."),
     (SERVICE, "service", "The `service` keyword."),
     (IMPORT, "import", "The `import` keyword."),

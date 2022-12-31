@@ -125,8 +125,8 @@ impl Plugin for Types {
                 TypeExpr::union(variant_ts_types.into_iter())
             }
             ir::DefKind::WrapperType(typ) => ctx.resolve_type(def, &typ.wrapped),
-            ir::DefKind::Service(_) => {
-                // Service definitions are handled separately.
+            _ => {
+                // Service definitions and derived types are handled separately.
                 return Ok(TokenStream::default());
             }
         };

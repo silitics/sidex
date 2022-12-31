@@ -3,6 +3,7 @@ use std::path::Path;
 use color_eyre::Help;
 use eyre::Result;
 use sidex_core::{ir, transformer::Transformer};
+use sidex_derive_mutation::derive_mutations;
 
 pub fn load_unit_and_bundle(
     directory: Option<&Path>,
@@ -29,5 +30,8 @@ pub fn load_unit_and_bundle(
 
     ctx.report().eprint(&transformer.storage);
 
-    result.map(|(x, y)| (x, y, transformer))
+    result.map(|(mut unit, bundle_idx)| {
+        derive_mutations(&mut unit);
+        (unit, bundle_idx, transformer)
+    })
 }

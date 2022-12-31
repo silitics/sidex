@@ -150,7 +150,9 @@ impl Plugin for Serde {
             .get_plugin_config::<SerdePluginConfig>("serde");
         let sidex_serde_path: syn::Path = syn::parse_str(&plugin_cfg.sidex_serde_path).unwrap();
         Ok(quote! {
+            #[allow(unused)]
             use #sidex_serde_path as __sidex_serde;
+            #[allow(unused)]
             use ::serde as __serde;
         })
     }

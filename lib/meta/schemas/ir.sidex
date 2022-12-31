@@ -18,6 +18,23 @@ wrapper DefIdx: idx
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper TypeVarIdx: idx
 
+/// References a bundle.
+alias BundleRef: BundleIdx
+
+/// References a schema.
+#[rust(derive(PartialEq, Eq, Hash))]
+record SchemaRef {
+    bundle: BundleRef,
+    schema: SchemaIdx,
+}
+
+/// References a definition.
+#[rust(derive(PartialEq, Eq, Hash))]
+record DefRef {
+    schema: SchemaRef,
+    def: DefIdx,
+}
+
 /// A *unit* is a collection of bundles.
 #[rust(attr(non_exhaustive))]
 record Unit {
@@ -104,6 +121,8 @@ record Docs {
 record Schema {
     /// The index of the schema.
     idx: SchemaIdx,
+    /// The index of the bundle the schema is part of.
+    bundle: BundleIdx,
     /// The name of the schema.
     name: string,
     /// The documentation of the schema.
@@ -114,6 +133,15 @@ record Schema {
     defs: [Def],
     /// The source of the schema.
     source?: SourceIdx,
+    /// The imported bundles, schemas, and definitions.
+    #[default]
+    imports: [string: ItemRef]
+}
+
+variant ItemRef {
+    Def: DefRef,
+    Schema: SchemaRef,
+    Bundle: BundleRef,
 }
 
 /// A definition.
@@ -151,6 +179,8 @@ variant DefKind {
     VariantType: VariantTypeDef,
     /// Definition of a wrapper type.
     WrapperType: WrapperTypeDef,
+    /// Definition of a derived type.
+    DerivedType: DerivedTypeDef,
     /// Definition of a service.
     Service: ServiceDef,
 }
@@ -215,6 +245,10 @@ record WrapperTypeDef {
     /// The type that is wrapped.
     wrapped: Type,
 }
+
+/// A definition of a derived type.
+#[rust(attr(non_exhaustive))]
+record DerivedTypeDef {}
 
 /// A definition of a service.
 #[rust(attr(non_exhaustive))]
@@ -320,7 +354,7 @@ variant TokenKind {
     Identifier: string,
 }
 
-#[json(content = "value")]
+#[json(tag = "type", content = "value")]
 variant Literal {
     String: string,
     Number: string,

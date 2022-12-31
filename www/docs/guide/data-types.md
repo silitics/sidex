@@ -163,7 +163,7 @@ By convention, variant names are required to be `CamelCase`.
 
 ### Wrapper Types
 
-Wrapper types are useful to define fresh types carrying additional invariants. For instance, not every <code className="type-name">Uuid</code> is also an id of a task. However, every id of a task is an <code className="type-name">Uuid</code>. This can be captured with a wrapper type:
+Wrapper types are useful to define fresh types carrying _additional invariants_. For instance, not every <code className="type-name">Uuid</code> is also an id of a task. However, every id of a task is an <code className="type-name">Uuid</code>. This can be captured with a wrapper type:
 
 ```sidex
 wrapper TaskId: Uuid
@@ -171,12 +171,52 @@ wrapper TaskId: Uuid
 
 This defines a new type <code className="type-name">TaskId</code> which wraps a <code className="type-name">Uuid</code> but is still a separate type.
 
+Note that every datum of a wrapper type _is a_ datum of the wrapped type but the converse is not necessarily true.
+In case of our example, every <code className="type-name">TaskId</code> is a <code className="type-name">Uuid</code> but not every <code className="type-name">Uuid</code> is a <code className="type-name">TaskId</code>.
+
+In case a datum of a wrapper type can be constructed simply by wrapping any datum of the wrapped type (i.e., there are no additional invariants imposed by the wrapper type), the wrapper type can be annotated with the `#[transparent]` attribute.
+As a result, code generators may generate additional code for constructing data of the wrapper type.
+The `#[transparent]` attribute also plays a crucial role when it comes to mutations – every mutation of the wrapped type can be applied to the wrapper.
+
+Example: A wrapper type around `string` for e-mail addresses. While every e-mail address is a string, we want to make sure to validate any user supplied input when constructing a string of that kind and mutations of the string are not allowed because this may invalidate the invariants.
+
 ## Types Aliases
 
 _Type aliases_ are defined with the <code className="keyword">alias</code> keyword. In contrast to wrapper types, they do not introduce a fresh nominal type. All they do is to bind an already existing type definition to another alternative name. For example:
 
 ```sidex
 alias TaskId: Uuid
+```
+
+## Derived Types
+
+_Derived types_ are defined with the <code className="keyword">derived</code> keyword. Their actual definition is then instantiated with a concrete Sidex type by a preprocessor, i.e., the actual definition of the type _is derived_ from other types. For instance, the mutation system is realized via derived types.
+
+For instance, the schema
+
+```sidex
+record User {
+  #[setter]
+  name: string,
+}
+
+#[mutation(for User))
+derived UserMutation
+```
+
+will be roughly equivalent to:
+
+```
+record User {
+  #[setter]
+  name: string,
+}
+
+#[mutation(for User)]
+variant UserMutation {
+  #[mutation(setter for name)]
+  SetName: string
+}
 ```
 
 ## Generic Types

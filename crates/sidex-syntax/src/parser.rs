@@ -88,11 +88,29 @@ fn attr_parser() -> impl Parser<TokenKind, ast::Attr, Error = Simple<TokenKind, 
                         kind: ast::AttrKind::List(ast::AttrList { path, elements }),
                     }
                 }),
-            path_parser().map(|path| {
-                ast::Attr {
-                    kind: ast::AttrKind::Path(path),
-                }
-            }),
+            path_parser()
+                .then(
+                    path_parser()
+                        .map(|path| {
+                            ast::Attr {
+                                kind: ast::AttrKind::Path(path),
+                            }
+                        })
+                        .repeated()
+                        .at_least(1)
+                        .or_not(),
+                )
+                .map(|(path, args)| {
+                    if let Some(elements) = args {
+                        ast::Attr {
+                            kind: ast::AttrKind::List(ast::AttrList { path, elements }),
+                        }
+                    } else {
+                        ast::Attr {
+                            kind: ast::AttrKind::Path(path),
+                        }
+                    }
+                }),
             token_stream_parser().map(|stream| {
                 ast::Attr {
                     kind: ast::AttrKind::Tokens(ast::TokenStream(stream)),
@@ -352,6 +370,15 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
                     (
                         (name, vars),
                         ast::DefKind::OpaqueType(ast::OpaqueTypeDef {}),
+                    )
+                }),
+            just(keywords::DERIVED)
+                .ignore_then(name_parser())
+                .then(type_vars_parser())
+                .map(|(name, vars)| {
+                    (
+                        (name, vars),
+                        ast::DefKind::DerivedType(ast::DerivedTypeDef {}),
                     )
                 }),
             just(keywords::ALIAS)

@@ -5,7 +5,7 @@
     Sidex
 </h1>
 <h4 align="center">
-    Simplifies data exchange across your entire stack.
+    Simplifies data exchange and manipulation across your entire stack.
 </h4>
 <p align="center">
   <a href="https://crates.io/crates/sidex-cli"><img alt="Sidex CLI Crate" src="https://img.shields.io/crates/v/sidex-cli?label=sidex-cli"></a>

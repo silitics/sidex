@@ -231,7 +231,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     let def = self.transformer.loaded[bundle.idx()].schemas[schema.idx()]
                         .def_by_name
                         .get(first.as_str())
-                        .unwrap();
+                        .expect(&format!("Unable to find definition {}.", first.as_str()));
                     LookupEntry::Def {
                         bundle,
                         schema,
@@ -584,8 +584,31 @@ impl Transformer {
 
                                     ir::Schema::new(
                                         schema.idx,
+                                        bundle.idx,
                                         schema.name.clone(),
-                                    ).with_docs(Some(ir::Docs::new(schema.docs.clone())))
+                                    )
+                                    .with_imports(
+                                        resolver.table.iter().filter_map(|(name, item)| {
+                                            let import = match item {
+                                                LookupEntry::Root => {
+                                                    // Do nothing!
+                                                    return None;
+                                                },
+                                                LookupEntry::Bundle(idx) => {
+                                                    ir::ItemRef::Bundle(*idx)
+                                                },
+                                                LookupEntry::Schema { bundle, schema } => {
+                                                    ir::ItemRef::Schema(ir::SchemaRef { bundle: *bundle, schema: *schema })
+                                                },
+                                                LookupEntry::Def { bundle, schema, def } => {
+                                                    let schema = ir::SchemaRef { bundle: *bundle, schema: *schema };
+                                                    ir::ItemRef::Def(ir::DefRef { schema, def: *def })
+                                                },
+                                            };
+                                            Some((name.clone(), import))
+                                        }).collect()
+                                    )
+                                    .with_docs(Some(ir::Docs::new(schema.docs.clone()))) //.with_imported(todo!())
                                     .with_defs(schema
                                         .defs
                                         .iter()
@@ -657,6 +680,9 @@ impl Transformer {
                                                         ),
                                                     ))
                                                 }
+                                                ast::DefKind::DerivedType(_) => {
+                                                    ir::DefKind::DerivedType(ir::DerivedTypeDef::new())
+                                                },
                                                 ast::DefKind::Service(service) => {
                                                     ir::DefKind::Service(ir::ServiceDef::new().with_methods(service
                                                             .methods
@@ -679,6 +705,7 @@ impl Transformer {
                                                             .collect(),
                                                     ))
                                                 }
+                                                
                                             };
                                             ir::Def::new( ir::Identifier::new(def.name.as_str().to_owned()), kind).with_docs(Some(ir::Docs::new(def.docs.to_string()))).with_vars(def
                                                     .vars

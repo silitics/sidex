@@ -228,6 +228,8 @@ pub enum DefKind {
     VariantType(VariantTypeDef),
     /// Definition of a wrapper type.
     WrapperType(WrapperTypeDef),
+    /// Definition of a derived type.
+    DerivedType(DerivedTypeDef),
     /// Definition of a service.
     Service(ServiceDef),
 }
@@ -298,6 +300,11 @@ pub struct WrapperTypeDef {
     /// The type expression describing the wrapped type.
     pub wrapped: TypeExpr,
 }
+
+/// Definition of a wrapper type.
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct DerivedTypeDef {}
 
 /// Definition of a service.
 #[derive(Clone, Debug)]

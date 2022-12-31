@@ -7,4 +7,5 @@ edition = "2021"
 sidex-core = { path = "../sidex-core", version = "^0.1" }
 sidex-gen = { path = "../sidex-gen", version = "0.1" }
 sidex-gen-rs = { path = "../sidex-gen-rs", version = "^0.1" }
+sidex-derive-mutation = { path = "../sidex-derive-mutation" }
 serde_json = "1"

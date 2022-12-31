@@ -31,10 +31,10 @@ Prism.languages.sidex = {
   },
   number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i,
   keyword: [
-    /\b(?:opaque|alias|record|variant|fun|service|import|wrapper)\b/,
+    /\b(?:opaque|alias|record|variant|fun|service|import|wrapper|class|implies|is|instance|derived)\b/,
     /\b(?:bool|string|f(?:32|64)|[ui](?:8|16|32|64)|idx|string|unit|bytes)\b/,
   ],
-  punctuation: /(:|::|\?|!)/,
+  punctuation: /(:|::|\?|!|\+)/,
   "class-name": /\b[A-Z]\w*\b/,
   variable: /\w+/,
 }

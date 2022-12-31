@@ -2,7 +2,7 @@
 	"name": "sidex",
 	"displayName": "Sidex",
 	"description": "Support for the Sidex data modeling and API definition language.",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "silitics",
 	"license": "MIT",
 	"repository": {

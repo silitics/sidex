@@ -3,3 +3,10 @@ name = "std"
 version = "1"
 description = "Sidex standard library."
 authors = ["Silitics GmbH <info@silitics.com>"]
+
+[backend.rust]
+derive = ["Clone", "Debug"] #, "::serde::Serialize", "::serde::Deserialize"]
+plugins = ["builder", "serde"]
+
+[backend.rust.plugin.serde]
+sidex_serde_path = "::sidex_serde"

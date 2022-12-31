@@ -17,6 +17,16 @@ export type Bytes = Nominal<string, "::std::builtins::bytes">
  */
 export type I8 = Nominal<number, "::std::builtins::i8">
 
+export const I8 = {
+  ZERO: 0 as I8,
+  ONE: 1 as I8,
+  MIN: -127 as I8,
+  MAX: 127 as I8,
+  from: toI8,
+  is: isI8,
+  default: () => 0 as I8,
+}
+
 /**
  * Convert any number to an 8-bit signed integer.
  *

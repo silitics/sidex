@@ -1,7 +1,8 @@
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Sidex",
-  tagline: "Simplifies data exchange across your entire stack.",
+  tagline:
+    "Simplifies data exchange and manipulation across your entire stack.",
   url: "https://oss.silitics.com/",
   baseUrl: "/sidex/",
 

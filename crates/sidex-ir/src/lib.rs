@@ -373,10 +373,21 @@ impl Unit {
     }
 
     pub fn type_def(&self, typ: &Type) -> Option<&Def> {
+        self.type_def_ref(typ).map(|def_ref| &self[def_ref])
+    }
+
+    pub fn type_def_ref(&self, typ: &Type) -> Option<DefRef> {
+        let typ = self.resolve_aliases(typ);
         match &typ.kind {
             TypeKind::TypeVar(_) => None,
             TypeKind::Instance(instance) => {
-                Some(&self[instance.bundle][instance.schema][instance.def])
+                Some(DefRef {
+                    schema: SchemaRef {
+                        bundle: instance.bundle,
+                        schema: instance.schema,
+                    },
+                    def: instance.def,
+                })
             }
         }
     }
@@ -389,5 +400,81 @@ impl Unit {
                 _ => None,
             }
         })
+    }
+
+    pub fn resolve_path(&self, root: ItemRef, path: &Path) -> Result<ItemRef, String> {
+        let mut item = root;
+        for segment in path.segments() {
+            match &item {
+                ItemRef::Def(_) => return Err("Definition has no items.".to_owned()),
+                ItemRef::Schema(schema_ref) => {
+                    let schema = &self[schema_ref.bundle][schema_ref.schema];
+                    item = schema
+                        .resolve_name(segment)
+                        .ok_or_else(|| "Unable to resolve name.".to_owned())?;
+                }
+                ItemRef::Bundle(bundle_ref) => {
+                    let bundle = &self[*bundle_ref];
+                    item = bundle
+                        .resolve_name(segment)
+                        .ok_or_else(|| "Unable to resolve name.".to_owned())?;
+                }
+            }
+        }
+        Ok(item)
+    }
+}
+
+impl Path {
+    pub fn segments(&self) -> impl Iterator<Item = &str> {
+        self.0.split("::")
+    }
+}
+
+impl Bundle {
+    pub fn resolve_name(&self, name: &str) -> Option<ItemRef> {
+        for schema in self.schemas.iter() {
+            if schema.name.as_str() == name {
+                return Some(ItemRef::Schema(schema.schema_ref()));
+            }
+        }
+        None
+    }
+}
+
+impl Schema {
+    pub fn schema_ref(&self) -> SchemaRef {
+        SchemaRef {
+            bundle: self.bundle,
+            schema: self.idx,
+        }
+    }
+
+    pub fn resolve_name(&self, name: &str) -> Option<ItemRef> {
+        for (def_idx, def) in self.defs.iter().enumerate() {
+            if def.name.as_str() == name {
+                return Some(ItemRef::Def(DefRef {
+                    schema: self.schema_ref(),
+                    def: DefIdx(def_idx),
+                }));
+            }
+        }
+        self.imports.get(name).cloned()
+    }
+}
+
+impl Index<SchemaRef> for Unit {
+    type Output = Schema;
+
+    fn index(&self, index: SchemaRef) -> &Self::Output {
+        &self[index.bundle][index.schema]
+    }
+}
+
+impl Index<DefRef> for Unit {
+    type Output = Def;
+
+    fn index(&self, index: DefRef) -> &Self::Output {
+        &self[index.schema][index.def]
     }
 }

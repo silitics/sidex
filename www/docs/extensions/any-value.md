@@ -2,13 +2,20 @@
 sidebar_position: 2
 ---
 
-# Any Value
+# Dynamic Typing
 
 This extension defines an opaque type <code className="type-name">Any</code> for representing values of unknown type:
 
 ```sidex title="any.sidex"
 /// A value of unknown type.
-opaque Any
+opaque AnyData
+
+opaque TypeId
+
+record Any {
+    type_id: TypeId,
+    data: AnyData,
+}
 ```
 
 Imagine you like to define an [RPC protocol](./rpc-api) with Sidex where arguments and return values of remote procedure calls can, from the perspective of the protocol, be _any_ value. This is where <code className="type-name">Any</code> is useful.

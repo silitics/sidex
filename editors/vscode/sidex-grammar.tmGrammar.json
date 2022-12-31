@@ -96,15 +96,25 @@
                 {
                     "comment": "Opaque Type Definition",
                     "name": "meta.sidex.opaque",
-                    "begin": "opaque",
-                    "beginCaptures": {
-                        "0": {
+                    "match": "(opaque)\\s*(\\w+)",
+                    "captures": {
+                        "1": {
                             "name": "storage.type.sidex.opaque"
+                        },
+                        "2": {
+                            "name": "entity.name.type"
                         }
-                    },
-                    "end": "\\w+",
-                    "endCaptures": {
-                        "0": {
+                    }
+                },
+                {
+                    "comment": "Derived Type Definition",
+                    "name": "meta.sidex.derived",
+                    "match": "(derived)\\s*(\\w+)",
+                    "captures": {
+                        "1": {
+                            "name": "storage.type.sidex.derived"
+                        },
+                        "2": {
                             "name": "entity.name.type"
                         }
                     }
@@ -337,7 +347,7 @@
             "patterns": [
                 {
                     "name": "storage.type.sidex",
-                    "match": "\\b(opaque|alias|variant|record|wrapper)\\b"
+                    "match": "\\b(opaque|alias|variant|record|wrapper|derived)\\b"
                 },
                 {
                     "name": "keyword.other.sidex",
