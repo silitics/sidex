@@ -8,7 +8,7 @@ macro_rules! read_std_bundle_file {
     ($($path:tt)*) => {
         include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../lib/std/",
+            "/../../lib/core/",
             $($path)*
         ))
     };
@@ -31,7 +31,7 @@ macro_rules! std_bundle_schemas {
 pub fn std_bundle(storage: &mut ir::SourceStorage) -> BundleSource {
     let manifest = bundle::try_parse_manifest(read_std_bundle_file!("sidex.toml"))
         .expect("Manifest of Sidex standard library should be valid.");
-    let schemas = std_bundle_schemas!(storage, ["any", "builtins", "option", "result"]);
+    let schemas = std_bundle_schemas!(storage, ["builtins"]);
 
     BundleSource {
         manifest,
