@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 use std::{error::Error, fs, path::Path};
 
 use sidex_core::transformer::Transformer;
@@ -5,12 +7,9 @@ use sidex_derive_mutation::derive_mutations;
 use sidex_gen::Generator;
 use sidex_gen_rs::RustGenerator;
 
+mod utils;
+
 pub fn build(bundle_path: &Path, output_path: &Path) {
-    // let out_dir = env::var_os("OUT_DIR").unwrap();
-    // let bundle_dir = env::var_os("CARGO_MANIFEST_DIR").unwrap();
-
-    // let bundle_path = Path::new(&bundle_dir);
-
     let ctx = sidex_core::diagnostics::DiagnosticCtx::new();
 
     let mut transformer = Transformer::new();
@@ -27,7 +26,6 @@ pub fn build(bundle_path: &Path, output_path: &Path) {
 
     derive_mutations(&mut unit);
 
-    // let out_path = Path::new(&out_dir).join("generated");
     fs::create_dir_all(&output_path).unwrap();
 
     let null = serde_json::Value::Null;
@@ -52,14 +50,10 @@ pub fn build(bundle_path: &Path, output_path: &Path) {
     for entry in fs::read_dir(&schemas_dir).unwrap() {
         let entry = entry.unwrap();
 
-        println!("cargo:rerun-if-changed={}", entry.path().to_string_lossy());
+        utils::emit_cargo_rerun_if_changed(entry.path());
     }
 
-    println!("cargo:rerun-if-changed={}", schemas_dir.to_string_lossy());
-    println!(
-        "cargo:rerun-if-changed={}",
-        bundle_path.join("sidex.toml").to_string_lossy()
-    );
-
-    println!("cargo:rerun-if-changed=build.rs");
+    utils::emit_cargo_rerun_if_changed(&schemas_dir);
+    utils::emit_cargo_rerun_if_changed(bundle_path.join("sidex.toml"));
+    utils::emit_cargo_rerun_if_changed("build.rs");
 }
