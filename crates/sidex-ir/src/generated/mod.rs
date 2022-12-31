@@ -2,7 +2,9 @@
 
 pub mod ir {
     #![doc = ""]
+    #[allow(unused)]
     use :: serde as __serde;
+    #[allow(unused)]
     use :: sidex_serde as __sidex_serde;
     #[doc = "Uniquely identifies a source in a unit.\n"]
     #[derive(Clone, Debug, Copy, PartialEq, Eq, Hash)]
@@ -626,6 +628,10 @@ pub mod ir {
     pub struct Unit {
         #[doc = "The bundles of the unit.\n"]
         pub bundles: ::std::vec::Vec<Bundle>,
+        #[doc = "The schemas of the unit.\n"]
+        pub schemas: ::std::vec::Vec<Schema>,
+        #[doc = "The definitions of the unit.\n"]
+        pub defs: ::std::vec::Vec<Def>,
         #[doc = "The sources of the unit.\n"]
         pub sources: SourceStorage,
     }
@@ -634,6 +640,8 @@ pub mod ir {
         pub fn new() -> Self {
             Self {
                 bundles: ::std::default::Default::default(),
+                schemas: ::std::default::Default::default(),
+                defs: ::std::default::Default::default(),
                 sources: ::std::default::Default::default(),
             }
         }
@@ -645,6 +653,26 @@ pub mod ir {
         #[doc = "Sets the value of `bundles`."]
         pub fn with_bundles(mut self, bundles: ::std::vec::Vec<Bundle>) -> Self {
             self.bundles = bundles;
+            self
+        }
+        #[doc = "Sets the value of `schemas`."]
+        pub fn set_schemas(&mut self, schemas: ::std::vec::Vec<Schema>) -> &mut Self {
+            self.schemas = schemas;
+            self
+        }
+        #[doc = "Sets the value of `schemas`."]
+        pub fn with_schemas(mut self, schemas: ::std::vec::Vec<Schema>) -> Self {
+            self.schemas = schemas;
+            self
+        }
+        #[doc = "Sets the value of `defs`."]
+        pub fn set_defs(&mut self, defs: ::std::vec::Vec<Def>) -> &mut Self {
+            self.defs = defs;
+            self
+        }
+        #[doc = "Sets the value of `defs`."]
+        pub fn with_defs(mut self, defs: ::std::vec::Vec<Def>) -> Self {
+            self.defs = defs;
             self
         }
         #[doc = "Sets the value of `sources`."]
@@ -669,12 +697,18 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Unit", 2usize)?;
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Unit", 4usize)?;
             __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "bundles",
                 &self.bundles,
             )?;
+            __serde::ser::SerializeStruct::serialize_field(
+                &mut __struct,
+                "schemas",
+                &self.schemas,
+            )?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "defs", &self.defs)?;
             __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "sources",
@@ -688,13 +722,16 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            const __IDENTIFIERS: &'static [&'static str] = &["bundles", "sources"];
+            const __IDENTIFIERS: &'static [&'static str] =
+                &["bundles", "schemas", "defs", "sources"];
             const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"bundles\", \"sources\"]";
+                "an identifier in [\"bundles\", \"schemas\", \"defs\", \"sources\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
+                __Identifier2,
+                __Identifier3,
                 __Unknown,
             }
             struct __IdentifierVisitor;
@@ -713,6 +750,8 @@ pub mod ir {
                     match __value {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -722,7 +761,9 @@ pub mod ir {
                 {
                     match __value {
                         "bundles" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "sources" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        "schemas" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        "defs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        "sources" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -735,7 +776,9 @@ pub mod ir {
                 {
                     match __value {
                         b"bundles" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"sources" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        b"schemas" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        b"defs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        b"sources" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -778,25 +821,48 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 4 fields"),
                             );
                         }
                     };
-                    let __field1 =
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
+                        ::std::vec::Vec<Schema>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
+                            );
+                        }
+                    };
+                    let __field2 = match __serde::de::SeqAccess::next_element::<::std::vec::Vec<Def>>(
+                        &mut __seq,
+                    )? {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
+                            );
+                        }
+                    };
+                    let __field3 =
                         match __serde::de::SeqAccess::next_element::<SourceStorage>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
-                                        1usize,
-                                        &"record with 2 fields",
+                                        3usize,
+                                        &"record with 4 fields",
                                     ),
                                 );
                             }
                         };
                     ::core::result::Result::Ok(Unit {
                         bundles: __field0,
-                        sources: __field1,
+                        schemas: __field1,
+                        defs: __field2,
+                        sources: __field3,
                     })
                 }
                 #[inline]
@@ -809,7 +875,11 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<::std::vec::Vec<Bundle>> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<SourceStorage> =
+                    let mut __field1: ::core::option::Option<::std::vec::Vec<Schema>> =
+                        ::core::option::Option::None;
+                    let mut __field2: ::core::option::Option<::std::vec::Vec<Def>> =
+                        ::core::option::Option::None;
+                    let mut __field3: ::core::option::Option<SourceStorage> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -833,11 +903,37 @@ pub mod ir {
                                 if ::core::option::Option::is_some(&__field1) {
                                     return ::core::result::Result::Err(
                                         <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "sources",
+                                            "schemas",
                                         ),
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Schema>>(
+                                        &mut __map,
+                                    )?,
+                                );
+                            }
+                            __Identifier::__Identifier2 => {
+                                if ::core::option::Option::is_some(&__field2) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("defs"),
+                                    );
+                                }
+                                __field2 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Def>>(
+                                        &mut __map,
+                                    )?,
+                                );
+                            }
+                            __Identifier::__Identifier3 => {
+                                if ::core::option::Option::is_some(&__field3) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "sources",
+                                        ),
+                                    );
+                                }
+                                __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<SourceStorage>(
                                         &mut __map,
                                     )?,
@@ -862,17 +958,35 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("schemas"),
+                            );
+                        }
+                    };
+                    let __field2 = match __field2 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("defs"),
+                            );
+                        }
+                    };
+                    let __field3 = match __field3 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
                                 <__A::Error as __serde::de::Error>::missing_field("sources"),
                             );
                         }
                     };
                     ::core::result::Result::Ok(Unit {
                         bundles: __field0,
-                        sources: __field1,
+                        schemas: __field1,
+                        defs: __field2,
+                        sources: __field3,
                     })
                 }
             }
-            const __FIELDS: &'static [&'static str] = &["bundles", "sources"];
+            const __FIELDS: &'static [&'static str] = &["bundles", "schemas", "defs", "sources"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Unit",
@@ -4318,6 +4432,10 @@ pub mod ir {
         WrapperType(WrapperTypeDef),
         #[doc = "Definition of a derived type.\n"]
         DerivedType(DerivedTypeDef),
+        #[doc = "Definition of a type class.\n"]
+        Class(ClassDef),
+        #[doc = "Definition of an instance of a type class.\n"]
+        Instance(InstanceDef),
         #[doc = "Definition of a service.\n"]
         Service(ServiceDef),
     }
@@ -4409,6 +4527,36 @@ pub mod ir {
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
+                    Self::Class(__value) => {
+                        let mut __struct =
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 1usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
+                            &mut __struct,
+                            "tag",
+                            "Class",
+                        )?;
+                        __serde::ser::SerializeStruct::end(__struct)
+                    }
+                    Self::Instance(__value) => {
+                        let mut __struct =
+                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 3usize)?;
+                        __serde::ser::SerializeStruct::serialize_field(
+                            &mut __struct,
+                            "tag",
+                            "Instance",
+                        )?;
+                        __serde::ser::SerializeStruct::serialize_field(
+                            &mut __struct,
+                            "cls",
+                            &__value.cls,
+                        )?;
+                        __serde::ser::SerializeStruct::serialize_field(
+                            &mut __struct,
+                            "subst",
+                            &__value.subst,
+                        )?;
+                        __serde::ser::SerializeStruct::end(__struct)
+                    }
                     Self::Service(__value) => {
                         let mut __struct =
                             __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
@@ -4481,11 +4629,29 @@ pub mod ir {
                             __value,
                         )
                     }
-                    Self::Service(__value) => {
+                    Self::Class(__value) => {
                         __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             6u32,
+                            "Class",
+                            __value,
+                        )
+                    }
+                    Self::Instance(__value) => {
+                        __serde::Serializer::serialize_newtype_variant(
+                            __serializer,
+                            "DefKind",
+                            7u32,
+                            "Instance",
+                            __value,
+                        )
+                    }
+                    Self::Service(__value) => {
+                        __serde::Serializer::serialize_newtype_variant(
+                            __serializer,
+                            "DefKind",
+                            8u32,
                             "Service",
                             __value,
                         )
@@ -4506,9 +4672,11 @@ pub mod ir {
                 "VariantType",
                 "WrapperType",
                 "DerivedType",
+                "Class",
+                "Instance",
                 "Service",
             ];
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Service\"]" ;
+            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Class\", \"Instance\", \"Service\"]" ;
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             enum __Identifier {
                 __Identifier0,
@@ -4518,6 +4686,8 @@ pub mod ir {
                 __Identifier4,
                 __Identifier5,
                 __Identifier6,
+                __Identifier7,
+                __Identifier8,
             }
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
@@ -4540,6 +4710,8 @@ pub mod ir {
                         4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Unsigned(__variant),
@@ -4559,7 +4731,9 @@ pub mod ir {
                         "VariantType" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         "WrapperType" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         "DerivedType" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "Service" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                        "Class" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                        "Instance" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                        "Service" => ::core::result::Result::Ok(__Identifier::__Identifier8),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
@@ -4582,7 +4756,9 @@ pub mod ir {
                         b"VariantType" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         b"WrapperType" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         b"DerivedType" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"Service" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                        b"Class" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                        b"Instance" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                        b"Service" => ::core::result::Result::Ok(__Identifier::__Identifier8),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Bytes(__variant),
@@ -4611,6 +4787,8 @@ pub mod ir {
                 "VariantType",
                 "WrapperType",
                 "DerivedType",
+                "Class",
+                "Instance",
                 "Service",
             ];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
@@ -4655,6 +4833,16 @@ pub mod ir {
                         ))
                     }
                     __Identifier::__Identifier6 => {
+                        ::core::result::Result::Ok(DefKind::Class(
+                            __tagged.deserialize_internally_tagged::<ClassDef, __D::Error>()?,
+                        ))
+                    }
+                    __Identifier::__Identifier7 => {
+                        ::core::result::Result::Ok(DefKind::Instance(
+                            __tagged.deserialize_internally_tagged::<InstanceDef, __D::Error>()?,
+                        ))
+                    }
+                    __Identifier::__Identifier8 => {
                         ::core::result::Result::Ok(DefKind::Service(
                             __tagged.deserialize_internally_tagged::<ServiceDef, __D::Error>()?,
                         ))
@@ -4718,6 +4906,18 @@ pub mod ir {
                                 ::core::result::Result::Ok(DefKind::DerivedType(__value))
                             }
                             (__Identifier::__Identifier6, __variant) => {
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
+                                    ClassDef,
+                                >(__variant)?;
+                                ::core::result::Result::Ok(DefKind::Class(__value))
+                            }
+                            (__Identifier::__Identifier7, __variant) => {
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
+                                    InstanceDef,
+                                >(__variant)?;
+                                ::core::result::Result::Ok(DefKind::Instance(__value))
+                            }
+                            (__Identifier::__Identifier8, __variant) => {
                                 let __value = __serde::de::VariantAccess::newtype_variant::<
                                     ServiceDef,
                                 >(__variant)?;
@@ -6540,6 +6740,388 @@ pub mod ir {
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "DerivedTypeDef",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
+        }
+    }
+    #[doc = "A definition of a type class.\n"]
+    #[derive(Clone, Debug)]
+    #[non_exhaustive]
+    pub struct ClassDef {}
+    impl ClassDef {
+        #[doc = "Creates a new [`ClassDef`]."]
+        pub fn new() -> Self {
+            Self {}
+        }
+    }
+    impl ::std::default::Default for ClassDef {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[automatically_derived]
+    impl __serde::Serialize for ClassDef {
+        fn serialize<__S: __serde::Serializer>(
+            &self,
+            __serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
+            let mut __struct =
+                __serde::Serializer::serialize_struct(__serializer, "ClassDef", 0usize)?;
+            __serde::ser::SerializeStruct::end(__struct)
+        }
+    }
+    #[automatically_derived]
+    impl<'de> __serde::Deserialize<'de> for ClassDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
+            __deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
+            const __IDENTIFIERS: &'static [&'static str] = &[];
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in []";
+            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            enum __Identifier {
+                __Unknown,
+            }
+            struct __IdentifierVisitor;
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                type Value = __Identifier;
+                fn expecting(
+                    &self,
+                    __formatter: &mut ::core::fmt::Formatter,
+                ) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                }
+                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                    }
+                }
+                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                    }
+                }
+                fn visit_bytes<__E>(
+                    self,
+                    __value: &[u8],
+                ) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                    }
+                }
+            }
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
+                #[inline]
+                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
+                where
+                    __D: __serde::Deserializer<'de>,
+                {
+                    __serde::Deserializer::deserialize_identifier(
+                        __deserializer,
+                        __IdentifierVisitor,
+                    )
+                }
+            }
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
+                type Value = ClassDef;
+                fn expecting(
+                    &self,
+                    __formatter: &mut ::core::fmt::Formatter,
+                ) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(__formatter, "record ClassDef")
+                }
+                #[inline]
+                fn visit_seq<__A>(
+                    self,
+                    mut __seq: __A,
+                ) -> ::core::result::Result<Self::Value, __A::Error>
+                where
+                    __A: __serde::de::SeqAccess<'de>,
+                {
+                    ::core::result::Result::Ok(ClassDef {})
+                }
+                #[inline]
+                fn visit_map<__A>(
+                    self,
+                    mut __map: __A,
+                ) -> ::core::result::Result<Self::Value, __A::Error>
+                where
+                    __A: __serde::de::MapAccess<'de>,
+                {
+                    while let ::core::option::Option::Some(__key) =
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                    {
+                        match __key {
+                            _ => {
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
+                                    &mut __map,
+                                )?;
+                            }
+                        }
+                    }
+                    ::core::result::Result::Ok(ClassDef {})
+                }
+            }
+            const __FIELDS: &'static [&'static str] = &[];
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "ClassDef",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
+        }
+    }
+    #[doc = ""]
+    #[derive(Clone, Debug)]
+    #[non_exhaustive]
+    pub struct InstanceDef {
+        #[doc = ""]
+        pub cls: DefRef,
+        #[doc = ""]
+        pub subst: ::std::vec::Vec<Type>,
+    }
+    impl InstanceDef {
+        #[doc = "Creates a new [`InstanceDef`]."]
+        pub fn new(cls: DefRef) -> Self {
+            Self {
+                cls,
+                subst: ::std::default::Default::default(),
+            }
+        }
+        #[doc = "Sets the value of `cls`."]
+        pub fn set_cls(&mut self, cls: DefRef) -> &mut Self {
+            self.cls = cls;
+            self
+        }
+        #[doc = "Sets the value of `cls`."]
+        pub fn with_cls(mut self, cls: DefRef) -> Self {
+            self.cls = cls;
+            self
+        }
+        #[doc = "Sets the value of `subst`."]
+        pub fn set_subst(&mut self, subst: ::std::vec::Vec<Type>) -> &mut Self {
+            self.subst = subst;
+            self
+        }
+        #[doc = "Sets the value of `subst`."]
+        pub fn with_subst(mut self, subst: ::std::vec::Vec<Type>) -> Self {
+            self.subst = subst;
+            self
+        }
+    }
+    #[automatically_derived]
+    impl __serde::Serialize for InstanceDef {
+        fn serialize<__S: __serde::Serializer>(
+            &self,
+            __serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
+            let mut __struct =
+                __serde::Serializer::serialize_struct(__serializer, "InstanceDef", 2usize)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "cls", &self.cls)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "subst", &self.subst)?;
+            __serde::ser::SerializeStruct::end(__struct)
+        }
+    }
+    #[automatically_derived]
+    impl<'de> __serde::Deserialize<'de> for InstanceDef {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
+            __deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
+            const __IDENTIFIERS: &'static [&'static str] = &["cls", "subst"];
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"cls\", \"subst\"]";
+            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            enum __Identifier {
+                __Identifier0,
+                __Identifier1,
+                __Unknown,
+            }
+            struct __IdentifierVisitor;
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                type Value = __Identifier;
+                fn expecting(
+                    &self,
+                    __formatter: &mut ::core::fmt::Formatter,
+                ) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                }
+                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                    }
+                }
+                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        "cls" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                        "subst" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                    }
+                }
+                fn visit_bytes<__E>(
+                    self,
+                    __value: &[u8],
+                ) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        b"cls" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                        b"subst" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                    }
+                }
+            }
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
+                #[inline]
+                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
+                where
+                    __D: __serde::Deserializer<'de>,
+                {
+                    __serde::Deserializer::deserialize_identifier(
+                        __deserializer,
+                        __IdentifierVisitor,
+                    )
+                }
+            }
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
+                type Value = InstanceDef;
+                fn expecting(
+                    &self,
+                    __formatter: &mut ::core::fmt::Formatter,
+                ) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(__formatter, "record InstanceDef")
+                }
+                #[inline]
+                fn visit_seq<__A>(
+                    self,
+                    mut __seq: __A,
+                ) -> ::core::result::Result<Self::Value, __A::Error>
+                where
+                    __A: __serde::de::SeqAccess<'de>,
+                {
+                    let __field0 = match __serde::de::SeqAccess::next_element::<DefRef>(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                            );
+                        }
+                    };
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
+                        ::std::vec::Vec<Type>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                            );
+                        }
+                    };
+                    ::core::result::Result::Ok(InstanceDef {
+                        cls: __field0,
+                        subst: __field1,
+                    })
+                }
+                #[inline]
+                fn visit_map<__A>(
+                    self,
+                    mut __map: __A,
+                ) -> ::core::result::Result<Self::Value, __A::Error>
+                where
+                    __A: __serde::de::MapAccess<'de>,
+                {
+                    let mut __field0: ::core::option::Option<DefRef> = ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::std::vec::Vec<Type>> =
+                        ::core::option::Option::None;
+                    while let ::core::option::Option::Some(__key) =
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                    {
+                        match __key {
+                            __Identifier::__Identifier0 => {
+                                if ::core::option::Option::is_some(&__field0) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("cls"),
+                                    );
+                                }
+                                __field0 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<DefRef>(&mut __map)?,
+                                );
+                            }
+                            __Identifier::__Identifier1 => {
+                                if ::core::option::Option::is_some(&__field1) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "subst",
+                                        ),
+                                    );
+                                }
+                                __field1 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Type>>(
+                                        &mut __map,
+                                    )?,
+                                );
+                            }
+                            _ => {
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
+                                    &mut __map,
+                                )?;
+                            }
+                        }
+                    }
+                    let __field0 = match __field0 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("cls"),
+                            );
+                        }
+                    };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("subst"),
+                            );
+                        }
+                    };
+                    ::core::result::Result::Ok(InstanceDef {
+                        cls: __field0,
+                        subst: __field1,
+                    })
+                }
+            }
+            const __FIELDS: &'static [&'static str] = &["cls", "subst"];
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "InstanceDef",
                 __FIELDS,
                 __Visitor {
                     __phantom_vars: ::core::marker::PhantomData,
@@ -10222,11 +10804,8 @@ pub mod ir {
     }
     impl AttrList {
         #[doc = "Creates a new [`AttrList`]."]
-        pub fn new(path: Path) -> Self {
-            Self {
-                path,
-                args: ::std::default::Default::default(),
-            }
+        pub fn new(path: Path, args: ::std::vec::Vec<Attr>) -> Self {
+            Self { path, args }
         }
         #[doc = "Sets the value of `path`."]
         pub fn set_path(&mut self, path: Path) -> &mut Self {

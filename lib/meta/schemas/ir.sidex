@@ -39,7 +39,14 @@ record DefRef {
 #[rust(attr(non_exhaustive))]
 record Unit {
     /// The bundles of the unit.
+    #[default]
     bundles: [Bundle],
+    /// The schemas of the unit.
+    #[default]
+    schemas: [Schema],
+    /// The definitions of the unit.
+    #[default]
+    defs: [Def],
     /// The sources of the unit.
     #[default]
     sources: SourceStorage,
@@ -49,6 +56,7 @@ record Unit {
 #[rust(attr(non_exhaustive))]
 record SourceStorage {
     /// The sources.
+    #[default]
     sources: [Source]
 }
 
@@ -73,8 +81,10 @@ record Bundle {
     /// The metadata of the bundle.
     metadata: Metadata,
     /// The dependencies of the bundle.
+    #[default]
     dependencies: [Dependency],
     /// The schemas of the bundle.
+    #[default]
     schemas: [Schema],
 }
 
@@ -128,8 +138,10 @@ record Schema {
     /// The documentation of the schema.
     docs?: Docs,
     /// The attributes of the schema.
+    #[default]
     attrs: [Attr],
     /// The definitions of the schema.
+    #[default]
     defs: [Def],
     /// The source of the schema.
     source?: SourceIdx,
@@ -152,8 +164,10 @@ record Def {
     /// The documentation of the definition.
     docs?: Docs,
     /// The type variables of the definition.
+    #[default]
     vars: [TypeVar],
     /// The attributes of the definition.
+    #[default]
     attrs: [Attr],
     /// The kind of the definition.
     kind: DefKind,
@@ -181,6 +195,10 @@ variant DefKind {
     WrapperType: WrapperTypeDef,
     /// Definition of a derived type.
     DerivedType: DerivedTypeDef,
+    /// Definition of a type class.
+    Class: ClassDef,
+    /// Definition of an instance of a type class.
+    Instance: InstanceDef,
     /// Definition of a service.
     Service: ServiceDef,
 }
@@ -200,6 +218,7 @@ record OpaqueTypeDef {}
 #[rust(attr(non_exhaustive))]
 record RecordTypeDef {
     /// The fields of the record type.
+    #[default]
     fields: [Field],
 }
 
@@ -211,6 +230,7 @@ record Field {
     /// The documentation of the field.
     docs?: Docs,
     /// The attributes of the field.
+    #[default]
     attrs: [Attr],
     /// The type of the field.
     typ: Type,
@@ -223,6 +243,7 @@ record Field {
 #[rust(attr(non_exhaustive))]
 record VariantTypeDef {
     /// The variants of the variant type.
+    #[default]
     variants: [Variant],
 }
 
@@ -234,6 +255,7 @@ record Variant {
     /// The documentation of the variant.
     docs?: Docs,
     /// The attributes of the variant.
+    #[default]
     attrs: [Attr],
     /// The optional type of the variant.
     typ?: Type,
@@ -250,10 +272,26 @@ record WrapperTypeDef {
 #[rust(attr(non_exhaustive))]
 record DerivedTypeDef {}
 
+/// A definition of a type class.
+#[rust(attr(non_exhaustive))]
+record ClassDef {
+    // /// The methods of the type class.
+    // #[default]
+    // methods: [Method]
+}
+
+#[rust(attr(non_exhaustive))]
+record InstanceDef {
+    cls: DefRef,
+    #[default]
+    subst: [Type],
+}
+
 /// A definition of a service.
 #[rust(attr(non_exhaustive))]
 record ServiceDef {
     /// The methods provided by the service.
+    #[default]
     methods: [Method],
 }
 
@@ -265,8 +303,10 @@ record Method {
     /// The documentation of the method.
     docs?: Docs,
     /// The attributes of the method.
+    #[default]
     attrs: [Attr],
     /// The parameters of the method.
+    #[default]
     parameters: [MethodParam],
     /// The optional return type of the method.
     returns?: Type,
@@ -319,6 +359,7 @@ record InstanceType {
     /// The actual definition.
     def: DefIdx,
     /// Substitutions for the type variables of the definition.
+    #[default]
     subst: [Type],
 }
 
