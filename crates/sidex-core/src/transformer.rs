@@ -705,7 +705,6 @@ impl Transformer {
                                                             .collect(),
                                                     ))
                                                 }
-                                                
                                             };
                                             ir::Def::new( ir::Identifier::new(def.name.as_str().to_owned()), kind).with_docs(Some(ir::Docs::new(def.docs.to_string()))).with_vars(def
                                                     .vars
