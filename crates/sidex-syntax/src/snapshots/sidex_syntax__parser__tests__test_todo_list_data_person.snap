@@ -29,7 +29,9 @@ Some(
                             segments: [
                                 Identifier(
                                     Node {
-                                        inner: "ids",
+                                        inner: Heap(
+                                            "ids",
+                                        ),
                                         span: Span(
                                             Span {
                                                 src: SourceIdx(
@@ -51,7 +53,9 @@ Some(
                 Def {
                     name: Identifier(
                         Node {
-                            inner: "Role",
+                            inner: Heap(
+                                "Role",
+                            ),
                             span: Span(
                                 Span {
                                     src: SourceIdx(
@@ -87,7 +91,9 @@ Some(
                                 Variant {
                                     name: Identifier(
                                         Node {
-                                            inner: "Admin",
+                                            inner: Heap(
+                                                "Admin",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -121,7 +127,9 @@ Some(
                                 Variant {
                                     name: Identifier(
                                         Node {
-                                            inner: "User",
+                                            inner: Heap(
+                                                "User",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -161,7 +169,9 @@ Some(
                 Def {
                     name: Identifier(
                         Node {
-                            inner: "Person",
+                            inner: Heap(
+                                "Person",
+                            ),
                             span: Span(
                                 Span {
                                     src: SourceIdx(
@@ -197,7 +207,9 @@ Some(
                                 Field {
                                     name: Identifier(
                                         Node {
-                                            inner: "id",
+                                            inner: Heap(
+                                                "id",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -232,7 +244,9 @@ Some(
                                                 segments: [
                                                     Identifier(
                                                         Node {
-                                                            inner: "ids",
+                                                            inner: Heap(
+                                                                "ids",
+                                                            ),
                                                             span: Span(
                                                                 Span {
                                                                     src: SourceIdx(
@@ -246,7 +260,9 @@ Some(
                                                     ),
                                                     Identifier(
                                                         Node {
-                                                            inner: "PersonId",
+                                                            inner: Heap(
+                                                                "PersonId",
+                                                            ),
                                                             span: Span(
                                                                 Span {
                                                                     src: SourceIdx(
@@ -269,7 +285,9 @@ Some(
                                 Field {
                                     name: Identifier(
                                         Node {
-                                            inner: "name",
+                                            inner: Heap(
+                                                "name",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -304,7 +322,9 @@ Some(
                                                 segments: [
                                                     Identifier(
                                                         Node {
-                                                            inner: "string",
+                                                            inner: Heap(
+                                                                "string",
+                                                            ),
                                                             span: Span(
                                                                 Span {
                                                                     src: SourceIdx(
@@ -327,7 +347,9 @@ Some(
                                 Field {
                                     name: Identifier(
                                         Node {
-                                            inner: "email",
+                                            inner: Heap(
+                                                "email",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -362,7 +384,9 @@ Some(
                                                 segments: [
                                                     Identifier(
                                                         Node {
-                                                            inner: "string",
+                                                            inner: Heap(
+                                                                "string",
+                                                            ),
                                                             span: Span(
                                                                 Span {
                                                                     src: SourceIdx(
@@ -385,7 +409,9 @@ Some(
                                 Field {
                                     name: Identifier(
                                         Node {
-                                            inner: "role",
+                                            inner: Heap(
+                                                "role",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -421,7 +447,9 @@ Some(
                                                         segments: [
                                                             Identifier(
                                                                 Node {
-                                                                    inner: "json",
+                                                                    inner: Heap(
+                                                                        "json",
+                                                                    ),
                                                                     span: Span(
                                                                         Span {
                                                                             src: SourceIdx(
@@ -444,7 +472,9 @@ Some(
                                                                         segments: [
                                                                             Identifier(
                                                                                 Node {
-                                                                                    inner: "name",
+                                                                                    inner: Heap(
+                                                                                        "name",
+                                                                                    ),
                                                                                     span: Span(
                                                                                         Span {
                                                                                             src: SourceIdx(
@@ -497,7 +527,9 @@ Some(
                                                 segments: [
                                                     Identifier(
                                                         Node {
-                                                            inner: "Role",
+                                                            inner: Heap(
+                                                                "Role",
+                                                            ),
                                                             span: Span(
                                                                 Span {
                                                                     src: SourceIdx(
@@ -520,7 +552,9 @@ Some(
                                 Field {
                                     name: Identifier(
                                         Node {
-                                            inner: "friends",
+                                            inner: Heap(
+                                                "friends",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -557,7 +591,9 @@ Some(
                                                         segments: [
                                                             Identifier(
                                                                 Node {
-                                                                    inner: "ids",
+                                                                    inner: Heap(
+                                                                        "ids",
+                                                                    ),
                                                                     span: Span(
                                                                         Span {
                                                                             src: SourceIdx(
@@ -571,7 +607,9 @@ Some(
                                                             ),
                                                             Identifier(
                                                                 Node {
-                                                                    inner: "PersonId",
+                                                                    inner: Heap(
+                                                                        "PersonId",
+                                                                    ),
                                                                     span: Span(
                                                                         Span {
                                                                             src: SourceIdx(
@@ -602,7 +640,9 @@ Some(
                 Def {
                     name: Identifier(
                         Node {
-                            inner: "GetPersonResult",
+                            inner: Heap(
+                                "GetPersonResult",
+                            ),
                             span: Span(
                                 Span {
                                     src: SourceIdx(
@@ -638,7 +678,9 @@ Some(
                                 Variant {
                                     name: Identifier(
                                         Node {
-                                            inner: "NotFound",
+                                            inner: Heap(
+                                                "NotFound",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -672,7 +714,9 @@ Some(
                                 Variant {
                                     name: Identifier(
                                         Node {
-                                            inner: "Found",
+                                            inner: Heap(
+                                                "Found",
+                                            ),
                                             span: Span(
                                                 Span {
                                                     src: SourceIdx(
@@ -708,7 +752,9 @@ Some(
                                                     segments: [
                                                         Identifier(
                                                             Node {
-                                                                inner: "Person",
+                                                                inner: Heap(
+                                                                    "Person",
+                                                                ),
                                                                 span: Span(
                                                                     Span {
                                                                         src: SourceIdx(

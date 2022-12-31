@@ -69,7 +69,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "rust",
+                Heap(
+                    "rust",
+                ),
             ),
             span: Span(
                 Span {
@@ -99,7 +101,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "type",
+                Heap(
+                    "type",
+                ),
             ),
             span: Span(
                 Span {
@@ -211,7 +215,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "json",
+                Heap(
+                    "json",
+                ),
             ),
             span: Span(
                 Span {
@@ -241,7 +247,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "type",
+                Heap(
+                    "type",
+                ),
             ),
             span: Span(
                 Span {
@@ -319,8 +327,10 @@ Some(
             ),
         },
         Token {
-            kind: Keyword(
-                OPAQUE,
+            kind: Identifier(
+                Heap(
+                    "opaque",
+                ),
             ),
             span: Span(
                 Span {
@@ -334,7 +344,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Uuid",
+                Heap(
+                    "Uuid",
+                ),
             ),
             span: Span(
                 Span {
@@ -377,8 +389,10 @@ Some(
             ),
         },
         Token {
-            kind: Keyword(
-                WRAPPER,
+            kind: Identifier(
+                Heap(
+                    "wrapper",
+                ),
             ),
             span: Span(
                 Span {
@@ -392,7 +406,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "PersonId",
+                Heap(
+                    "PersonId",
+                ),
             ),
             span: Span(
                 Span {
@@ -423,7 +439,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Uuid",
+                Heap(
+                    "Uuid",
+                ),
             ),
             span: Span(
                 Span {
@@ -466,8 +484,10 @@ Some(
             ),
         },
         Token {
-            kind: Keyword(
-                WRAPPER,
+            kind: Identifier(
+                Heap(
+                    "wrapper",
+                ),
             ),
             span: Span(
                 Span {
@@ -481,7 +501,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "TaskId",
+                Heap(
+                    "TaskId",
+                ),
             ),
             span: Span(
                 Span {
@@ -512,7 +534,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Uuid",
+                Heap(
+                    "Uuid",
+                ),
             ),
             span: Span(
                 Span {

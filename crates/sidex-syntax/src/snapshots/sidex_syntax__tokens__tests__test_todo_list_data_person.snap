@@ -20,8 +20,10 @@ Some(
             ),
         },
         Token {
-            kind: Keyword(
-                IMPORT,
+            kind: Identifier(
+                Heap(
+                    "import",
+                ),
             ),
             span: Span(
                 Span {
@@ -35,7 +37,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "ids",
+                Heap(
+                    "ids",
+                ),
             ),
             span: Span(
                 Span {
@@ -63,8 +67,10 @@ Some(
             ),
         },
         Token {
-            kind: Keyword(
-                VARIANT,
+            kind: Identifier(
+                Heap(
+                    "variant",
+                ),
             ),
             span: Span(
                 Span {
@@ -78,7 +84,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Role",
+                Heap(
+                    "Role",
+                ),
             ),
             span: Span(
                 Span {
@@ -123,7 +131,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Admin",
+                Heap(
+                    "Admin",
+                ),
             ),
             span: Span(
                 Span {
@@ -169,7 +179,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "User",
+                Heap(
+                    "User",
+                ),
             ),
             span: Span(
                 Span {
@@ -230,8 +242,10 @@ Some(
             ),
         },
         Token {
-            kind: Keyword(
-                RECORD,
+            kind: Identifier(
+                Heap(
+                    "record",
+                ),
             ),
             span: Span(
                 Span {
@@ -245,7 +259,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Person",
+                Heap(
+                    "Person",
+                ),
             ),
             span: Span(
                 Span {
@@ -290,7 +306,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "id",
+                Heap(
+                    "id",
+                ),
             ),
             span: Span(
                 Span {
@@ -321,7 +339,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "ids",
+                Heap(
+                    "ids",
+                ),
             ),
             span: Span(
                 Span {
@@ -369,7 +389,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "PersonId",
+                Heap(
+                    "PersonId",
+                ),
             ),
             span: Span(
                 Span {
@@ -415,7 +437,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "name",
+                Heap(
+                    "name",
+                ),
             ),
             span: Span(
                 Span {
@@ -446,7 +470,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "string",
+                Heap(
+                    "string",
+                ),
             ),
             span: Span(
                 Span {
@@ -492,7 +518,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "email",
+                Heap(
+                    "email",
+                ),
             ),
             span: Span(
                 Span {
@@ -540,7 +568,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "string",
+                Heap(
+                    "string",
+                ),
             ),
             span: Span(
                 Span {
@@ -634,7 +664,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "json",
+                Heap(
+                    "json",
+                ),
             ),
             span: Span(
                 Span {
@@ -664,7 +696,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "name",
+                Heap(
+                    "name",
+                ),
             ),
             span: Span(
                 Span {
@@ -743,7 +777,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "role",
+                Heap(
+                    "role",
+                ),
             ),
             span: Span(
                 Span {
@@ -774,7 +810,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Role",
+                Heap(
+                    "Role",
+                ),
             ),
             span: Span(
                 Span {
@@ -820,7 +858,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "friends",
+                Heap(
+                    "friends",
+                ),
             ),
             span: Span(
                 Span {
@@ -867,7 +907,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "ids",
+                Heap(
+                    "ids",
+                ),
             ),
             span: Span(
                 Span {
@@ -915,7 +957,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "PersonId",
+                Heap(
+                    "PersonId",
+                ),
             ),
             span: Span(
                 Span {
@@ -1007,8 +1051,10 @@ Some(
             ),
         },
         Token {
-            kind: Keyword(
-                VARIANT,
+            kind: Identifier(
+                Heap(
+                    "variant",
+                ),
             ),
             span: Span(
                 Span {
@@ -1022,7 +1068,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "GetPersonResult",
+                Heap(
+                    "GetPersonResult",
+                ),
             ),
             span: Span(
                 Span {
@@ -1067,7 +1115,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "NotFound",
+                Heap(
+                    "NotFound",
+                ),
             ),
             span: Span(
                 Span {
@@ -1113,7 +1163,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Found",
+                Heap(
+                    "Found",
+                ),
             ),
             span: Span(
                 Span {
@@ -1144,7 +1196,9 @@ Some(
         },
         Token {
             kind: Identifier(
-                "Person",
+                Heap(
+                    "Person",
+                ),
             ),
             span: Span(
                 Span {

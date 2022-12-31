@@ -7,7 +7,7 @@
 
 use std::{
     fmt::{self, Display, Write},
-    str::FromStr,
+    hash::Hash,
     sync::Arc,
 };
 
@@ -230,80 +230,37 @@ gen_code_punctuations![
     (AngleClose, ">", "A closing angle `>`."),
 ];
 
-/// Helper macro generating the lexer and data structures for keywords.
-macro_rules! gen_code_keywords {
-    ($( ( $name:ident , $keyword:literal , $doc:literal ) $(,)? )*) => {
-        /// A kind of punctuation like `opaque` or `enum`.
-        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-        pub enum KeywordKind {
+/// Keywords like `opaque` or `variant`.
+pub mod keywords {
+    use super::*;
+
+    /// Turns a `&'static str` keyword into [`TokenKind::Identifier`].
+    const fn keyword(keyword: &'static str) -> TokenKind {
+        TokenKind::Identifier(Str::Static(keyword))
+    }
+
+    /// Helper macro for defining keywords.
+    macro_rules! define {
+        ($( ( $name:ident , $keyword:literal , $doc:literal ) $(,)? )*) => {
             $(
                 #[doc = $doc]
-                $name,
+                pub const $name: TokenKind = keyword($keyword);
             )*
         }
+    }
 
-        impl fmt::Display for KeywordKind {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                match self {
-                    $(
-                        Self::$name => f.write_str($keyword),
-                    )*
-                }
-            }
-        }
-
-        /// Keywords like `opaque` or `enum`.
-        pub mod keywords {
-            use thiserror::Error;
-
-            use super::*;
-
-            /// Error when trying to convert a non-keyword string to [`keywords::KeywordKind`].
-            #[derive(Debug, Clone, Error)]
-            #[error("Provided string is not a keyword.")]
-            pub struct NoKeywordError;
-
-            $(
-                #[doc = $doc]
-                pub const $name: TokenKind = TokenKind::Keyword(KeywordKind::$name);
-            )*
-        }
-
-        /// Construct a lexer for keywords.
-        fn keyword_lexer() -> impl Parser<char, TokenKind, Error = Simple<char, Span>> {
-            choice((
-                $(
-                    text::keyword($keyword).to(keywords::$name),
-                )*
-            ))
-        }
-
-        impl FromStr for KeywordKind {
-            type Err = keywords::NoKeywordError;
-
-            fn from_str(s: &str) -> Result<Self, Self::Err> {
-                match s {
-                    $(
-                        $keyword => Ok(Self::$name),
-                    )*
-                    _ => Err(keywords::NoKeywordError),
-                }
-            }
-        }
-    };
+    define![
+        (ALIAS, "alias", "The `alias` keyword."),
+        (OPAQUE, "opaque", "The `opaque` keyword."),
+        (RECORD, "record", "The `record` keyword."),
+        (VARIANT, "variant", "The `variant` keyword."),
+        (WRAPPER, "wrapper", "The `wrapper` keyword."),
+        (DERIVED, "derived", "The `derived` keyword."),
+        (FUN, "fun", "The `fun` keyword."),
+        (SERVICE, "service", "The `service` keyword."),
+        (IMPORT, "import", "The `import` keyword."),
+    ];
 }
-
-gen_code_keywords![
-    (ALIAS, "alias", "The `alias` keyword."),
-    (OPAQUE, "opaque", "The `opaque` keyword."),
-    (RECORD, "record", "The `record` keyword."),
-    (VARIANT, "variant", "The `variant` keyword."),
-    (WRAPPER, "wrapper", "The `wrapper` keyword."),
-    (DERIVED, "derived", "The `derived` keyword."),
-    (FUN, "fun", "The `fun` keyword."),
-    (SERVICE, "service", "The `service` keyword."),
-    (IMPORT, "import", "The `import` keyword."),
-];
 
 /// Indicates the type of a comment.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -365,6 +322,43 @@ impl fmt::Display for Literal {
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum Str {
+    /// A heap-allocated identifier.
+    Heap(Arc<str>),
+    /// A statically-allocated identifier.
+    Static(&'static str),
+}
+
+impl Str {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Str::Heap(ident) => ident.as_ref(),
+            Str::Static(ident) => *ident,
+        }
+    }
+}
+
+impl Display for Str {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+impl PartialEq for Str {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_str() == other.as_str()
+    }
+}
+
+impl Eq for Str {}
+
+impl Hash for Str {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.as_str().hash(state);
+    }
+}
+
 /// A kind of token.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum TokenKind {
@@ -372,12 +366,10 @@ pub enum TokenKind {
     Delimiter(DelimiterSymbol),
     /// A punctuation token.
     Punctuation(PunctuationSymbol),
-    /// A keyword token.
-    Keyword(KeywordKind),
     /// A literal token.
     Literal(Literal),
     /// An identifier token.
-    Identifier(Arc<String>),
+    Identifier(Str),
     /// A comment token.
     Comment {
         comment: Arc<String>,
@@ -399,9 +391,8 @@ impl fmt::Display for TokenKind {
         match self {
             TokenKind::Delimiter(delimiter) => delimiter.fmt(f),
             TokenKind::Punctuation(punctuation) => punctuation.fmt(f),
-            TokenKind::Keyword(keyword) => keyword.fmt(f),
             TokenKind::Literal(literal) => literal.fmt(f),
-            TokenKind::Identifier(identifier) => f.write_str(identifier),
+            TokenKind::Identifier(identifier) => f.write_str(identifier.as_str()),
             TokenKind::Comment { comment, kind } => {
                 match kind {
                     CommentKind::Line => {
@@ -469,7 +460,10 @@ impl Display for Token {
 
 /// Construct a lexer for identifiers and keywords.
 fn identifier_lexer() -> impl Parser<char, TokenKind, Error = Simple<char, Span>> {
-    text::ident().map(Arc::new).map(TokenKind::Identifier)
+    text::ident()
+        .map(<Arc<str>>::from)
+        .map(Str::Heap)
+        .map(TokenKind::Identifier)
 }
 
 /// Construct a lexer for comments.
@@ -555,7 +549,6 @@ fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char, Span>> {
         comment_lexer("/*", just("*/"), CommentKind::Block),
         literal_lexer(),
         punctuation_lexer(),
-        keyword_lexer(),
         identifier_lexer(),
     ))
     .map_with_span(|kind, span| Token { kind, span })

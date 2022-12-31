@@ -363,10 +363,6 @@ fn transform_token_stream(stream: &ast::TokenStream) -> ir::TokenStream {
                 }
                 TokenKind::Punctuation(composed.clone())
             }
-            tokens::TokenKind::Keyword(keyword) => {
-                // Keywords do not bear any special meaning in attributes.
-                TokenKind::Identifier(keyword.to_string())
-            }
             tokens::TokenKind::Literal(literal) => {
                 match literal {
                     tokens::Literal::Numeric { .. } => {

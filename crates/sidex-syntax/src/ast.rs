@@ -8,7 +8,10 @@ use std::{
 
 use sidex_ir as ir;
 
-use crate::{span::Span, tokens::Token};
+use crate::{
+    span::Span,
+    tokens::{self, Token},
+};
 
 /// A stream of tokens.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -103,7 +106,7 @@ impl<T> Node<T> {
 
 /// An identifier.
 #[derive(Clone, Debug)]
-pub struct Identifier(pub(crate) Node<Arc<String>>);
+pub struct Identifier(pub(crate) Node<tokens::Str>);
 
 impl Identifier {
     /// The identifier as a `&str`.

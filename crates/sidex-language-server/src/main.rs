@@ -111,7 +111,7 @@ impl LanguageServer for Srv {
                 let line_start = rope.try_line_to_char(line).unwrap();
                 let start = token.start() - line_start;
                 let token_type = match &token.kind {
-                    tokens::TokenKind::Keyword(_) => Some(0),
+                    // tokens::TokenKind::Keyword(_) => Some(0),
                     tokens::TokenKind::Literal(literal) => {
                         match literal {
                             tokens::Literal::Numeric { .. } => Some(1),
