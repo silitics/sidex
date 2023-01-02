@@ -151,10 +151,20 @@ impl Plugin for Types {
     }
 
     fn visit_schema(&self, ctx: &SchemaCtx) -> diagnostics::Result<TokenStream> {
-        let schema_imports = ctx.bundle_ctx.bundle.schemas.iter().map(|schema| {
-            let mut path = String::with_capacity(schema.name.len() + 2);
-            path.push_str("./");
-            path.push_str(schema.name.as_str());
+        let mut import_paths = ctx
+            .bundle_ctx
+            .bundle
+            .schemas
+            .iter()
+            .map(|schema| {
+                let mut path = String::with_capacity(schema.name.len() + 2);
+                path.push_str("./");
+                path.push_str(schema.name.as_str());
+                (path, schema)
+            })
+            .collect::<Vec<_>>();
+        import_paths.sort_by(|(x, _), (y, _)| x.cmp(y));
+        let schema_imports = import_paths.iter().map(|(path, schema)| {
             let local_name = format_ident!("__schema_{}", schema.name);
             quote! {
                 import * as #local_name from #path;
@@ -168,10 +178,19 @@ impl Plugin for Types {
     }
 
     fn visit_bundle(&self, ctx: &crate::context::BundleCtx) -> diagnostics::Result<TokenStream> {
-        let schema_exports = ctx.bundle.schemas.iter().map(|schema| {
-            let mut path = String::with_capacity(schema.name.len() + 2);
-            path.push_str("./");
-            path.push_str(schema.name.as_str());
+        let mut import_paths = ctx
+            .bundle
+            .schemas
+            .iter()
+            .map(|schema| {
+                let mut path = String::with_capacity(schema.name.len() + 2);
+                path.push_str("./");
+                path.push_str(schema.name.as_str());
+                (path, schema)
+            })
+            .collect::<Vec<_>>();
+        import_paths.sort_by(|(x, _), (y, _)| x.cmp(y));
+        let schema_exports = import_paths.iter().map(|(path, schema)| {
             let name = format_ident!("{}", schema.name);
             quote! {
                 export * as #name from #path;
