@@ -5,7 +5,7 @@
     Sidex
 </h1>
 <h4 align="center">
-    Simplifies data exchange and manipulation across your entire stack.
+    Simplifies data exchange across your entire stack.
 </h4>
 <p align="center">
   <a href="https://crates.io/crates/sidex-cli"><img alt="Sidex CLI Crate" src="https://img.shields.io/crates/v/sidex-cli?label=sidex-cli"></a>
@@ -18,7 +18,7 @@
 >
 > Sidex **is still under construction**. In particular, the functionality described here may not exist yet, may change considerably in the future, or may even be completely abandoned at a later point in time. We are actively working on the design, features, and vision of Sidex. ⚠️
 
-_Sidex_ is a format- and language-agnostic data modeling and API definition framework with a focus on simplicity, extensibility, and developer ergonomics. Sidex aims to simplify data exchange between different programming languages and platforms via potentially multiple interchange formats and storage backends.
+_Sidex_ is a format- and language-agnostic data modeling and API definition framework with a focus on type safety, extensibility, and developer ergonomics. Sidex aims to simplify data exchange between different programming languages and platforms via potentially multiple interchange formats and storage backends.
 
 💡 **Idea:** The idea is simple, define your data model and API once with Sidex and then generate code for different languages, interchange formats, and storage backends from this single Sidex ground truth.
 
