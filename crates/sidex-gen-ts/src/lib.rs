@@ -30,6 +30,8 @@ impl Generator for TsGenerator {
             .unwrap()
             .unwrap_or_default();
 
+        println!("{cfg:?}");
+
         let bundle_ctx = BundleCtx {
             cfg: &cfg,
             unit: job.unit,

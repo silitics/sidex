@@ -229,6 +229,7 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn resolve_type_old(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
+        println!("Resolving type {:?}", typ);
         match &typ.kind {
             ir::TypeKind::TypeVar(var) => {
                 let var = format_ident!("{}", def[var.idx].name.as_str());
@@ -237,13 +238,13 @@ impl<'cx> SchemaCtx<'cx> {
             ir::TypeKind::Instance(instance) => {
                 let bundle = &self.bundle_ctx.unit[instance.bundle];
                 let schema = &bundle[instance.schema];
-                let def = &schema[instance.def];
+                let instance_def = &schema[instance.def];
 
                 let qualified_path = format!(
                     "::{}::{}::{}",
                     bundle.metadata.name,
                     schema.name,
-                    def.name.as_str()
+                    instance_def.name.as_str()
                 );
 
                 let typ = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path) {
@@ -251,7 +252,7 @@ impl<'cx> SchemaCtx<'cx> {
                     rust_path.to_token_stream()
                 } else {
                     if instance.bundle == self.bundle_ctx.bundle.idx {
-                        let def_name = format_ident!("{}", &def.name.as_str());
+                        let def_name = format_ident!("{}", &instance_def.name.as_str());
                         if instance.schema == self.schema.idx {
                             quote! { #def_name }
                         } else {
@@ -259,8 +260,16 @@ impl<'cx> SchemaCtx<'cx> {
                             quote! { super::#schema_name::#def_name }
                         }
                     } else {
-                        eprintln!("{}", qualified_path);
-                        todo!()
+                        let external_path = self
+                            .bundle_ctx
+                            .cfg
+                            .external
+                            .get(&bundle.metadata.name)
+                            .unwrap();
+                        let parsed = syn::parse_str::<TokenStream>(&external_path).unwrap();
+                        let schema_name = format_ident!("{}", &schema.name);
+                        let def_name = format_ident!("{}", &instance_def.name.as_str());
+                        quote! { #parsed::#schema_name::#def_name }
                     }
                 };
 

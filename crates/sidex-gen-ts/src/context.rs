@@ -114,20 +114,20 @@ impl<'cx> SchemaCtx<'cx> {
             ir::TypeKind::Instance(instance) => {
                 let bundle = &self.bundle_ctx.unit[instance.bundle];
                 let schema = &bundle[instance.schema];
-                let def = &schema[instance.def];
+                let instance_def = &schema[instance.def];
 
                 let qualified_path = format!(
                     "::{}::{}::{}",
                     bundle.metadata.name,
                     schema.name,
-                    def.name.as_str()
+                    instance_def.name.as_str()
                 );
 
                 let typ = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path) {
                     path.parse().unwrap()
                 } else {
                     if instance.bundle == self.bundle_ctx.bundle.idx {
-                        let def_name = format_ident!("{}", &def.name.as_str());
+                        let def_name = format_ident!("{}", &instance_def.name.as_str());
                         if instance.schema == self.schema.idx {
                             quote! { #def_name }
                         } else {
@@ -135,12 +135,15 @@ impl<'cx> SchemaCtx<'cx> {
                             quote! { #schema_name . #def_name }
                         }
                     } else {
-                        eprintln!("{}", qualified_path);
-                        todo!()
+                        let bundle_name = format_ident!("__bundle_{}", &bundle.metadata.name);
+                        let schema_name = format_ident!("{}", schema.name);
+                        let def_name = format_ident!("{}", &instance_def.name.as_str());
+
+                        quote! { #bundle_name . #schema_name . #def_name }
                     }
                 };
 
-                if def.vars.is_empty() {
+                if instance_def.vars.is_empty() {
                     TypeExpr(typ)
                 } else {
                     let subst = instance

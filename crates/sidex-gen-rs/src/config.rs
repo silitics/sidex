@@ -12,6 +12,8 @@ pub struct Config {
     pub types: TypesConfig,
     #[serde(default)]
     pub plugin: HashMap<String, serde_json::Value>,
+    #[serde(default)]
+    pub external: HashMap<String, String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]

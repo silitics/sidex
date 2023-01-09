@@ -170,10 +170,18 @@ impl Plugin for Types {
                 import * as #local_name from #path;
             }
         });
+        let external_imports = ctx.bundle_ctx.cfg.external.iter().map(|(name, path)| {
+            let local_name = format_ident!("__bundle_{}", name);
+            quote! {
+                import * as #local_name from #path;
+            }
+        });
         Ok(quote! {
             import * as __sidex_types from "@sidex/types";
 
             #(#schema_imports)*
+
+            #(#external_imports)*
         })
     }
 

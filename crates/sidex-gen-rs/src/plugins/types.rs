@@ -16,6 +16,7 @@ pub struct Types;
 
 impl Plugin for Types {
     fn visit_def(&self, ctx: &SchemaCtx, def: &Def) -> Result<proc_macro2::TokenStream> {
+        println!("Generating type definition for {}.", def.name.as_str());
         let name = format_ident!("{}", def.name.as_str());
         let docs = def
             .docs
