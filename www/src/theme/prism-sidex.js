@@ -31,7 +31,7 @@ Prism.languages.sidex = {
   },
   number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i,
   keyword: [
-    /\b(?:opaque|alias|record|variant|fun|service|import|wrapper|class|with|type|is|instance|derived)\b/,
+    /\b(?:opaque|alias|record|variant|fun|interface|import|wrapper|class|with|type|is|instance|derived)\b/,
     /\b(?:bool|string|f(?:32|64)|[ui](?:8|16|32|64)|idx|string|unit|bytes)\b/,
   ],
   punctuation: /(:|::|\?|!|\+)/,

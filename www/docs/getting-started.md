@@ -29,7 +29,7 @@ As Sidex is still under construction, it is best to install it directly from Git
 
 ## Creating a Sidex Bundle
 
-Sidex organizes data models and API definitions into _bundles_.
+Sidex organizes data models and interface definitions into _bundles_.
 
 To create a new Sidex _bundle_ named `my_bundle` run:
 
@@ -43,14 +43,14 @@ Here is a simple example of a schema you may place in the file `person.sidex`:
 
 ```sidex title="person.sidex"
 // Import a type from another bundle and schema.
-import ::sidex::result::Result
+import ::std::result::Result
 
 /// A *Universally Unique Identifier* (UUID).
 #[json(type = "string")]  // In JSON this is a string.
 #[rust(type = "::uuid::Uuid")]  // In Rust this is `::uuid::Uuid`.
 opaque Uuid  // This is an opaque user-defined type.
 
-/// A unique id for a person.
+/// A unique id identifying a person.
 wrapper PersonId: Uuid  // This is a wrapper type.
 
 /// A *role* of a person.
@@ -82,9 +82,10 @@ record Error {
     message: string
 }
 
-/// The main API service.
-service Api {
+/// The main API interface.
+interface Api {
     /// Lookup a person by their id.
+    #[rest(get("/person/<id>"))]
     fun get_person_by_id(id: PersonId) -> Result<Person, Error>
 }
 ```
