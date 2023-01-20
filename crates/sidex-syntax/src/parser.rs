@@ -362,7 +362,7 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
         .then(choice((
             def_with_inner_parser(keywords::RECORD, record_def_inner_parser()),
             def_with_inner_parser(keywords::VARIANT, variant_def_inner_parser()),
-            def_with_inner_parser(keywords::SERVICE, service_def_inner_parser()),
+            def_with_inner_parser(keywords::INTERFACE, service_def_inner_parser()),
             just(keywords::OPAQUE)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())

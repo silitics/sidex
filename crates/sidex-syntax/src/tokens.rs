@@ -257,7 +257,7 @@ pub mod keywords {
         (WRAPPER, "wrapper", "The `wrapper` keyword."),
         (DERIVED, "derived", "The `derived` keyword."),
         (FUN, "fun", "The `fun` keyword."),
-        (SERVICE, "service", "The `service` keyword."),
+        (INTERFACE, "interface", "The `interface` keyword."),
         (IMPORT, "import", "The `import` keyword."),
     ];
 }

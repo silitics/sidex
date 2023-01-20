@@ -141,6 +141,9 @@
                             "include": "#attributes"
                         },
                         {
+                            "include": "#type-list"
+                        },
+                        {
                             "begin": "\\w+",
                             "beginCaptures": {
                                 "0": {
@@ -191,6 +194,9 @@
                             "include": "#attributes"
                         },
                         {
+                            "include": "#type-list"
+                        },
+                        {
                             "begin": "\\w+",
                             "beginCaptures": {
                                 "0": {
@@ -216,6 +222,44 @@
                         },
                         {
                             "include": "#type-expression"
+                        }
+                    ]
+                },
+                {
+                    "comment": "Interface Definition",
+                    "name": "meta.sidex.definition.interface",
+                    "begin": "(interface)\\s*(\\w+)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.interface.type"
+                        },
+                        "2": {
+                            "name": "entity.name"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {},
+                    "patterns": [
+                        {
+                            "include": "#comments"
+                        },
+                        {
+                            "include": "#type-list"
+                        },
+                        {
+                            "include": "#attributes"
+                        },
+                        {
+                            "include": "#items"
+                        },
+                        {
+                            "include": "#type-expression"
+                        },
+                        {
+                            "include": "#keywords"
+                        },
+                        {
+                            "include": "#operators"
                         }
                     ]
                 },
@@ -265,6 +309,26 @@
                             "include": "#type-expression"
                         }
                     ]
+                }
+            ]
+        },
+        "type-list": {
+            "comment": "Type List",
+            "begin": "<",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.angle.open"
+                }
+            },
+            "end": ">",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.angle.open"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type-expression"
                 }
             ]
         },
@@ -351,7 +415,7 @@
                 },
                 {
                     "name": "keyword.other.sidex",
-                    "match": "\\b(fun|service|import)\\b"
+                    "match": "\\b(fun|interface|import)\\b"
                 }
             ]
         },
