@@ -17,6 +17,7 @@
         "mkdir",
         "newtype",
         "noninteractive",
+        "nonoverlapping",
         "nosources",
         "panicbit",
         "repr",
