@@ -1,4 +1,4 @@
-//! Extension for representing result.
+//! Type for results.
 
 /// A result which is either a value of type `T` or an error of type `E`.
 variant Result<T, E> {

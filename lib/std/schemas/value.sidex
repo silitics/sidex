@@ -1,28 +1,49 @@
-//! Extension for representing values of unknown type.
+//! Type for representing arbitrary values.
 
-variant Value {
-    String: string,
-    Bytes: bytes,
-
-    I8: i8,
-    I16: i16,
-    I32: i32,
-    I64: i64,
-
-    U8: u8,
-    U16: u16,
-    U32: u32,
-    U64: u64,
-
-    Idx: idx,
-
-    F32: f32,
-    F64: f64,
-
-    Bool: bool,
-
-    Unit,
-
-    Sequence: [Value],
-    Map: [Value: Value],    
-}
+// TODO: When using values as keys, how do we handle that keys need to be hashable?
+//
+// /// An arbitrary value of some type.
+// #[json(tag = "kind", content = "value")]
+// variant Value {
+//     /// A string.
+//     String: string,
+//     /// A sequence of bytes.
+//     Bytes: bytes,
+//
+//     /// An 8-bit signed integer.
+//     I8: i8,
+//     /// A 16-bit signed integer.
+//     I16: i16,
+//     /// A 32-bit signed integer.
+//     I32: i32,
+//     /// A 64-bit signed integer.
+//     I64: i64,
+//
+//     /// An 8-bit unsigned integer.
+//     U8: u8,
+//     /// A 16-bit unsigned integer.
+//     U16: u16,
+//     /// A 32-bit unsigned integer.
+//     U32: u32,
+//     /// A 64-bit unsigned integer.
+//     U64: u64,
+//
+//     /// An index into a sequence.
+//     Idx: idx,
+//
+//     /// A 32-bit floating-point number.
+//     F32: f32,
+//     /// A 64-bit floating-point number.
+//     F64: f64,
+//
+//     /// A boolean.
+//     Bool: bool,
+//
+//     /// A _unit_ indicating the absence of any specific data.
+//     Unit,
+//
+//     /// A sequence of values.
+//     Sequence: [Value],
+//     /// A map of values.
+//     Map: [Value: Value],    
+// }

@@ -1,4 +1,4 @@
-//! Extension for representing optionals.
+//! Type for optional values.
 
 /// An optional value of type `T`.
 variant Option<T> {
