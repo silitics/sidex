@@ -6,6 +6,7 @@ use sidex_gen::{diagnostics::Result, ir};
 use crate::context::{BundleCtx, SchemaCtx};
 
 pub mod builder;
+pub mod interfaces;
 pub mod serde;
 pub mod types;
 
@@ -28,5 +29,6 @@ pub fn plugins() -> HashMap<String, Arc<dyn 'static + Plugin + Sync>> {
     plugins.insert("types".to_owned(), Arc::new(types::Types));
     plugins.insert("builder".to_owned(), Arc::new(builder::Builder));
     plugins.insert("serde".to_owned(), Arc::new(serde::Serde));
+    plugins.insert("interfaces".to_owned(), Arc::new(interfaces::Interfaces));
     plugins
 }
