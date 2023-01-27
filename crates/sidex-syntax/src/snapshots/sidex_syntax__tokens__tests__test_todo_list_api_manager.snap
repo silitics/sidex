@@ -138,7 +138,7 @@ Some(
         Token {
             kind: Identifier(
                 Heap(
-                    "service",
+                    "interface",
                 ),
             ),
             span: Span(
@@ -147,7 +147,7 @@ Some(
                         0,
                     ),
                     start: 46,
-                    end: 53,
+                    end: 55,
                 },
             ),
         },
@@ -162,8 +162,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 54,
-                    end: 65,
+                    start: 56,
+                    end: 67,
                 },
             ),
         },
@@ -178,8 +178,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 66,
-                    end: 67,
+                    start: 68,
+                    end: 69,
                 },
             ),
         },
@@ -193,8 +193,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 72,
-                    end: 104,
+                    start: 74,
+                    end: 106,
                 },
             ),
         },
@@ -209,8 +209,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 108,
-                    end: 111,
+                    start: 110,
+                    end: 113,
                 },
             ),
         },
@@ -225,8 +225,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 112,
-                    end: 128,
+                    start: 114,
+                    end: 130,
                 },
             ),
         },
@@ -241,8 +241,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 128,
-                    end: 129,
+                    start: 130,
+                    end: 131,
                 },
             ),
         },
@@ -257,8 +257,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 129,
-                    end: 131,
+                    start: 131,
+                    end: 133,
                 },
             ),
         },
@@ -274,8 +274,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 131,
-                    end: 132,
+                    start: 133,
+                    end: 134,
                 },
             ),
         },
@@ -290,8 +290,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 133,
-                    end: 136,
+                    start: 135,
+                    end: 138,
                 },
             ),
         },
@@ -307,8 +307,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 136,
-                    end: 137,
+                    start: 138,
+                    end: 139,
                 },
             ),
         },
@@ -324,8 +324,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 137,
-                    end: 138,
+                    start: 139,
+                    end: 140,
                 },
             ),
         },
@@ -340,8 +340,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 138,
-                    end: 146,
+                    start: 140,
+                    end: 148,
                 },
             ),
         },
@@ -356,8 +356,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 146,
-                    end: 147,
+                    start: 148,
+                    end: 149,
                 },
             ),
         },
@@ -373,8 +373,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 148,
-                    end: 149,
+                    start: 150,
+                    end: 151,
                 },
             ),
         },
@@ -383,23 +383,6 @@ Some(
                 PunctuationSymbol {
                     kind: AngleClose,
                     is_composed: false,
-                },
-            ),
-            span: Span(
-                Span {
-                    src: SourceIdx(
-                        0,
-                    ),
-                    start: 149,
-                    end: 150,
-                },
-            ),
-        },
-        Token {
-            kind: Punctuation(
-                PunctuationSymbol {
-                    kind: Colon,
-                    is_composed: true,
                 },
             ),
             span: Span(
@@ -416,6 +399,23 @@ Some(
             kind: Punctuation(
                 PunctuationSymbol {
                     kind: Colon,
+                    is_composed: true,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 153,
+                    end: 154,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
                     is_composed: false,
                 },
             ),
@@ -424,8 +424,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 152,
-                    end: 153,
+                    start: 154,
+                    end: 155,
                 },
             ),
         },
@@ -440,8 +440,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 153,
-                    end: 157,
+                    start: 155,
+                    end: 159,
                 },
             ),
         },
@@ -457,8 +457,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 157,
-                    end: 158,
+                    start: 159,
+                    end: 160,
                 },
             ),
         },
@@ -474,8 +474,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 158,
-                    end: 159,
+                    start: 160,
+                    end: 161,
                 },
             ),
         },
@@ -490,8 +490,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 159,
-                    end: 165,
+                    start: 161,
+                    end: 167,
                 },
             ),
         },
@@ -507,8 +507,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 165,
-                    end: 166,
+                    start: 167,
+                    end: 168,
                 },
             ),
         },
@@ -524,8 +524,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 166,
-                    end: 167,
+                    start: 168,
+                    end: 169,
                 },
             ),
         },
@@ -540,8 +540,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 167,
-                    end: 182,
+                    start: 169,
+                    end: 184,
                 },
             ),
         },
@@ -555,8 +555,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 188,
-                    end: 218,
+                    start: 190,
+                    end: 220,
                 },
             ),
         },
@@ -571,8 +571,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 222,
-                    end: 225,
+                    start: 224,
+                    end: 227,
                 },
             ),
         },
@@ -587,8 +587,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 226,
-                    end: 239,
+                    start: 228,
+                    end: 241,
                 },
             ),
         },
@@ -603,8 +603,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 239,
-                    end: 240,
+                    start: 241,
+                    end: 242,
                 },
             ),
         },
@@ -619,8 +619,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 240,
-                    end: 242,
+                    start: 242,
+                    end: 244,
                 },
             ),
         },
@@ -636,8 +636,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 242,
-                    end: 243,
+                    start: 244,
+                    end: 245,
                 },
             ),
         },
@@ -652,8 +652,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 244,
-                    end: 247,
+                    start: 246,
+                    end: 249,
                 },
             ),
         },
@@ -669,8 +669,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 247,
-                    end: 248,
+                    start: 249,
+                    end: 250,
                 },
             ),
         },
@@ -686,8 +686,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 248,
-                    end: 249,
+                    start: 250,
+                    end: 251,
                 },
             ),
         },
@@ -702,8 +702,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 249,
-                    end: 255,
+                    start: 251,
+                    end: 257,
                 },
             ),
         },
@@ -719,8 +719,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 255,
-                    end: 256,
+                    start: 257,
+                    end: 258,
                 },
             ),
         },
@@ -735,8 +735,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 257,
-                    end: 266,
+                    start: 259,
+                    end: 268,
                 },
             ),
         },
@@ -752,8 +752,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 266,
-                    end: 267,
+                    start: 268,
+                    end: 269,
                 },
             ),
         },
@@ -769,8 +769,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 267,
-                    end: 268,
+                    start: 269,
+                    end: 270,
                 },
             ),
         },
@@ -785,8 +785,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 269,
-                    end: 273,
+                    start: 271,
+                    end: 275,
                 },
             ),
         },
@@ -801,8 +801,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 273,
-                    end: 274,
+                    start: 275,
+                    end: 276,
                 },
             ),
         },
@@ -817,8 +817,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 275,
-                    end: 276,
+                    start: 277,
+                    end: 278,
                 },
             ),
         },

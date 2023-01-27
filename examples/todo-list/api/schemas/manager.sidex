@@ -1,7 +1,7 @@
 import ::data::ids
 
 /// The main API service.
-service ListManager {
+interface ListManager {
     /// Lookup a person by it's id.
     fun get_person_by_id(id: ids::PersonId) -> ::data::person::GetPersonResult
 
