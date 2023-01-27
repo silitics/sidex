@@ -61,7 +61,7 @@ impl Plugin for Types {
                         let typ = TokenStream::from_str(&typ.path).unwrap();
                         Ok(quote! {
                             #[doc = #docs]
-                            #vis type #name < #vars > = #typ;
+                            #vis type #name < #vars > = #typ < #vars >;
                         })
                     }
                     None => todo!(),
