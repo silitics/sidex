@@ -1,0 +1,55 @@
+//! Definition of the Sidex RPC protocol.
+
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
+wrapper CallId: idx
+
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
+wrapper StreamId: idx
+
+#[rust(derive(PartialEq, Eq, Hash))]
+wrapper FunctionName: string
+
+#[rust(derive(PartialEq, Eq, Hash))]
+wrapper ParameterName: string
+
+variant Message<E> {
+    /// Calls a procedure.
+    Call: CallMessage<E>,
+    /// Aborts a call.
+    Abort: AbortMessage,
+
+    Return: ReturnMessage<E>,
+
+    StreamNext: StreamNextMessage<E>,
+    StreamClose: StreamCloseMessage,
+}
+
+record CallMessage<E> {
+    id: CallId,
+    fun: FunctionName,
+    args: [ParameterName: E],
+}
+
+record ReturnMessage<E> {
+    id: CallId,
+    value: E,
+}
+
+record AbortMessage {
+    id: CallId,
+    reason?: string,
+}
+
+record StreamNextMessage<E> {
+    id: StreamId,
+    /// The next value of the stream.
+    /// 
+    /// If there is no value, then the stream is exhausted.
+    value?: E,
+}
+
+/// Closes the receiving end of a stream indicating to the sender that no new values are
+/// desired.
+record StreamCloseMessage {
+    id: StreamId,
+}
