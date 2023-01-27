@@ -5,8 +5,8 @@ description = "Sidex RPC library."
 authors = ["Silitics GmbH <info@silitics.com>"]
 
 [backend.rust]
-derive = ["Clone", "Debug"]
-plugins = ["serde"]
+derive = ["Clone", "Debug"] #, "::serde::Serialize", "::serde::Deserialize"]
+plugins = ["builder", "serde"]
 
 [backend.rust.plugin.serde]
 sidex_serde_path = "::sidex_serde"
