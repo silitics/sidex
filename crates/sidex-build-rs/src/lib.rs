@@ -31,7 +31,7 @@ pub fn configure() -> Generator {
     Generator::new()
 }
 
-/// Interface for generating Rust code for Sidex bundles.
+/// Interface for generating Rust code from Sidex bundles.
 #[must_use]
 pub struct Generator {
     /// The output path where to place the generated code.
