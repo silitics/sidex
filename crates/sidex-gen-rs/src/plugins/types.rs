@@ -49,7 +49,7 @@ impl Plugin for Types {
 
         match &def.kind {
             DefKind::TypeAlias(alias) => {
-                let aliased = ctx.resolve_type_old(def, &alias.aliased);
+                let aliased = ctx.resolve_type_old(def, &alias.aliased, false);
                 Ok(quote! {
                     #[doc = #docs]
                     #vis type #name < #vars > = #aliased;
@@ -78,7 +78,7 @@ impl Plugin for Types {
                             .as_ref()
                             .map(|docs| docs.as_str())
                             .unwrap_or_default();
-                        let mut typ = ctx.resolve_type_old(def, &field.typ);
+                        let mut typ = ctx.resolve_type_old(def, &field.typ, false);
                         let attrs = FieldAttrs::try_from_attrs(&field.attrs)?;
                         for wrapper in attrs.wrappers {
                             let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
@@ -115,7 +115,7 @@ impl Plugin for Types {
                             .map(|docs| docs.as_str())
                             .unwrap_or_default();
                         if let Some(typ) = &variant.typ {
-                            let typ = ctx.resolve_type_old(def, typ);
+                            let typ = ctx.resolve_type_old(def, typ, false);
                             quote! {
                                 #[doc = #docs]
                                 #name(#typ),
@@ -138,7 +138,7 @@ impl Plugin for Types {
                 })
             }
             DefKind::WrapperType(typ) => {
-                let wrapped = ctx.resolve_type_old(def, &typ.wrapped);
+                let wrapped = ctx.resolve_type_old(def, &typ.wrapped, false);
                 Ok(quote! {
                     #[doc = #docs]
                     #derive

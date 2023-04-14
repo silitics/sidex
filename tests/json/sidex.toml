@@ -1,5 +1,5 @@
 [bundle]
-name = "json"
+name = "json_test_bundle"
 version = "0.0.0"
 description = "Test cases for Sidex's JSON representation."
 authors = ["Silitics GmbH <info@silitics.com>"]

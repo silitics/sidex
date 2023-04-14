@@ -12,4 +12,7 @@ homepage.workspace = true
 [dependencies]
 serde = "1"
 serde_json = "1"
-sidex = { path = "../sidex", features = ["macros", "serde"] }
+sidex = { path = "../sidex", features = ["macros"] }
+
+[build-dependencies]
+sidex-build-rs = { path = "../sidex-build-rs" }

@@ -1,8 +1,16 @@
 #[doc(hidden)]
 mod generated {
-    include!(concat!(env!("OUT_DIR"), "/generated/mod.rs"));
+    include!(concat!(
+        env!("OUT_DIR"),
+        "/sidex-bundles/",
+        "rpc",
+        "/mod.rs"
+    ));
 }
 
+use std::marker::PhantomData;
+
+use futures::future::BoxFuture;
 pub use generated::*;
 
 pub mod transport;

@@ -1,47 +1,57 @@
 #![doc = include_str!("../README.md")]
 
-use std::any::Any;
-
-use ::serde::{de::IntoDeserializer, Deserialize, Serialize};
-#[cfg(feature = "macros")]
-pub use sidex_macros::*;
-#[cfg(feature = "serde")]
 pub use sidex_serde as serde;
 
-#[cfg(feature = "json")]
-pub mod json;
+pub mod interfaces;
 
-#[cfg(feature = "rpc")]
-pub mod rpc {
-    pub use sidex_rpc::*;
-}
-
-/// A _data type_.
-pub trait DataType: 'static + Clone + Send + for<'de> Deserialize<'de> + Serialize {}
-
-impl<T> DataType for T where T: 'static + Clone + Send + for<'de> Deserialize<'de> + Serialize {}
-
-pub trait Embedded: Sized {
-    fn deserialize<T: DataType>(&self) -> Result<T, ()>;
-    fn serialize<T: DataType>(value: &T) -> Result<Self, ()>;
-}
-
-impl Embedded for serde_json::Value {
-    fn deserialize<T: DataType>(&self) -> Result<T, ()> {
-        T::deserialize(self.clone().into_deserializer()).map_err(|_| ())
-    }
-
-    fn serialize<T: DataType>(value: &T) -> Result<Self, ()> {
-        serde_json::to_value(value).map_err(|_| ())
-    }
-}
-
-impl Embedded for Box<dyn Any + Send> {
-    fn deserialize<T: DataType>(&self) -> Result<T, ()> {
-        self.downcast_ref().cloned().ok_or_else(|| ())
-    }
-
-    fn serialize<T: DataType>(value: &T) -> Result<Self, ()> {
-        Ok(Box::new(value.clone()))
-    }
+/// Macro for including bundles build with [`sidex_build_rs`].
+///
+/// [`sidex_build_rs`]: https://docs.rs/sidex_build_rs/latest/sidex_build_rs/
+///
+///
+/// ## Examples
+///
+/// To include a bundle named `bundle_name` as a module with the same name, use the
+/// following macro invocation:
+///
+/// ```ignore
+/// sidex::include_bundle!(pub bundle_name);
+/// ```
+///
+/// Here, `pub` specifies that the generated module should be public. Without it, the
+/// generated module would be private.
+///
+/// Using the `as` keyword, it is also possible to give the generated module a different
+/// name than the bundle name. For instance, the following macro invocation includes the
+/// bundle named `bundle_name` as a module named `mod_name`:
+///
+/// ```ignore
+/// sidex::include_bundle!(pub bundle_name as mod_name);
+/// ```
+///
+/// Additional attributes for the module can be given using the standard Rust syntax. For
+/// instance:
+///
+/// ```ignore
+/// sidex::include_bundle! {
+///     #[cfg(feature = "include-bundle")]
+///     bundle_name as mod_name
+/// }
+/// ```
+#[macro_export]
+macro_rules! include_bundle {
+    ($(#[$meta:meta])* $vis:vis $bundle_name:ident) => {
+        $crate::include_bundle!($(#[$meta])* $vis $bundle_name as $bundle_name);
+    };
+    ($(#[$meta:meta])* $vis:vis $bundle_name:ident as $mod_name:ident) => {
+        $(#[$meta])*
+        $vis mod $mod_name {
+            include!(concat!(
+                env!("OUT_DIR"),
+                "/sidex-bundles/",
+                stringify!($bundle_name),
+                "/mod.rs"
+            ));
+        }
+    };
 }

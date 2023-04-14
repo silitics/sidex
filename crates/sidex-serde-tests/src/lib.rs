@@ -1,6 +1,4 @@
-mod generated {
-    sidex::include_bundle!("../../tests/json");
-}
+sidex::include_bundle!(json_test_bundle as generated);
 
 #[cfg(test)]
 mod tests {

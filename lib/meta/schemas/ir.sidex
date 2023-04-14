@@ -200,7 +200,7 @@ variant DefKind {
     /// Definition of an instance of a type class.
     Instance: InstanceDef,
     /// Definition of a service.
-    Service: ServiceDef,
+    Interface: InterfaceDef,
 }
 
 /// A definition of a type alias.
@@ -287,15 +287,15 @@ record InstanceDef {
     subst: [Type],
 }
 
-/// A definition of a service.
+/// A definition of an interface.
 #[rust(attr(non_exhaustive))]
-record ServiceDef {
-    /// The methods provided by the service.
+record InterfaceDef {
+    /// The methods provided by the interface.
     #[default]
     methods: [Method],
 }
 
-/// A method of a service definition.
+/// A method of a interface definition.
 #[rust(attr(non_exhaustive))]
 record Method {
     /// The name of the method.

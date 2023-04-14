@@ -12,15 +12,14 @@ homepage.workspace = true
 thiserror = "1"
 # Procedural macros for Sidex.
 sidex-macros = { path = "../sidex-macros", version = "^0.1", optional = true }
-sidex-serde = { path = "../sidex-serde", optional = true }
+sidex-serde = { path = "../sidex-serde" }
 sidex-rpc = { path = "../sidex-rpc", optional = true }
 futures = { version = "*", optional = true }
-serde_json = { version = "1", optional = true }
-serde = { version = "1", optional = true }
+serde_json = { version = "1" }
+serde = { version = "1" }
 
 [features]
-default = ["macros", "serde", "rpc", "json"]
+default = ["macros",  "rpc"]
 macros = ["sidex-macros"]
-serde = ["sidex-serde", "dep:serde"]
-rpc = ["futures", "serde", "sidex-rpc"]
-json = ["serde_json"]
+rpc = ["futures", "sidex-rpc"]
+serde = []

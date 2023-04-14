@@ -142,6 +142,7 @@ fn gen_externally_tagged_body(
         ctx.generic_type_vars_with_bounds(def, quote! { __serde::Deserialize<'de> });
 
     quote! {
+        #[doc(hidden)]
         struct __Visitor < #vars > {
             __phantom_vars: ::core::marker::PhantomData<fn(&( #vars ))>,
         }
@@ -180,6 +181,7 @@ fn gen_externally_tagged_body(
 fn gen_variants_array_const(variants: &[SerdeVariant]) -> TokenStream {
     let names = variants.iter().map(|variant| &variant.name);
     quote! {
+        #[doc(hidden)]
         const __VARIANTS: &'static [&'static str] = &[#(#names,)*];
     }
 }

@@ -680,7 +680,7 @@ impl Transformer {
                                                     ir::DefKind::DerivedType(ir::DerivedTypeDef::new())
                                                 },
                                                 ast::DefKind::Service(service) => {
-                                                    ir::DefKind::Service(ir::ServiceDef::new().with_methods(service
+                                                    ir::DefKind::Interface(ir::InterfaceDef::new().with_methods(service
                                                             .methods
                                                             .iter()
                                                             .map(|method| {

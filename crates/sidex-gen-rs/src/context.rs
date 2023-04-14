@@ -146,7 +146,7 @@ impl<'cx> SchemaCtx<'cx> {
 
     pub fn field_info(&self, def: &ir::Def, field: &ir::Field) -> FieldInfo {
         let name = format_ident!("{}", &field.name.as_str());
-        let mut typ = self.resolve_type_old(def, &field.typ);
+        let mut typ = self.resolve_type_old(def, &field.typ, false);
         let attrs = FieldAttrs::try_from_attrs(&field.attrs)
             .map_err(|_| ())
             .unwrap();
@@ -225,10 +225,15 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn resolve_type(&self, def: &ir::Def, typ: &ir::Type) -> syn::Type {
-        syn::parse2(self.resolve_type_old(def, typ)).unwrap()
+        syn::parse2(self.resolve_type_old(def, typ, false)).unwrap()
     }
 
-    pub fn resolve_type_old(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
+    pub fn resolve_type_old(
+        &self,
+        def: &ir::Def,
+        typ: &ir::Type,
+        extra_super: bool,
+    ) -> TokenStream {
         println!("Resolving type {:?}", typ);
         match &typ.kind {
             ir::TypeKind::TypeVar(var) => {
@@ -253,11 +258,16 @@ impl<'cx> SchemaCtx<'cx> {
                 } else {
                     if instance.bundle == self.bundle_ctx.bundle.idx {
                         let def_name = format_ident!("{}", &instance_def.name.as_str());
+                        let prefix = if extra_super {
+                            quote! { super::}
+                        } else {
+                            quote! {}
+                        };
                         if instance.schema == self.schema.idx {
-                            quote! { #def_name }
+                            quote! { #prefix #def_name }
                         } else {
                             let schema_name = format_ident!("{}", &schema.name);
-                            quote! { super::#schema_name::#def_name }
+                            quote! { #prefix super::#schema_name::#def_name }
                         }
                     } else {
                         let external_path = self
@@ -276,7 +286,7 @@ impl<'cx> SchemaCtx<'cx> {
                 let subst = instance
                     .subst
                     .iter()
-                    .map(|typ| self.resolve_type_old(def, typ))
+                    .map(|typ| self.resolve_type_old(def, typ, extra_super))
                     .collect::<Vec<_>>();
 
                 quote! { #typ < #(#subst , )* > }

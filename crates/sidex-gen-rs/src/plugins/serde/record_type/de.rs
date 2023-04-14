@@ -130,6 +130,7 @@ fn gen_visitor(
     quote! {
         #field_identifiers_enum
 
+        #[doc(hidden)]
         struct __Visitor < #vars > {
             __phantom_vars: ::core::marker::PhantomData<fn(&( #vars ))>,
         }
@@ -205,6 +206,7 @@ fn gen_visitor(
 fn gen_fields_array_const(fields: &[SerdeField]) -> TokenStream {
     let names = fields.iter().map(|field| &field.name);
     quote! {
+        #[doc(hidden)]
         const __FIELDS: &'static [&'static str] = &[#(#names,)*];
     }
 }

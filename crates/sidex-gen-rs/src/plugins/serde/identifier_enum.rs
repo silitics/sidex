@@ -101,16 +101,20 @@ pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
     };
 
     let tokens = quote! {
+        #[doc(hidden)]
         const __IDENTIFIERS: &'static [&'static str] = &[#(#names_str,)*];
 
+        #[doc(hidden)]
         const __EXPECTING_IDENTIFIERS: &'static str = #expecting;
 
         #[derive(::core::clone::Clone, ::core::marker::Copy)]
+        #[doc(hidden)]
         enum __Identifier {
             #(#variants,)*
             #unknown
         }
 
+        #[doc(hidden)]
         struct __IdentifierVisitor;
 
         impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {

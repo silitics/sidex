@@ -9,9 +9,6 @@ wrapper StreamId: idx
 #[rust(derive(PartialEq, Eq, Hash))]
 wrapper FunctionName: string
 
-#[rust(derive(PartialEq, Eq, Hash))]
-wrapper ParameterName: string
-
 variant Message<E> {
     /// Calls a procedure.
     Call: CallMessage<E>,
@@ -27,7 +24,7 @@ variant Message<E> {
 record CallMessage<E> {
     id: CallId,
     fun: FunctionName,
-    args: [ParameterName: E],
+    args: E,
 }
 
 record ReturnMessage<E> {

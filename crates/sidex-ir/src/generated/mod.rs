@@ -4437,7 +4437,7 @@ pub mod ir {
         #[doc = "Definition of an instance of a type class.\n"]
         Instance(InstanceDef),
         #[doc = "Definition of a service.\n"]
-        Service(ServiceDef),
+        Interface(InterfaceDef),
     }
     #[automatically_derived]
     impl __serde::Serialize for DefKind {
@@ -4557,13 +4557,13 @@ pub mod ir {
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
-                    Self::Service(__value) => {
+                    Self::Interface(__value) => {
                         let mut __struct =
                             __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
                             "tag",
-                            "Service",
+                            "Interface",
                         )?;
                         __serde::ser::SerializeStruct::serialize_field(
                             &mut __struct,
@@ -4647,12 +4647,12 @@ pub mod ir {
                             __value,
                         )
                     }
-                    Self::Service(__value) => {
+                    Self::Interface(__value) => {
                         __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
                             8u32,
-                            "Service",
+                            "Interface",
                             __value,
                         )
                     }
@@ -4674,9 +4674,9 @@ pub mod ir {
                 "DerivedType",
                 "Class",
                 "Instance",
-                "Service",
+                "Interface",
             ];
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Class\", \"Instance\", \"Service\"]" ;
+            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Class\", \"Instance\", \"Interface\"]" ;
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             enum __Identifier {
                 __Identifier0,
@@ -4733,7 +4733,7 @@ pub mod ir {
                         "DerivedType" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         "Class" => ::core::result::Result::Ok(__Identifier::__Identifier6),
                         "Instance" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "Service" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                        "Interface" => ::core::result::Result::Ok(__Identifier::__Identifier8),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
@@ -4758,7 +4758,7 @@ pub mod ir {
                         b"DerivedType" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         b"Class" => ::core::result::Result::Ok(__Identifier::__Identifier6),
                         b"Instance" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"Service" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                        b"Interface" => ::core::result::Result::Ok(__Identifier::__Identifier8),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Bytes(__variant),
@@ -4789,7 +4789,7 @@ pub mod ir {
                 "DerivedType",
                 "Class",
                 "Instance",
-                "Service",
+                "Interface",
             ];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
@@ -4843,8 +4843,8 @@ pub mod ir {
                         ))
                     }
                     __Identifier::__Identifier8 => {
-                        ::core::result::Result::Ok(DefKind::Service(
-                            __tagged.deserialize_internally_tagged::<ServiceDef, __D::Error>()?,
+                        ::core::result::Result::Ok(DefKind::Interface(
+                            __tagged.deserialize_internally_tagged::<InterfaceDef, __D::Error>()?,
                         ))
                     }
                 }
@@ -4919,9 +4919,9 @@ pub mod ir {
                             }
                             (__Identifier::__Identifier8, __variant) => {
                                 let __value = __serde::de::VariantAccess::newtype_variant::<
-                                    ServiceDef,
+                                    InterfaceDef,
                                 >(__variant)?;
-                                ::core::result::Result::Ok(DefKind::Service(__value))
+                                ::core::result::Result::Ok(DefKind::Interface(__value))
                             }
                         }
                     }
@@ -7129,15 +7129,15 @@ pub mod ir {
             )
         }
     }
-    #[doc = "A definition of a service.\n"]
+    #[doc = "A definition of an interface.\n"]
     #[derive(Clone, Debug)]
     #[non_exhaustive]
-    pub struct ServiceDef {
-        #[doc = "The methods provided by the service.\n"]
+    pub struct InterfaceDef {
+        #[doc = "The methods provided by the interface.\n"]
         pub methods: ::std::vec::Vec<Method>,
     }
-    impl ServiceDef {
-        #[doc = "Creates a new [`ServiceDef`]."]
+    impl InterfaceDef {
+        #[doc = "Creates a new [`InterfaceDef`]."]
         pub fn new() -> Self {
             Self {
                 methods: ::std::default::Default::default(),
@@ -7154,19 +7154,19 @@ pub mod ir {
             self
         }
     }
-    impl ::std::default::Default for ServiceDef {
+    impl ::std::default::Default for InterfaceDef {
         fn default() -> Self {
             Self::new()
         }
     }
     #[automatically_derived]
-    impl __serde::Serialize for ServiceDef {
+    impl __serde::Serialize for InterfaceDef {
         fn serialize<__S: __serde::Serializer>(
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "ServiceDef", 1usize)?;
+                __serde::Serializer::serialize_struct(__serializer, "InterfaceDef", 1usize)?;
             __serde::ser::SerializeStruct::serialize_field(
                 &mut __struct,
                 "methods",
@@ -7176,7 +7176,7 @@ pub mod ir {
         }
     }
     #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for ServiceDef {
+    impl<'de> __serde::Deserialize<'de> for InterfaceDef {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
@@ -7243,12 +7243,12 @@ pub mod ir {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
             impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = ServiceDef;
+                type Value = InterfaceDef;
                 fn expecting(
                     &self,
                     __formatter: &mut ::core::fmt::Formatter,
                 ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record ServiceDef")
+                    ::core::fmt::Formatter::write_str(__formatter, "record InterfaceDef")
                 }
                 #[inline]
                 fn visit_seq<__A>(
@@ -7269,7 +7269,7 @@ pub mod ir {
                             );
                         }
                     };
-                    ::core::result::Result::Ok(ServiceDef { methods: __field0 })
+                    ::core::result::Result::Ok(InterfaceDef { methods: __field0 })
                 }
                 #[inline]
                 fn visit_map<__A>(
@@ -7314,13 +7314,13 @@ pub mod ir {
                             );
                         }
                     };
-                    ::core::result::Result::Ok(ServiceDef { methods: __field0 })
+                    ::core::result::Result::Ok(InterfaceDef { methods: __field0 })
                 }
             }
             const __FIELDS: &'static [&'static str] = &["methods"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
-                "ServiceDef",
+                "InterfaceDef",
                 __FIELDS,
                 __Visitor {
                     __phantom_vars: ::core::marker::PhantomData,
@@ -7328,7 +7328,7 @@ pub mod ir {
             )
         }
     }
-    #[doc = "A method of a service definition.\n"]
+    #[doc = "A method of a interface definition.\n"]
     #[derive(Clone, Debug)]
     #[non_exhaustive]
     pub struct Method {
