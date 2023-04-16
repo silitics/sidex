@@ -19,7 +19,12 @@
 //!
 //! [`include_bundle!`]: https://docs.rs/sidex/latest/sidex/macro.include_bundle.html
 
-use std::{error::Error, fs, path::PathBuf};
+use std::{
+    error::Error,
+    ffi::{OsStr, OsString},
+    fs,
+    path::{Path, PathBuf},
+};
 
 use sidex_core::transformer::Transformer;
 use sidex_gen_rs::RustGenerator;
@@ -42,8 +47,8 @@ pub struct Generator {
     emit_rerun_if_changed: bool,
     /// The `format_generated_code` option.
     format_generated_code: bool,
-    /// The bundle paths for which to generate code.
-    bundle_paths: Vec<PathBuf>,
+    /// The bundles for which to generate code.
+    bundles: Vec<Bundle>,
 }
 
 impl Generator {
@@ -54,7 +59,7 @@ impl Generator {
             root_path: utils::default_root_path(),
             emit_rerun_if_changed: true,
             format_generated_code: true,
-            bundle_paths: Vec::new(),
+            bundles: Vec::new(),
         }
     }
 
@@ -80,8 +85,8 @@ impl Generator {
     }
 
     /// Adds a bundle for which to generate code.
-    pub fn with_bundle<P: Into<PathBuf>>(mut self, bundle_path: P) -> Self {
-        self.bundle_paths.push(bundle_path.into());
+    pub fn with_bundle<B: Into<Bundle>>(mut self, bundle: B) -> Self {
+        self.bundles.push(bundle.into());
         self
     }
 
@@ -94,9 +99,9 @@ impl Generator {
         let mut transformer = Transformer::new();
 
         let bundle_indices = match self
-            .bundle_paths
+            .bundles
             .iter()
-            .map(|bundle_path| transformer.load_bundle_recursive(&self.root_path.join(bundle_path)))
+            .map(|bundle| transformer.load_bundle_recursive(&self.root_path.join(&bundle.path)))
             .collect::<Result<Vec<_>, _>>()
         {
             Ok(indices) => indices,
@@ -108,9 +113,9 @@ impl Generator {
 
         let unit = transformer.transform();
 
-        for (bundle_idx, bundle_path) in bundle_indices.iter().zip(&self.bundle_paths) {
+        for (bundle_idx, bundle) in bundle_indices.iter().zip(&self.bundles) {
             let null = serde_json::Value::Null;
-            let bundle_path = self.root_path.join(bundle_path);
+            let bundle_path = self.root_path.join(&bundle.path);
             let config = transformer
                 .get_bundle_manifest(*bundle_idx)
                 .backend
@@ -156,3 +161,33 @@ impl Generator {
         Ok(())
     }
 }
+
+/// A bundle for which to generate code.
+pub struct Bundle {
+    path: PathBuf,
+}
+
+impl Bundle {
+    /// Creates a new [`Bundle`] with the specified path.
+    pub(crate) fn new(path: PathBuf) -> Self {
+        Self { path }
+    }
+}
+
+/// Helper macro for implementing the [`From`] trait for [`Bundle`].
+macro_rules! impl_from_for_bundle {
+    ($from:ty) => {
+        impl From<$from> for Bundle {
+            fn from(value: $from) -> Self {
+                Bundle::new(value.into())
+            }
+        }
+    };
+}
+
+impl_from_for_bundle!(&str);
+impl_from_for_bundle!(String);
+impl_from_for_bundle!(&Path);
+impl_from_for_bundle!(PathBuf);
+impl_from_for_bundle!(&OsStr);
+impl_from_for_bundle!(OsString);
