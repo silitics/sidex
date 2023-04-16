@@ -101,7 +101,9 @@ impl Generator {
         let bundle_indices = match self
             .bundles
             .iter()
-            .map(|bundle| transformer.load_bundle_recursive(&self.root_path.join(&bundle.path)))
+            .map(|bundle| {
+                ctx.exec(|| transformer.load_bundle_recursive(&self.root_path.join(&bundle.path)))
+            })
             .collect::<Result<Vec<_>, _>>()
         {
             Ok(indices) => indices,
