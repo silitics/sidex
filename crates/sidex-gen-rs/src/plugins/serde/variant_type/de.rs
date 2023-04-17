@@ -136,10 +136,28 @@ fn gen_externally_tagged_body(
             }
         });
 
+    let match_arms_str =
+        variants
+            .iter()
+            .zip(identifiers.iter())
+            .filter_map(|(variant, de_ident)| {
+                let ident = &variant.rust_variant.ident;
+                if variant.rust_variant.ty.is_some() {
+                    return None;
+                }
+                Some(quote! {
+                    __Identifier::#de_ident => {
+                        ::core::result::Result::Ok(#ty_ident::#ident)
+                    }
+                })
+            });
+
     let vars = ctx.generic_type_vars(def);
 
     let vars_with_bounds =
         ctx.generic_type_vars_with_bounds(def, quote! { __serde::Deserialize<'de> });
+
+    let enum_type_name = format!("enum {}", ty_name);
 
     quote! {
         #[doc(hidden)]
@@ -153,8 +171,21 @@ fn gen_externally_tagged_body(
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 ::core::fmt::Formatter::write_str(
                     __formatter,
-                    "enum ExternallyTagged",
+                    #enum_type_name,
                 )
+            }
+
+            #[inline]
+            fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
+            where
+                __E: __serde::de::Error,
+            {
+                let __identifier = __IdentifierVisitor.visit_str(__value)?;
+
+                match __identifier {
+                    #(#match_arms_str),*
+                    _ => Err(__E::invalid_value(__serde::de::Unexpected::Str(__value), &self))
+                }
             }
 
             #[inline]
