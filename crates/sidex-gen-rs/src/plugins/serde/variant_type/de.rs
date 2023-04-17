@@ -182,6 +182,7 @@ fn gen_externally_tagged_body(
             {
                 let __identifier = __IdentifierVisitor.visit_str(__value)?;
 
+                #[allow(unreachable_patterns)]
                 match __identifier {
                     #(#match_arms_str),*
                     _ => Err(__E::invalid_value(__serde::de::Unexpected::Str(__value), &self))
