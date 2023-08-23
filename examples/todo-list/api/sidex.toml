@@ -1,6 +1,0 @@
-[bundle]
-name = "api"
-version = "0.1.0"
-
-[dependencies]
-data = { path = "../data" }

@@ -1,5 +1,5 @@
 [bundle]
-name = "data"
+name = "todo_list_data"
 version = "0.1.0"
 
 [backend.rust]

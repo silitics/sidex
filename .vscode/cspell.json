@@ -22,6 +22,7 @@
         "noninteractive",
         "nonoverlapping",
         "nosources",
+        "openapi",
         "panicbit",
         "repr",
         "rustfmt",

@@ -1,0 +1,6 @@
+[bundle]
+name = "todo_list_api"
+version = "0.1.0"
+
+[dependencies]
+todo_list_data = { path = "../todo_list_data" }

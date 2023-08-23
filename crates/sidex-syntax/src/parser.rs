@@ -503,21 +503,21 @@ mod tests {
 
     make_test_from_file!(
         test_todo_list_api_manager,
-        "../../../examples/todo-list/api/schemas/manager.sidex"
+        "../../../examples/todo-list/todo_list_api/schemas/manager.sidex"
     );
 
     make_test_from_file!(
         test_todo_list_data_ids,
-        "../../../examples/todo-list/data/schemas/ids.sidex"
+        "../../../examples/todo-list/todo_list_data/schemas/ids.sidex"
     );
 
     make_test_from_file!(
         test_todo_list_data_person,
-        "../../../examples/todo-list/data/schemas/person.sidex"
+        "../../../examples/todo-list/todo_list_data/schemas/person.sidex"
     );
 
     make_test_from_file!(
         test_todo_list_data_task,
-        "../../../examples/todo-list/data/schemas/task.sidex"
+        "../../../examples/todo-list/todo_list_data/schemas/task.sidex"
     );
 }
