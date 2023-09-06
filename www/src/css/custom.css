@@ -32,16 +32,23 @@
 
 /* Styling for inline code. Colors copied from Prism theme. */
 code.keyword,
-code.builtin-type {
+code.builtin-type,
+span.keyword,
+span.builtin-type {
   color: rgb(197, 165, 197);
 }
-code.type-name {
+code.type-name,
+span.type-name {
   color: rgb(250, 200, 99);
 }
 
 /* Fix the spacing between footnote text and backref link. */
 .footnote-backref {
   margin-left: 6pt;
+}
+
+p > code {
+  line-height: normal !important;
 }
 
 sup {
