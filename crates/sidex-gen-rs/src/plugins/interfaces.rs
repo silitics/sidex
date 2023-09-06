@@ -14,7 +14,7 @@ impl Plugin for Interfaces {
     fn visit_def(&self, ctx: &SchemaCtx, def: &Def) -> Result<proc_macro2::TokenStream> {
         let DefKind::Interface(interface_def) = &def.kind else {
             // We only generate code for interface definitions.
-            return Ok(Default::default())
+            return Ok(Default::default());
         };
         println!("Generating interface definition for {}.", def.name.as_str());
         let trait_name = format_ident!("{}", def.name.as_str());

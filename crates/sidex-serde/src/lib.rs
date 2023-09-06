@@ -8,10 +8,9 @@ pub mod ser;
 // fn default_serialize<T: serde::Serialize, S: serde::Serializer>(
 //     value: &T,
 //     serializer: S,
-// ) -> Result<S::Ok, S::Error> {
-//     // Use Serde's default `serialize` implementation but wrap the serializer such
-//     // that inner values are serialized as required by Sidex.
-//     serde::Serialize::serialize(value, Sidex(serializer))
+// ) -> Result<S::Ok, S::Error> { // Use Serde's default `serialize` implementation but
+//   wrap the serializer such // that inner values are serialized as required by Sidex.
+//   serde::Serialize::serialize(value, Sidex(serializer))
 // }
 
 // pub trait Serialize: serde::Serialize {
@@ -157,8 +156,7 @@ pub mod ser;
 //         name: &'static str,
 //         variant_index: u32,
 //         variant: &'static str,
-//     ) -> Result<Self::Ok, Self::Error> {
-//         todo!()
+//     ) -> Result<Self::Ok, Self::Error> { todo!()
 //     }
 
 //     fn serialize_newtype_struct<T: ?Sized>(
@@ -197,8 +195,7 @@ pub mod ser;
 //         self,
 //         name: &'static str,
 //         len: usize,
-//     ) -> Result<Self::SerializeTupleStruct, Self::Error> {
-//         todo!()
+//     ) -> Result<Self::SerializeTupleStruct, Self::Error> { todo!()
 //     }
 
 //     fn serialize_tuple_variant(
@@ -207,8 +204,7 @@ pub mod ser;
 //         variant_index: u32,
 //         variant: &'static str,
 //         len: usize,
-//     ) -> Result<Self::SerializeTupleVariant, Self::Error> {
-//         todo!()
+//     ) -> Result<Self::SerializeTupleVariant, Self::Error> { todo!()
 //     }
 
 //     fn serialize_map(self, len: Option<usize>) -> Result<Self::SerializeMap,
@@ -219,8 +215,7 @@ pub mod ser;
 //         self,
 //         name: &'static str,
 //         len: usize,
-//     ) -> Result<Self::SerializeStruct, Self::Error> {
-//         todo!()
+//     ) -> Result<Self::SerializeStruct, Self::Error> { todo!()
 //     }
 
 //     fn serialize_struct_variant(
@@ -229,8 +224,7 @@ pub mod ser;
 //         variant_index: u32,
 //         variant: &'static str,
 //         len: usize,
-//     ) -> Result<Self::SerializeStructVariant, Self::Error> {
-//         todo!()
+//     ) -> Result<Self::SerializeStructVariant, Self::Error> { todo!()
 //     }
 // }
 

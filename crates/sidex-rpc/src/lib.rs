@@ -59,21 +59,10 @@ pub mod transport;
 //     fn poll(
 //         self: std::pin::Pin<&mut Self>,
 //         cx: &mut std::task::Context<'_>,
-//     ) -> std::task::Poll<Self::Output> {
-//         while !self.tx_buffer.is_empty() {
-//             match self.tx.poll_ready_unpin(cx) {
-//                 Poll::Ready(Ok(_)) => {
-//                     let message = self.tx_buffer.pop_front().unwrap();
-//                     self.tx.start_send_unpin(message);
-//                 }
-//                 Poll::Ready(Err(err)) => {
-//                     panic!("Propagate error!")
-//                 }
-//                 _ => {
-//                     break;
-//                 }
-//             }
-//         }
+//     ) -> std::task::Poll<Self::Output> { while !self.tx_buffer.is_empty() { match
+//       self.tx.poll_ready_unpin(cx) { Poll::Ready(Ok(_)) => { let message =
+//       self.tx_buffer.pop_front().unwrap(); self.tx.start_send_unpin(message); }
+//       Poll::Ready(Err(err)) => { panic!("Propagate error!") } _ => { break; } } }
 
 //         Poll::Pending
 //     }
