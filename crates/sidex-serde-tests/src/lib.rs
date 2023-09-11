@@ -43,6 +43,9 @@ mod tests {
         test::<VariantExternallyTagged<i32>>("VariantExternallyTagged");
         test::<VariantAdjacentlyTagged<i32>>("VariantAdjacentlyTagged");
         test::<VariantImplicitlyTagged<bool>>("VariantImplicitlyTagged");
+        test::<MaybeRef<u64>>("MaybeRefInteger");
+        test::<MaybeRef<Point>>("MaybeRefPoint");
+        test::<Any>("Any");
     }
 
     #[test]

@@ -63,3 +63,29 @@ record VarRecord<T> {
     x: T,
     y?: string,
 }
+
+#[json(tagged = implicitly)]
+variant Any {
+    Integer: i64,
+    Float: f64,
+    String: string,
+    Bool: bool,
+    Array: [Any],
+    Object: [string: Any],
+}
+
+#[json(tagged = implicitly)]
+variant MaybeRef<T> {
+    Value: T,
+    Reference: Reference,
+}
+
+record Reference {
+    #[json(name = "$ref")]
+    reference: string,
+}
+
+record Point {
+    x: f64,
+    y: f64,
+}
