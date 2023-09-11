@@ -26,6 +26,10 @@ regenerate-ir:
     cd lib/meta && cargo run --bin sidex -- generate rust ../../crates/sidex-ir/src/generated
     cargo +nightly fmt
 
+regenerate-openapi:
+    cd lib/openapi && cargo run --bin sidex -- generate rust ../../crates/sidex-gen-openapi/src/generated
+    cargo +nightly fmt
+
 reset-ir:
     git checkout crates/sidex-ir/src/generated/mod.rs
 

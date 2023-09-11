@@ -121,6 +121,8 @@ pub struct InvalidRenameFunctionError;
 #[derive(Debug, Clone)]
 pub enum RenameFunction {
     None,
+    Lowercase,
+    Uppercase,
     CamelCase,
     PascalCase,
     SnakeCase,
@@ -133,6 +135,8 @@ impl RenameFunction {
     pub fn apply_to(&self, input: &str) -> String {
         match self {
             RenameFunction::None => input.to_owned(),
+            RenameFunction::Lowercase => input.to_lowercase(),
+            RenameFunction::Uppercase => input.to_uppercase(),
             RenameFunction::CamelCase => to_camel_case(input),
             RenameFunction::PascalCase => to_pascal_case(input),
             RenameFunction::SnakeCase => to_snake_case(input),
@@ -149,6 +153,8 @@ impl FromStr for RenameFunction {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "none" => Ok(Self::None),
+            "lowercase" => Ok(Self::Lowercase),
+            "UPPERCASE" => Ok(Self::Uppercase),
             "camelCase" => Ok(Self::CamelCase),
             "PascalCase" => Ok(Self::PascalCase),
             "snake_case" => Ok(Self::SnakeCase),

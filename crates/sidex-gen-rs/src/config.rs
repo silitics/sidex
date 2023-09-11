@@ -49,7 +49,7 @@ impl TypesConfig {
             "::core::builtins::f32" => f32,
             "::core::builtins::f64" => f64,
             "::core::builtins::bool" => bool,
-            "::core::builtins::unit" => (),
+            "::core::builtins::unit" => ::std::unit,
             "::core::builtins::Sequence" => ::std::vec::Vec,
             "::core::builtins::Map" => ::std::collections::HashMap,
         };

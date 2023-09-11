@@ -4,3 +4,6 @@ version = "0.1.0"
 
 [dependencies]
 todo_list_data = { path = "../todo_list_data" }
+
+[backend.openapi]
+title = "Task Manager API"

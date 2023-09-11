@@ -1,0 +1,39 @@
+#[http("/pet")]
+#[openapi(tag = "pet")]
+interface PetsApi {
+    /// Update an existing pet.
+    #[http(put)]
+    fun update_pet()
+
+    /// Add a new pet to the store.
+    #[http(post)]
+    fun add_pet()
+
+    /// Find a pet by its status.
+    #[http(get("/findByStatus"))]
+    fun find_by_status()
+
+    /// Find a pet by its tags.
+    #[http(get("/findByTags"))]
+    fun find_by_tags()
+}
+
+#[http("/pet/{pet_id}")]
+#[openapi(tag = "pet")]
+interface PetApi(pet_id: idx) {
+    /// Query a pet by its id.
+    #[http(get)]
+    fun get_pet()
+
+    /// Update a pet with form data.
+    #[http(post)]
+    fun update_pet()
+
+    /// Delete a pet.
+    #[http(delete)]
+    fun delete_pet()
+
+    /// Upload an image.
+    #[http(post("/uploadImage"))]
+    fun upload_image()
+}

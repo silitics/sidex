@@ -24,6 +24,8 @@
         "nosources",
         "openapi",
         "panicbit",
+        "petstore",
+        "Petstore",
         "repr",
         "rustfmt",
         "rwlock",

@@ -1,0 +1,31 @@
+{
+    "description": "successful operation",
+    "headers": {
+        "X-Rate-Limit": {
+            "description": "calls per hour allowed by the user",
+            "schema": {
+                "type": "integer",
+                "format": "int32"
+            }
+        },
+        "X-Expires-After": {
+            "description": "date in UTC when token expires",
+            "schema": {
+                "type": "string",
+                "format": "date-time"
+            }
+        }
+    },
+    "content": {
+        "application/xml": {
+            "schema": {
+                "type": "string"
+            }
+        },
+        "application/json": {
+            "schema": {
+                "type": "string"
+            }
+        }
+    }
+}

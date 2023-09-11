@@ -1,0 +1,28 @@
+[bundle]
+name = "petstore"
+version = "0.1.0"
+
+[backend.openapi.info]
+title = "Sidex Petstore API"
+version = "1.0.11"
+description = """
+This is a sample replicating the [Swagger Petstore API](https://petstore3.swagger.io/) with [Sidex](http://oss.silitics.com/sidex).
+
+For the Sidex sources, checkout our [GitHub Repository](https://github.com/silitics/sidex/tree/main/examples/petstore).
+"""
+license = { name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html" }
+
+[[backend.openapi.servers]]
+url = "https://petstore3.swagger.io/api/v3"
+
+[[backend.openapi.tags]]
+name = "pet"
+description = "Everything about pets."
+
+[[backend.openapi.tags]]
+name = "store"
+description = "Access to petstore orders."
+
+[[backend.openapi.tags]]
+name = "user"
+description = "Operations on users."

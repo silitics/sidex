@@ -1,0 +1,32 @@
+#[http("/store")]
+#[openapi(tag = "store")]
+interface StoreApi {
+    /// Query the petstore inventory.
+    #[http(get("/inventory"))]
+    fun get_inventory()
+
+    /// Place an order for a pet.
+    #[http(post("/order"))]
+    fun place_order()
+}
+
+#[http("/store/order/{order_id}")]
+#[openapi(tag = "store")]
+interface OrderApi(order_id: idx) {
+    /// Query order by its id.
+    #[http(get)]
+    fun get_order() -> Order
+
+    /// Delete an order.
+    #[http(delete)]
+    fun delete_order()
+}
+
+record Order {
+    id: i64,
+    pet_id: i64,
+    quantity: i32,
+    ship_date: string,
+    status: string,
+    complete: bool,
+}

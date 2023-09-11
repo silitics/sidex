@@ -1,0 +1,286 @@
+//! Types of the OpenAPI specification.
+
+/// A string that MAY use [CommonMark syntax](https://spec.commonmark.org/).
+wrapper Markdown: string
+
+/// A string that MUST be an URL.
+wrapper Url: string
+
+/// A string that MUST be an email address.
+wrapper Email: string
+
+/// Either a value of type `T` or a reference.
+#[json(tagged = implicitly)]
+variant MaybeRef<T> {
+    /// A value of type `T`.
+    Value: T,
+    /// A reference.
+    Reference: Reference,
+}
+
+/// An [OpenAPI Object](https://spec.openapis.org/oas/v3.1.0#openapi-object) (4.8.1).
+record OpenApi {
+    openapi: string,
+    info: Info,
+    json_schema_dialect?: string,
+    servers?: [Server],
+    paths?: Paths,
+    webhooks?: [string: MaybeRef<PathItem>],
+    components?: Components,
+    security?: [SecurityRequirement],
+    tags?: [Tag],
+    external_docs?: ExternalDocumentation,
+}
+
+/// An [Info Object](https://spec.openapis.org/oas/v3.1.0#info-object) (4.8.2).
+record Info {
+    title: string,
+    version: string,
+    summary?: string,
+    description?: Markdown,
+    terms_of_service?: Url,
+    contact?: Contact,
+    license?: License,
+}
+
+/// A [Contact Object](https://spec.openapis.org/oas/v3.1.0#contact-object)  (4.8.3).
+record Contact {
+    name?: string,
+    url?: Url,
+    email?: Email,
+}
+
+/// A [License Object](https://spec.openapis.org/oas/v3.1.0#license-object) (4.8.4).
+record License {
+    name: string,
+    identifier?: string,
+    url?: Url,
+}
+
+/// A [Server Object](https://spec.openapis.org/oas/v3.1.0#server-object) (4.8.5).
+record Server {
+    url: Url,
+    description?: Markdown,
+    variables?: [string: ServerVariable],
+}
+
+/// A [Server Variable Object](https://spec.openapis.org/oas/v3.1.0#server-variable-object) (4.8.6).
+record ServerVariable {
+    #[json(name = "enum")]
+    options?: [string],
+    default: string,
+    description?: Markdown,
+}
+
+/// A [Components Object](https://spec.openapis.org/oas/v3.1.0#components-object) (4.8.7).
+record Components {
+    schemas?: [string: Schema],
+    responses?: [string: MaybeRef<Response>],
+    parameters?: [string: MaybeRef<Parameter>],
+    examples?: [string: MaybeRef<Example>],
+    request_bodies?: [string: MaybeRef<RequestBody>],
+    headers?: [string: MaybeRef<Header>],
+    security_schemes?: [string: MaybeRef<SecurityScheme>],
+    links?: [string: MaybeRef<Link>],
+    callbacks?: [string: MaybeRef<Callback>],
+    path_items?: [string: MaybeRef<PathItem>],
+}
+
+/// A [Paths Object](https://spec.openapis.org/oas/v3.1.0#paths-object) (4.8.8)
+wrapper Paths: [string: PathItem]
+
+/// A [Path Item Object](https://spec.openapis.org/oas/v3.1.0#path-item-object) (4.8.9)
+record PathItem {
+    #[json(name = "$ref")]
+    reference?: string,
+    summary?: string,
+    description?: Markdown,
+    get?: Operation,
+    put?: Operation,
+    post?: Operation,
+    delete?: Operation,
+    options?: Operation,
+    head?: Operation,
+    patch?: Operation,
+    trace?: Operation,
+    servers?: [Server],
+    parameters?: [MaybeRef<Parameter>],
+}
+
+/// An [Operation Object](https://spec.openapis.org/oas/v3.1.0#operation-object) (4.8.10)
+record Operation {
+    tags?: [string],
+    summary?: string,
+    description?: Markdown,
+    external_docs?: ExternalDocumentation,
+    operation_id?: string,
+    parameters?: [MaybeRef<Parameter>],
+    request_body?: MaybeRef<RequestBody>,
+    responses?: Responses,
+    callbacks?: [string: MaybeRef<Callback>],
+    deprecated?: bool,
+    security?: [SecurityRequirement],
+    servers?: [Server],
+}
+
+/// An [External Documentation Object](https://spec.openapis.org/oas/v3.1.0#external-documentation-object) (4.8.11).
+record ExternalDocumentation {
+    description?: Markdown,
+    url: Url,
+}
+
+#[json(tagged = implicitly)]
+variant Any {
+    Integer: i64,
+    Float: f64,
+    String: string,
+    Bool: bool,
+    Array: [Any],
+    Object: [string: Any],
+    // Null: unit,
+}
+
+/// A [Parameter Object](https://spec.openapis.org/oas/v3.1.0#parameter-object) (4.8.12).
+record Parameter {
+    name: string,
+    #[json(name = "in")]
+    location: ParameterLocation,
+    description?: Markdown,
+    required?: bool,
+    deprecated?: bool,
+    allow_empty_value?: bool,
+    style?: string,
+    explode?: bool,
+    allow_reserved?: bool,
+    schema?: Schema,
+    example?: Any,
+    examples?: [string: MaybeRef<Example>],
+    content?: [string: MediaType],
+}
+
+/// Location of a [Parameter Object](https://spec.openapis.org/oas/v3.1.0#parameter-object) (4.8.12).
+#[json(rename_all = "lowercase", tagged = externally)]
+variant ParameterLocation {
+    Query,
+    Header,
+    Path,
+    Cookie,
+}
+
+/// A [Request Body Object](https://spec.openapis.org/oas/v3.1.0#request-body-object) (4.8.13).
+record RequestBody {
+    description?: Markdown,
+    content: [string: MediaType],
+    required?: bool,
+}
+
+
+/// A [Media Type Object](https://spec.openapis.org/oas/v3.1.0#media-type-object) (4.8.14).
+record MediaType {
+    schema?: Schema,
+    example?: Any,
+    examples?: [string: MaybeRef<Example>],
+    encoding?: [string: Encoding],
+}
+
+/// An [Encoding Object](https://spec.openapis.org/oas/v3.1.0#encoding-object) (4.8.15).
+record Encoding {
+    content_type?: string,
+    headers?: [string: MaybeRef<Header>],
+    style?: string,
+    explode?: string,
+    allow_reserved?: bool,
+}
+
+/// A [Responses Object](https://spec.openapis.org/oas/v3.1.0#responses-object) (4.8.16).
+wrapper Responses: [string: MaybeRef<Response>]
+
+/// A [Response Object](https://spec.openapis.org/oas/v3.1.0#response-object) (4.8.17).
+record Response {
+    description: Markdown,
+    headers?: [string: MaybeRef<Header>],
+    content?: [string: MediaType],
+    links?: [string: MaybeRef<Link>],
+}
+
+
+/// A [Callback Object](https://spec.openapis.org/oas/v3.1.0#callback-object) (4.8.18).
+wrapper Callback: [string: MaybeRef<PathItem>]
+
+
+/// A [Example Object](https://spec.openapis.org/oas/v3.1.0#example-object) (4.8.19).
+record Example {
+    summary?: string,
+    description?: Markdown,
+    value?: Any,
+    external_value?: string,
+}
+
+/// A [Link Object](https://spec.openapis.org/oas/v3.1.0#link-object) (4.8.20).
+record Link {
+    operation_ref?: string,
+    operation_id?: string,
+    parameters?: [string: Any],
+    request_body?: Any,
+    description?: string,
+    server?: Server,
+}
+
+/// A [Header Object](https://spec.openapis.org/oas/v3.1.0#header-object) (4.8.21).
+record Header {
+    description?: Markdown,
+    required?: bool,
+    deprecated?: bool,
+    allow_empty_value?: bool,
+    style?: string,
+    explode?: bool,
+    allow_reserved?: bool,
+    schema?: Schema,
+    example?: Any,
+    examples?: [string: MaybeRef<Example>],
+    content?: [string: MediaType],
+}
+
+
+/// A [Tag Object](https://spec.openapis.org/oas/v3.1.0#tag-object) (4.8.22).
+record Tag {
+    name: string,
+    description?: Markdown,
+    external_docs?: ExternalDocumentation,
+}
+
+/// A [Reference Object](https://spec.openapis.org/oas/v3.1.0#reference-object) (4.8.23).
+record Reference {
+    #[json(name = "$ref")]
+    reference: string,
+    summary?: string,
+    description?: Markdown,
+}
+
+/// A [Schema Object](https://spec.openapis.org/oas/v3.1.0#schema-object) (4.8.24).
+wrapper Schema: Any
+
+/// A [Discriminator Object](https://spec.openapis.org/oas/v3.1.0#discriminator-object) (4.8.25).
+record Discriminator {
+    property_name: string,
+    mapping?: [string: string],
+}
+
+/// An [XML Object](https://spec.openapis.org/oas/v3.1.0#xml-object) (4.8.26).
+wrapper XmlObject: Any
+
+/// A [Security Scheme Object](https://spec.openapis.org/oas/v3.1.0#security-scheme-object) (4.8.27).
+record SecurityScheme {
+    #[json(name = "type")]
+    ty: string,
+    description?: Markdown,
+    name?: string,
+    scheme?: string,
+    bearer_format?: string,
+    flows?: Any,
+    open_id_connect_url?: Url,
+}
+
+
+/// A [Security Requirement Object](https://spec.openapis.org/oas/v3.1.0#security-requirement-object) (4.8.30).
+wrapper SecurityRequirement: [string: [string]]

@@ -1,0 +1,46 @@
+#[http("/user")]
+#[openapi(tag = "user")]
+interface UsersApi {
+    /// Create a user.
+    #[http(post)]
+    fun create_user()
+
+    /// Create a list of users from a specified list.
+    #[http(post("/createWithList"))]
+    fun create_users()
+
+    /// Login a user.
+    #[http(get("/login"))]
+    fun login()
+
+    /// Logout a user.
+    #[http(get("/logout"))]
+    fun logout()
+}
+
+#[http("/user/{username}")]
+#[openapi(tag = "user")]
+interface UserApi(username: string) {
+    /// Query a user.
+    #[http(get)]
+    fun get_user() -> User
+
+    /// Update a user.
+    #[http(put)]
+    fun update_user()
+
+    /// Delete a user.
+    #[http(delete)]
+    fun delete_user()
+}
+
+record User {
+    id: i64,
+    username: string,
+    first_name: string,
+    last_name: string,
+    email: string,
+    password: string,
+    phone: string,
+    user_status: i32
+}

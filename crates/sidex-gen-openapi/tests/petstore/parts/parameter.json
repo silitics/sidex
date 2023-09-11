@@ -1,0 +1,16 @@
+{
+    "name": "status",
+    "in": "query",
+    "description": "Status values that need to be considered for filter",
+    "required": false,
+    "explode": true,
+    "schema": {
+        "type": "string",
+        "default": "available",
+        "enum": [
+            "available",
+            "pending",
+            "sold"
+        ]
+    }
+}

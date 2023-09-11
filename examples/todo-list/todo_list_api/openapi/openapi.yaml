@@ -1,0 +1,4 @@
+openapi: '3.1'
+info:
+  title: Task Manager API
+  version: 0.1.0
