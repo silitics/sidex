@@ -171,6 +171,8 @@ record Def {
     attrs: [Attr],
     /// The kind of the definition.
     kind: DefKind,
+    #[default]
+    args: [MethodParam],
 }
 
 /// A type variable of a definition.
@@ -195,11 +197,7 @@ variant DefKind {
     WrapperType: WrapperTypeDef,
     /// Definition of a derived type.
     DerivedType: DerivedTypeDef,
-    /// Definition of a type class.
-    Class: ClassDef,
-    /// Definition of an instance of a type class.
-    Instance: InstanceDef,
-    /// Definition of a service.
+    /// Definition of an interface.
     Interface: InterfaceDef,
 }
 
@@ -272,20 +270,6 @@ record WrapperTypeDef {
 #[rust(attr(non_exhaustive))]
 record DerivedTypeDef {}
 
-/// A definition of a type class.
-#[rust(attr(non_exhaustive))]
-record ClassDef {
-    // /// The methods of the type class.
-    // #[default]
-    // methods: [Method]
-}
-
-#[rust(attr(non_exhaustive))]
-record InstanceDef {
-    cls: DefRef,
-    #[default]
-    subst: [Type],
-}
 
 /// A definition of an interface.
 #[rust(attr(non_exhaustive))]
@@ -322,6 +306,8 @@ record MethodParam {
     /// Indicates whether the parameter is optional.
     #[default]
     is_optional: bool,
+    #[default]
+    attrs: [Attr],
 }
 
 /// A type.

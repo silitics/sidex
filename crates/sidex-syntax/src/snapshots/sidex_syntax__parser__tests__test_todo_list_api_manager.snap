@@ -14,15 +14,15 @@ Some(
                     name: Identifier(
                         Node {
                             inner: Heap(
-                                "TodoApi",
+                                "Tasks",
                             ),
                             span: Span(
                                 Span {
                                     src: SourceIdx(
                                         0,
                                     ),
-                                    start: 12,
-                                    end: 19,
+                                    start: 29,
+                                    end: 34,
                                 },
                             ),
                         },
@@ -31,9 +31,196 @@ Some(
                         [],
                     ),
                     vars: [],
-                    attrs: [],
-                    kind: Service(
-                        ServiceDef {
+                    attrs: [
+                        Attr {
+                            kind: List(
+                                AttrList {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: Heap(
+                                                        "http",
+                                                    ),
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 3,
+                                                            end: 7,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    elements: [
+                                        Attr {
+                                            kind: Tokens(
+                                                TokenStream(
+                                                    [
+                                                        Token {
+                                                            kind: Literal(
+                                                                String(
+                                                                    "/tasks",
+                                                                ),
+                                                            ),
+                                                            span: Span(
+                                                                Span {
+                                                                    src: SourceIdx(
+                                                                        0,
+                                                                    ),
+                                                                    start: 8,
+                                                                    end: 16,
+                                                                },
+                                                            ),
+                                                        },
+                                                    ],
+                                                ),
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ),
+                        },
+                    ],
+                    args: [],
+                    kind: Interface(
+                        InterfaceDef {
+                            methods: [],
+                        },
+                    ),
+                },
+            ),
+            Def(
+                Def {
+                    name: Identifier(
+                        Node {
+                            inner: Heap(
+                                "Task",
+                            ),
+                            span: Span(
+                                Span {
+                                    src: SourceIdx(
+                                        0,
+                                    ),
+                                    start: 83,
+                                    end: 87,
+                                },
+                            ),
+                        },
+                    ),
+                    docs: Docs(
+                        [],
+                    ),
+                    vars: [],
+                    attrs: [
+                        Attr {
+                            kind: List(
+                                AttrList {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: Heap(
+                                                        "http",
+                                                    ),
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 47,
+                                                            end: 51,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    elements: [
+                                        Attr {
+                                            kind: Tokens(
+                                                TokenStream(
+                                                    [
+                                                        Token {
+                                                            kind: Literal(
+                                                                String(
+                                                                    "/tasks/{task_id}",
+                                                                ),
+                                                            ),
+                                                            span: Span(
+                                                                Span {
+                                                                    src: SourceIdx(
+                                                                        0,
+                                                                    ),
+                                                                    start: 52,
+                                                                    end: 70,
+                                                                },
+                                                            ),
+                                                        },
+                                                    ],
+                                                ),
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ),
+                        },
+                    ],
+                    args: [
+                        MethodParam {
+                            name: Identifier(
+                                Node {
+                                    inner: Heap(
+                                        "task_id",
+                                    ),
+                                    span: Span(
+                                        Span {
+                                            src: SourceIdx(
+                                                0,
+                                            ),
+                                            start: 88,
+                                            end: 95,
+                                        },
+                                    ),
+                                },
+                            ),
+                            typ: Instance(
+                                InstanceTypeExpr {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: Heap(
+                                                        "idx",
+                                                    ),
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 97,
+                                                            end: 100,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    subst: [],
+                                },
+                            ),
+                            is_optional: false,
+                            attrs: [],
+                        },
+                    ],
+                    kind: Interface(
+                        InterfaceDef {
                             methods: [],
                         },
                     ),

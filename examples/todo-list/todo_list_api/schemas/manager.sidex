@@ -1,5 +1,10 @@
 
+#[http("/tasks")]
+interface Tasks {
+    
+}
 
-interface TodoApi {
+#[http("/tasks/{task_id}")]
+interface Task(task_id: idx) {
     
 }

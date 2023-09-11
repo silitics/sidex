@@ -5,6 +5,119 @@ expression: result
 Some(
     [
         Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Hash,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 1,
+                    end: 2,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 2,
+                    end: 3,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "http",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 3,
+                    end: 7,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 7,
+                    end: 8,
+                },
+            ),
+        },
+        Token {
+            kind: Literal(
+                String(
+                    "/tasks",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 8,
+                    end: 16,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 16,
+                    end: 17,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 17,
+                    end: 18,
+                },
+            ),
+        },
+        Token {
             kind: Identifier(
                 Heap(
                     "interface",
@@ -15,15 +128,15 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 2,
-                    end: 11,
+                    start: 19,
+                    end: 28,
                 },
             ),
         },
         Token {
             kind: Identifier(
                 Heap(
-                    "TodoApi",
+                    "Tasks",
                 ),
             ),
             span: Span(
@@ -31,8 +144,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 12,
-                    end: 19,
+                    start: 29,
+                    end: 34,
                 },
             ),
         },
@@ -47,8 +160,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 20,
-                    end: 21,
+                    start: 35,
+                    end: 36,
                 },
             ),
         },
@@ -63,8 +176,266 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 27,
-                    end: 28,
+                    start: 42,
+                    end: 43,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Hash,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 45,
+                    end: 46,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 46,
+                    end: 47,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "http",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 47,
+                    end: 51,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 51,
+                    end: 52,
+                },
+            ),
+        },
+        Token {
+            kind: Literal(
+                String(
+                    "/tasks/{task_id}",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 52,
+                    end: 70,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 70,
+                    end: 71,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 71,
+                    end: 72,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "interface",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 73,
+                    end: 82,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "Task",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 83,
+                    end: 87,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 87,
+                    end: 88,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "task_id",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 88,
+                    end: 95,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Colon,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 95,
+                    end: 96,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "idx",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 97,
+                    end: 100,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 100,
+                    end: 101,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Brace,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 102,
+                    end: 103,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Brace,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 109,
+                    end: 110,
                 },
             ),
         },

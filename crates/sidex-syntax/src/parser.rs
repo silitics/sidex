@@ -4,7 +4,7 @@ use chumsky::{prelude::*, Stream};
 use sidex_ir as ir;
 
 use crate::{
-    ast,
+    ast::{self, MethodParam},
     span::Span,
     tokens::{
         delimiters, diagnostic_from_error, keywords, punctuations, tokenize, Delimiter, DocKind,
@@ -276,12 +276,16 @@ fn def_with_inner_parser(
     inner: impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone,
 ) -> impl Parser<
     TokenKind,
-    ((ast::Identifier, Vec<ast::TypeVar>), ast::DefKind),
+    (
+        ((ast::Identifier, Vec<ast::TypeVar>), Vec<MethodParam>),
+        ast::DefKind,
+    ),
     Error = Simple<TokenKind, Span>,
 > + Clone {
     just(keyword)
         .ignore_then(name_parser())
         .then(type_vars_parser())
+        .then(args_parser(false))
         .then(inner.delimited_by(
             just(delimiters::Brace::OPEN),
             just(delimiters::Brace::CLOSE),
@@ -306,21 +310,43 @@ fn variant_def_inner_parser(
 
 fn method_param_parser(
 ) -> impl Parser<TokenKind, ast::MethodParam, Error = Simple<TokenKind, Span>> + Clone {
-    name_parser()
+    attrs_parser()
         .then(
-            just(punctuations::QuestionMark::ALONE)
-                .or(just(punctuations::QuestionMark::COMPOSED))
-                .or_not(),
+            name_parser()
+                .then(
+                    just(punctuations::QuestionMark::ALONE)
+                        .or(just(punctuations::QuestionMark::COMPOSED))
+                        .or_not(),
+                )
+                .then_ignore(just(punctuations::Colon::ALONE))
+                .then(type_expr_parser()),
         )
-        .then_ignore(just(punctuations::Colon::ALONE))
-        .then(type_expr_parser())
-        .map(|((name, optional), typ)| {
+        .map(|(attrs, ((name, optional), typ))| {
             ast::MethodParam {
                 name,
                 typ,
                 is_optional: optional.is_some(),
+                attrs,
             }
         })
+}
+
+fn args_parser(
+    required: bool,
+) -> impl Parser<TokenKind, Vec<ast::MethodParam>, Error = Simple<TokenKind, Span>> + Clone {
+    let inner = method_param_parser()
+        .separated_by(just(punctuations::Comma::ALONE))
+        .allow_trailing()
+        .delimited_by(
+            just(delimiters::Parenthesis::OPEN),
+            just(delimiters::Parenthesis::CLOSE),
+        )
+        .boxed();
+    if required {
+        inner
+    } else {
+        inner.or_not().map(|args| args.unwrap_or_default()).boxed()
+    }
 }
 
 fn method_parser() -> impl Parser<TokenKind, ast::Method, Error = Simple<TokenKind, Span>> + Clone {
@@ -328,15 +354,7 @@ fn method_parser() -> impl Parser<TokenKind, ast::Method, Error = Simple<TokenKi
         .then(attrs_parser())
         .then_ignore(just(keywords::FUN))
         .then(name_parser())
-        .then(
-            method_param_parser()
-                .separated_by(just(punctuations::Comma::ALONE))
-                .allow_trailing()
-                .delimited_by(
-                    just(delimiters::Parenthesis::OPEN),
-                    just(delimiters::Parenthesis::CLOSE),
-                ),
-        )
+        .then(args_parser(true))
         .then(arrow().ignore_then(type_expr_parser()).or_not())
         .map(|((((docs, attrs), name), params), returns)| {
             ast::Method {
@@ -349,11 +367,11 @@ fn method_parser() -> impl Parser<TokenKind, ast::Method, Error = Simple<TokenKi
         })
 }
 
-fn service_def_inner_parser(
+fn interface_def_inner_parser(
 ) -> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
     method_parser()
         .repeated()
-        .map(|functions| ast::DefKind::Service(ast::ServiceDef { methods: functions }))
+        .map(|functions| ast::DefKind::Interface(ast::InterfaceDef { methods: functions }))
 }
 
 fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, Span>> + Clone {
@@ -362,10 +380,11 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
         .then(choice((
             def_with_inner_parser(keywords::RECORD, record_def_inner_parser()),
             def_with_inner_parser(keywords::VARIANT, variant_def_inner_parser()),
-            def_with_inner_parser(keywords::INTERFACE, service_def_inner_parser()),
+            def_with_inner_parser(keywords::INTERFACE, interface_def_inner_parser()),
             just(keywords::OPAQUE)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())
+                .then(args_parser(false))
                 .map(|(name, vars)| {
                     (
                         (name, vars),
@@ -375,6 +394,7 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
             just(keywords::DERIVED)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())
+                .then(args_parser(false))
                 .map(|(name, vars)| {
                     (
                         (name, vars),
@@ -384,6 +404,7 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
             just(keywords::ALIAS)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())
+                .then(args_parser(false))
                 .then_ignore(just(punctuations::Colon::ALONE))
                 .then(
                     type_expr_parser()
@@ -392,18 +413,20 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
             just(keywords::WRAPPER)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())
+                .then(args_parser(false))
                 .then_ignore(just(punctuations::Colon::ALONE))
                 .then(
                     type_expr_parser()
                         .map(|wrapped| ast::DefKind::WrapperType(ast::WrapperTypeDef { wrapped })),
                 ),
         )))
-        .map(|((docs, attrs), ((name, vars), kind))| {
+        .map(|((docs, attrs), (((name, vars), args), kind))| {
             ast::Item::Def(ast::Def {
                 name,
                 docs,
                 vars,
                 attrs,
+                args,
                 kind,
             })
         })

@@ -183,6 +183,7 @@ Some(
                             ),
                         },
                     ],
+                    args: [],
                     kind: VariantType(
                         VariantTypeDef {
                             variants: [
@@ -335,6 +336,7 @@ Some(
                     ),
                     vars: [],
                     attrs: [],
+                    args: [],
                     kind: RecordType(
                         RecordTypeDef {
                             fields: [

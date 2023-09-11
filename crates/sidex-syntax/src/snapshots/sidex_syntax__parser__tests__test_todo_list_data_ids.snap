@@ -219,6 +219,7 @@ Some(
                             ),
                         },
                     ],
+                    args: [],
                     kind: OpaqueType(
                         OpaqueTypeDef,
                     ),
@@ -260,6 +261,7 @@ Some(
                     ),
                     vars: [],
                     attrs: [],
+                    args: [],
                     kind: WrapperType(
                         WrapperTypeDef {
                             wrapped: Instance(
@@ -328,6 +330,7 @@ Some(
                     ),
                     vars: [],
                     attrs: [],
+                    args: [],
                     kind: WrapperType(
                         WrapperTypeDef {
                             wrapped: Instance(

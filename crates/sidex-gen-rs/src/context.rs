@@ -234,7 +234,7 @@ impl<'cx> SchemaCtx<'cx> {
         typ: &ir::Type,
         extra_super: bool,
     ) -> TokenStream {
-        println!("Resolving type {:?}", typ);
+        // println!("Resolving type {:?}", typ);
         match &typ.kind {
             ir::TypeKind::TypeVar(var) => {
                 let var = format_ident!("{}", def[var.idx].name.as_str());

@@ -417,6 +417,24 @@ fn transform_attrs(attrs: &[ast::Attr]) -> Vec<ir::Attr> {
     attrs.iter().map(transform_attr).collect()
 }
 
+fn transform_method_params(
+    resolver: &Resolver,
+    def: &ast::Def,
+    params: &[ast::MethodParam],
+) -> Vec<ir::MethodParam> {
+    params
+        .iter()
+        .map(|param| {
+            ir::MethodParam::new(
+                ir::Identifier::new(param.name.as_str().to_owned()),
+                resolver.resolve_type_expr(def, &param.typ),
+            )
+            .with_is_optional(param.is_optional)
+            .with_attrs(transform_attrs(&param.attrs))
+        })
+        .collect()
+}
+
 impl Transformer {
     pub fn new() -> Self {
         let mut transformer = Self {
@@ -679,7 +697,7 @@ impl Transformer {
                                                 ast::DefKind::DerivedType(_) => {
                                                     ir::DefKind::DerivedType(ir::DerivedTypeDef::new())
                                                 },
-                                                ast::DefKind::Service(service) => {
+                                                ast::DefKind::Interface(service) => {
                                                     ir::DefKind::Interface(ir::InterfaceDef::new().with_methods(service
                                                             .methods
                                                             .iter()
@@ -690,13 +708,7 @@ impl Transformer {
                                                                         .to_owned()),
                                                                     ).with_docs(Some(ir::Docs::new(method.docs.to_string()))).with_attrs(transform_attrs(
                                                                         &method.attrs,
-                                                                    )).with_parameters(method
-                                                                        .params
-                                                                        .iter()
-                                                                        .map(|param| {
-                                                                            ir::MethodParam::new(ir::Identifier::new(param.name.as_str().to_owned()), resolver.resolve_type_expr(def, &param.typ) ).with_is_optional(param.is_optional)
-                                                                        })
-                                                                        .collect()).with_returns(method.returns.as_ref().map(|typ| resolver.resolve_type_expr(def, typ)))
+                                                                    )).with_parameters(transform_method_params(&resolver, def, &method.params)).with_returns(method.returns.as_ref().map(|typ| resolver.resolve_type_expr(def, typ)))
                                                             })
                                                             .collect(),
                                                     ))
@@ -708,7 +720,7 @@ impl Transformer {
                                                     .map(|var| {
                                                         ir::TypeVar::new(ir::Identifier::new(var.name.as_str().to_owned()))
                                                     })
-                                                    .collect()).with_attrs(transform_attrs(&def.attrs))
+                                                    .collect()).with_args(transform_method_params(&resolver, def, &def.args)).with_attrs(transform_attrs(&def.attrs))
                                         })
                                         .collect(),)
                                 })

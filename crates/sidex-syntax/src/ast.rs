@@ -206,6 +206,8 @@ pub struct Def {
     pub vars: Vec<TypeVar>,
     /// The attributes of the definition.
     pub attrs: Vec<Attr>,
+    /// The arguments of the definition.
+    pub args: Vec<MethodParam>,
     /// The kind of the definition.
     pub kind: DefKind,
 }
@@ -233,8 +235,8 @@ pub enum DefKind {
     WrapperType(WrapperTypeDef),
     /// Definition of a derived type.
     DerivedType(DerivedTypeDef),
-    /// Definition of a service.
-    Service(ServiceDef),
+    /// Definition of an interface.
+    Interface(InterfaceDef),
 }
 
 /// Definition of a type alias.
@@ -309,15 +311,15 @@ pub struct WrapperTypeDef {
 #[non_exhaustive]
 pub struct DerivedTypeDef {}
 
-/// Definition of a service.
+/// Definition of an interface.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
-pub struct ServiceDef {
-    /// The methods provided by the service.
+pub struct InterfaceDef {
+    /// The methods provided by the interface.
     pub methods: Vec<Method>,
 }
 
-/// A method of a service definition.
+/// A method of an interface definition.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct Method {
@@ -343,6 +345,8 @@ pub struct MethodParam {
     pub typ: TypeExpr,
     /// Indicates whether the parameter is optional.
     pub is_optional: bool,
+    /// The attributes of the parameter.
+    pub attrs: Vec<Attr>,
 }
 
 /// An expression describing a type.

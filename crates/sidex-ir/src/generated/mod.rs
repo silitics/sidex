@@ -193,15 +193,19 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["bundle", "schema"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"bundle\", \"schema\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -257,6 +261,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -374,6 +379,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["bundle", "schema"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -437,14 +443,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["schema", "def"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"schema\", \"def\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -500,6 +510,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -611,6 +622,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["schema", "def"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -722,11 +734,14 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] =
                 &["bundles", "schemas", "defs", "sources"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"bundles\", \"schemas\", \"defs\", \"sources\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -734,6 +749,7 @@ pub mod ir {
                 __Identifier3,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -795,6 +811,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -986,6 +1003,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["bundles", "schemas", "defs", "sources"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -1048,13 +1066,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["sources"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"sources\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -1107,6 +1129,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -1185,6 +1208,7 @@ pub mod ir {
                     ::core::result::Result::Ok(SourceStorage { sources: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["sources"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -1290,16 +1314,20 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["idx", "origin", "text"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"idx\", \"origin\", \"text\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -1358,6 +1386,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -1503,6 +1532,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["idx", "origin", "text"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -1610,11 +1640,14 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] =
                 &["idx", "metadata", "dependencies", "schemas"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"idx\", \"metadata\", \"dependencies\", \"schemas\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -1622,6 +1655,7 @@ pub mod ir {
                 __Identifier3,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -1683,6 +1717,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -1872,6 +1907,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] =
                 &["idx", "metadata", "dependencies", "schemas"];
             __serde::Deserializer::deserialize_struct(
@@ -1937,14 +1973,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["name", "bundle"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"bundle\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -2000,6 +2040,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -2116,6 +2157,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["name", "bundle"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -2249,11 +2291,14 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] =
                 &["name", "version", "description", "authors"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"name\", \"version\", \"description\", \"authors\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -2261,6 +2306,7 @@ pub mod ir {
                 __Identifier3,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -2322,6 +2368,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -2509,6 +2556,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] =
                 &["name", "version", "description", "authors"];
             __serde::Deserializer::deserialize_struct(
@@ -2587,15 +2635,19 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["identifier", "span"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"identifier\", \"span\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -2651,6 +2703,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -2764,6 +2817,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["identifier", "span"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -2813,13 +2867,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["text"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"text\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -2872,6 +2930,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -2948,6 +3007,7 @@ pub mod ir {
                     ::core::result::Result::Ok(Docs { text: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["text"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -3127,11 +3187,14 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &[
                 "idx", "bundle", "name", "docs", "attrs", "defs", "source", "imports",
             ];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"idx\", \"bundle\", \"name\", \"docs\", \"attrs\", \"defs\", \"source\", \"imports\"]" ;
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -3143,6 +3206,7 @@ pub mod ir {
                 __Identifier7,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -3216,6 +3280,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -3539,6 +3604,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &[
                 "idx", "bundle", "name", "docs", "attrs", "defs", "source", "imports",
             ];
@@ -3664,15 +3730,19 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["Def", "Schema", "Bundle"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"Def\", \"Schema\", \"Bundle\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -3746,6 +3816,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             const __VARIANTS: &'static [&'static str] = &["Def", "Schema", "Bundle"];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
@@ -3772,6 +3843,7 @@ pub mod ir {
                     }
                 }
             } else {
+                #[doc(hidden)]
                 struct __Visitor {
                     __phantom_vars: ::core::marker::PhantomData<fn(&())>,
                 }
@@ -3781,7 +3853,26 @@ pub mod ir {
                         &self,
                         __formatter: &mut ::core::fmt::Formatter,
                     ) -> ::core::fmt::Result {
-                        ::core::fmt::Formatter::write_str(__formatter, "enum ExternallyTagged")
+                        ::core::fmt::Formatter::write_str(__formatter, "enum ItemRef")
+                    }
+                    #[inline]
+                    fn visit_str<__E>(
+                        self,
+                        __value: &str,
+                    ) -> ::core::result::Result<Self::Value, __E>
+                    where
+                        __E: __serde::de::Error,
+                    {
+                        let __identifier = __IdentifierVisitor.visit_str(__value)?;
+                        #[allow(unreachable_patterns)]
+                        match __identifier {
+                            _ => {
+                                Err(__E::invalid_value(
+                                    __serde::de::Unexpected::Str(__value),
+                                    &self,
+                                ))
+                            }
+                        }
                     }
                     #[inline]
                     fn visit_enum<__A>(
@@ -3838,6 +3929,8 @@ pub mod ir {
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The kind of the definition.\n"]
         pub kind: DefKind,
+        #[doc = ""]
+        pub args: ::std::vec::Vec<MethodParam>,
     }
     impl Def {
         #[doc = "Creates a new [`Def`]."]
@@ -3848,6 +3941,7 @@ pub mod ir {
                 docs: ::std::default::Default::default(),
                 vars: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
+                args: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `name`."]
@@ -3900,6 +3994,16 @@ pub mod ir {
             self.kind = kind;
             self
         }
+        #[doc = "Sets the value of `args`."]
+        pub fn set_args(&mut self, args: ::std::vec::Vec<MethodParam>) -> &mut Self {
+            self.args = args;
+            self
+        }
+        #[doc = "Sets the value of `args`."]
+        pub fn with_args(mut self, args: ::std::vec::Vec<MethodParam>) -> Self {
+            self.args = args;
+            self
+        }
     }
     #[automatically_derived]
     impl __serde::Serialize for Def {
@@ -3907,7 +4011,7 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Def", 5usize)?;
+            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Def", 6usize)?;
             __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
             match &self.docs {
                 ::core::option::Option::Some(__value) => {
@@ -3920,6 +4024,7 @@ pub mod ir {
             __serde::ser::SerializeStruct::serialize_field(&mut __struct, "vars", &self.vars)?;
             __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
             __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "args", &self.args)?;
             __serde::ser::SerializeStruct::end(__struct)
         }
     }
@@ -3928,19 +4033,24 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] =
-                &["name", "docs", "vars", "attrs", "kind"];
+                &["name", "docs", "vars", "attrs", "kind", "args"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"name\", \"docs\", \"vars\", \"attrs\", \"kind\"]";
+                "an identifier in [\"name\", \"docs\", \"vars\", \"attrs\", \"kind\", \"args\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
                 __Identifier3,
                 __Identifier4,
+                __Identifier5,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -3960,6 +4070,7 @@ pub mod ir {
                         2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -3973,6 +4084,7 @@ pub mod ir {
                         "vars" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         "attrs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         "kind" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                        "args" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -3989,6 +4101,7 @@ pub mod ir {
                         b"vars" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         b"attrs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         b"kind" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                        b"args" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -4005,6 +4118,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -4031,7 +4145,7 @@ pub mod ir {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
                                         0usize,
-                                        &"record with 5 fields",
+                                        &"record with 6 fields",
                                     ),
                                 );
                             }
@@ -4043,7 +4157,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 6 fields"),
                             );
                         }
                     };
@@ -4054,7 +4168,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 6 fields"),
                             );
                         }
                     };
@@ -4065,7 +4179,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 6 fields"),
                             );
                         }
                     };
@@ -4076,17 +4190,29 @@ pub mod ir {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
                                         4usize,
-                                        &"record with 5 fields",
+                                        &"record with 6 fields",
                                     ),
                                 );
                             }
                         };
+                    let __field5 = match __serde::de::SeqAccess::next_element::<
+                        ::std::vec::Vec<MethodParam>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(5usize, &"record with 6 fields"),
+                            );
+                        }
+                    };
                     ::core::result::Result::Ok(Def {
                         name: __field0,
                         docs: __field1,
                         vars: __field2,
                         attrs: __field3,
                         kind: __field4,
+                        args: __field5,
                     })
                 }
                 #[inline]
@@ -4106,6 +4232,8 @@ pub mod ir {
                     let mut __field3: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<DefKind> =
+                        ::core::option::Option::None;
+                    let mut __field5: ::core::option::Option<::std::vec::Vec<MethodParam>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -4169,6 +4297,18 @@ pub mod ir {
                                     __serde::de::MapAccess::next_value::<DefKind>(&mut __map)?,
                                 );
                             }
+                            __Identifier::__Identifier5 => {
+                                if ::core::option::Option::is_some(&__field5) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("args"),
+                                    );
+                                }
+                                __field5 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        ::std::vec::Vec<MethodParam>,
+                                    >(&mut __map)?,
+                                );
+                            }
                             _ => {
                                 __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
@@ -4212,16 +4352,27 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field5 = match __field5 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("args"),
+                            );
+                        }
+                    };
                     ::core::result::Result::Ok(Def {
                         name: __field0,
                         docs: __field1,
                         vars: __field2,
                         attrs: __field3,
                         kind: __field4,
+                        args: __field5,
                     })
                 }
             }
-            const __FIELDS: &'static [&'static str] = &["name", "docs", "vars", "attrs", "kind"];
+            #[doc(hidden)]
+            const __FIELDS: &'static [&'static str] =
+                &["name", "docs", "vars", "attrs", "kind", "args"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Def",
@@ -4272,13 +4423,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["name"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -4331,6 +4486,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -4406,6 +4562,7 @@ pub mod ir {
                     ::core::result::Result::Ok(TypeVar { name: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["name"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -4432,11 +4589,7 @@ pub mod ir {
         WrapperType(WrapperTypeDef),
         #[doc = "Definition of a derived type.\n"]
         DerivedType(DerivedTypeDef),
-        #[doc = "Definition of a type class.\n"]
-        Class(ClassDef),
-        #[doc = "Definition of an instance of a type class.\n"]
-        Instance(InstanceDef),
-        #[doc = "Definition of a service.\n"]
+        #[doc = "Definition of an interface.\n"]
         Interface(InterfaceDef),
     }
     #[automatically_derived]
@@ -4527,36 +4680,6 @@ pub mod ir {
                         )?;
                         __serde::ser::SerializeStruct::end(__struct)
                     }
-                    Self::Class(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 1usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Class",
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Instance(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 3usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Instance",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "cls",
-                            &__value.cls,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "subst",
-                            &__value.subst,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
                     Self::Interface(__value) => {
                         let mut __struct =
                             __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
@@ -4629,29 +4752,11 @@ pub mod ir {
                             __value,
                         )
                     }
-                    Self::Class(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            6u32,
-                            "Class",
-                            __value,
-                        )
-                    }
-                    Self::Instance(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            7u32,
-                            "Instance",
-                            __value,
-                        )
-                    }
                     Self::Interface(__value) => {
                         __serde::Serializer::serialize_newtype_variant(
                             __serializer,
                             "DefKind",
-                            8u32,
+                            6u32,
                             "Interface",
                             __value,
                         )
@@ -4665,6 +4770,7 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &[
                 "TypeAlias",
                 "OpaqueType",
@@ -4672,12 +4778,12 @@ pub mod ir {
                 "VariantType",
                 "WrapperType",
                 "DerivedType",
-                "Class",
-                "Instance",
                 "Interface",
             ];
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Class\", \"Instance\", \"Interface\"]" ;
+            #[doc(hidden)]
+            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Interface\"]" ;
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -4686,9 +4792,8 @@ pub mod ir {
                 __Identifier4,
                 __Identifier5,
                 __Identifier6,
-                __Identifier7,
-                __Identifier8,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -4710,8 +4815,6 @@ pub mod ir {
                         4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                         6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Unsigned(__variant),
@@ -4731,9 +4834,7 @@ pub mod ir {
                         "VariantType" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         "WrapperType" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         "DerivedType" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "Class" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        "Instance" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "Interface" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                        "Interface" => ::core::result::Result::Ok(__Identifier::__Identifier6),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
@@ -4756,9 +4857,7 @@ pub mod ir {
                         b"VariantType" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         b"WrapperType" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         b"DerivedType" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"Class" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        b"Instance" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"Interface" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                        b"Interface" => ::core::result::Result::Ok(__Identifier::__Identifier6),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Bytes(__variant),
@@ -4780,6 +4879,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             const __VARIANTS: &'static [&'static str] = &[
                 "TypeAlias",
                 "OpaqueType",
@@ -4787,8 +4887,6 @@ pub mod ir {
                 "VariantType",
                 "WrapperType",
                 "DerivedType",
-                "Class",
-                "Instance",
                 "Interface",
             ];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
@@ -4833,22 +4931,13 @@ pub mod ir {
                         ))
                     }
                     __Identifier::__Identifier6 => {
-                        ::core::result::Result::Ok(DefKind::Class(
-                            __tagged.deserialize_internally_tagged::<ClassDef, __D::Error>()?,
-                        ))
-                    }
-                    __Identifier::__Identifier7 => {
-                        ::core::result::Result::Ok(DefKind::Instance(
-                            __tagged.deserialize_internally_tagged::<InstanceDef, __D::Error>()?,
-                        ))
-                    }
-                    __Identifier::__Identifier8 => {
                         ::core::result::Result::Ok(DefKind::Interface(
                             __tagged.deserialize_internally_tagged::<InterfaceDef, __D::Error>()?,
                         ))
                     }
                 }
             } else {
+                #[doc(hidden)]
                 struct __Visitor {
                     __phantom_vars: ::core::marker::PhantomData<fn(&())>,
                 }
@@ -4858,7 +4947,26 @@ pub mod ir {
                         &self,
                         __formatter: &mut ::core::fmt::Formatter,
                     ) -> ::core::fmt::Result {
-                        ::core::fmt::Formatter::write_str(__formatter, "enum ExternallyTagged")
+                        ::core::fmt::Formatter::write_str(__formatter, "enum DefKind")
+                    }
+                    #[inline]
+                    fn visit_str<__E>(
+                        self,
+                        __value: &str,
+                    ) -> ::core::result::Result<Self::Value, __E>
+                    where
+                        __E: __serde::de::Error,
+                    {
+                        let __identifier = __IdentifierVisitor.visit_str(__value)?;
+                        #[allow(unreachable_patterns)]
+                        match __identifier {
+                            _ => {
+                                Err(__E::invalid_value(
+                                    __serde::de::Unexpected::Str(__value),
+                                    &self,
+                                ))
+                            }
+                        }
                     }
                     #[inline]
                     fn visit_enum<__A>(
@@ -4906,18 +5014,6 @@ pub mod ir {
                                 ::core::result::Result::Ok(DefKind::DerivedType(__value))
                             }
                             (__Identifier::__Identifier6, __variant) => {
-                                let __value = __serde::de::VariantAccess::newtype_variant::<
-                                    ClassDef,
-                                >(__variant)?;
-                                ::core::result::Result::Ok(DefKind::Class(__value))
-                            }
-                            (__Identifier::__Identifier7, __variant) => {
-                                let __value = __serde::de::VariantAccess::newtype_variant::<
-                                    InstanceDef,
-                                >(__variant)?;
-                                ::core::result::Result::Ok(DefKind::Instance(__value))
-                            }
-                            (__Identifier::__Identifier8, __variant) => {
                                 let __value = __serde::de::VariantAccess::newtype_variant::<
                                     InterfaceDef,
                                 >(__variant)?;
@@ -4981,13 +5077,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["aliased"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"aliased\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -5040,6 +5140,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -5112,6 +5213,7 @@ pub mod ir {
                     ::core::result::Result::Ok(TypeAliasDef { aliased: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["aliased"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -5154,12 +5256,16 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &[];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in []";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -5209,6 +5315,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -5252,6 +5359,7 @@ pub mod ir {
                     ::core::result::Result::Ok(OpaqueTypeDef {})
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &[];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -5310,13 +5418,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["fields"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"fields\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -5369,6 +5481,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -5447,6 +5560,7 @@ pub mod ir {
                     ::core::result::Result::Ok(RecordTypeDef { fields: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["fields"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -5567,11 +5681,14 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] =
                 &["name", "docs", "attrs", "typ", "isOptional"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"name\", \"docs\", \"attrs\", \"typ\", \"isOptional\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -5580,6 +5697,7 @@ pub mod ir {
                 __Identifier4,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -5644,6 +5762,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -5851,6 +5970,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] =
                 &["name", "docs", "attrs", "typ", "isOptional"];
             __serde::Deserializer::deserialize_struct(
@@ -5914,13 +6034,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["variants"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"variants\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -5973,6 +6097,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -6051,6 +6176,7 @@ pub mod ir {
                     ::core::result::Result::Ok(VariantTypeDef { variants: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["variants"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -6160,10 +6286,13 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["name", "docs", "attrs", "typ"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"name\", \"docs\", \"attrs\", \"typ\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -6171,6 +6300,7 @@ pub mod ir {
                 __Identifier3,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -6232,6 +6362,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -6410,6 +6541,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["name", "docs", "attrs", "typ"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -6465,13 +6597,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["wrapped"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"wrapped\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -6524,6 +6660,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -6596,6 +6733,7 @@ pub mod ir {
                     ::core::result::Result::Ok(WrapperTypeDef { wrapped: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["wrapped"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -6638,12 +6776,16 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &[];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in []";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -6693,6 +6835,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -6736,392 +6879,11 @@ pub mod ir {
                     ::core::result::Result::Ok(DerivedTypeDef {})
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &[];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "DerivedTypeDef",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
-        }
-    }
-    #[doc = "A definition of a type class.\n"]
-    #[derive(Clone, Debug)]
-    #[non_exhaustive]
-    pub struct ClassDef {}
-    impl ClassDef {
-        #[doc = "Creates a new [`ClassDef`]."]
-        pub fn new() -> Self {
-            Self {}
-        }
-    }
-    impl ::std::default::Default for ClassDef {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[automatically_derived]
-    impl __serde::Serialize for ClassDef {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "ClassDef", 0usize)?;
-            __serde::ser::SerializeStruct::end(__struct)
-        }
-    }
-    #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for ClassDef {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            const __IDENTIFIERS: &'static [&'static str] = &[];
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in []";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            enum __Identifier {
-                __Unknown,
-            }
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
-            }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = ClassDef;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record ClassDef")
-                }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    ::core::result::Result::Ok(ClassDef {})
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    ::core::result::Result::Ok(ClassDef {})
-                }
-            }
-            const __FIELDS: &'static [&'static str] = &[];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "ClassDef",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
-        }
-    }
-    #[doc = ""]
-    #[derive(Clone, Debug)]
-    #[non_exhaustive]
-    pub struct InstanceDef {
-        #[doc = ""]
-        pub cls: DefRef,
-        #[doc = ""]
-        pub subst: ::std::vec::Vec<Type>,
-    }
-    impl InstanceDef {
-        #[doc = "Creates a new [`InstanceDef`]."]
-        pub fn new(cls: DefRef) -> Self {
-            Self {
-                cls,
-                subst: ::std::default::Default::default(),
-            }
-        }
-        #[doc = "Sets the value of `cls`."]
-        pub fn set_cls(&mut self, cls: DefRef) -> &mut Self {
-            self.cls = cls;
-            self
-        }
-        #[doc = "Sets the value of `cls`."]
-        pub fn with_cls(mut self, cls: DefRef) -> Self {
-            self.cls = cls;
-            self
-        }
-        #[doc = "Sets the value of `subst`."]
-        pub fn set_subst(&mut self, subst: ::std::vec::Vec<Type>) -> &mut Self {
-            self.subst = subst;
-            self
-        }
-        #[doc = "Sets the value of `subst`."]
-        pub fn with_subst(mut self, subst: ::std::vec::Vec<Type>) -> Self {
-            self.subst = subst;
-            self
-        }
-    }
-    #[automatically_derived]
-    impl __serde::Serialize for InstanceDef {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "InstanceDef", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "cls", &self.cls)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "subst", &self.subst)?;
-            __serde::ser::SerializeStruct::end(__struct)
-        }
-    }
-    #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for InstanceDef {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            const __IDENTIFIERS: &'static [&'static str] = &["cls", "subst"];
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"cls\", \"subst\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Unknown,
-            }
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "cls" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "subst" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"cls" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"subst" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
-            }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = InstanceDef;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record InstanceDef")
-                }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<DefRef>(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
-                            );
-                        }
-                    };
-                    let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::std::vec::Vec<Type>,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(InstanceDef {
-                        cls: __field0,
-                        subst: __field1,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    let mut __field0: ::core::option::Option<DefRef> = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::std::vec::Vec<Type>> =
-                        ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("cls"),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<DefRef>(&mut __map)?,
-                                );
-                            }
-                            __Identifier::__Identifier1 => {
-                                if ::core::option::Option::is_some(&__field1) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "subst",
-                                        ),
-                                    );
-                                }
-                                __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Type>>(
-                                        &mut __map,
-                                    )?,
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("cls"),
-                            );
-                        }
-                    };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("subst"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(InstanceDef {
-                        cls: __field0,
-                        subst: __field1,
-                    })
-                }
-            }
-            const __FIELDS: &'static [&'static str] = &["cls", "subst"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "InstanceDef",
                 __FIELDS,
                 __Visitor {
                     __phantom_vars: ::core::marker::PhantomData,
@@ -7180,13 +6942,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["methods"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"methods\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -7239,6 +7005,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -7317,6 +7084,7 @@ pub mod ir {
                     ::core::result::Result::Ok(InterfaceDef { methods: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["methods"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -7448,11 +7216,14 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] =
                 &["name", "docs", "attrs", "parameters", "returns"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"name\", \"docs\", \"attrs\", \"parameters\", \"returns\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -7461,6 +7232,7 @@ pub mod ir {
                 __Identifier4,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -7525,6 +7297,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -7742,6 +7515,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] =
                 &["name", "docs", "attrs", "parameters", "returns"];
             __serde::Deserializer::deserialize_struct(
@@ -7764,6 +7538,8 @@ pub mod ir {
         pub typ: Type,
         #[doc = "Indicates whether the parameter is optional.\n"]
         pub is_optional: bool,
+        #[doc = ""]
+        pub attrs: ::std::vec::Vec<Attr>,
     }
     impl MethodParam {
         #[doc = "Creates a new [`MethodParam`]."]
@@ -7772,6 +7548,7 @@ pub mod ir {
                 name,
                 typ,
                 is_optional: ::std::default::Default::default(),
+                attrs: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `name`."]
@@ -7804,6 +7581,16 @@ pub mod ir {
             self.is_optional = is_optional;
             self
         }
+        #[doc = "Sets the value of `attrs`."]
+        pub fn set_attrs(&mut self, attrs: ::std::vec::Vec<Attr>) -> &mut Self {
+            self.attrs = attrs;
+            self
+        }
+        #[doc = "Sets the value of `attrs`."]
+        pub fn with_attrs(mut self, attrs: ::std::vec::Vec<Attr>) -> Self {
+            self.attrs = attrs;
+            self
+        }
     }
     #[automatically_derived]
     impl __serde::Serialize for MethodParam {
@@ -7812,7 +7599,7 @@ pub mod ir {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "MethodParam", 3usize)?;
+                __serde::Serializer::serialize_struct(__serializer, "MethodParam", 4usize)?;
             __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
             __serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", &self.typ)?;
             __serde::ser::SerializeStruct::serialize_field(
@@ -7820,6 +7607,7 @@ pub mod ir {
                 "isOptional",
                 &self.is_optional,
             )?;
+            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
             __serde::ser::SerializeStruct::end(__struct)
         }
     }
@@ -7828,16 +7616,21 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
-            const __IDENTIFIERS: &'static [&'static str] = &["name", "typ", "isOptional"];
+            #[doc(hidden)]
+            const __IDENTIFIERS: &'static [&'static str] = &["name", "typ", "isOptional", "attrs"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"name\", \"typ\", \"isOptional\"]";
+                "an identifier in [\"name\", \"typ\", \"isOptional\", \"attrs\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
+                __Identifier3,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -7855,6 +7648,7 @@ pub mod ir {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -7866,6 +7660,7 @@ pub mod ir {
                         "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         "typ" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         "isOptional" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        "attrs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -7880,6 +7675,7 @@ pub mod ir {
                         b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         b"typ" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         b"isOptional" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        b"attrs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                     }
                 }
@@ -7896,6 +7692,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -7922,7 +7719,7 @@ pub mod ir {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
                                         0usize,
-                                        &"record with 3 fields",
+                                        &"record with 4 fields",
                                     ),
                                 );
                             }
@@ -7931,7 +7728,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -7939,7 +7736,18 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
+                            );
+                        }
+                    };
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
+                        ::std::vec::Vec<Attr>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -7947,6 +7755,7 @@ pub mod ir {
                         name: __field0,
                         typ: __field1,
                         is_optional: __field2,
+                        attrs: __field3,
                     })
                 }
                 #[inline]
@@ -7961,6 +7770,8 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Type> = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<bool> = ::core::option::Option::None;
+                    let mut __field3: ::core::option::Option<::std::vec::Vec<Attr>> =
+                        ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -7997,6 +7808,20 @@ pub mod ir {
                                     __serde::de::MapAccess::next_value::<bool>(&mut __map)?,
                                 );
                             }
+                            __Identifier::__Identifier3 => {
+                                if ::core::option::Option::is_some(&__field3) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "attrs",
+                                        ),
+                                    );
+                                }
+                                __field3 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<::std::vec::Vec<Attr>>(
+                                        &mut __map,
+                                    )?,
+                                );
+                            }
                             _ => {
                                 __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
@@ -8028,14 +7853,24 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field3 = match __field3 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("attrs"),
+                            );
+                        }
+                    };
                     ::core::result::Result::Ok(MethodParam {
                         name: __field0,
                         typ: __field1,
                         is_optional: __field2,
+                        attrs: __field3,
                     })
                 }
             }
-            const __FIELDS: &'static [&'static str] = &["name", "typ", "isOptional"];
+            #[doc(hidden)]
+            const __FIELDS: &'static [&'static str] = &["name", "typ", "isOptional", "attrs"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "MethodParam",
@@ -8108,14 +7943,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["kind", "span"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"kind\", \"span\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -8171,6 +8010,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -8281,6 +8121,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -8389,14 +8230,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["TypeVar", "Instance"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"TypeVar\", \"Instance\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -8467,6 +8312,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             const __VARIANTS: &'static [&'static str] = &["TypeVar", "Instance"];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
@@ -8486,6 +8332,7 @@ pub mod ir {
                     }
                 }
             } else {
+                #[doc(hidden)]
                 struct __Visitor {
                     __phantom_vars: ::core::marker::PhantomData<fn(&())>,
                 }
@@ -8495,7 +8342,26 @@ pub mod ir {
                         &self,
                         __formatter: &mut ::core::fmt::Formatter,
                     ) -> ::core::fmt::Result {
-                        ::core::fmt::Formatter::write_str(__formatter, "enum ExternallyTagged")
+                        ::core::fmt::Formatter::write_str(__formatter, "enum TypeKind")
+                    }
+                    #[inline]
+                    fn visit_str<__E>(
+                        self,
+                        __value: &str,
+                    ) -> ::core::result::Result<Self::Value, __E>
+                    where
+                        __E: __serde::de::Error,
+                    {
+                        let __identifier = __IdentifierVisitor.visit_str(__value)?;
+                        #[allow(unreachable_patterns)]
+                        match __identifier {
+                            _ => {
+                                Err(__E::invalid_value(
+                                    __serde::de::Unexpected::Str(__value),
+                                    &self,
+                                ))
+                            }
+                        }
                     }
                     #[inline]
                     fn visit_enum<__A>(
@@ -8572,13 +8438,17 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["idx"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"idx\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -8631,6 +8501,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -8706,6 +8577,7 @@ pub mod ir {
                     ::core::result::Result::Ok(TypeVarType { idx: __field0 })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["idx"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -8801,10 +8673,13 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["bundle", "schema", "def", "subst"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"bundle\", \"schema\", \"def\", \"subst\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
@@ -8812,6 +8687,7 @@ pub mod ir {
                 __Identifier3,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -8873,6 +8749,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -9057,6 +8934,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["bundle", "schema", "def", "subst"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -9133,16 +9011,20 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["src", "start", "end"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"src\", \"start\", \"end\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -9201,6 +9083,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -9342,6 +9225,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["src", "start", "end"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -9416,14 +9300,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["kind", "span"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"kind\", \"span\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -9479,6 +9367,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -9589,6 +9478,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -9728,17 +9618,21 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] =
                 &["Punctuation", "Delimiter", "Literal", "Identifier"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"Punctuation\", \"Delimiter\", \"Literal\", \"Identifier\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
                 __Identifier3,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -9815,6 +9709,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             const __VARIANTS: &'static [&'static str] =
                 &["Punctuation", "Delimiter", "Literal", "Identifier"];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
@@ -9855,6 +9750,7 @@ pub mod ir {
                     }
                 }
             } else {
+                #[doc(hidden)]
                 struct __Visitor {
                     __phantom_vars: ::core::marker::PhantomData<fn(&())>,
                 }
@@ -9864,7 +9760,26 @@ pub mod ir {
                         &self,
                         __formatter: &mut ::core::fmt::Formatter,
                     ) -> ::core::fmt::Result {
-                        ::core::fmt::Formatter::write_str(__formatter, "enum ExternallyTagged")
+                        ::core::fmt::Formatter::write_str(__formatter, "enum TokenKind")
+                    }
+                    #[inline]
+                    fn visit_str<__E>(
+                        self,
+                        __value: &str,
+                    ) -> ::core::result::Result<Self::Value, __E>
+                    where
+                        __E: __serde::de::Error,
+                    {
+                        let __identifier = __IdentifierVisitor.visit_str(__value)?;
+                        #[allow(unreachable_patterns)]
+                        match __identifier {
+                            _ => {
+                                Err(__E::invalid_value(
+                                    __serde::de::Unexpected::Str(__value),
+                                    &self,
+                                ))
+                            }
+                        }
                     }
                     #[inline]
                     fn visit_enum<__A>(
@@ -10015,15 +9930,19 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["String", "Number", "Bool"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"String\", \"Number\", \"Bool\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -10097,6 +10016,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             const __VARIANTS: &'static [&'static str] = &["String", "Number", "Bool"];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
@@ -10127,6 +10047,7 @@ pub mod ir {
                     }
                 }
             } else {
+                #[doc(hidden)]
                 struct __Visitor {
                     __phantom_vars: ::core::marker::PhantomData<fn(&())>,
                 }
@@ -10136,7 +10057,26 @@ pub mod ir {
                         &self,
                         __formatter: &mut ::core::fmt::Formatter,
                     ) -> ::core::fmt::Result {
-                        ::core::fmt::Formatter::write_str(__formatter, "enum ExternallyTagged")
+                        ::core::fmt::Formatter::write_str(__formatter, "enum Literal")
+                    }
+                    #[inline]
+                    fn visit_str<__E>(
+                        self,
+                        __value: &str,
+                    ) -> ::core::result::Result<Self::Value, __E>
+                    where
+                        __E: __serde::de::Error,
+                    {
+                        let __identifier = __IdentifierVisitor.visit_str(__value)?;
+                        #[allow(unreachable_patterns)]
+                        match __identifier {
+                            _ => {
+                                Err(__E::invalid_value(
+                                    __serde::de::Unexpected::Str(__value),
+                                    &self,
+                                ))
+                            }
+                        }
                     }
                     #[inline]
                     fn visit_enum<__A>(
@@ -10292,14 +10232,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["kind", "span"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"kind\", \"span\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -10355,6 +10299,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -10465,6 +10410,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["kind", "span"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -10620,16 +10566,20 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["Path", "List", "Assign", "Tokens"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
                 "an identifier in [\"Path\", \"List\", \"Assign\", \"Tokens\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
                 __Identifier3,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -10706,6 +10656,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             const __VARIANTS: &'static [&'static str] = &["Path", "List", "Assign", "Tokens"];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
@@ -10737,6 +10688,7 @@ pub mod ir {
                     }
                 }
             } else {
+                #[doc(hidden)]
                 struct __Visitor {
                     __phantom_vars: ::core::marker::PhantomData<fn(&())>,
                 }
@@ -10746,7 +10698,26 @@ pub mod ir {
                         &self,
                         __formatter: &mut ::core::fmt::Formatter,
                     ) -> ::core::fmt::Result {
-                        ::core::fmt::Formatter::write_str(__formatter, "enum ExternallyTagged")
+                        ::core::fmt::Formatter::write_str(__formatter, "enum AttrKind")
+                    }
+                    #[inline]
+                    fn visit_str<__E>(
+                        self,
+                        __value: &str,
+                    ) -> ::core::result::Result<Self::Value, __E>
+                    where
+                        __E: __serde::de::Error,
+                    {
+                        let __identifier = __IdentifierVisitor.visit_str(__value)?;
+                        #[allow(unreachable_patterns)]
+                        match __identifier {
+                            _ => {
+                                Err(__E::invalid_value(
+                                    __serde::de::Unexpected::Str(__value),
+                                    &self,
+                                ))
+                            }
+                        }
                     }
                     #[inline]
                     fn visit_enum<__A>(
@@ -10846,14 +10817,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["path", "args"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"path\", \"args\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -10909,6 +10884,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -11018,6 +10994,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["path", "args"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
@@ -11081,14 +11058,18 @@ pub mod ir {
         fn deserialize<__D: __serde::Deserializer<'de>>(
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
             const __IDENTIFIERS: &'static [&'static str] = &["path", "value"];
+            #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"path\", \"value\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Unknown,
             }
+            #[doc(hidden)]
             struct __IdentifierVisitor;
             impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
                 type Value = __Identifier;
@@ -11144,6 +11125,7 @@ pub mod ir {
                     )
                 }
             }
+            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -11255,6 +11237,7 @@ pub mod ir {
                     })
                 }
             }
+            #[doc(hidden)]
             const __FIELDS: &'static [&'static str] = &["path", "value"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
