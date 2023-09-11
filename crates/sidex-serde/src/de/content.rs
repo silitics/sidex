@@ -25,6 +25,26 @@ pub(crate) fn deserialize_content<'de, T: Deserialize<'de>, E: serde::de::Error>
     return T::deserialize(theirs::ContentDeserializer::new(content));
 }
 
+/// Deserializes [`Content`] into `T`.
+pub fn deserialize_into_content<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Content<'de>, D::Error> {
+    #[cfg(not(feature = "serde-private-content"))]
+    return Content::deserialize(deserializer);
+    #[cfg(feature = "serde-private-content")]
+    return Content::deserialize(deserializer);
+}
+
+/// Deserializes [`Content`] into `T`.
+pub fn deserialize_content_ref<'a, 'de, T: Deserialize<'de>, E: serde::de::Error>(
+    content: &'a Content<'de>,
+) -> Result<T, E> {
+    #[cfg(not(feature = "serde-private-content"))]
+    return T::deserialize(ours::ContentRefDeserializer::new(content));
+    #[cfg(feature = "serde-private-content")]
+    return T::deserialize(theirs::ContentRefDeserializer::new(content));
+}
+
 /// Compares a [`Content`] and a `&str` for equality.
 pub(crate) fn content_str_eq<'de>(content: &Content<'de>, string: &str) -> bool {
     match content {

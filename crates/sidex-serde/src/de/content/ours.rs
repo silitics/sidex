@@ -574,3 +574,412 @@ impl<'c, 'de> From<&'c Content<'de>> for Unexpected<'c> {
         }
     }
 }
+
+/// An implementation of [`Deserializer`] from [`Content`].
+pub(crate) struct ContentRefDeserializer<'a, 'de, E> {
+    content: &'a Content<'de>,
+    _phantom_error: PhantomData<E>,
+}
+
+impl<'a, 'de, E> ContentRefDeserializer<'a, 'de, E> {
+    pub(crate) fn new(content: &'a Content<'de>) -> Self {
+        Self {
+            content,
+            _phantom_error: PhantomData,
+        }
+    }
+}
+
+impl<'a, 'de, E: serde::de::Error> ContentRefDeserializer<'a, 'de, E> {
+    #[cold]
+    fn invalid_type(self, expected: &dyn Expected) -> E {
+        E::invalid_type(self.content.unexpected(), expected)
+    }
+}
+
+/// Generates a `deserialize` method delegating to `deserialize_any`.
+macro_rules! impl_content_deserializer_delegate_to_any {
+    ($deserialize:ident) => {
+        fn $deserialize<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            self.deserialize_any(visitor)
+        }
+    };
+}
+
+impl<'a, 'de, E: serde::de::Error> Deserializer<'de> for ContentRefDeserializer<'a, 'de, E> {
+    type Error = E;
+
+    fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match *self.content {
+            Content::Bool(v) => visitor.visit_bool(v),
+            Content::U8(v) => visitor.visit_u8(v),
+            Content::U16(v) => visitor.visit_u16(v),
+            Content::U32(v) => visitor.visit_u32(v),
+            Content::U64(v) => visitor.visit_u64(v),
+            Content::I8(v) => visitor.visit_i8(v),
+            Content::I16(v) => visitor.visit_i16(v),
+            Content::I32(v) => visitor.visit_i32(v),
+            Content::I64(v) => visitor.visit_i64(v),
+            Content::F32(v) => visitor.visit_f32(v),
+            Content::F64(v) => visitor.visit_f64(v),
+            Content::Char(v) => visitor.visit_char(v),
+            Content::String(ref v) => visitor.visit_string(v.clone()),
+            Content::Str(v) => visitor.visit_borrowed_str(v),
+            Content::Bytes(v) => visitor.visit_borrowed_bytes(v),
+            Content::ByteBuf(ref v) => visitor.visit_byte_buf(v.clone()),
+            Content::None => visitor.visit_none(),
+            Content::Some(ref v) => visitor.visit_some(ContentRefDeserializer::new(v)),
+            Content::Unit => visitor.visit_unit(),
+            Content::Newtype(ref v) => visitor.visit_newtype_struct(ContentRefDeserializer::new(v)),
+            Content::Seq(ref v) => visitor.visit_seq(ContentRefSeqAccess::new(v.as_slice().iter())),
+            Content::Map(ref v) => visitor.visit_map(ContentRefMapAccess::new(v.as_slice().iter())),
+        }
+    }
+
+    impl_content_deserializer_delegate_to_any!(deserialize_bool);
+
+    impl_content_deserializer_delegate_to_any!(deserialize_i8);
+    impl_content_deserializer_delegate_to_any!(deserialize_i16);
+    impl_content_deserializer_delegate_to_any!(deserialize_i32);
+    impl_content_deserializer_delegate_to_any!(deserialize_i64);
+
+    impl_content_deserializer_delegate_to_any!(deserialize_u8);
+    impl_content_deserializer_delegate_to_any!(deserialize_u16);
+    impl_content_deserializer_delegate_to_any!(deserialize_u32);
+    impl_content_deserializer_delegate_to_any!(deserialize_u64);
+
+    impl_content_deserializer_delegate_to_any!(deserialize_f32);
+    impl_content_deserializer_delegate_to_any!(deserialize_f64);
+
+    impl_content_deserializer_delegate_to_any!(deserialize_char);
+
+    impl_content_deserializer_delegate_to_any!(deserialize_str);
+    impl_content_deserializer_delegate_to_any!(deserialize_string);
+    impl_content_deserializer_delegate_to_any!(deserialize_bytes);
+    impl_content_deserializer_delegate_to_any!(deserialize_byte_buf);
+
+    fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Content::Unit => visitor.visit_unit(),
+            Content::Map(map) if map.is_empty() => visitor.visit_unit(),
+            Content::Seq(seq) if seq.is_empty() => visitor.visit_unit(),
+            _ => Err(self.invalid_type(&visitor)),
+        }
+    }
+
+    fn deserialize_option<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Content::None => visitor.visit_none(),
+            Content::Some(value) => visitor.visit_some(ContentRefDeserializer::new(value)),
+            Content::Unit => visitor.visit_unit(),
+            _ => visitor.visit_some(self),
+        }
+    }
+
+    fn deserialize_unit_struct<V>(
+        self,
+        _name: &'static str,
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_unit(visitor)
+    }
+
+    fn deserialize_newtype_struct<V>(
+        self,
+        _name: &'static str,
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Content::Newtype(v) => visitor.visit_newtype_struct(ContentRefDeserializer::new(v)),
+            _ => visitor.visit_newtype_struct(self),
+        }
+    }
+
+    impl_content_deserializer_delegate_to_any!(deserialize_seq);
+
+    fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_seq(visitor)
+    }
+
+    fn deserialize_tuple_struct<V>(
+        self,
+        _name: &'static str,
+        _len: usize,
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_seq(visitor)
+    }
+
+    fn deserialize_map<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_any(visitor)
+    }
+
+    fn deserialize_struct<V>(
+        self,
+        _name: &'static str,
+        _fields: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_any(visitor)
+    }
+
+    fn deserialize_enum<V>(
+        self,
+        _name: &'static str,
+        _variants: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Content::Seq(seq) if !seq.is_empty() && seq.len() <= 2 => {
+                let content = seq.get(1);
+                let variant = seq
+                    .get(0)
+                    .expect("We just made sure that there is an element.");
+                visitor.visit_enum(ContentRefEnumAccess::new(variant, content))
+            }
+            Content::Map(map) if map.len() == 1 => {
+                let (variant, content) = map
+                    .get(0)
+                    .expect("We just made sure that there is an element.");
+                visitor.visit_enum(ContentRefEnumAccess::new(variant, Some(content)))
+            }
+            Content::Bytes(_) | Content::String(_) => {
+                visitor.visit_enum(ContentRefEnumAccess::new(self.content, None))
+            }
+            _ => self.deserialize_any(visitor),
+        }
+    }
+
+    fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_any(visitor)
+    }
+
+    fn deserialize_ignored_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        drop(self);
+        visitor.visit_unit()
+    }
+}
+
+/// Implementation of [`serde::de::SeqAccess`] for [`Content`].
+struct ContentRefSeqAccess<'a, 'de, E> {
+    remaining: std::slice::Iter<'a, Content<'de>>,
+    _phantom_error: PhantomData<E>,
+}
+
+impl<'a, 'de, E> ContentRefSeqAccess<'a, 'de, E> {
+    /// Creates a new [`ContentSeqAccess`].
+    fn new(seq: std::slice::Iter<'a, Content<'de>>) -> Self {
+        Self {
+            remaining: seq.into_iter(),
+            _phantom_error: PhantomData,
+        }
+    }
+}
+
+impl<'a, 'de, E: serde::de::Error> serde::de::SeqAccess<'de> for ContentRefSeqAccess<'a, 'de, E> {
+    type Error = E;
+
+    fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+    where
+        T: serde::de::DeserializeSeed<'de>,
+    {
+        self.remaining
+            .next()
+            .map(|element| seed.deserialize(ContentRefDeserializer::new(element)))
+            .transpose()
+    }
+}
+
+/// Implementation of [`serde::de::MapAccess`] for [`Content`].
+struct ContentRefMapAccess<'a, 'de, E> {
+    remaining: std::slice::Iter<'a, (Content<'de>, Content<'de>)>,
+    value: Option<&'a Content<'de>>,
+    _phantom_error: PhantomData<E>,
+}
+
+impl<'a, 'de, E> ContentRefMapAccess<'a, 'de, E> {
+    /// Creates a new [`ContentMapAccess`].
+    fn new(seq: std::slice::Iter<'a, (Content<'de>, Content<'de>)>) -> Self {
+        Self {
+            remaining: seq.into_iter(),
+            value: None,
+            _phantom_error: PhantomData,
+        }
+    }
+}
+
+impl<'a, 'de, E: serde::de::Error> serde::de::MapAccess<'de> for ContentRefMapAccess<'a, 'de, E> {
+    type Error = E;
+
+    fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Self::Error>
+    where
+        K: serde::de::DeserializeSeed<'de>,
+    {
+        self.remaining
+            .next()
+            .map(|(key, value)| {
+                self.value = Some(value);
+                seed.deserialize(ContentRefDeserializer::new(key))
+            })
+            .transpose()
+    }
+
+    fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Self::Error>
+    where
+        V: serde::de::DeserializeSeed<'de>,
+    {
+        let value = self.value.take().expect(
+            "Calling `next_value_seed` before `next_key_seed` is incorrect and allowed to panic.",
+        );
+        seed.deserialize(ContentRefDeserializer::new(value))
+    }
+}
+
+/// Implementation of [`serde::de::EnumAccess`] for [`Content`].
+struct ContentRefEnumAccess<'a, 'de, E> {
+    variant: &'a Content<'de>,
+    content: Option<&'a Content<'de>>,
+    _phantom_error: PhantomData<E>,
+}
+
+impl<'a, 'de, E> ContentRefEnumAccess<'a, 'de, E> {
+    /// Creates a new [`ContentEnumAccess`].
+    pub fn new(variant: &'a Content<'de>, content: Option<&'a Content<'de>>) -> Self {
+        Self {
+            variant,
+            content,
+            _phantom_error: PhantomData,
+        }
+    }
+}
+
+impl<'a, 'de, E: serde::de::Error> serde::de::EnumAccess<'de> for ContentRefEnumAccess<'a, 'de, E> {
+    type Error = E;
+
+    type Variant = ContentRefVariantAccess<'a, 'de, E>;
+
+    fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self::Variant), Self::Error>
+    where
+        V: serde::de::DeserializeSeed<'de>,
+    {
+        seed.deserialize(ContentRefDeserializer::new(self.variant))
+            .map(|variant| (variant, ContentRefVariantAccess::new(self.content)))
+    }
+}
+
+/// Implementation of [`serde::de::VariantAccess`] for [`Content`].
+struct ContentRefVariantAccess<'a, 'de, E> {
+    content: Option<&'a Content<'de>>,
+    _phantom_error: PhantomData<E>,
+}
+
+impl<'a, 'de, E> ContentRefVariantAccess<'a, 'de, E> {
+    /// Creates a new [`ContentVariantAccess`].
+    pub fn new(content: Option<&'a Content<'de>>) -> Self {
+        Self {
+            content,
+            _phantom_error: PhantomData,
+        }
+    }
+}
+
+impl<'a, 'de, E: serde::de::Error> serde::de::VariantAccess<'de>
+    for ContentRefVariantAccess<'a, 'de, E>
+{
+    type Error = E;
+
+    fn unit_variant(self) -> Result<(), Self::Error> {
+        match self.content {
+            Some(content) => <()>::deserialize(ContentRefDeserializer::new(content)),
+            None => Ok(()),
+        }
+    }
+
+    fn newtype_variant_seed<T>(self, seed: T) -> Result<T::Value, Self::Error>
+    where
+        T: serde::de::DeserializeSeed<'de>,
+    {
+        match self.content {
+            Some(content) => seed.deserialize(ContentRefDeserializer::new(content)),
+            None => {
+                Err(serde::de::Error::invalid_type(
+                    Unexpected::UnitVariant,
+                    &"newtype variant",
+                ))
+            }
+        }
+    }
+
+    fn tuple_variant<V>(self, _len: usize, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Some(value) => ContentRefDeserializer::new(value).deserialize_any(visitor),
+            None => {
+                Err(serde::de::Error::invalid_type(
+                    Unexpected::UnitVariant,
+                    &"tuple variant",
+                ))
+            }
+        }
+    }
+
+    fn struct_variant<V>(
+        self,
+        _fields: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self.content {
+            Some(value) => ContentRefDeserializer::new(value).deserialize_any(visitor),
+            None => {
+                Err(serde::de::Error::invalid_type(
+                    Unexpected::UnitVariant,
+                    &"struct variant",
+                ))
+            }
+        }
+    }
+}

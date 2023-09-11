@@ -86,6 +86,7 @@ impl Plugin for Types {
                                     { #name : #inner }
                                 }))
                             }
+                            JsonTaggedAttr::Implicitly => variant_ts_types.push(inner),
                             _ => {
                                 match ctx.bundle_ctx.unit.record_type(&resolved) {
                                     Some(_)
@@ -113,7 +114,9 @@ impl Plugin for Types {
                         }
                     } else {
                         variant_ts_types.push(match ty_json_attrs.tagged {
-                            JsonTaggedAttr::Externally => TypeExpr(quote! { #name }),
+                            JsonTaggedAttr::Externally | JsonTaggedAttr::Implicitly => {
+                                TypeExpr(quote! { #name })
+                            }
                             _ => {
                                 TypeExpr(quote! {
                                     { #ty_tag_field : #name }

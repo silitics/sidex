@@ -2,7 +2,7 @@
 
 use std::cmp;
 
-mod content;
+pub mod content;
 
 pub mod tagged;
 

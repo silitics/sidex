@@ -1,13 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use sidex_attrs_json::{
-    atoms::JsonTaggedAttr, JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantTypeAttrs,
-};
-use sidex_gen::{
-    attrs::TryFromAttrs,
-    diagnostics::{Diagnostic, Result},
-    ir,
-};
+use sidex_attrs_json::{atoms::JsonTaggedAttr, JsonVariantTypeAttrs};
+use sidex_gen::{diagnostics::Result, ir};
 
 use crate::{
     context::{RustTy, SchemaCtx},
@@ -37,8 +31,30 @@ pub(crate) fn gen_deserialize_body(
 
     let ty_ident = &ty.ident;
 
-    let human_readable_match_arms =
-        variants
+    let body = if !matches!(ty_json_attrs.tagged, JsonTaggedAttr::Externally) {
+        let human_readable_body = if matches!(ty_json_attrs.tagged, JsonTaggedAttr::Implicitly) {
+            let try_variants = variants
+            .iter()
+            .map(|variant| {
+                let ident = &variant.rust_variant.ident;
+                if let Some(ty) = &variant.rust_variant.ty {
+                    quote! {
+                        match __sidex_serde::de::content::deserialize_content_ref::<#ty, __D::Error>(&__content) {
+                            Ok(__value) => return Ok(#ty_ident::#ident(__value)),
+                            Err(_) => { /* ignore */ },
+                        };
+                    }
+                } else {
+                    todo!()
+                }
+            });
+            quote! {
+                let __content = __sidex_serde::de::content::deserialize_into_content(__deserializer)?;
+                #(#try_variants)*
+                Err(<__D::Error as __serde::de::Error>::custom("no matching variant found"))
+            }
+        } else {
+            let human_readable_match_arms = variants
             .iter()
             .zip(identifiers.iter())
             .map(|(variant, de_ident)| {
@@ -78,15 +94,17 @@ pub(crate) fn gen_deserialize_body(
                     }
                 }
             });
-
-    let body = if !matches!(ty_json_attrs.tagged, JsonTaggedAttr::Externally) {
-        let tag_field = ty_json_attrs.tag_field_name();
-        quote! {
-            if __serde::Deserializer::is_human_readable(&__deserializer) {
+            let tag_field = ty_json_attrs.tag_field_name();
+            quote! {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<__Identifier, __D>(__deserializer, #tag_field)?;
                 match __tagged.tag {
                     #(#human_readable_match_arms,)*
                 }
+            }
+        };
+        quote! {
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                #human_readable_body
             } else {
                 #non_human_readable_body
             }

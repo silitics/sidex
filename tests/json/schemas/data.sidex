@@ -17,6 +17,17 @@ variant VariantInternallyTagged<T> {
     H: VarRecord<T>,
 }
 
+#[json(tagged = implicitly)]
+variant VariantImplicitlyTagged<T> {
+    A: u64,
+    B: f64,
+    C: string,
+    D: [string],
+    E: [string: u64],
+    F: [string: f64],
+    G: T,
+}
+
 #[json(tagged = externally)]
 variant VariantExternallyTagged<T> {
     A,

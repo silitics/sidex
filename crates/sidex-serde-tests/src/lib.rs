@@ -42,6 +42,7 @@ mod tests {
         test::<VariantInternallyTagged<i32>>("VariantInternallyTagged");
         test::<VariantExternallyTagged<i32>>("VariantExternallyTagged");
         test::<VariantAdjacentlyTagged<i32>>("VariantAdjacentlyTagged");
+        test::<VariantImplicitlyTagged<bool>>("VariantImplicitlyTagged");
     }
 
     #[test]

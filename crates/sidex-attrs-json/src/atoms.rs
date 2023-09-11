@@ -100,6 +100,7 @@ pub enum JsonTaggedAttr {
     Externally,
     #[default]
     Internally,
+    Implicitly,
 }
 
 impl TryFromAttr for JsonTaggedAttr {
@@ -113,6 +114,7 @@ impl TryFromAttr for JsonTaggedAttr {
             "adjacently" => accept!(Self::Adjacently),
             "externally" => accept!(Self::Externally),
             "internally" => accept!(Self::Internally),
+            "implicitly" => accept!(Self::Implicitly),
             _ => reject!(attr, "Expected a tag"),
         }
     }

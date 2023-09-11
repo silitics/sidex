@@ -24,6 +24,7 @@ pub(crate) fn gen_serialize_body(
         }
         JsonTaggedAttr::Adjacently => gen_adjacently_tagged_body(ty, ty_json_attrs, variants),
         JsonTaggedAttr::Internally => gen_internally_tagged_body(ctx, ty, ty_json_attrs, variants)?,
+        JsonTaggedAttr::Implicitly => gen_implicitly_tagged_body(ty, variants)?,
     };
 
     let non_human_readable_body = gen_externally_tagged_body(ty, variants);
@@ -81,6 +82,42 @@ fn gen_adjacently_tagged_body(
             #(#match_arms),*
         }
     }
+}
+
+fn gen_implicitly_tagged_body(ty: &RustTy, variants: &[SerdeVariant]) -> Result<TokenStream> {
+    let ty_name = &ty.name;
+
+    let match_arms = variants
+        .iter()
+        .enumerate()
+        .map(|(idx, variant)| {
+            let ident = &variant.rust_variant.ident;
+            let name = &variant.name;
+
+            if let Some(_) = &variant.variant.typ {
+                // Delegate serialization to the inner type.
+                Ok(quote! {
+                    Self::#ident(__value) => {
+                        __serde::ser::Serialize::serialize(__value, __serializer)
+                    }
+                })
+            } else {
+                // Serialize as a unit variant.
+                Ok(quote! {
+                    Self::#ident => {
+                        __serde::Serializer::serialize_unit_variant(
+                            __serializer, #ty_name, #idx, #name
+                        )
+                    }
+                })
+            }
+        })
+        .collect::<Result<Vec<_>>>()?;
+    Ok(quote! {
+        match self {
+            #(#match_arms),*
+        }
+    })
 }
 
 fn gen_internally_tagged_body(
