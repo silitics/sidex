@@ -2,9 +2,24 @@
 sidebar_position: 1
 ---
 
-# JSON
+# JSON-like Formats
 
 [JSON](https://en.wikipedia.org/wiki/JSON) (_JavaScript Object Notion_) is a popular text-based format for representing data – especially on the web.
+This section covers the mapping from Sidex types to their JSON representation.
+It can also be used for other formats with JSON-compatible fragments such as [TOML](https://en.wikipedia.org/wiki/TOML) or [YAML](https://en.wikipedia.org/wiki/YAML), comprehensively referred to as _JSON-like formats_.
+To define the mapping, we use [JSON Schema](https://json-schema.org/), the well-established standard for constraining the form of _JSON documents_.
+Each type is mapped to a respective JSON _schema_.
+
+There are, of course, many ways to map Sidex types to JSON – each of which with its own tradeoffs – which is why we give developers the possibility to customize the exact mapping to their needs using `json` attributes on types, fields, and variants.
+This customizability also allows capturing existing JSON-like formats.
+For instance, the structure of JSON schemas themselves [can be described using Sidex](https://github.com/silitics/sidex/tree/main/lib/json-schema).
+By default, the mapping tries to follow JavaScript and JSON idioms, for instance, field names are automatically converted to `camelCase` and variants are internally tagged.
+Our premise is that JSON is mostly used in the web context, so the default mapping should follow the established idioms of the JavaScript ecosystem.
+As a result, the mapping to TypeScript types can be used simply with [`JSON.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) without constructing any other objects from it, all while feeling idiomatic.
+
+Sidex comes with a generator for generating JSON schemas from Sidex types and bundles.
+This opens up [the broad ecosystem of JSON schema tooling](https://json-schema.org/implementations.html), e.g., for validation or code generation, for use with Sidex thereby vastly improving interoperability.
+For instance, you may use [any of the JSON schema code generators](https://json-schema.org/implementations.html#generators-from-schemas) to generate types for a language not supported by Sidex itself.
 
 ## JSON Types
 
