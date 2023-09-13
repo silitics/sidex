@@ -12,26 +12,24 @@ pub(crate) fn gen_serialize_body(ty: &RustTy, fields: &[SerdeField]) -> TokenStr
     let serialize_fields = fields.iter().map(|field| {
         let ident = &field.rust_field.ident;
         let name = &field.name;
-        if field.rust_field.is_optional {
+
+        if field.json_attrs.inline {
             quote! {
-                match &self.#ident {
-                    ::core::option::Option::Some(__value) => {
-                        __serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, __value)?;
-                    },
-                    ::core::option::Option::None => {
-                        __serde::ser::SerializeStruct::skip_field(&mut __struct, #name)?;
-                    }
-                }
+                __record.serialize_inlined_field(#name, &self.#ident)?;
+            }   
+        } else if field.rust_field.is_optional {
+            quote! {
+                __record.serialize_optional_field(#name, ::core::option::Option::as_ref(&self.#ident))?;
             }
-        } else {
+        }else {
             quote! {
-                __serde::ser::SerializeStruct::serialize_field(&mut __struct, #name, &self.#ident)?;
+                __record.serialize_field(#name, &self.#ident)?;
             }
         }
     });
     quote! {
-        let mut __struct = __serde::Serializer::serialize_struct(__serializer, #ty_name, #num_fields)?;
+        let mut __record = __sidex_serde::ser::RecordSerializer::new(__serializer, #ty_name, #num_fields)?;
         #(#serialize_fields)*
-        __serde::ser::SerializeStruct::end(__struct)
+        __record.end()
     }
 }

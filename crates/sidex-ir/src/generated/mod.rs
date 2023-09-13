@@ -181,11 +181,11 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "SchemaRef", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "schema", &self.schema)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "SchemaRef", 2usize)?;
+            __record.serialize_field("bundle", &self.bundle)?;
+            __record.serialize_field("schema", &self.schema)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -431,11 +431,11 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "DefRef", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "schema", &self.schema)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "def", &self.def)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "DefRef", 2usize)?;
+            __record.serialize_field("schema", &self.schema)?;
+            __record.serialize_field("def", &self.def)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -709,24 +709,13 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Unit", 4usize)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "bundles",
-                &self.bundles,
-            )?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "schemas",
-                &self.schemas,
-            )?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "defs", &self.defs)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "sources",
-                &self.sources,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Unit", 4usize)?;
+            __record.serialize_field("bundles", &self.bundles)?;
+            __record.serialize_field("schemas", &self.schemas)?;
+            __record.serialize_field("defs", &self.defs)?;
+            __record.serialize_field("sources", &self.sources)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -1051,14 +1040,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "SourceStorage", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "sources",
-                &self.sources,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "SourceStorage", 1usize)?;
+            __record.serialize_field("sources", &self.sources)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -1283,30 +1268,14 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Source", 3usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            match &self.origin {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "origin",
-                        __value,
-                    )?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "origin")?;
-                }
-            }
-            match &self.text {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "text")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Source", 3usize)?;
+            __record.serialize_field("idx", &self.idx)?;
+            __record
+                .serialize_optional_field("origin", ::core::option::Option::as_ref(&self.origin))?;
+            __record
+                .serialize_optional_field("text", ::core::option::Option::as_ref(&self.text))?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -1614,25 +1583,13 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Bundle", 4usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "metadata",
-                &self.metadata,
-            )?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "dependencies",
-                &self.dependencies,
-            )?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "schemas",
-                &self.schemas,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Bundle", 4usize)?;
+            __record.serialize_field("idx", &self.idx)?;
+            __record.serialize_field("metadata", &self.metadata)?;
+            __record.serialize_field("dependencies", &self.dependencies)?;
+            __record.serialize_field("schemas", &self.schemas)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -1961,11 +1918,11 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Dependency", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Dependency", 2usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record.serialize_field("bundle", &self.bundle)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -2251,39 +2208,19 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Metadata", 4usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "version",
-                &self.version,
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Metadata", 4usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record.serialize_field("version", &self.version)?;
+            __record.serialize_optional_field(
+                "description",
+                ::core::option::Option::as_ref(&self.description),
             )?;
-            match &self.description {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "description",
-                        __value,
-                    )?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "description")?;
-                }
-            }
-            match &self.authors {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "authors",
-                        __value,
-                    )?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "authors")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            __record.serialize_optional_field(
+                "authors",
+                ::core::option::Option::as_ref(&self.authors),
+            )?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -2612,22 +2549,12 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Identifier", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "identifier",
-                &self.identifier,
-            )?;
-            match &self.span {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Identifier", 2usize)?;
+            __record.serialize_field("identifier", &self.identifier)?;
+            __record
+                .serialize_optional_field("span", ::core::option::Option::as_ref(&self.span))?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -2857,9 +2784,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Docs", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "text", &self.text)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Docs", 1usize)?;
+            __record.serialize_field("text", &self.text)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -3147,39 +3075,19 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Schema", 8usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            match &self.docs {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
-                }
-            }
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "defs", &self.defs)?;
-            match &self.source {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "source",
-                        __value,
-                    )?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "source")?;
-                }
-            }
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "imports",
-                &self.imports,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Schema", 8usize)?;
+            __record.serialize_field("idx", &self.idx)?;
+            __record.serialize_field("bundle", &self.bundle)?;
+            __record.serialize_field("name", &self.name)?;
+            __record
+                .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
+            __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("defs", &self.defs)?;
+            __record
+                .serialize_optional_field("source", ::core::option::Option::as_ref(&self.source))?;
+            __record.serialize_field("imports", &self.imports)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -4011,21 +3919,16 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Def", 6usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            match &self.docs {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
-                }
-            }
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "vars", &self.vars)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "args", &self.args)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Def", 6usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record
+                .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
+            __record.serialize_field("vars", &self.vars)?;
+            __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("kind", &self.kind)?;
+            __record.serialize_field("args", &self.args)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -4412,10 +4315,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "TypeVar", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "TypeVar", 1usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -5062,14 +4965,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "TypeAliasDef", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "aliased",
-                &self.aliased,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "TypeAliasDef", 1usize)?;
+            __record.serialize_field("aliased", &self.aliased)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -5246,9 +5145,9 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "OpaqueTypeDef", 0usize)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "OpaqueTypeDef", 0usize)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -5407,10 +5306,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "RecordTypeDef", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "fields", &self.fields)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "RecordTypeDef", 1usize)?;
+            __record.serialize_field("fields", &self.fields)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -5655,25 +5554,15 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Field", 5usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            match &self.docs {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
-                }
-            }
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", &self.typ)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "isOptional",
-                &self.is_optional,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Field", 5usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record
+                .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
+            __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("typ", &self.typ)?;
+            __record.serialize_field("isOptional", &self.is_optional)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -6019,14 +5908,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "VariantTypeDef", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "variants",
-                &self.variants,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "VariantTypeDef", 1usize)?;
+            __record.serialize_field("variants", &self.variants)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -6258,27 +6143,14 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Variant", 4usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            match &self.docs {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
-                }
-            }
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            match &self.typ {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "typ")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Variant", 4usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record
+                .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
+            __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_optional_field("typ", ::core::option::Option::as_ref(&self.typ))?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -6582,14 +6454,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "WrapperTypeDef", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "wrapped",
-                &self.wrapped,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "WrapperTypeDef", 1usize)?;
+            __record.serialize_field("wrapped", &self.wrapped)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -6766,9 +6634,9 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "DerivedTypeDef", 0usize)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "DerivedTypeDef", 0usize)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -6927,14 +6795,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "InterfaceDef", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "methods",
-                &self.methods,
-            )?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "InterfaceDef", 1usize)?;
+            __record.serialize_field("methods", &self.methods)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -7179,36 +7043,18 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Method", 5usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            match &self.docs {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "docs", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "docs")?;
-                }
-            }
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "parameters",
-                &self.parameters,
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Method", 5usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record
+                .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
+            __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("parameters", &self.parameters)?;
+            __record.serialize_optional_field(
+                "returns",
+                ::core::option::Option::as_ref(&self.returns),
             )?;
-            match &self.returns {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(
-                        &mut __struct,
-                        "returns",
-                        __value,
-                    )?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "returns")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -7598,17 +7444,13 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "MethodParam", 4usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "name", &self.name)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "typ", &self.typ)?;
-            __serde::ser::SerializeStruct::serialize_field(
-                &mut __struct,
-                "isOptional",
-                &self.is_optional,
-            )?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "attrs", &self.attrs)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "MethodParam", 4usize)?;
+            __record.serialize_field("name", &self.name)?;
+            __record.serialize_field("typ", &self.typ)?;
+            __record.serialize_field("isOptional", &self.is_optional)?;
+            __record.serialize_field("attrs", &self.attrs)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -7925,17 +7767,12 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Type", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
-            match &self.span {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Type", 2usize)?;
+            __record.serialize_field("kind", &self.kind)?;
+            __record
+                .serialize_optional_field("span", ::core::option::Option::as_ref(&self.span))?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -8427,10 +8264,10 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "TypeVarType", 1usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "idx", &self.idx)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "TypeVarType", 1usize)?;
+            __record.serialize_field("idx", &self.idx)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -8659,13 +8496,13 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "InstanceType", 4usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "bundle", &self.bundle)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "schema", &self.schema)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "def", &self.def)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "subst", &self.subst)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "InstanceType", 4usize)?;
+            __record.serialize_field("bundle", &self.bundle)?;
+            __record.serialize_field("schema", &self.schema)?;
+            __record.serialize_field("def", &self.def)?;
+            __record.serialize_field("subst", &self.subst)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -8999,11 +8836,12 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Span", 3usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "src", &self.src)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "start", &self.start)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "end", &self.end)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Span", 3usize)?;
+            __record.serialize_field("src", &self.src)?;
+            __record.serialize_field("start", &self.start)?;
+            __record.serialize_field("end", &self.end)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -9281,18 +9119,12 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "Token", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
-            match &self.span {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Token", 2usize)?;
+            __record.serialize_field("kind", &self.kind)?;
+            __record
+                .serialize_optional_field("span", ::core::option::Option::as_ref(&self.span))?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -10214,17 +10046,12 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct = __serde::Serializer::serialize_struct(__serializer, "Attr", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "kind", &self.kind)?;
-            match &self.span {
-                ::core::option::Option::Some(__value) => {
-                    __serde::ser::SerializeStruct::serialize_field(&mut __struct, "span", __value)?;
-                }
-                ::core::option::Option::None => {
-                    __serde::ser::SerializeStruct::skip_field(&mut __struct, "span")?;
-                }
-            }
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Attr", 2usize)?;
+            __record.serialize_field("kind", &self.kind)?;
+            __record
+                .serialize_optional_field("span", ::core::option::Option::as_ref(&self.span))?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -10805,11 +10632,11 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "AttrList", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "path", &self.path)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "args", &self.args)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "AttrList", 2usize)?;
+            __record.serialize_field("path", &self.path)?;
+            __record.serialize_field("args", &self.args)?;
+            __record.end()
         }
     }
     #[automatically_derived]
@@ -11046,11 +10873,11 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __struct =
-                __serde::Serializer::serialize_struct(__serializer, "AttrAssign", 2usize)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "path", &self.path)?;
-            __serde::ser::SerializeStruct::serialize_field(&mut __struct, "value", &self.value)?;
-            __serde::ser::SerializeStruct::end(__struct)
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "AttrAssign", 2usize)?;
+            __record.serialize_field("path", &self.path)?;
+            __record.serialize_field("value", &self.value)?;
+            __record.end()
         }
     }
     #[automatically_derived]

@@ -88,6 +88,7 @@ impl TryApplyAttr for JsonRecordTypeAttrs {
 pub struct JsonFieldAttrs {
     pub name: Option<atoms::NameAttr>,
     pub rename: Option<atoms::RenameAttr>,
+    pub inline: bool,
 }
 
 impl TryApplyAttr for JsonFieldAttrs {
@@ -98,6 +99,8 @@ impl TryApplyAttr for JsonFieldAttrs {
                     self.name = Some(name);
                 } else if let Ok(rename) = arg.convert() {
                     self.rename = Some(rename);
+                } else if arg.is_path("inline") {
+                    self.inline = true;
                 } else {
                     reject!(arg, "Expected a JSON field attribute.")
                 }

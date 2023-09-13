@@ -98,6 +98,8 @@ mod _sealed {
 pub trait AttrConvertExt: _sealed::Sealed {
     fn convert<T: TryFromAttr>(&self) -> Result<T>;
 
+    fn is_path<P: AsRef<str>>(&self, path: P) -> bool;
+
     fn expect_path(&self) -> Result<&ir::Path>;
 
     fn expect_list(&self) -> Result<&ir::AttrList>;
@@ -196,6 +198,13 @@ impl AttrConvertExt for ir::Attr {
                 Err(err) => Err(err.into()),
             }
         })
+    }
+
+    fn is_path<P: AsRef<str>>(&self, expected: P) -> bool {
+        match &self.kind {
+            ir::AttrKind::Path(path) => path.as_str() == expected.as_ref(),
+            _ => false,
+        }
     }
 }
 
