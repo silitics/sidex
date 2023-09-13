@@ -16,7 +16,7 @@ pub(crate) fn gen_serialize_body(ty: &RustTy, fields: &[SerdeField]) -> TokenStr
         if field.json_attrs.inline {
             quote! {
                 __record.serialize_inlined_field(#name, &self.#ident)?;
-            }   
+            }
         } else if field.rust_field.is_optional {
             quote! {
                 __record.serialize_optional_field(#name, ::core::option::Option::as_ref(&self.#ident))?;
