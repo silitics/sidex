@@ -72,14 +72,18 @@ impl Plugin for Types {
                     .fields
                     .iter()
                     .map(|field| {
-                        let name = format_ident!("{}", &field.name.as_str());
+                        let attrs = FieldAttrs::try_from_attrs(&field.attrs)?;
+
+                        let name = format_ident!(
+                            "{}",
+                            attrs.name.as_deref().unwrap_or_else(|| field.name.as_str())
+                        );
                         let docs = field
                             .docs
                             .as_ref()
                             .map(|docs| docs.as_str())
                             .unwrap_or_default();
                         let mut typ = ctx.resolve_type_old(def, &field.typ, false);
-                        let attrs = FieldAttrs::try_from_attrs(&field.attrs)?;
                         for wrapper in attrs.wrappers {
                             let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
                             typ = quote! { #wrapper < #typ > }

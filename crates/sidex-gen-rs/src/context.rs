@@ -107,13 +107,17 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn field(&self, def: &ir::Def, field: &ir::Field) -> RustField {
-        let ident = format_ident!("{}", field.name.as_str());
-        let name = field.name.as_str().to_owned();
-        let mut inner_ty = self.resolve_type(def, &field.typ);
-
         let attrs = FieldAttrs::try_from_attrs(&field.attrs)
             .map_err(|_| ())
             .unwrap();
+
+        let ident = format_ident!(
+            "{}",
+            attrs.name.as_deref().unwrap_or_else(|| field.name.as_str())
+        );
+        let name = field.name.as_str().to_owned();
+        let mut inner_ty = self.resolve_type(def, &field.typ);
+
         for wrapper in attrs.wrappers {
             let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
             inner_ty = syn::parse2(quote! { #wrapper < #inner_ty > }).unwrap()
@@ -145,11 +149,15 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn field_info(&self, def: &ir::Def, field: &ir::Field) -> FieldInfo {
-        let name = format_ident!("{}", &field.name.as_str());
-        let mut typ = self.resolve_type_old(def, &field.typ, false);
         let attrs = FieldAttrs::try_from_attrs(&field.attrs)
             .map_err(|_| ())
             .unwrap();
+
+        let name = format_ident!(
+            "{}",
+            attrs.name.as_deref().unwrap_or_else(|| field.name.as_str())
+        );
+        let mut typ = self.resolve_type_old(def, &field.typ, false);
         for wrapper in attrs.wrappers {
             let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
             typ = quote! { #wrapper < #typ > }

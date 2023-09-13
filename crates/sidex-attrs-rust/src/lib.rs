@@ -3,7 +3,7 @@ use std::str::FromStr;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use sidex_gen::{
-    attrs::{accept, reject, AttrConvertExt, TryApplyAttr, TryFromAttr},
+    attrs::{accept, new_assign_attr, reject, AttrConvertExt, TryApplyAttr, TryFromAttr},
     diagnostics::{Diagnostic, Result},
     ir,
 };
@@ -128,10 +128,16 @@ impl TryFromAttr for Wrapper {
     }
 }
 
+new_assign_attr! {
+    /// An attribute of the form `name = "<NAME>"`.
+    pub struct NameAttr["name"](pub String)
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct FieldAttrs {
     pub visibility: Visibility,
     pub wrappers: Vec<Wrapper>,
+    pub name: Option<String>,
 }
 
 impl TryApplyAttr for FieldAttrs {
@@ -143,6 +149,8 @@ impl TryApplyAttr for FieldAttrs {
                         self.visibility = visibility;
                     } else if let Ok(wrapper) = Wrapper::try_from_attr(attr) {
                         self.wrappers.push(wrapper)
+                    } else if let Ok(name) = NameAttr::try_from_attr(attr) {
+                        self.name = Some(name.0);
                     }
                 }
             }
