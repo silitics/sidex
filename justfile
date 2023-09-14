@@ -27,7 +27,11 @@ regenerate-ir:
     cargo +nightly fmt
 
 regenerate-openapi:
-    cd lib/openapi && cargo run --bin sidex -- generate rust ../../crates/sidex-gen-openapi/src/generated
+    cd lib/openapi && cargo run --bin sidex -- generate rust ../../crates/sidex-gen-openapi/src/generated/openapi
+    cargo +nightly fmt
+
+regenerate-json-schema:
+    cd lib/json-schema && cargo run --bin sidex -- generate rust ../../crates/sidex-gen-json-schema/src/generated
     cargo +nightly fmt
 
 reset-ir:

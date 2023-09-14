@@ -1,5 +1,7 @@
 //! Types of the OpenAPI specification.
 
+import ::json_schema::schema::SchemaObject
+
 /// A string that MAY use [CommonMark syntax](https://spec.commonmark.org/).
 wrapper Markdown: string
 
@@ -74,7 +76,7 @@ record ServerVariable {
 
 /// A [Components Object](https://spec.openapis.org/oas/v3.1.0#components-object) (4.8.7).
 record Components {
-    schemas?: [string: Schema],
+    schemas?: [string: SchemaObject],
     responses?: [string: MaybeRef<Response>],
     parameters?: [string: MaybeRef<Parameter>],
     examples?: [string: MaybeRef<Example>],
@@ -152,7 +154,7 @@ record Parameter {
     style?: string,
     explode?: bool,
     allow_reserved?: bool,
-    schema?: Schema,
+    schema?: SchemaObject,
     example?: Any,
     examples?: [string: MaybeRef<Example>],
     content?: [string: MediaType],
@@ -177,7 +179,7 @@ record RequestBody {
 
 /// A [Media Type Object](https://spec.openapis.org/oas/v3.1.0#media-type-object) (4.8.14).
 record MediaType {
-    schema?: Schema,
+    schema?: SchemaObject,
     example?: Any,
     examples?: [string: MaybeRef<Example>],
     encoding?: [string: Encoding],
@@ -235,7 +237,7 @@ record Header {
     style?: string,
     explode?: bool,
     allow_reserved?: bool,
-    schema?: Schema,
+    schema?: SchemaObject,
     example?: Any,
     examples?: [string: MaybeRef<Example>],
     content?: [string: MediaType],
@@ -256,9 +258,6 @@ record Reference {
     summary?: string,
     description?: Markdown,
 }
-
-/// A [Schema Object](https://spec.openapis.org/oas/v3.1.0#schema-object) (4.8.24).
-wrapper Schema: Any
 
 /// A [Discriminator Object](https://spec.openapis.org/oas/v3.1.0#discriminator-object) (4.8.25).
 record Discriminator {

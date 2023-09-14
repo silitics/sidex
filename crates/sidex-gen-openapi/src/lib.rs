@@ -4,12 +4,11 @@ use indexmap::IndexMap;
 use serde::{de::IntoDeserializer, Deserialize, Serialize};
 use sidex_attrs_http::{HttpInterfaceAttrs, HttpMethod, HttpOperationAttrs};
 use sidex_gen::{attrs::TryFromAttrs, diagnostics, ir, Generator};
+use sidex_gen_json_schema::types::schema::{self, MaybeArray, Schema, SchemaObject};
 
 #[doc(hidden)]
 mod generated;
-pub use generated::openapi as types;
-
-use crate::types::PathItem;
+pub use generated::openapi::openapi as types;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
@@ -27,6 +26,50 @@ pub struct PathParam {
 
 #[derive(Debug, Clone)]
 pub struct Operation {}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct TypeKey {
+    pub base_type: ir::DefRef,
+    pub type_params: Vec<TypeKey>,
+}
+
+impl TypeKey {
+    pub fn fully_qualified_name(&self, unit: &ir::Unit) -> String {
+        let bundle = &unit[self.base_type.schema.bundle];
+        let schema = &bundle[self.base_type.schema.schema];
+        let bundle_name = &bundle.metadata.name;
+        let schema_name = &schema.name;
+        let def_name = schema[self.base_type.def].name.as_str();
+        let mut type_name = format!("{}.{}.{}", bundle_name, schema_name, def_name);
+        for param in &self.type_params {
+            type_name.push_str("--");
+            type_name.push_str(&param.fully_qualified_name(unit));
+        }
+        type_name
+    }
+
+    pub fn human_readable_name(&self, unit: &ir::Unit) -> String {
+        let bundle = &unit[self.base_type.schema.bundle];
+        let schema = &bundle[self.base_type.schema.schema];
+        let bundle_name = &bundle.metadata.name;
+        let schema_name = &schema.name;
+        let def_name = schema[self.base_type.def].name.as_str();
+        let mut type_name = format!("{}.{}.{}", bundle_name, schema_name, def_name);
+        if !self.type_params.is_empty() {
+            type_name.push_str("<");
+        }
+        for (idx, param) in self.type_params.iter().enumerate() {
+            if idx > 0 {
+                type_name.push_str(", ");
+            }
+            type_name.push_str(&param.fully_qualified_name(unit));
+        }
+        if !self.type_params.is_empty() {
+            type_name.push_str(">");
+        }
+        type_name
+    }
+}
 
 #[derive(Debug, Clone, Default)]
 pub struct PathTree {
@@ -68,8 +111,12 @@ impl Generator for OpenApiGenerator {
         //todo!()
         let openapi_file = job.output.join("openapi.yaml");
 
+        let mut ctx = sidex_gen_json_schema::JsonSchemaCtx::new(&job.unit);
+        ctx.set_def_prefix("#/components/schemas/");
+
         let metadata = &job.unit[job.bundle].metadata;
-        let config = Config::deserialize(job.config.clone().into_deserializer())?;
+        let config =
+            Config::deserialize(job.config.clone().into_deserializer()).unwrap_or_default();
 
         let mut openapi = types::OpenApi::new(
             "3.1.0".to_owned(),
@@ -112,6 +159,10 @@ impl Generator for OpenApiGenerator {
                             continue;
                         }
                     };
+                    for param in &method.parameters {
+                        ctx.resolve(&param.typ)?;
+                    }
+
                     println!("Found HTTP operation `{}`.", method.name.identifier);
                     let mut tree = root.resolve_mut(path.strip_prefix("/").unwrap());
                     if let Some(path) = &operation_attrs.path {
@@ -124,12 +175,21 @@ impl Generator for OpenApiGenerator {
                     if let Some(docs) = &method.docs {
                         operation.set_summary(Some(docs.as_str().to_owned()));
                     }
+                    let mut content = IndexMap::new();
+                    if let Some(returns) = &method.returns {
+                        let returns_schema = ctx.resolve(returns)?;
+                        content.insert(
+                            "application/json".to_owned(),
+                            types::MediaType::new().with_schema(Some(returns_schema)),
+                        );
+                    }
                     let mut responses = IndexMap::new();
                     responses.insert(
                         "200".to_owned(),
-                        types::MaybeRef::Value(types::Response::new(types::Markdown(
-                            "XYZ".to_owned(),
-                        ))),
+                        types::MaybeRef::Value(
+                            types::Response::new(types::Markdown("XYZ".to_owned()))
+                                .with_content(Some(content)),
+                        ),
                     );
                     operation.set_responses(Some(types::Responses(responses)));
                     tree.operations.insert(operation_attrs.method, operation);
@@ -172,14 +232,11 @@ impl Generator for OpenApiGenerator {
                 params.push(types::MaybeRef::Value(
                     types::Parameter::new(name.clone(), types::ParameterLocation::Path)
                         .with_required(Some(true))
-                        .with_schema(Some(types::Schema(types::Any::Object(
-                            [
-                                ("type".to_owned(), types::Any::String("integer".to_owned())),
-                                ("format".to_owned(), types::Any::String("int64".to_owned())),
-                            ]
-                            .into_iter()
-                            .collect(),
-                        )))),
+                        .with_schema(Some(
+                            schema::SchemaObject::new()
+                                .with_allowed_types(Some(schema::Type::Integer.into()))
+                                .with_format(Some("int64".to_owned())),
+                        )),
                 ));
                 stack.push((format!("{path}/{{{}}}", name), params, &catch.tree))
             }
@@ -191,6 +248,9 @@ impl Generator for OpenApiGenerator {
         openapi.set_paths(Some(types::Paths(paths)));
         openapi.set_tags(config.tags.clone());
         openapi.set_servers(config.servers.clone());
+        openapi.set_components(Some(
+            types::Components::new().with_schemas(Some(ctx.into_defs())),
+        ));
 
         println!("{:#?}", root);
 

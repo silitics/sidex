@@ -1,3 +1,15 @@
+/// A user.
+record User {
+    id?: idx,
+    username?: string,
+    first_name?: string,
+    last_name?: string,
+    email?: string,
+    password?: string,
+    phone?: string,
+    user_status?: i32
+}
+
 #[http("/user")]
 #[openapi(tag = "user")]
 interface UsersApi {
@@ -34,13 +46,3 @@ interface UserApi(username: string) {
     fun delete_user()
 }
 
-record User {
-    id: i64,
-    username: string,
-    first_name: string,
-    last_name: string,
-    email: string,
-    password: string,
-    phone: string,
-    user_status: i32
-}

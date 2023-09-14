@@ -1,18 +1,14 @@
 [bundle]
-name = "openapi"
+name = "json_schema"
 version = "1"
-description = "Sidex schema for OpenAPI."
+description = "Sidex schema for JSON Schema."
 authors = ["Silitics GmbH <info@silitics.com>"]
 
-[dependencies]
-json_schema = { path = "../json-schema" }
+[backend.json-schema]
 
 [backend.rust]
 derive = ["Clone", "Debug"]
 plugins = ["builder", "serde"]
-
-[backend.rust.external]
-"json_schema" = "::sidex_gen_json_schema::types"
 
 [backend.rust.plugin.serde]
 sidex_serde_path = "::sidex_serde"

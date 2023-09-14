@@ -2,6 +2,8 @@
 name = "petstore"
 version = "0.1.0"
 
+[backend.json-schema]
+
 [backend.openapi.info]
 title = "Sidex Petstore API"
 version = "1.0.11"

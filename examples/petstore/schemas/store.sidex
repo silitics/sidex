@@ -1,3 +1,13 @@
+/// An order.
+record Order {
+    id: idx,
+    pet_id: idx,
+    quantity: i32,
+    ship_date: string,
+    status: string,
+    complete: bool,
+}
+
 #[http("/store")]
 #[openapi(tag = "store")]
 interface StoreApi {
@@ -20,13 +30,4 @@ interface OrderApi(order_id: idx) {
     /// Delete an order.
     #[http(delete)]
     fun delete_order()
-}
-
-record Order {
-    id: i64,
-    pet_id: i64,
-    quantity: i32,
-    ship_date: string,
-    status: string,
-    complete: bool,
 }

@@ -1,3 +1,8 @@
+/// A pet.
+record Pet {
+    id: idx,
+}
+
 #[http("/pet")]
 #[openapi(tag = "pet")]
 interface PetsApi {
@@ -11,7 +16,7 @@ interface PetsApi {
 
     /// Find a pet by its status.
     #[http(get("/findByStatus"))]
-    fun find_by_status()
+    fun find_by_status() -> [Pet]
 
     /// Find a pet by its tags.
     #[http(get("/findByTags"))]

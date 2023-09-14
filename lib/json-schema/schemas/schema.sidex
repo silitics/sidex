@@ -1,0 +1,330 @@
+//! Types of [JSON Schema](https://json-schema.org) version `2020-12`.
+//! 
+//! The types have been inspired by [Schemars](https://crates.io/crates/schemars).
+//! 
+//! **References**:
+//! 
+//! - [JSON Schema Core](https://json-schema.org/draft/2020-12/json-schema-core.html)
+//! - [JSON Schema Validation](https://json-schema.org/draft/2020-12/json-schema-validation.html)
+
+/// A JSON schema.
+/// 
+/// See [JSON Schema 4.3](https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-documents).
+#[json(tagged = implicitly)]
+variant Schema {
+    /// A boolean JSON schema.
+    /// 
+    /// See [JSON Schema 4.3.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-boolean-json-schemas).
+    Bool: bool,
+    /// A schema object.
+    /// 
+    /// See [JSON Schema 4.3.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-documents).
+    Object: SchemaObject,
+}
+
+/// A schema object.
+/// 
+/// See [JSON Schema 4.3.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-documents).
+record SchemaObject {
+    /// The `$id` keyword.
+    /// 
+    /// See [JSON Schema 8.2.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-id-keyword).
+    #[json(name = "$id")]
+    id?: string,
+    /// The `type` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.1.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-type).
+    #[rust(name = "allowed_types")]
+    type?: MaybeArray<Type>,
+    /// The `enum` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.1.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-enum).
+    #[rust(name = "allowed_values")]
+    enum?: [Any],
+    /// The `const` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.1.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-const).
+    #[rust(name = "allowed_value")]
+    const?: Any,
+    /// The `format` keyword.
+    /// 
+    /// See [JSON Schema Validation 7](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-vocabularies-for-semantic-c).
+    format?: string,
+    /// The `$ref` keyword.
+    #[json(name = "$ref")]
+    #[rust(name = "reference")]
+    ref?: SchemaRef,
+    /// The `$comment` keyword.
+    #[json(name = "$comment")]
+    comment?: string,
+    /// Basic metadata annotations.
+    /// 
+    /// See [JSON Schema Validation 9](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-a-vocabulary-for-basic-meta).
+    #[json(inline)]
+    #[rust(box)]
+    metadata?: Metadata,
+    /// Keywords for combining and conditionally applying subschemas.
+    /// 
+    /// See [JSON Schema 10.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc).
+    #[json(inline)]
+    #[rust(box)]
+    subschema_keywords?: SubschemaKeywords,
+    /// Keywords applying to numbers.    
+    #[json(inline)]
+    #[rust(box)]
+    number_keywords?: NumberKeywords,
+    /// Keywords applying to strings.
+    #[json(inline)]
+    #[rust(box)]
+    string_keywords?: StringKeywords,
+    /// Keywords applying to arrays.
+    #[json(inline)]
+    #[rust(box)]
+    array_keywords?: ArrayKeywords,
+    /// Keywords applying to objects.
+    #[json(inline)]
+    #[rust(box)]
+    object_keywords?: ObjectKeywords,
+    /// Schema extensions.
+    #[json(inline)]
+    extensions?: [string: Any],
+}
+
+/// Types for the `type` keyword.
+/// 
+/// See [JSON Schema Validation 6.1.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-type).
+#[json(rename_all = "lowercase", tagged = externally)]
+#[rust(derive(PartialEq, Eq))]
+variant Type {
+    Null,
+    Boolean,
+    Object,
+    Array,
+    Number,
+    String,
+    Integer,
+}
+
+/// Either a single value of type `T` or an array of type `T`.
+#[json(tagged = implicitly)]
+#[rust(derive(PartialEq, Eq))]
+variant MaybeArray<T> {
+    Single: T,
+    Array: [T],
+}
+
+/// Any JSON value.
+#[json(tagged = implicitly)]
+variant Any {
+    // Null: unit,
+    Boolean: bool,
+    Integer: i32,
+    Number: f64,
+    String: string,
+    Object: [string: Any],
+    Array: [Any],
+}
+
+/// A reference to a JSON schema.
+wrapper SchemaRef: string
+
+/// Basic metadata annotations.
+/// 
+/// See [JSON Schema Validation 9](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-a-vocabulary-for-basic-meta).
+record Metadata {
+    /// The `title` keyword.
+    /// 
+    /// See [JSON Schema Validation 9.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-title-and-description).
+    title?: string,
+    /// The `description` keyword.
+    /// 
+    /// See [JSON Schema Validation 9.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-title-and-description).
+    description?: string,
+    /// The `default` keyword.
+    /// 
+    /// See [JSON Schema Validation 9.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-default).
+    default?: Any,
+    /// The `deprecated` keyword.
+    /// 
+    /// See [JSON Schema Validation 9.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-deprecated).
+    deprecated?: bool,
+    /// The `readOnly` keyword.
+    /// 
+    /// See [JSON Schema Validation 9.4](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-readonly-and-writeonly).
+    read_only?: bool,
+    /// The `readWrite` keyword.
+    /// 
+    /// See [JSON Schema Validation 9.4](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-readonly-and-writeonly).
+    write_only?: bool,
+    /// The `examples` keyword.
+    /// 
+    /// See [JSON Schema Validation 9.5](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-examples).
+    examples?: [Any],
+}
+
+/// Keywords for combining and conditionally applying subschemas.
+/// 
+/// See [JSON Schema 10.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc).
+record SubschemaKeywords {
+    /// The `allOf` keyword.
+    /// 
+    /// See [JSON Schema 10.2.1.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-allof).
+    all_of?: [Schema],
+    /// The `andOf` keyword.
+    /// 
+    /// See [JSON Schema 10.2.1.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-anyof).
+    any_of?: [Schema],
+    /// The `oneOf` keyword.
+    /// 
+    /// See [JSON Schema 10.2.1.3](https://json-schema.org/draft/2020-12/json-schema-core.html#name-oneof).
+    one_of?: [Schema],
+    /// The `not` keyword.
+    /// 
+    /// See [JSON Schema 10.2.1.4](https://json-schema.org/draft/2020-12/json-schema-core.html#name-not).
+    not?: [Schema],
+    /// The `if` keyword.
+    /// 
+    /// See [JSON Schema 10.2.2.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-if).
+    #[rust(name = "condition")]
+    if?: Schema,
+    /// The `then` keyword.
+    /// 
+    /// See [JSON Schema 10.2.2.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-then).
+    #[rust(name = "consequence")]
+    then?: Schema,
+    /// The `else` keyword.
+    /// 
+    /// See [JSON Schema 10.2.2.3](https://json-schema.org/draft/2020-12/json-schema-core.html#name-else).
+    #[rust(name = "alternative")]
+    else?: Schema,
+    /// The `dependentSchemas` keyword.
+    /// 
+    /// See [JSON Schema 10.2.2.4](https://json-schema.org/draft/2020-12/json-schema-core.html#name-dependentschemas)
+    dependent_schemas?: [string: Schema],
+}
+
+/// Keywords applying to numbers.
+record NumberKeywords {
+    /// The `multipleOf` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.2.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-multipleof).
+    multiple_of?: Number,
+    /// The `maximum` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.2.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-maximum).
+    maximum?: Number,
+    /// The `exclusiveMaximum` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.2.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-exclusivemaximum).
+    exclusive_maximum?: Number,
+    /// The `minimum` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.2.4](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-minimum).
+    minimum?: Number,
+    /// The `exclusiveMaximum` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.2.5](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-exclusiveminimum).
+    exclusive_minimum?: Number,
+}
+
+/// A number that is either an integer or a floating point number.
+#[json(tagged = implicitly)]
+variant Number {
+    Integer: i64,
+    Float: f64,
+}
+
+/// Keywords applying to strings.
+record StringKeywords {
+    /// The `maxLength` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.3.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-maxlength).
+    max_length?: idx,
+    /// The `minLength` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.3.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-minlength).
+    min_length?: idx,
+    /// The `pattern` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.3.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-pattern).
+    pattern?: Pattern,
+}
+
+/// A regular expression according to ECMA-262.
+wrapper Pattern: string
+
+/// Keywords applying to arrays.
+record ArrayKeywords {
+    /// The `prefixItems` keyword.
+    /// 
+    /// See [JSON Schema 10.3.1.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-prefixitems).
+    prefix_items?: [Schema],
+    /// The `items` keyword.
+    /// 
+    /// See [JSON Schema 10.3.1.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-items).
+    #[rust(box)]
+    items?: Schema,
+    /// The `contains` keyword.
+    /// 
+    /// See [JSON Schema 10.3.1.3](https://json-schema.org/draft/2020-12/json-schema-core.html#name-contains).
+    #[rust(box)]
+    contains?: Schema,
+    /// The `maxItems` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.4.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-maxitems).
+    max_items?: idx,
+    /// The `minItems` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.4.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-minitems).
+    min_items?: idx,
+    /// The `uniqueItems` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.4.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-uniqueitems).
+    unique_items?: bool,
+    /// The `maxContains` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.4.4](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-maxcontains).
+    max_contains?: idx,
+    /// The `minContains` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.4.5](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-maxcontains).
+    min_contains?: idx,
+}
+
+/// Keywords applying to objects.
+record ObjectKeywords {
+    /// The `properties` keyword.
+    /// 
+    /// See [JSON Schema 10.3.2.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-properties).
+    properties?: [string: Schema],
+    /// The `patternProperties` keyword.
+    /// 
+    /// See [JSON Schema 10.3.2.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-patternproperties).
+    pattern_properties?: [string: Schema],
+    /// The `additionalProperties` keyword.
+    /// 
+    /// See [JSON Schema 10.3.2.3](https://json-schema.org/draft/2020-12/json-schema-core.html#name-additionalproperties).
+    #[rust(box)]
+    additional_properties?: Schema,
+    /// The `propertyNames` keyword.
+    /// 
+    /// See [JSON Schema 10.3.2.4](https://json-schema.org/draft/2020-12/json-schema-core.html#name-propertynames).
+    #[rust(box)]
+    property_names?: Schema,
+    /// The `maxProperties` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.5.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-maxproperties).
+    max_properties?: idx,
+    /// The `minProperties` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.5.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-minproperties).
+    min_properties?: idx,
+    /// The `required` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.5.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-required).
+    required?: [string],
+    /// The `dependentRequired` keyword.
+    /// 
+    /// See [JSON Schema Validation 6.5.4](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-dependentrequired).
+    dependent_required?: [string: [string]],
+}
