@@ -4,7 +4,7 @@ use indexmap::IndexMap;
 use serde::{de::IntoDeserializer, Deserialize, Serialize};
 use sidex_attrs_http::{HttpInterfaceAttrs, HttpMethod, HttpOperationAttrs};
 use sidex_gen::{attrs::TryFromAttrs, diagnostics, ir, Generator};
-use sidex_gen_json_schema::types::schema::{self, MaybeArray, Schema, SchemaObject};
+use sidex_gen_json_schema::types::schema;
 
 #[doc(hidden)]
 mod generated;

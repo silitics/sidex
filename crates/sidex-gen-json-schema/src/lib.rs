@@ -103,14 +103,6 @@ impl<'cx> JsonSchemaCtx<'cx> {
         self
     }
 
-    fn schema_id(&self, name: &str) -> String {
-        if let Some(prefix) = &self.id_prefix {
-            format!("{prefix}/{name}")
-        } else {
-            format!("/{name}")
-        }
-    }
-
     fn qualified_path(&self, typ: &ir::InstanceType) -> String {
         let bundle = &self.unit[typ.bundle];
         let schema = &bundle[typ.schema];
@@ -229,7 +221,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 )));
             }
             "::core::builtins::Map" => {
-                let key_type = &instance.subst[0];
+                let _key_type = &instance.subst[0];
                 let value_type = &instance.subst[1];
                 let value_schema = self.resolve(&value_type)?;
                 // TODO: Check that key is string.

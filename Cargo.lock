@@ -343,15 +343,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
-name = "erased-serde"
-version = "0.3.24"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4ca605381c017ec7a5fef5e548f1cfaa419ed0f6df6367339300db74c92aa7d"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "eyre"
 version = "0.6.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -886,17 +877,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-embed-macro"
-version = "0.1.0"
-dependencies = [
- "serde",
- "sidex",
- "sidex-build-rs",
- "sidex-serde",
- "uuid",
-]
-
-[[package]]
 name = "rustc-demangle"
 version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1000,8 +980,6 @@ dependencies = [
  "futures",
  "serde",
  "serde_json",
- "sidex-macros",
- "sidex-rpc",
  "sidex-serde",
  "thiserror",
 ]
@@ -1206,29 +1184,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sidex-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde_json",
- "sidex-core",
- "sidex-gen-rs",
- "syn 1.0.98",
-]
-
-[[package]]
-name = "sidex-rpc"
-version = "0.1.0"
-dependencies = [
- "futures",
- "pin-project",
- "serde",
- "sidex-build-rs",
- "sidex-serde",
-]
-
-[[package]]
 name = "sidex-serde"
 version = "0.1.0"
 dependencies = [
@@ -1256,14 +1211,6 @@ dependencies = [
  "sidex-diagnostics",
  "sidex-ir",
  "thiserror",
-]
-
-[[package]]
-name = "sidex-value"
-version = "0.1.0"
-dependencies = [
- "erased-serde",
- "serde",
 ]
 
 [[package]]
@@ -1408,6 +1355,17 @@ name = "tinyvec_macros"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
+
+[[package]]
+name = "todo_list_backend"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "sidex",
+ "sidex-build-rs",
+ "sidex-serde",
+ "uuid",
+]
 
 [[package]]
 name = "tokio"

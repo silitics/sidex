@@ -30,26 +30,19 @@ pub struct RustTy {
     pub name: String,
 }
 
-pub struct RecordType {
-    ident: syn::Ident,
-    name: String,
-    fields: Vec<RustField>,
-}
-
-pub struct Generics<'d> {
-    def: &'d ir::Def,
+pub struct Generics {
     generics: syn::Generics,
 }
 
-impl<'d> Generics<'d> {
-    pub fn new(def: &'d ir::Def) -> Self {
+impl Generics {
+    pub fn new(def: &ir::Def) -> Self {
         let mut generics = syn::Generics::default();
         for var in &def.vars {
             let ident = format_ident!("{}", var.name.as_str());
             let param = syn::GenericParam::Type(ident.into());
             generics.params.push(param);
         }
-        Self { def, generics }
+        Self { generics }
     }
 
     pub fn split_for_impl(
@@ -173,7 +166,7 @@ impl<'cx> SchemaCtx<'cx> {
         }
     }
 
-    pub fn generics<'d>(&self, def: &'d ir::Def) -> Generics<'d> {
+    pub fn generics(&self, def: &ir::Def) -> Generics {
         Generics::new(def)
     }
 

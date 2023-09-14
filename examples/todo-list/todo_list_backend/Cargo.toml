@@ -1,5 +1,5 @@
 [package]
-name = "rust-embed-macro"
+name = "todo_list_backend"
 description = "Example for embedding a Sidex model with a macro."
 version = "0.1.0"
 edition = "2021"
@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 # Required for the Sidex macro.
-sidex = { path = "../../../crates/sidex", features = ["macros"] }
+sidex = { path = "../../../crates/sidex" }
 sidex-serde = { path = "../../../crates/sidex-serde" }
 serde = "1"
 # Used by the Sidex model.

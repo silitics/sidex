@@ -1,4 +1,4 @@
-use sidex_attrs::{AttrConvertExt, TryApplyAttr, TryFromAttr, TryFromAttrs};
+use sidex_attrs::{AttrConvertExt, TryFromAttr};
 use sidex_gen::rename;
 use sidex_ir as ir;
 

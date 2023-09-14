@@ -99,7 +99,7 @@ impl Plugin for Serde {
                     )?,
                 )
             }
-            ir::DefKind::WrapperType(typ_def) => {
+            ir::DefKind::WrapperType(_) => {
                 let ty_ident = &ty.ident;
                 (
                     quote! {

@@ -76,11 +76,6 @@ fn gen_visitor(
         .map(|field| &field.rust_field.ty)
         .collect::<Vec<_>>();
 
-    let field_inner_tys = fields
-        .iter()
-        .map(|field| &field.rust_field.inner_ty)
-        .collect::<Vec<_>>();
-
     let field_names = fields.iter().map(|field| &field.name).collect::<Vec<_>>();
 
     let expecting = format!("record {}", ty.name);
