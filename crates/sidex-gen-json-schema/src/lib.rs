@@ -196,6 +196,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
                                     .map(|docs| docs.as_str().trim().to_owned()),
                             ),
                     )));
+                    json_schema.set_id(Some(format!("/{def_name}")));
                     self.defs.insert(def_name.clone(), Some(json_schema));
                     self.def_ref(&def_name)
                 }
