@@ -1,0 +1,21 @@
+{
+  "$id": "/data_models.search_api.Item",
+  "type": "object",
+  "title": "Item",
+  "description": "",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "title"
+  ]
+}

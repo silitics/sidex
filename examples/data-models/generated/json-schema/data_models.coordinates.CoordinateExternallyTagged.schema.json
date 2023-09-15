@@ -1,0 +1,23 @@
+{
+  "$id": "/data_models.coordinates.CoordinateExternallyTagged",
+  "title": "CoordinateExternallyTagged",
+  "description": "",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "Cartesian": {
+          "$ref": "/data_models.coordinates.CartesianCoordinate"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "Polar": {
+          "$ref": "/data_models.coordinates.PolarCoordinate"
+        }
+      }
+    }
+  ]
+}

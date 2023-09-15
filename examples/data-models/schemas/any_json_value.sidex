@@ -1,0 +1,9 @@
+#[json(tagged = implicitly)]
+variant Any {
+    Integer: i32,
+    Float: f64,
+    String: string,
+    Bool: bool,
+    Array: [Any],
+    Object: [string: Any],
+}

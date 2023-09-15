@@ -1,0 +1,21 @@
+{
+  "$id": "/data_models.person.Person",
+  "type": "object",
+  "title": "Person",
+  "description": "",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": {
+    "$ref": "/data_models.any_json_value.Any"
+  },
+  "required": []
+}

@@ -1,0 +1,35 @@
+variant CoordinateInternallyTagged {
+    Cartesian: CartesianCoordinate,
+    Polar: PolarCoordinate,
+}
+
+#[json(tagged = implicitly)]
+variant CoordinateImplicitlyTagged {
+    Cartesian: CartesianCoordinate,
+    Polar: PolarCoordinate,
+}
+
+#[json(tagged = externally)]
+variant CoordinateExternallyTagged {
+    Cartesian: CartesianCoordinate,
+    Polar: PolarCoordinate,
+}
+
+#[json(tagged = adjacently, tag = "type")]
+variant CoordinateAdjacentlyTagged {
+    #[json(content = "cartesian")]
+    Cartesian: CartesianCoordinate,
+    #[json(content = "polar")]
+    Polar: PolarCoordinate,
+}
+
+record CartesianCoordinate {
+    x: f64,
+    y: f64,
+}
+
+record PolarCoordinate {
+    #[json(name = "radius")]
+    r: f64,
+    phi: f64,
+}

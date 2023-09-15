@@ -1,0 +1,11 @@
+#[json(tagged = externally, rename_all = "UPPERCASE")]
+variant TrafficLightColor {
+    Red,
+    Yellow,
+    Green,
+}
+
+record TrafficLightStatus {
+    color?: TrafficLightColor,
+    last_change?: string,
+}

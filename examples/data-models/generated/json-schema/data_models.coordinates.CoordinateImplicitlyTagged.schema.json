@@ -1,0 +1,13 @@
+{
+  "$id": "/data_models.coordinates.CoordinateImplicitlyTagged",
+  "title": "CoordinateImplicitlyTagged",
+  "description": "",
+  "anyOf": [
+    {
+      "$ref": "/data_models.coordinates.CartesianCoordinate"
+    },
+    {
+      "$ref": "/data_models.coordinates.PolarCoordinate"
+    }
+  ]
+}

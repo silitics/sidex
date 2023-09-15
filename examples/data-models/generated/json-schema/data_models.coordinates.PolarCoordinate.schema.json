@@ -1,0 +1,18 @@
+{
+  "$id": "/data_models.coordinates.PolarCoordinate",
+  "type": "object",
+  "title": "PolarCoordinate",
+  "description": "",
+  "properties": {
+    "radius": {
+      "type": "number"
+    },
+    "phi": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "radius",
+    "phi"
+  ]
+}

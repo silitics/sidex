@@ -5,6 +5,7 @@
         "blazingly",
         "builtins",
         "canonicalize",
+        "cartesian",
         "chumsky",
         "combinators",
         "conv",

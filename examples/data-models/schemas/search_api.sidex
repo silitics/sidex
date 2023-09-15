@@ -1,0 +1,20 @@
+record Pagination {
+    skip?: idx,
+    limit?: idx,
+}
+
+record SearchRequest {
+    query: string,
+    #[json(inline)]
+    pagination?: Pagination
+}
+
+record SearchResults {
+    items: [Item],
+}
+
+record Item {
+    id: idx,
+    title: string,
+    description?: string,
+}

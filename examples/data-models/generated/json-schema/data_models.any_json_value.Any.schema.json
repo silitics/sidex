@@ -1,0 +1,32 @@
+{
+  "$id": "/data_models.any_json_value.Any",
+  "title": "Any",
+  "description": "",
+  "anyOf": [
+    {
+      "type": "integer",
+      "format": "int32"
+    },
+    {
+      "type": "number"
+    },
+    {
+      "type": "string"
+    },
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "array",
+      "items": {
+        "$ref": "/data_models.any_json_value.Any"
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "/data_models.any_json_value.Any"
+      }
+    }
+  ]
+}

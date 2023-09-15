@@ -1,0 +1,17 @@
+{
+  "$id": "/data_models.search_api.SearchResults",
+  "type": "object",
+  "title": "SearchResults",
+  "description": "",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "/data_models.search_api.Item"
+      }
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

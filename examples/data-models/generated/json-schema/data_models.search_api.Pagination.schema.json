@@ -1,0 +1,15 @@
+{
+  "$id": "/data_models.search_api.Pagination",
+  "type": "object",
+  "title": "Pagination",
+  "description": "",
+  "properties": {
+    "skip": {
+      "type": "integer"
+    },
+    "limit": {
+      "type": "integer"
+    }
+  },
+  "required": []
+}

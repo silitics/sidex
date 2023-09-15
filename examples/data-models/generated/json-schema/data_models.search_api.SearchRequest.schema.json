@@ -1,0 +1,20 @@
+{
+  "$id": "/data_models.search_api.SearchRequest",
+  "type": "object",
+  "title": "SearchRequest",
+  "description": "",
+  "properties": {
+    "query": {
+      "type": "string"
+    },
+    "skip": {
+      "type": "integer"
+    },
+    "limit": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "query"
+  ]
+}

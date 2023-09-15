@@ -1,0 +1,16 @@
+{
+  "$id": "/data_models.traffic_light.TrafficLightColor",
+  "title": "TrafficLightColor",
+  "description": "",
+  "oneOf": [
+    {
+      "const": "RED"
+    },
+    {
+      "const": "YELLOW"
+    },
+    {
+      "const": "GREEN"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "$id": "/data_models.coordinates.CoordinateInternallyTagged",
+  "title": "CoordinateInternallyTagged",
+  "description": "",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "const": "Cartesian"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "const": "Polar"
+        },
+        "radius": {
+          "type": "number"
+        },
+        "phi": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "radius",
+        "phi"
+      ]
+    }
+  ]
+}

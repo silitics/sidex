@@ -1,0 +1,15 @@
+{
+  "$id": "/data_models.traffic_light.TrafficLightStatus",
+  "type": "object",
+  "title": "TrafficLightStatus",
+  "description": "",
+  "properties": {
+    "color": {
+      "$ref": "/data_models.traffic_light.TrafficLightColor"
+    },
+    "lastChange": {
+      "type": "string"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,18 @@
+{
+  "$id": "/data_models.coordinates.CartesianCoordinate",
+  "type": "object",
+  "title": "CartesianCoordinate",
+  "description": "",
+  "properties": {
+    "x": {
+      "type": "number"
+    },
+    "y": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "x",
+    "y"
+  ]
+}

@@ -1,0 +1,9 @@
+import any_json_value::Any
+
+record Person {
+    id?: idx,
+    first_name?: string,
+    last_name?: string,
+    #[json(inline)]
+    additional_data?: [string: Any],
+}

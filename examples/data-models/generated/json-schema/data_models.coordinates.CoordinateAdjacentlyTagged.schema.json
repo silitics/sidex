@@ -1,0 +1,29 @@
+{
+  "$id": "/data_models.coordinates.CoordinateAdjacentlyTagged",
+  "title": "CoordinateAdjacentlyTagged",
+  "description": "",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "Cartesian"
+        },
+        "cartesian": {
+          "$ref": "/data_models.coordinates.CartesianCoordinate"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "Polar"
+        },
+        "polar": {
+          "$ref": "/data_models.coordinates.PolarCoordinate"
+        }
+      }
+    }
+  ]
+}
