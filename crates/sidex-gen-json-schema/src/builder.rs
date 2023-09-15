@@ -107,10 +107,9 @@ impl VariantTypeSchemaBuilder {
             Externally => externally_tagged(variant_name, schema).into(),
             Internally => {
                 if may_inline {
-                    internally_tagged(&self.tag_field, variant_name, schema).into()
+                    internally_tagged(&self.tag_field, variant_name, raw_schema).into()
                 } else {
-                    adjacently_tagged(&self.tag_field, content_field, variant_name, raw_schema)
-                        .into()
+                    adjacently_tagged(&self.tag_field, content_field, variant_name, schema).into()
                 }
             }
             Implicitly => schema.into(),
