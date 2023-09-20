@@ -243,3 +243,50 @@ pub mod ser;
 //         self.0.end()
 //     }
 // }
+
+// pub trait Sink {
+//     fn atom(&mut self, atom: u64);
+
+//     fn start_seq(&mut self);
+//     fn end_seq(&mut self);
+// }
+
+// struct IntoSink<'sink>(&'sink mut dyn Sink);
+
+// impl<'de, 'sink> DeserializeSeed<'de> for IntoSink<'sink> {
+//     type Value = ();
+
+//     fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+//     where
+//         D: serde::Deserializer<'de>,
+//     {
+//         struct Visitor<'sink>(&'sink mut dyn Sink);
+
+//         impl<'de, 'sink> serde::de::Visitor<'de> for Visitor<'sink> {
+//             type Value = ();
+
+//             fn expecting(&self, formatter: &mut std::fmt::Formatter) ->
+// std::fmt::Result {                 todo!()
+//             }
+
+//             fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
+//             where
+//                 E: serde::de::Error,
+//             {
+//                 self.0.atom(v);
+//                 Ok(())
+//             }
+
+//             fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+//             where
+//                 A: serde::de::SeqAccess<'de>,
+//             {
+//                 self.0.start_seq();
+//                 while let Some(_) = seq.next_element_seed(IntoSink(self.0))? { /*
+// ignore */ }                 Ok(())
+//             }
+//         }
+
+//         deserializer.deserialize_any(Visitor(self.0))
+//     }
+// }

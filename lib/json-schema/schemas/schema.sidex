@@ -22,6 +22,16 @@ variant Schema {
     Object: SchemaObject,
 }
 
+/// A root schema.
+record RootSchema {
+    #[json(name = "$schema")]
+    meta_schema?: string,
+    #[json(inline)]
+    schema: SchemaObject,
+    #[json(name = "$defs")]
+    defs?: [string: Schema],
+}
+
 /// A schema object.
 /// 
 /// See [JSON Schema 4.3.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-documents).
@@ -289,6 +299,11 @@ record ArrayKeywords {
     /// 
     /// See [JSON Schema Validation 6.4.5](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-maxcontains).
     min_contains?: idx,
+    /// The `unevaluatedItems` keyword.
+    /// 
+    /// See [JSON Schema Core 11.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-unevaluateditems)
+    #[rust(box)]
+    unevaluated_items?: Schema,
 }
 
 /// Keywords applying to objects.
@@ -327,4 +342,25 @@ record ObjectKeywords {
     /// 
     /// See [JSON Schema Validation 6.5.4](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-dependentrequired).
     dependent_required?: [string: [string]],
+    /// The `unevaluatedProperties` keyword.
+    /// 
+    /// See [JSON Schema Core 11.3](https://json-schema.org/draft/2020-12/json-schema-core.html#name-unevaluatedproperties)
+    #[rust(box)]
+    unevaluated_properties?: Schema,
+}
+
+wrapper IdlVariantsExt: [IdlVariant]
+
+record IdlVariant {
+    name: string,
+    type_ref?: string,
+}
+
+wrapper IdlFieldsExt: [IdlField]
+
+record IdlField {
+    name: string,
+    type_ref: string,
+    optional?: bool,
+    inlined?: bool,
 }

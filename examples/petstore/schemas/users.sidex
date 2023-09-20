@@ -1,13 +1,13 @@
 /// A user.
 record User {
     id?: idx,
-    username?: string,
+    username: string,
     first_name?: string,
     last_name?: string,
     email?: string,
     password?: string,
     phone?: string,
-    user_status?: i32
+    user_status?: i32,
 }
 
 #[http("/user")]

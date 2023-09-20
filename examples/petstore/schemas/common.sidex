@@ -1,0 +1,6 @@
+/// An API response.
+record ApiResponse {
+    code: i32,
+    type: string,
+    message: string,
+}

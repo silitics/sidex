@@ -30,6 +30,7 @@
         "panicbit",
         "petstore",
         "Petstore",
+        "Redoc",
         "repr",
         "rustfmt",
         "rwlock",

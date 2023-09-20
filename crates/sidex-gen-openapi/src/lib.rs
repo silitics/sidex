@@ -4,7 +4,7 @@ use indexmap::IndexMap;
 use serde::{de::IntoDeserializer, Deserialize, Serialize};
 use sidex_attrs_http::{HttpInterfaceAttrs, HttpMethod, HttpOperationAttrs};
 use sidex_gen::{attrs::TryFromAttrs, diagnostics, ir, Generator};
-use sidex_gen_json_schema::types::schema;
+use sidex_gen_json_schema::{types::schema, JsonSchemaConfig};
 
 #[doc(hidden)]
 mod generated;
@@ -104,6 +104,12 @@ impl PathTree {
     }
 }
 
+pub enum Argument {
+    Parameter(types::Parameter),
+    Body,
+    Ignore,
+}
+
 pub struct OpenApiGenerator;
 
 impl Generator for OpenApiGenerator {
@@ -111,7 +117,10 @@ impl Generator for OpenApiGenerator {
         //todo!()
         let openapi_file = job.output.join("openapi.yaml");
 
-        let mut ctx = sidex_gen_json_schema::JsonSchemaCtx::new(&job.unit);
+        let mut config = JsonSchemaConfig::default();
+        config.emit_ids = false;
+
+        let mut ctx = sidex_gen_json_schema::JsonSchemaCtx::new(&job.unit, config);
         ctx.set_def_prefix("#/components/schemas/");
 
         let metadata = &job.unit[job.bundle].metadata;
@@ -159,8 +168,28 @@ impl Generator for OpenApiGenerator {
                             continue;
                         }
                     };
+
+                    let mut params = Vec::new();
+
+                    for param in &def.args {
+                        params.push(types::MaybeRef::Value(
+                            types::Parameter::new(
+                                sidex_gen::rename::to_camel_case(param.name.as_str()),
+                                types::ParameterLocation::Path,
+                            )
+                            .with_schema(Some(ctx.resolve(&param.typ)?.use_schema))
+                            .with_required(Some(true)),
+                        ));
+                    }
                     for param in &method.parameters {
-                        ctx.resolve(&param.typ)?;
+                        params.push(types::MaybeRef::Value(
+                            types::Parameter::new(
+                                sidex_gen::rename::to_camel_case(param.name.as_str()),
+                                types::ParameterLocation::Path,
+                            )
+                            .with_schema(Some(ctx.resolve(&param.typ)?.use_schema))
+                            .with_required(Some(true)),
+                        ));
                     }
 
                     println!("Found HTTP operation `{}`.", method.name.identifier);
@@ -168,7 +197,7 @@ impl Generator for OpenApiGenerator {
                     if let Some(path) = &operation_attrs.path {
                         tree = tree.resolve_mut(path.strip_prefix("/").unwrap());
                     };
-                    let mut operation = types::Operation::new();
+                    let mut operation = types::Operation::new().with_parameters(Some(params));
                     if let Some(tag) = &interface_attrs.open_api.tag {
                         operation.set_tags(Some(vec![tag.clone()]));
                     }
@@ -177,7 +206,7 @@ impl Generator for OpenApiGenerator {
                     }
                     let mut content = IndexMap::new();
                     if let Some(returns) = &method.returns {
-                        let returns_schema = ctx.resolve(returns)?;
+                        let returns_schema = ctx.resolve(returns)?.use_schema;
                         content.insert(
                             "application/json".to_owned(),
                             types::MediaType::new().with_schema(Some(returns_schema)),
@@ -203,8 +232,8 @@ impl Generator for OpenApiGenerator {
         while let Some((path, params, tree)) = stack.pop() {
             let mut item = types::PathItem::new();
             for (method, operation) in &tree.operations {
-                let mut operation = operation.clone();
-                operation.set_parameters(Some(params.clone()));
+                let operation = operation.clone();
+                // operation.set_parameters(Some(params.clone()));
                 match method {
                     HttpMethod::Get => item.set_get(Some(operation)),
                     HttpMethod::Put => item.set_put(Some(operation)),
@@ -248,13 +277,19 @@ impl Generator for OpenApiGenerator {
         openapi.set_paths(Some(types::Paths(paths)));
         openapi.set_tags(config.tags.clone());
         openapi.set_servers(config.servers.clone());
+        let mut schemas = ctx.into_defs().into_iter().collect::<Vec<_>>();
+        schemas.sort_by(|(x_name, _), (y_name, _)| x_name.cmp(y_name));
         openapi.set_components(Some(
-            types::Components::new().with_schemas(Some(ctx.into_defs())),
+            types::Components::new().with_schemas(Some(schemas.into_iter().collect())),
         ));
 
         println!("{:#?}", root);
 
         std::fs::write(openapi_file, serde_yaml::to_string(&openapi)?)?;
+        std::fs::write(
+            job.output.join("openapi.json"),
+            serde_json::to_string(&openapi)?,
+        )?;
 
         Ok(())
     }

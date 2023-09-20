@@ -375,6 +375,7 @@ impl std::fmt::Display for Diagnostic {
 }
 
 impl<E: 'static + Send + Sync + std::error::Error> From<E> for Diagnostic {
+    #[track_caller]
     fn from(error: E) -> Self {
         Self::error(error.to_string()).with_error(error)
     }

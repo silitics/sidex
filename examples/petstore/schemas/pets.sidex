@@ -1,6 +1,33 @@
+import common::ApiResponse
+
 /// A pet.
 record Pet {
-    id: idx,
+    id?: idx,
+    name: string,
+    category?: Category,
+    photo_urls: [string],
+    tags?: [Tag],
+    status?: PetStatus,
+}
+
+/// A category.
+record Category {
+    id?: idx,
+    name?: string,
+}
+
+/// A tag.
+record Tag {
+    id?: idx,
+    name?: string,
+}
+
+/// The status of a pet.
+#[json(tagged = externally, rename_all = "lowercase")]
+variant PetStatus {
+    Available,
+    Pending,
+    Sold
 }
 
 #[http("/pet")]
@@ -8,11 +35,11 @@ record Pet {
 interface PetsApi {
     /// Update an existing pet.
     #[http(put)]
-    fun update_pet()
+    fun update_pet() -> Pet
 
     /// Add a new pet to the store.
     #[http(post)]
-    fun add_pet()
+    fun add_pet() -> Pet
 
     /// Find a pet by its status.
     #[http(get("/findByStatus"))]
@@ -20,7 +47,7 @@ interface PetsApi {
 
     /// Find a pet by its tags.
     #[http(get("/findByTags"))]
-    fun find_by_tags()
+    fun find_by_tags() -> [Pet]
 }
 
 #[http("/pet/{pet_id}")]
@@ -28,11 +55,11 @@ interface PetsApi {
 interface PetApi(pet_id: idx) {
     /// Query a pet by its id.
     #[http(get)]
-    fun get_pet()
+    fun get_pet() -> Pet
 
     /// Update a pet with form data.
     #[http(post)]
-    fun update_pet()
+    fun update_pet(name?: string, status?: PetStatus)
 
     /// Delete a pet.
     #[http(delete)]
@@ -40,5 +67,5 @@ interface PetApi(pet_id: idx) {
 
     /// Upload an image.
     #[http(post("/uploadImage"))]
-    fun upload_image()
+    fun upload_image() -> ApiResponse
 }

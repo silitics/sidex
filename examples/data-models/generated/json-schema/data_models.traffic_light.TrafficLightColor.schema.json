@@ -1,16 +1,329 @@
 {
-  "$id": "/data_models.traffic_light.TrafficLightColor",
-  "title": "TrafficLightColor",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "data_models.traffic_light.TrafficLightColor",
+  "enum": [
+    "RED",
+    "YELLOW",
+    "GREEN"
+  ],
   "description": "",
-  "oneOf": [
-    {
-      "const": "RED"
+  "$defs": {
+    "data_models.search_api.Pagination": {
+      "$id": "data_models.search_api.Pagination",
+      "type": "object",
+      "description": "",
+      "properties": {
+        "skip": {
+          "type": "integer"
+        },
+        "limit": {
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "unevaluatedProperties": false
     },
-    {
-      "const": "YELLOW"
+    "data_models.search_api.SearchRequest": {
+      "$id": "data_models.search_api.SearchRequest",
+      "type": "object",
+      "description": "",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "skip": {
+              "type": "integer"
+            },
+            "limit": {
+              "type": "integer"
+            }
+          },
+          "required": []
+        }
+      ],
+      "properties": {
+        "query": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "unevaluatedProperties": false
     },
-    {
-      "const": "GREEN"
+    "data_models.search_api.SearchResults": {
+      "$id": "data_models.search_api.SearchResults",
+      "type": "object",
+      "description": "",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "data_models.search_api.Item"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "unevaluatedProperties": false
+    },
+    "data_models.search_api.Item": {
+      "$id": "data_models.search_api.Item",
+      "type": "object",
+      "description": "",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "unevaluatedProperties": false
+    },
+    "data_models.any_json_value.Any": {
+      "$id": "data_models.any_json_value.Any",
+      "description": "",
+      "anyOf": [
+        {
+          "type": "integer",
+          "format": "int32"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "data_models.any_json_value.Any"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "data_models.any_json_value.Any"
+          }
+        }
+      ]
+    },
+    "data_models.person.Person": {
+      "$id": "data_models.person.Person",
+      "type": "object",
+      "description": "",
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "data_models.any_json_value.Any"
+          }
+        }
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "unevaluatedProperties": false
+    },
+    "data_models.traffic_light.TrafficLightStatus": {
+      "$id": "data_models.traffic_light.TrafficLightStatus",
+      "type": "object",
+      "description": "",
+      "properties": {
+        "color": {
+          "$ref": "data_models.traffic_light.TrafficLightColor"
+        },
+        "lastChange": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "unevaluatedProperties": false
+    },
+    "data_models.coordinates.CoordinateInternallyTagged": {
+      "$id": "data_models.coordinates.CoordinateInternallyTagged",
+      "description": "",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "const": "Cartesian"
+            },
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "const": "Polar"
+            },
+            "radius": {
+              "type": "number"
+            },
+            "phi": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "radius",
+            "phi"
+          ]
+        }
+      ]
+    },
+    "data_models.coordinates.CartesianCoordinate": {
+      "$id": "data_models.coordinates.CartesianCoordinate",
+      "type": "object",
+      "description": "",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "unevaluatedProperties": false
+    },
+    "data_models.coordinates.PolarCoordinate": {
+      "$id": "data_models.coordinates.PolarCoordinate",
+      "type": "object",
+      "description": "",
+      "properties": {
+        "radius": {
+          "type": "number"
+        },
+        "phi": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "radius",
+        "phi"
+      ],
+      "unevaluatedProperties": false
+    },
+    "data_models.coordinates.CoordinateImplicitlyTagged": {
+      "$id": "data_models.coordinates.CoordinateImplicitlyTagged",
+      "description": "",
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "number"
+            },
+            "phi": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "radius",
+            "phi"
+          ]
+        }
+      ]
+    },
+    "data_models.coordinates.CoordinateExternallyTagged": {
+      "$id": "data_models.coordinates.CoordinateExternallyTagged",
+      "description": "",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "Cartesian": {
+              "$ref": "data_models.coordinates.CartesianCoordinate"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "Polar": {
+              "$ref": "data_models.coordinates.PolarCoordinate"
+            }
+          }
+        }
+      ]
+    },
+    "data_models.coordinates.CoordinateAdjacentlyTagged": {
+      "$id": "data_models.coordinates.CoordinateAdjacentlyTagged",
+      "description": "",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "Cartesian"
+            },
+            "cartesian": {
+              "$ref": "data_models.coordinates.CartesianCoordinate"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "Polar"
+            },
+            "polar": {
+              "$ref": "data_models.coordinates.PolarCoordinate"
+            }
+          }
+        }
+      ]
     }
-  ]
+  }
 }
