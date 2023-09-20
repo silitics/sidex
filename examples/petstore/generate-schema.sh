@@ -3,7 +3,7 @@
 just run generate openapi generated
 just run generate json-schema generated/schemas
 
-OPENAPI_DEF=$(cat generated/openapi.json)
+JSON_DEFINITON=$(cat generated/openapi.json)
 
 cat >generated/openapi-redoc.html <<EOF
 <!DOCTYPE html>
@@ -27,8 +27,35 @@ cat >generated/openapi-redoc.html <<EOF
     <div id="redoc-container"></div>
     <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
     <script>
-        const DEFINITION = ${OPENAPI_DEF};
+        const DEFINITION = ${JSON_DEFINITON};
         Redoc.init(DEFINITION, {}, document.getElementById('redoc-container'));
+    </script>
+  </body>
+</html>
+EOF
+
+cat >generated/openapi-swagger-ui.html <<EOF
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="SwaggerUI" />
+
+    <title>API Documentation</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@latest/swagger-ui.css" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@latest/swagger-ui-bundle.js" crossorigin></script>
+    <script>
+      window.onload = () => {
+        window.ui = SwaggerUIBundle({
+          spec: ${JSON_DEFINITON},
+          dom_id: '#swagger-ui',
+        });
+      };
     </script>
   </body>
 </html>
