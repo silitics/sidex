@@ -297,7 +297,7 @@ impl Diagnostic {
 
     /// Iterator over the errors attached to the diagnostic.
     pub fn errors(&self) -> impl Iterator<Item = &dyn std::error::Error> {
-        self.errors.iter().map(AsRef::as_ref)
+        self.errors.iter().map(|error| error.as_ref())
     }
 
     /// Sets the span of the diagnostic.
