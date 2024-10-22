@@ -23,10 +23,10 @@
     ],
     "extensions": {
         "recommendations": [
-            "rust-lang.rust-analyzer",
-            "panicbit.cargo",
-            "serayuzgur.crates",
             "esbenp.prettier-vscode"
+            "fill-labs.dependi",
+            "panicbit.cargo",
+            "rust-lang.rust-analyzer",
         ]
     },
     "settings": {
