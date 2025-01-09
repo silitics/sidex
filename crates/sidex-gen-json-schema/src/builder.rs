@@ -247,11 +247,13 @@ pub fn pure_tag(variant_name: &str) -> SchemaObject {
 pub fn object_tag(tag_field: &str, variant_name: &str) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(ObjectKeywords::new().with_properties(Some(
-            indexmap! {
-                tag_field.to_owned() => make_schema_string(variant_name).into(),
-            },
-        )))))
+        .with_object_keywords(Some(Box::new(
+            ObjectKeywords::new()
+                .with_properties(Some(indexmap! {
+                    tag_field.to_owned() => make_schema_string(variant_name).into(),
+                }))
+                .with_required(Some(vec![tag_field.to_owned()])),
+        )))
 }
 
 pub fn externally_tagged(variant_name: &str, content_schema: SchemaObject) -> SchemaObject {
