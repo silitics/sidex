@@ -491,7 +491,7 @@ impl Generator for JsonSchemaGenerator {
     fn generate(&self, job: sidex_gen::Job) -> diagnostics::Result<()> {
         // let config = Config::deserialize(job.config.clone().into_deserializer())?;
         let mut ctx = JsonSchemaCtx::new(&job.unit, Default::default());
-        ctx.set_def_prefix("");
+        // ctx.set_def_prefix("");
         for bundle in &job.unit.bundles {
             for schema in &bundle.schemas {
                 for (idx, def) in schema.defs.iter().enumerate() {
