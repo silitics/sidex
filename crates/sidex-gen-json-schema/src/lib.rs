@@ -518,7 +518,7 @@ impl Generator for JsonSchemaGenerator {
         }
         let defs = ctx.into_defs();
         for (name, schema) in &defs {
-            let defs = defs
+            let mut defs = defs
                 .iter()
                 .filter(|(def_name, _)| *def_name != name)
                 .map(|(name, schema)| {
@@ -527,8 +527,8 @@ impl Generator for JsonSchemaGenerator {
                         schema.clone().with_id(Some(name.clone())).into(),
                     )
                 })
-                .collect();
-            defs.sort_keys_unstable();
+                .collect::<IndexMap<_, _>>();
+            defs.sort_keys();
             let root_schema = RootSchema::new(schema.clone())
                 .with_meta_schema(Some(
                     "https://json-schema.org/draft/2020-12/schema".to_owned(),
