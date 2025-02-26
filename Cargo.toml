@@ -4,7 +4,7 @@ members = ["crates/*", "examples/petstore/rust-backend"]
 
 [workspace.package]
 # We have no `version` here because the different crates can evolve independently.
-edition = "2021"
+edition = "2024"
 authors = ["Silitics GmbH <info@silitics.com>"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/silitics/sidex"
