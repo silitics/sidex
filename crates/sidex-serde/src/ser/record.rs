@@ -1,8 +1,8 @@
 //! Serialization helpers for record types.
 
 use serde::{
-    ser::{Error, Impossible, SerializeMap, SerializeStruct},
     Serialize, Serializer,
+    ser::{Error, Impossible, SerializeMap, SerializeStruct},
 };
 
 use self::RecordSerializerMethod::*;

@@ -1,0 +1,7 @@
+import ids::{TaskId, PersonId}
+
+interface TodoList {
+    fun create(name: string) -> TaskId
+    fun delete(task: TaskId)
+    fun assign(task: TaskId, person: PersonId)
+}

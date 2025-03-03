@@ -3100,7 +3100,7 @@ pub mod ir {
                 "idx", "bundle", "name", "docs", "attrs", "defs", "source", "imports",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"idx\", \"bundle\", \"name\", \"docs\", \"attrs\", \"defs\", \"source\", \"imports\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"idx\", \"bundle\", \"name\", \"docs\", \"attrs\", \"defs\", \"source\", \"imports\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -4684,7 +4684,7 @@ pub mod ir {
                 "Interface",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Interface\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"TypeAlias\", \"OpaqueType\", \"RecordType\", \"VariantType\", \"WrapperType\", \"DerivedType\", \"Interface\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {

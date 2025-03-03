@@ -3,12 +3,12 @@
 use std::marker::PhantomData;
 
 use serde::{
-    de::{DeserializeSeed, Visitor},
     Deserialize, Deserializer,
+    de::{DeserializeSeed, Visitor},
 };
 
 use super::{
-    content::{content_str_eq, deserialize_content, Content, ContentVisitor},
+    content::{Content, ContentVisitor, content_str_eq, deserialize_content},
     sanitize_size_hint,
 };
 

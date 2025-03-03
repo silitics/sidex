@@ -1,14 +1,14 @@
 //! Chumsky-based parser for Sidex definitions.
 
-use chumsky::{prelude::*, Stream};
+use chumsky::{Stream, prelude::*};
 use sidex_ir as ir;
 
 use crate::{
     ast::{self, MethodParam},
     span::Span,
     tokens::{
-        delimiters, diagnostic_from_error, keywords, punctuations, tokenize, Delimiter, DocKind,
-        Punctuation, Token, TokenKind,
+        Delimiter, DocKind, Punctuation, Token, TokenKind, delimiters, diagnostic_from_error,
+        keywords, punctuations, tokenize,
     },
 };
 
@@ -21,8 +21,8 @@ fn name_parser() -> impl Parser<TokenKind, ast::Identifier, Error = Simple<Token
 }
 
 /// Create a parser for parsing token streams.
-fn token_stream_parser(
-) -> impl Parser<TokenKind, Vec<Token>, Error = Simple<TokenKind, Span>> + Clone {
+fn token_stream_parser()
+-> impl Parser<TokenKind, Vec<Token>, Error = Simple<TokenKind, Span>> + Clone {
     let single_token =
         filter(TokenKind::is_not_delimiter).map_with_span(|kind, span| vec![Token { kind, span }]);
 
@@ -130,8 +130,8 @@ fn attrs_parser() -> impl Parser<TokenKind, Vec<ast::Attr>, Error = Simple<Token
     attr.repeated()
 }
 
-fn double_colon(
-) -> impl Parser<TokenKind, (TokenKind, TokenKind), Error = Simple<TokenKind, Span>> + Clone {
+fn double_colon()
+-> impl Parser<TokenKind, (TokenKind, TokenKind), Error = Simple<TokenKind, Span>> + Clone {
     just(punctuations::Colon::COMPOSED)
         .then(just(punctuations::Colon::ALONE).or(just(punctuations::Colon::COMPOSED)))
 }
@@ -155,8 +155,8 @@ fn path_parser() -> impl Parser<TokenKind, ast::Path, Error = Simple<TokenKind, 
         })
 }
 
-fn type_expr_parser(
-) -> impl Parser<TokenKind, ast::TypeExpr, Error = Simple<TokenKind, Span>> + Clone {
+fn type_expr_parser()
+-> impl Parser<TokenKind, ast::TypeExpr, Error = Simple<TokenKind, Span>> + Clone {
     recursive(|type_expr| {
         let container = type_expr
             .clone()
@@ -206,8 +206,8 @@ fn type_expr_parser(
     })
 }
 
-fn type_vars_parser(
-) -> impl Parser<TokenKind, Vec<ast::TypeVar>, Error = Simple<TokenKind, Span>> + Clone {
+fn type_vars_parser()
+-> impl Parser<TokenKind, Vec<ast::TypeVar>, Error = Simple<TokenKind, Span>> + Clone {
     name_parser()
         .separated_by(just(punctuations::Comma::ALONE))
         .allow_trailing()
@@ -292,24 +292,24 @@ fn def_with_inner_parser(
         ))
 }
 
-fn record_def_inner_parser(
-) -> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
+fn record_def_inner_parser()
+-> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
     field_parser()
         .separated_by(just(punctuations::Comma::ALONE))
         .allow_trailing()
         .map(|fields| ast::DefKind::RecordType(ast::RecordTypeDef { fields }))
 }
 
-fn variant_def_inner_parser(
-) -> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
+fn variant_def_inner_parser()
+-> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
     variant_parser()
         .separated_by(just(punctuations::Comma::ALONE))
         .allow_trailing()
         .map(|variants| ast::DefKind::VariantType(ast::VariantTypeDef { variants }))
 }
 
-fn method_param_parser(
-) -> impl Parser<TokenKind, ast::MethodParam, Error = Simple<TokenKind, Span>> + Clone {
+fn method_param_parser()
+-> impl Parser<TokenKind, ast::MethodParam, Error = Simple<TokenKind, Span>> + Clone {
     attrs_parser()
         .then(
             name_parser()
@@ -367,8 +367,8 @@ fn method_parser() -> impl Parser<TokenKind, ast::Method, Error = Simple<TokenKi
         })
 }
 
-fn interface_def_inner_parser(
-) -> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
+fn interface_def_inner_parser()
+-> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
     method_parser()
         .repeated()
         .map(|functions| ast::DefKind::Interface(ast::InterfaceDef { methods: functions }))

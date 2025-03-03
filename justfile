@@ -15,7 +15,7 @@ fmt:
 
 # Generate the API documentation using Rustdoc.
 doc:
-    cargo +nightly doc --lib --document-private-items --all-features
+    RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --bin todo_list_backend --lib --document-private-items --all-features
 
 
 # Run all tests.

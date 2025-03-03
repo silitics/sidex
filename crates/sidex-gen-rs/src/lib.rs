@@ -10,12 +10,13 @@ use context::{BundleCtx, SchemaCtx};
 use plugins::Plugin;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use serde::{de::IntoDeserializer, Deserialize};
-use sidex_gen::{diagnostics, diagnostics::Result, ir, Generator, Job};
+use serde::{Deserialize, de::IntoDeserializer};
+use sidex_gen::{Generator, Job, diagnostics, diagnostics::Result, ir};
 
 pub mod config;
 pub mod context;
 pub mod plugins;
+pub mod rstyir;
 
 /// Implements [`Generator`] for Rust.
 #[derive(Clone)]

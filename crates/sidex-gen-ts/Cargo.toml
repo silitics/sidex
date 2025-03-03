@@ -18,7 +18,7 @@ sidex-attrs-json = { path = "../sidex-attrs-json" }  # PUBLIC
 # Required for generating TypeScript code.
 proc-macro2 = "1"  # PUBLIC
 quote = "1"  # PUBLIC
-syn = { version = "1", features = ["extra-traits"] }  # PUBLIC
+syn = { version = "2", features = ["extra-traits"] }  # PUBLIC
 # Required for deserializing the backend configuration.
 serde = "1"  # PUBLIC
 serde_json = "1"

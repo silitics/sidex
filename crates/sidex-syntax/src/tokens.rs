@@ -11,7 +11,7 @@ use std::{
     sync::Arc,
 };
 
-use chumsky::{prelude::*, Stream};
+use chumsky::{Stream, prelude::*};
 use sidex_diagnostics::{Diagnostic, Label};
 use sidex_ir as ir;
 

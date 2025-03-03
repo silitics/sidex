@@ -2,7 +2,7 @@
 
 use clap::Parser;
 use sidex_core::{
-    bundle::{Manifest, MANIFEST_NAME, SCHEMAS_DIR},
+    bundle::{MANIFEST_NAME, Manifest, SCHEMAS_DIR},
     ir,
 };
 

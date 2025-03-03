@@ -1,9 +1,9 @@
 use std::str::FromStr;
 
 use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 use sidex_gen::{
-    attrs::{accept, new_assign_attr, reject, AttrConvertExt, TryApplyAttr, TryFromAttr},
+    attrs::{AttrConvertExt, TryApplyAttr, TryFromAttr, accept, new_assign_attr, reject},
     diagnostics::{Diagnostic, Result},
     ir,
 };
@@ -30,7 +30,7 @@ impl TryFromAttr for Type {
 }
 
 /// `derive(...)`
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct Derive {
     pub positive: Vec<TokenStream>,
 }
@@ -163,7 +163,7 @@ pub struct Inner {
     pub visibility: Visibility,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct TypeAttrs {
     pub typ: Option<Type>,
     pub derive: Derive,

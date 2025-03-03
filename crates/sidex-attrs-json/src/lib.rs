@@ -1,7 +1,7 @@
 #![doc = include_str!("../README.md")]
 
 use sidex_gen::{
-    attrs::{accept, reject, AttrConvertExt, TryApplyAttr},
+    attrs::{AttrConvertExt, TryApplyAttr, accept, reject},
     diagnostics, ir,
     rename::RenameFunction,
 };
@@ -84,7 +84,7 @@ impl TryApplyAttr for JsonRecordTypeAttrs {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct JsonFieldAttrs {
     pub name: Option<atoms::NameAttr>,
     pub rename: Option<atoms::RenameAttr>,
@@ -110,7 +110,7 @@ impl TryApplyAttr for JsonFieldAttrs {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct JsonVariantTypeAttrs {
     pub rename_all: atoms::RenameAllAttr,
     pub tagged: atoms::JsonTaggedAttr,
@@ -175,7 +175,7 @@ impl TryApplyAttr for JsonVariantTypeAttrs {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct JsonVariantAttrs {
     pub name: Option<atoms::NameAttr>,
     pub rename: Option<atoms::RenameAttr>,

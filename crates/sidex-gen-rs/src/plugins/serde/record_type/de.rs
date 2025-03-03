@@ -8,8 +8,8 @@ use sidex_gen::ir;
 use crate::{
     context::{RustTy, SchemaCtx},
     plugins::serde::{
-        identifier_enum::{gen_identifier_enum, IdentifierKind},
         SerdeField,
+        identifier_enum::{IdentifierKind, gen_identifier_enum},
     },
 };
 

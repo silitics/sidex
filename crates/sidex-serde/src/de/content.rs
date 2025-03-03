@@ -1,6 +1,6 @@
 //! Data structure for holding intermediate deserialized values of unknown type.
 
-use serde::{de::Visitor, Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, de::Visitor};
 
 use super::sanitize_size_hint;
 

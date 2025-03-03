@@ -3,8 +3,8 @@
 use std::str::FromStr;
 
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote, ToTokens};
-use serde::{de::IntoDeserializer, Deserialize};
+use quote::{ToTokens, format_ident, quote};
+use serde::{Deserialize, de::IntoDeserializer};
 use sidex_attrs_rust::{FieldAttrs, Visibility};
 use sidex_gen::{attrs::TryFromAttrs, ir};
 

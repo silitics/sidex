@@ -14,7 +14,7 @@ use thiserror::Error;
 
 use crate::{
     builtins,
-    bundle::{self, iter_schemas, BundleSource, Manifest},
+    bundle::{self, BundleSource, Manifest, iter_schemas},
     ir::{self, TokenKind},
 };
 

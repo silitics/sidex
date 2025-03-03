@@ -4,7 +4,7 @@ use config::Config;
 use context::{BundleCtx, SchemaCtx};
 use plugins::Plugin;
 use quote::quote;
-use sidex_gen::{diagnostics, Generator};
+use sidex_gen::{Generator, diagnostics};
 
 pub mod config;
 pub mod context;

@@ -1,13 +1,13 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use sidex_attrs_json::{atoms::JsonTaggedAttr, JsonVariantTypeAttrs};
+use sidex_attrs_json::{JsonVariantTypeAttrs, atoms::JsonTaggedAttr};
 use sidex_gen::{diagnostics::Result, ir};
 
 use crate::{
     context::{RustTy, SchemaCtx},
     plugins::serde::{
-        identifier_enum::{gen_identifier_enum, IdentifierKind},
         SerdeVariant,
+        identifier_enum::{IdentifierKind, gen_identifier_enum},
     },
 };
 

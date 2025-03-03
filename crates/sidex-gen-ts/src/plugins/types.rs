@@ -1,8 +1,8 @@
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use sidex_attrs_json::{
-    atoms::JsonTaggedAttr, JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
-    JsonVariantTypeAttrs, OpaqueTypeAttrs,
+    JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs, JsonVariantTypeAttrs, OpaqueTypeAttrs,
+    atoms::JsonTaggedAttr,
 };
 use sidex_gen::{
     attrs::TryFromAttrs,

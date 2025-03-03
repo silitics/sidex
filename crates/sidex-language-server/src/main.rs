@@ -3,7 +3,7 @@ use ropey::Rope;
 use sidex_ir as ir;
 use sidex_syntax::tokens::{self, tokenize};
 use tower_lsp::{
-    jsonrpc,
+    Client, LanguageServer, LspService, Server, jsonrpc,
     lsp_types::{
         DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
         DocumentFilter, InitializeParams, InitializeResult, InitializedParams, MessageType,
@@ -12,7 +12,6 @@ use tower_lsp::{
         SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities, ServerInfo,
         TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind,
     },
-    Client, LanguageServer, LspService, Server,
 };
 use url::Url;
 

@@ -3,9 +3,9 @@
 use std::marker::PhantomData;
 
 use serde::{
+    Deserialize, Deserializer, Serialize,
     de::{Expected, Unexpected, Visitor},
     ser::{SerializeMap, SerializeSeq},
-    Deserialize, Deserializer, Serialize,
 };
 
 #[cfg(not(feature = "serde-private-content"))]

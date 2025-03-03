@@ -852,7 +852,7 @@ pub mod schema {
                 "extensions",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"$id\", \"type\", \"enum\", \"const\", \"format\", \"$ref\", \"$comment\", \"metadata\", \"subschemaKeywords\", \"numberKeywords\", \"stringKeywords\", \"arrayKeywords\", \"objectKeywords\", \"extensions\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"$id\", \"type\", \"enum\", \"const\", \"format\", \"$ref\", \"$comment\", \"metadata\", \"subschemaKeywords\", \"numberKeywords\", \"stringKeywords\", \"arrayKeywords\", \"objectKeywords\", \"extensions\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -1611,7 +1611,7 @@ pub mod schema {
                 "null", "boolean", "object", "array", "number", "string", "integer",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"null\", \"boolean\", \"object\", \"array\", \"number\", \"string\", \"integer\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"null\", \"boolean\", \"object\", \"array\", \"number\", \"string\", \"integer\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -2053,7 +2053,7 @@ pub mod schema {
             const __IDENTIFIERS: &'static [&'static str] =
                 &["Boolean", "Integer", "Number", "String", "Object", "Array"];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"Boolean\", \"Integer\", \"Number\", \"String\", \"Object\", \"Array\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"Boolean\", \"Integer\", \"Number\", \"String\", \"Object\", \"Array\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -2488,7 +2488,7 @@ pub mod schema {
                 "examples",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"title\", \"description\", \"default\", \"deprecated\", \"readOnly\", \"writeOnly\", \"examples\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"title\", \"description\", \"default\", \"deprecated\", \"readOnly\", \"writeOnly\", \"examples\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -3076,7 +3076,7 @@ pub mod schema {
                 "dependentSchemas",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"allOf\", \"anyOf\", \"oneOf\", \"not\", \"if\", \"then\", \"else\", \"dependentSchemas\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"allOf\", \"anyOf\", \"oneOf\", \"not\", \"if\", \"then\", \"else\", \"dependentSchemas\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -3636,7 +3636,7 @@ pub mod schema {
                 "exclusiveMinimum",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"multipleOf\", \"maximum\", \"exclusiveMaximum\", \"minimum\", \"exclusiveMinimum\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"multipleOf\", \"maximum\", \"exclusiveMaximum\", \"minimum\", \"exclusiveMinimum\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -4709,7 +4709,7 @@ pub mod schema {
                 "unevaluatedItems",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"prefixItems\", \"items\", \"contains\", \"maxItems\", \"minItems\", \"uniqueItems\", \"maxContains\", \"minContains\", \"unevaluatedItems\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"prefixItems\", \"items\", \"contains\", \"maxItems\", \"minItems\", \"uniqueItems\", \"maxContains\", \"minContains\", \"unevaluatedItems\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -5431,7 +5431,7 @@ pub mod schema {
                 "unevaluatedProperties",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"properties\", \"patternProperties\", \"additionalProperties\", \"propertyNames\", \"maxProperties\", \"minProperties\", \"required\", \"dependentRequired\", \"unevaluatedProperties\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"properties\", \"patternProperties\", \"additionalProperties\", \"propertyNames\", \"maxProperties\", \"minProperties\", \"required\", \"dependentRequired\", \"unevaluatedProperties\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {

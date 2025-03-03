@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use indexmap::IndexMap;
-use serde::{de::IntoDeserializer, Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::IntoDeserializer};
 use sidex_attrs_http::{HttpInterfaceAttrs, HttpMethod, HttpOperationAttrs};
-use sidex_gen::{attrs::TryFromAttrs, diagnostics, ir, Generator};
-use sidex_gen_json_schema::{types::schema, JsonSchemaConfig};
+use sidex_gen::{Generator, attrs::TryFromAttrs, diagnostics, ir};
+use sidex_gen_json_schema::{JsonSchemaConfig, types::schema};
 
 #[doc(hidden)]
 mod generated;

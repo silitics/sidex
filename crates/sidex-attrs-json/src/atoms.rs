@@ -1,5 +1,5 @@
 use sidex_gen::{
-    attrs::{accept, new_assign_attr, reject, AttrConvertExt, TryFromAttr},
+    attrs::{AttrConvertExt, TryFromAttr, accept, new_assign_attr, reject},
     diagnostics, ir,
     rename::RenameFunction,
 };

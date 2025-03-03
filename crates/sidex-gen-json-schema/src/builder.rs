@@ -1,6 +1,6 @@
 //! Helpers for building schemas from type definitions.
 
-use indexmap::{indexmap, IndexMap};
+use indexmap::{IndexMap, indexmap};
 use sidex_attrs_json::atoms::JsonTaggedAttr;
 
 use crate::{

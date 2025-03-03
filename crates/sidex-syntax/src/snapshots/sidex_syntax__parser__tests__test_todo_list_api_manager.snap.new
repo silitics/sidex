@@ -1,0 +1,14 @@
+---
+source: crates/sidex-syntax/src/parser.rs
+assertion_line: 527
+expression: result
+---
+Some(
+    Schema {
+        attrs: [],
+        docs: Docs(
+            [],
+        ),
+        items: [],
+    },
+)

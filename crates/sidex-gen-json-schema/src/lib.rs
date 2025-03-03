@@ -3,17 +3,17 @@ pub mod generated;
 use builder::{RecordTypeSchemaBuilder, VariantTypeSchemaBuilder};
 pub use generated as types;
 pub use generated::schema::*;
-use indexmap::{indexmap, IndexMap};
+use indexmap::{IndexMap, indexmap};
 use serde::{Deserialize, Serialize};
 use sidex_attrs_json::{
     JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs, JsonVariantTypeAttrs,
 };
 use sidex_gen::{
+    Generator,
     attrs::TryFromAttrs,
     diagnostics,
-    ir::{self, TypeVarType, STD_BUNDLE_IDX},
+    ir::{self, STD_BUNDLE_IDX, TypeVarType},
     rename::RenameFunction,
-    Generator,
 };
 
 pub mod builder;

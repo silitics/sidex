@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use sidex_attrs_json::{atoms::JsonTaggedAttr, JsonVariantTypeAttrs};
+use sidex_attrs_json::{JsonVariantTypeAttrs, atoms::JsonTaggedAttr};
 use sidex_gen::diagnostics::Result;
 
 use crate::{

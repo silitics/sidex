@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/*", "examples/petstore/rust-backend"]
+members = ["crates/*", "examples/petstore/rust-backend", "examples/todo-list/todo_list_backend"]
 
 [workspace.package]
 # We have no `version` here because the different crates can evolve independently.
@@ -9,3 +9,6 @@ authors = ["Silitics GmbH <info@silitics.com>"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/silitics/sidex"
 homepage = "https://oss.silitics.com/sidex"
+
+[workspace.dependencies]
+sidex-rpc-core = { path = "crates/sidex-rpc-core" }

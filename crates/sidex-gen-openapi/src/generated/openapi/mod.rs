@@ -518,7 +518,7 @@ pub mod openapi {
                 "externalDocs",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"openapi\", \"info\", \"jsonSchemaDialect\", \"servers\", \"paths\", \"webhooks\", \"components\", \"security\", \"tags\", \"externalDocs\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"openapi\", \"info\", \"jsonSchemaDialect\", \"servers\", \"paths\", \"webhooks\", \"components\", \"security\", \"tags\", \"externalDocs\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -1228,7 +1228,7 @@ pub mod openapi {
                 "license",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"title\", \"version\", \"summary\", \"description\", \"termsOfService\", \"contact\", \"license\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"title\", \"version\", \"summary\", \"description\", \"termsOfService\", \"contact\", \"license\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -3203,7 +3203,7 @@ pub mod openapi {
                 "pathItems",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"schemas\", \"responses\", \"parameters\", \"examples\", \"requestBodies\", \"headers\", \"securitySchemes\", \"links\", \"callbacks\", \"pathItems\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"schemas\", \"responses\", \"parameters\", \"examples\", \"requestBodies\", \"headers\", \"securitySchemes\", \"links\", \"callbacks\", \"pathItems\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -4135,7 +4135,7 @@ pub mod openapi {
                 "parameters",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"$ref\", \"summary\", \"description\", \"get\", \"put\", \"post\", \"delete\", \"options\", \"head\", \"patch\", \"trace\", \"servers\", \"parameters\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"$ref\", \"summary\", \"description\", \"get\", \"put\", \"post\", \"delete\", \"options\", \"head\", \"patch\", \"trace\", \"servers\", \"parameters\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -5091,7 +5091,7 @@ pub mod openapi {
                 "servers",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"tags\", \"summary\", \"description\", \"externalDocs\", \"operationId\", \"parameters\", \"requestBody\", \"responses\", \"callbacks\", \"deprecated\", \"security\", \"servers\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"tags\", \"summary\", \"description\", \"externalDocs\", \"operationId\", \"parameters\", \"requestBody\", \"responses\", \"callbacks\", \"deprecated\", \"security\", \"servers\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -6026,7 +6026,7 @@ pub mod openapi {
             const __IDENTIFIERS: &'static [&'static str] =
                 &["Integer", "Float", "String", "Bool", "Array", "Object"];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"Integer\", \"Float\", \"String\", \"Bool\", \"Array\", \"Object\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"Integer\", \"Float\", \"String\", \"Bool\", \"Array\", \"Object\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -6552,7 +6552,7 @@ pub mod openapi {
                 "content",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"name\", \"in\", \"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"in\", \"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -8315,7 +8315,7 @@ pub mod openapi {
                 "allowReserved",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"contentType\", \"headers\", \"style\", \"explode\", \"allowReserved\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"contentType\", \"headers\", \"style\", \"explode\", \"allowReserved\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -9649,7 +9649,7 @@ pub mod openapi {
                 "server",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"operationRef\", \"operationId\", \"parameters\", \"requestBody\", \"description\", \"server\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"operationRef\", \"operationId\", \"parameters\", \"requestBody\", \"description\", \"server\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -10266,7 +10266,7 @@ pub mod openapi {
                 "content",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -11964,7 +11964,7 @@ pub mod openapi {
                 "openIdConnectUrl",
             ];
             #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"type\", \"description\", \"name\", \"scheme\", \"bearerFormat\", \"flows\", \"openIdConnectUrl\"]" ;
+            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"type\", \"description\", \"name\", \"scheme\", \"bearerFormat\", \"flows\", \"openIdConnectUrl\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
