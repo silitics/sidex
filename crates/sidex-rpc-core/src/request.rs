@@ -58,3 +58,13 @@ pub struct RequestParts {
     /// Private field for future extendability.
     _private: (),
 }
+
+impl RequestParts {
+    pub fn new(method: Method) -> Self {
+        Self {
+            method,
+            extensions: Extensions::default(),
+            _private: (),
+        }
+    }
+}

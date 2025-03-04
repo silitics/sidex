@@ -20,7 +20,7 @@ record Task {
     /// The status of the task.
     status: Status,
     /// An optional description of the task.
-    description?: string,    
+    description?: string,
     /// An optional person assigned to the task.
     assigned_to?: PersonId,
 }

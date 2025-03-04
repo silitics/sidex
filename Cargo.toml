@@ -11,4 +11,5 @@ repository = "https://github.com/silitics/sidex"
 homepage = "https://oss.silitics.com/sidex"
 
 [workspace.dependencies]
+sidex-rpc = { path = "crates/sidex-rpc" }
 sidex-rpc-core = { path = "crates/sidex-rpc-core" }

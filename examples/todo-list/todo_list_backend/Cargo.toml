@@ -11,9 +11,13 @@ sidex = { path = "../../../crates/sidex" }
 sidex-serde = { path = "../../../crates/sidex-serde" }
 serde = "1"
 # Used by the Sidex model.
-uuid = { version = "^1.1", features = ["serde"] }
+uuid = { version = "^1.1", features = ["serde", "v4"] }
 
+sidex-rpc.workspace = true
 sidex-rpc-core.workspace = true
+axum = { version = "0.8.1", features = ["json"] }
+tokio = { version = "1.43.0", features = ["full"] }
+serde_json = "1.0.140"
 
 [build-dependencies]
 sidex-build-rs = { path = "../../../crates/sidex-build-rs" }

@@ -1,1 +1,0 @@
-//! Generator for wrapper types.

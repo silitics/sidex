@@ -61,7 +61,7 @@ impl Method {
             .rsplit_once('.')
             .unwrap_or(("", self.as_str()));
         let mut head = self.raw.clone();
-        head.advance(tail.len());
+        head.advance(tail.len() + 1);
         (tail, Method::unchecked_from_bytes(head))
     }
 

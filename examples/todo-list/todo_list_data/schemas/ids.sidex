@@ -6,7 +6,9 @@
 opaque Uuid  // This is an opaque user-defined type.
 
 /// An unique identifier for a person.
+#[rust(derive(PartialEq, Eq, Hash))]
 wrapper PersonId: Uuid  // This is a wrapper type.
 
 /// A unique identifier for a task.
+#[rust(derive(PartialEq, Eq, Hash))]
 wrapper TaskId: Uuid

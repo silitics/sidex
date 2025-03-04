@@ -141,6 +141,16 @@ impl JsonVariantTypeAttrs {
             self.rename_all.function.apply_to(variant.name.as_str())
         }
     }
+
+    pub fn variant_name_from_str(&self, variant: &str, variant_attrs: &JsonVariantAttrs) -> String {
+        if let Some(name) = &variant_attrs.name {
+            name.0.clone()
+        } else if let Some(rename) = &variant_attrs.rename {
+            rename.function.apply_to(variant)
+        } else {
+            self.rename_all.function.apply_to(variant)
+        }
+    }
 }
 
 impl Default for JsonVariantTypeAttrs {

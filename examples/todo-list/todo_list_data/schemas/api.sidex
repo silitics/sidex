@@ -1,7 +1,19 @@
 import ids::{TaskId, PersonId}
+import task::Status
 
 interface TodoList {
+    /// Create a new task.
     fun create(name: string) -> TaskId
+    /// Delete a task.
     fun delete(task: TaskId)
+    /// Assign a task to a person.
     fun assign(task: TaskId, person: PersonId)
+    /// Unassign a task.
+    fun unassign(task: TaskId)
+    /// Set the name of a task.
+    fun set_name(task: TaskId, name: string)
+    /// Set the status of a task.
+    fun set_status(task: TaskId, status: Status)
+    /// Set the description of a task.
+    fun set_description(task: TaskId, description: string)
 }

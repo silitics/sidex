@@ -4,4 +4,4 @@ version = "0.1.0"
 
 [backend.rust]
 derive = ["Clone", "Debug"]
-plugins = ["serde", "interfaces"]
+plugins = ["serde", "interfaces", "builder"]

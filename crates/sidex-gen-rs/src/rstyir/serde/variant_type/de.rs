@@ -1,43 +1,38 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use sidex_attrs_json::{JsonVariantTypeAttrs, atoms::JsonTaggedAttr};
-use sidex_gen::{diagnostics::Result, ir};
+use sidex_attrs_json::atoms::JsonTaggedAttr;
 
-use crate::{
-    context::{RustTy, SchemaCtx},
-    plugins::serde::{
-        SerdeVariant,
-        identifier_enum::{IdentifierKind, gen_identifier_enum},
-    },
+use crate::rstyir::{
+    RsType, RsTypeVariant, RsVariant,
+    serde::identifier_enum::{IdentifierKind, gen_identifier_enum},
 };
 
-pub(crate) fn gen_deserialize_body(
-    ctx: &SchemaCtx,
-    def: &ir::Def,
-    ty: &RustTy,
-    ty_json_attrs: &JsonVariantTypeAttrs,
-    variants: &[SerdeVariant],
-) -> Result<TokenStream> {
+pub(crate) fn gen_deserialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> TokenStream {
     let (identifiers, identifier_enum) = gen_identifier_enum(
-        variants
-            .iter()
-            .map(|variant| ty_json_attrs.variant_name(&variant.variant, &variant.json_attrs)),
+        variant_ty.variants.iter().map(|variant| {
+            variant_ty
+                .json_attrs
+                .variant_name_from_str(&variant.name, &variant.json_attrs)
+        }),
         IdentifierKind::Variant,
     );
 
-    let variants_array_const = gen_variants_array_const(variants);
+    let variants_array_const = gen_variants_array_const(&variant_ty.variants);
 
-    let non_human_readable_body = gen_externally_tagged_body(ctx, def, ty, variants, &identifiers);
+    let non_human_readable_body = gen_externally_tagged_body(ty, variant_ty, &identifiers);
 
     let ty_ident = &ty.ident;
 
-    let body = if !matches!(ty_json_attrs.tagged, JsonTaggedAttr::Externally) {
-        let human_readable_body = if matches!(ty_json_attrs.tagged, JsonTaggedAttr::Implicitly) {
-            let try_variants = variants
+    let body = if !matches!(variant_ty.json_attrs.tagged, JsonTaggedAttr::Externally) {
+        let human_readable_body = if matches!(
+            variant_ty.json_attrs.tagged,
+            JsonTaggedAttr::Implicitly
+        ) {
+            let try_variants = variant_ty.variants
             .iter()
             .map(|variant| {
-                let ident = &variant.rust_variant.ident;
-                if let Some(ty) = &variant.rust_variant.ty {
+                let ident = &variant.ident;
+                if let Some(ty) = &variant.ty {
                     quote! {
                         match __sidex_serde::de::content::deserialize_content_ref::<#ty, __D::Error>(&__content) {
                             Ok(__value) => return Ok(#ty_ident::#ident(__value)),
@@ -54,21 +49,21 @@ pub(crate) fn gen_deserialize_body(
                 Err(<__D::Error as __serde::de::Error>::custom("no matching variant found"))
             }
         } else {
-            let human_readable_match_arms = variants
+            let human_readable_match_arms = variant_ty.variants
             .iter()
             .zip(identifiers.iter())
             .map(|(variant, de_ident)| {
-                let ident = &variant.rust_variant.ident;
-                let constructor = if let Some(ty) = &variant.rust_variant.ty {
-                    let content_field = ty_json_attrs.content_field_name(&variant.json_attrs);
-                    match &ty_json_attrs.tagged {
+                let ident = &variant.ident;
+                let constructor = if let Some(ty) = &variant.ty {
+                    let content_field = variant_ty.json_attrs.content_field_name(&variant.json_attrs);
+                    match &variant_ty.json_attrs.tagged {
                         JsonTaggedAttr::Adjacently => {
                             quote! {
                                 #ty_ident::#ident(__tagged.deserialize_adjacently_tagged::<#ty, __D::Error>(#content_field)?)
                             }
                         }
                         JsonTaggedAttr::Internally => {
-                            let is_record = variant.variant.typ.as_ref().map(|typ| ctx.bundle_ctx.unit.resolve_aliases(&typ)).map(|typ| ctx.bundle_ctx.unit.record_type(&typ).is_some()).unwrap_or(false);
+                            let is_record = variant.is_record;
                             if is_record && variant.json_attrs.content.is_none() {
                                 quote! {
                                     #ty_ident::#ident(__tagged.deserialize_internally_tagged::<#ty, __D::Error>()?)
@@ -94,7 +89,7 @@ pub(crate) fn gen_deserialize_body(
                     }
                 }
             });
-            let tag_field = ty_json_attrs.tag_field_name();
+            let tag_field = variant_ty.json_attrs.tag_field_name();
             quote! {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<__Identifier, __D>(__deserializer, #tag_field)?;
                 match __tagged.tag {
@@ -113,29 +108,25 @@ pub(crate) fn gen_deserialize_body(
         non_human_readable_body
     };
 
-    Ok(quote! {
+    quote! {
         #identifier_enum
         #variants_array_const
         #body
-    })
+    }
 }
 
 fn gen_externally_tagged_body(
-    ctx: &SchemaCtx,
-    def: &ir::Def,
-    ty: &RustTy,
-    variants: &[SerdeVariant],
+    ty: &RsType,
+    variant_ty: &RsTypeVariant,
     identifiers: &[syn::Ident],
 ) -> TokenStream {
     let ty_ident = &ty.ident;
     let ty_name = &ty.name;
 
-    let match_arms = variants
-        .iter()
-        .zip(identifiers.iter())
-        .map(|(variant, de_ident)| {
-            let ident = &variant.rust_variant.ident;
-            let constructor = if let Some(ty) = &variant.rust_variant.ty {
+    let match_arms = variant_ty.variants.iter().zip(identifiers.iter()).map(
+        |(variant, de_ident)| {
+            let ident = &variant.ident;
+            let constructor = if let Some(ty) = &variant.ty {
                 quote! {
                     let __value = __serde::de::VariantAccess::newtype_variant::<#ty>(__variant)?;
                     ::core::result::Result::Ok(#ty_ident::#ident(__value))
@@ -152,39 +143,38 @@ fn gen_externally_tagged_body(
                     #constructor
                 }
             }
+        },
+    );
+
+    let match_arms_str = variant_ty
+        .variants
+        .iter()
+        .zip(identifiers.iter())
+        .filter_map(|(variant, de_ident)| {
+            let ident = &variant.ident;
+            if variant.ty.is_some() {
+                return None;
+            }
+            Some(quote! {
+                __Identifier::#de_ident => {
+                    ::core::result::Result::Ok(#ty_ident::#ident)
+                }
+            })
         });
 
-    let match_arms_str =
-        variants
-            .iter()
-            .zip(identifiers.iter())
-            .filter_map(|(variant, de_ident)| {
-                let ident = &variant.rust_variant.ident;
-                if variant.rust_variant.ty.is_some() {
-                    return None;
-                }
-                Some(quote! {
-                    __Identifier::#de_ident => {
-                        ::core::result::Result::Ok(#ty_ident::#ident)
-                    }
-                })
-            });
-
-    let vars = ctx.generic_type_vars(def);
-
-    let vars_with_bounds =
-        ctx.generic_type_vars_with_bounds(def, quote! { __serde::Deserialize<'de> });
+    let type_generics = ty.type_generics();
+    let impl_generics = ty.type_generics_with_bounds(&quote! { __serde::Deserialize<'de> });
 
     let enum_type_name = format!("enum {}", ty_name);
 
     quote! {
         #[doc(hidden)]
-        struct __Visitor < #vars > {
-            __phantom_vars: ::core::marker::PhantomData<fn(&( #vars ))>,
+        struct __Visitor <#type_generics> {
+            __phantom_vars: ::core::marker::PhantomData<fn(&( #type_generics ))>,
         }
 
-        impl <'de, #vars_with_bounds > __serde::de::Visitor<'de> for __Visitor < #vars > {
-            type Value = #ty_ident < #vars >;
+        impl <'de, #impl_generics> __serde::de::Visitor<'de> for __Visitor <#type_generics> {
+            type Value = #ty_ident <#type_generics>;
 
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 ::core::fmt::Formatter::write_str(
@@ -228,8 +218,8 @@ fn gen_externally_tagged_body(
 }
 
 /// Generates the `__VARIANTS` array constant with the variant names.
-fn gen_variants_array_const(variants: &[SerdeVariant]) -> TokenStream {
-    let names = variants.iter().map(|variant| &variant.name);
+fn gen_variants_array_const(variants: &[RsVariant]) -> TokenStream {
+    let names = variants.iter().map(|variant| &variant.json_name);
     quote! {
         #[doc(hidden)]
         const __VARIANTS: &'static [&'static str] = &[#(#names,)*];

@@ -1,13 +1,21 @@
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
+use sidex_attrs_json::JsonFieldAttrs;
+use sidex_attrs_rust::Visibility;
 use sidex_gen::{
     diagnostics::Result,
     ir::{Def, DefKind},
     rename::{to_camel_case, to_pascal_case, to_snake_case},
 };
+use syn::Ident;
 
 use super::Plugin;
-use crate::context::SchemaCtx;
+use crate::{
+    context::SchemaCtx,
+    rstyir::{
+        RsField, RsType, RsTypeKind, RsTypeRecord, rs_type_to_rs_def, serde::rs_type_impl_serde,
+    },
+};
 
 pub struct Interfaces;
 
@@ -20,7 +28,7 @@ impl Plugin for Interfaces {
         println!("Generating interface definition for {}.", def.name.as_str());
         let trait_name = format_ident!("{}Handler", def.name.as_str());
         let service_name = format_ident!("{}Service", def.name.as_str());
-        let mod_name = format_ident!("{}_rpc", to_snake_case(def.name.as_str()));
+        let mod_name = format_ident!("{}", to_snake_case(def.name.as_str()));
         let docs = def
             .docs
             .as_ref()
@@ -39,7 +47,7 @@ impl Plugin for Interfaces {
                     .as_ref()
                     .map(|docs| docs.as_str())
                     .unwrap_or_default();
-                let param_name = format_ident!("{}", to_pascal_case(method.name.as_str()));
+                let args_name = format_ident!("{}Args", to_pascal_case(method.name.as_str()));
 
                 let returns = method
                     .returns
@@ -52,40 +60,59 @@ impl Plugin for Interfaces {
 
                 Ok(quote! {
                     #[doc = #docs]
-                    fn #name(&self, request: __sidex_rpc_core::request::Request<#mod_name :: #param_name>) #returns;
+                    fn #name(&self, request: __sidex_rpc_core::request::Request<#mod_name :: #args_name>) #returns;
                 })
             })
             .collect::<Result<Vec<_>>>()?;
 
-        let request_types = interface_def.methods.iter().map(|method| {
-            let name = format_ident!("{}", to_pascal_case(method.name.as_str()));
-            let parameters = method.parameters.iter().map(|param| {
-                let name = format_ident!("{}", param.name.as_str());
-                let mut typ = ctx.resolve_type_old(def, &param.typ, true);
-                if param.is_optional {
-                    typ = quote! { ::std::option::Option< #typ > };
-                }
-                quote! { #name: #typ }
-            });
-            let doc = format!(
-                "Method type for [`{}::{}`].",
+        let arg_types = interface_def.methods.iter().map(|method| {
+            let name = format!("{}Args", to_pascal_case(method.name.as_str()));
+            let ident = format_ident!("{}", name);
+            let docs = format!(
+                "Arguments type for `{}::{}`.",
                 def.name.as_str(),
                 method.name.as_str()
             );
-            let returns = method
-                .returns
-                .as_ref()
-                .map(|returns| {
-                    let typ = ctx.resolve_type_old(def, returns, true);
-                    quote! { #typ }
-                })
-                .unwrap_or_else(|| quote! { () });
-
+            let ty = RsType {
+                name,
+                ident,
+                visibility: Visibility::Pub,
+                vars: Default::default(),
+                docs,
+                meta: quote! {
+                    #[derive(Debug, Clone)]
+                },
+                kind: RsTypeKind::Record(RsTypeRecord {
+                    fields: method
+                        .parameters
+                        .iter()
+                        .map(|param| {
+                            let ident = format_ident!("{}", param.name.as_str());
+                            let mut ty = ctx.resolve_type_old(def, &param.typ, true);
+                            if param.is_optional {
+                                ty = quote! { ::std::option::Option< #ty > };
+                            }
+                            let docs = format!("Argument `{}`.", param.name.as_str());
+                            RsField {
+                                name: param.name.identifier.clone(),
+                                ident,
+                                docs,
+                                visibility: Visibility::Pub,
+                                is_optional: param.is_optional,
+                                json_attrs: JsonFieldAttrs::default(),
+                                json_name: to_camel_case(param.name.as_str()),
+                                ty,
+                            }
+                        })
+                        .collect(),
+                    json_attrs: Default::default(),
+                }),
+            };
+            let rs_def = rs_type_to_rs_def(&ty);
+            let serde_impl = rs_type_impl_serde(&ty);
             quote! {
-                #[doc = #doc]
-                pub struct #name {
-                    #(#parameters,)*
-                }
+                #rs_def
+                #serde_impl
             }
         });
 
@@ -109,7 +136,7 @@ impl Plugin for Interfaces {
 
         // let service_name = format_ident!("{}Service", def.name.as_str());
 
-        let mod_doc = format!("Request and response types for [`{}`].", def.name.as_str());
+        let mod_doc = format!("Types for the `{}` interface.", def.name.as_str());
 
         let handle_match_arms = interface_def.methods.iter().map(|method| {
             let name = to_camel_case(method.name.as_str());
@@ -130,7 +157,7 @@ impl Plugin for Interfaces {
         });
 
         let service_bounds = interface_def.methods.iter().map(|method| {
-            let name = format_ident!("{}", to_pascal_case(method.name.as_str()));
+            let name = format_ident!("{}Args", to_pascal_case(method.name.as_str()));
             let returns = method
                 .returns
                 .as_ref()
@@ -156,6 +183,14 @@ impl Plugin for Interfaces {
                 handler: ::std::sync::Arc<__H>,
             }
 
+            impl<__H> #service_name<__H> {
+                pub fn new(handler: __H) -> Self {
+                    Self {
+                        handler: ::std::sync::Arc::new(handler),
+                    }
+                }
+            }
+
             impl<__H: 'static + Send + Sync + #trait_name, __I: 'static + Send + Sync, __O: 'static + Send + Sync> __sidex_rpc_core::AsyncCall<__I, __O> for #service_name<__H> where #(#service_bounds),* {
                 type Future = __sidex_rpc_core::BoxedCallFuture<__O>;
 
@@ -178,7 +213,10 @@ impl Plugin for Interfaces {
             #vis mod #mod_name {
                 use super::#trait_name;
 
-                #(#request_types)*
+                use ::serde as __serde;
+                use ::sidex_serde as __sidex_serde;
+
+                #(#arg_types)*
             }
 
 

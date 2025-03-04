@@ -66,6 +66,7 @@ pub enum InvalidRequestErrorKind {
 }
 
 /// Provided method is invalid.
+#[derive(Debug)]
 pub struct InvalidMethodError {
     reason: InvalidMethodErrorReason,
 }
@@ -104,6 +105,7 @@ impl std::fmt::Display for InvalidMethodError {
     }
 }
 
+#[derive(Debug)]
 enum InvalidMethodErrorReason {
     Empty,
     InvalidCharacter { character: char, position: usize },

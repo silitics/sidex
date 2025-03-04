@@ -24,6 +24,12 @@ impl<I, O> Clone for Router<I, O> {
 }
 
 impl<I, O> Router<I, O> {
+    pub fn new() -> Self {
+        Self {
+            services: HashMap::new(),
+        }
+    }
+
     pub fn register<S: AsyncCall<I, O>>(&mut self, prefix: &str, service: S) {
         self.services.insert(
             prefix.to_owned(),
@@ -38,6 +44,7 @@ impl<I: 'static, O: 'static> AsyncCall<I, O> for Router<I, O> {
     fn call(&self, mut request: Request<I>) -> Self::Future {
         let (prefix, method) = request.parts.method.split_last();
         if let Some(service) = self.services.get(prefix) {
+            println!("service found, method: {}", method.as_str());
             request.parts.method = method;
             service(request)
         } else {

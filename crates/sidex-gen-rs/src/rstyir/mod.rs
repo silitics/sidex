@@ -22,21 +22,20 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
     let RsType {
         ident,
         visibility,
-        generics,
         docs,
         meta,
         kind,
         ..
     } = &rs_type;
 
-    let (_, vars, _) = generics.split_for_impl();
+    let type_generics = rs_type.type_generics();
 
     match kind {
         RsTypeKind::Alias(rs_type_alias) => {
             let RsTypeAlias { aliased } = rs_type_alias;
             quote! {
                 #[doc = #docs]
-                #visibility type #ident #vars = #aliased;
+                #visibility type #ident <#type_generics> = #aliased;
             }
         }
         RsTypeKind::Wrapper(rs_type_wrapper) => {
@@ -44,9 +43,9 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
             quote! {
                 #[doc = #docs]
                 #meta
-                #visibility struct #ident #vars (pub(crate) #wrapped);
+                #visibility struct #ident <#type_generics> (pub(crate) #wrapped);
 
-                impl ::std::convert::From<#ident> for #wrapped {
+                impl <#type_generics> ::std::convert::From<#ident <#type_generics>> for #wrapped {
                     fn from(wrapped: #ident) -> Self {
                         wrapped.0
                     }
@@ -72,7 +71,7 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
             quote! {
                 #[doc = #docs]
                 #meta
-                #visibility struct #ident #vars {
+                #visibility struct #ident <#type_generics> {
                     #(#fields)*
                 }
             }
@@ -102,7 +101,7 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
             quote! {
                 #[doc = #docs]
                 #meta
-                #visibility enum #ident #vars {
+                #visibility enum #ident <#type_generics> {
                     #(#variants)*
                 }
             }
@@ -111,12 +110,11 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
 }
 
 pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
-    let mut generics = syn::Generics::default();
-    for var in &def.vars {
-        let ident = format_ident!("{}", var.name.as_str());
-        let param = syn::GenericParam::Type(ident.into());
-        generics.params.push(param);
-    }
+    let vars = def
+        .vars
+        .iter()
+        .map(|var| format_ident!("{}", var.name.as_str()))
+        .collect();
     let docs = def
         .docs
         .as_ref()
@@ -158,6 +156,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
             }
         }
         DefKind::RecordType(typ) => {
+            let ty_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
             let fields = typ
                 .fields
                 .iter()
@@ -188,18 +187,21 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         ident: name,
                         docs,
                         visibility: attrs.visibility.clone(),
-                        json: json_attrs,
+                        is_optional: field.is_optional,
+                        json_name: ty_json_attrs.field_name(field, &json_attrs),
+                        json_attrs,
                         ty: typ,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
-            let ty_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
+
             RsTypeKind::Record(RsTypeRecord {
                 fields,
-                json: ty_json_attrs,
+                json_attrs: ty_json_attrs,
             })
         }
         DefKind::VariantType(typ) => {
+            let ty_json_attrs = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
             let variants = typ
                 .variants
                 .iter()
@@ -221,15 +223,22 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         name: variant.name.identifier.clone(),
                         docs,
                         ident: name,
-                        json: json_attrs,
+                        json_name: ty_json_attrs.variant_name(variant, &json_attrs),
+                        json_attrs,
+                        is_record: if let Some(typ) = &variant.typ {
+                            let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
+                            ctx.bundle_ctx.unit.record_type(&resolved).is_some()
+                        } else {
+                            false
+                        },
                         ty,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
-            let ty_json_attrs = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
+
             RsTypeKind::Variant(RsTypeVariant {
                 variants,
-                json: ty_json_attrs,
+                json_attrs: ty_json_attrs,
             })
         }
         _ => {
@@ -241,7 +250,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
         name: def.name.identifier.clone(),
         ident: format_ident!("{}", def.name.as_str()),
         visibility: Visibility::Pub,
-        generics,
+        vars,
         docs,
         meta,
         kind,
@@ -255,10 +264,22 @@ pub struct RsType {
     pub name: String,
     pub ident: Ident,
     pub visibility: Visibility,
-    pub generics: syn::Generics,
+    pub vars: Vec<Ident>,
     pub docs: String,
     pub meta: TokenStream,
     pub kind: RsTypeKind,
+}
+
+impl RsType {
+    pub fn type_generics(&self) -> TokenStream {
+        let vars = &self.vars;
+        quote! { #(#vars,)* }
+    }
+
+    pub fn type_generics_with_bounds(&self, bounds: &TokenStream) -> TokenStream {
+        let vars = &self.vars;
+        quote! { #(#vars: #bounds , )* }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -282,7 +303,7 @@ pub struct RsTypeAlias {
 #[derive(Debug, Clone)]
 pub struct RsTypeRecord {
     pub fields: Vec<RsField>,
-    pub json: JsonRecordTypeAttrs,
+    pub json_attrs: JsonRecordTypeAttrs,
 }
 
 #[derive(Debug, Clone)]
@@ -291,14 +312,16 @@ pub struct RsField {
     pub ident: Ident,
     pub docs: String,
     pub visibility: Visibility,
-    pub json: JsonFieldAttrs,
+    pub is_optional: bool,
+    pub json_attrs: JsonFieldAttrs,
+    pub json_name: String,
     pub ty: RsTypePath,
 }
 
 #[derive(Debug, Clone)]
 pub struct RsTypeVariant {
     pub variants: Vec<RsVariant>,
-    pub json: JsonVariantTypeAttrs,
+    pub json_attrs: JsonVariantTypeAttrs,
 }
 
 #[derive(Debug, Clone)]
@@ -306,6 +329,8 @@ pub struct RsVariant {
     pub name: String,
     pub ident: Ident,
     pub docs: String,
-    pub json: JsonVariantAttrs,
+    pub json_attrs: JsonVariantAttrs,
+    pub json_name: String,
+    pub is_record: bool,
     pub ty: Option<RsTypePath>,
 }

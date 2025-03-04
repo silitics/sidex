@@ -2,30 +2,19 @@
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use sidex_attrs_json::JsonRecordTypeAttrs;
-use sidex_gen::ir;
 
-use crate::{
-    context::{RustTy, SchemaCtx},
-    plugins::serde::{
-        SerdeField,
-        identifier_enum::{IdentifierKind, gen_identifier_enum},
-    },
+use crate::rstyir::{
+    RsField, RsType, RsTypeRecord,
+    serde::identifier_enum::{IdentifierKind, gen_identifier_enum},
 };
 
 /// Generates the body of [`deserialize`][serde::Deserialize::deserialize].
-pub(crate) fn gen_deserialize_body(
-    ctx: &SchemaCtx,
-    def: &ir::Def,
-    ty: &RustTy,
-    ty_json_attrs: &JsonRecordTypeAttrs,
-    fields: &[SerdeField],
-) -> TokenStream {
+pub(crate) fn gen_deserialize_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
     // Generate the `__Visitor` for deserialization.
-    let visitor = gen_visitor(ctx, def, ty, ty_json_attrs, fields);
+    let visitor = gen_visitor(ty, record_ty);
 
     // Generate the `__FIELDS` array constant with the field names.
-    let fields_array_const = gen_fields_array_const(fields);
+    let fields_array_const = gen_fields_array_const(&record_ty.fields);
 
     let ty_name = &ty.name;
 
@@ -42,52 +31,51 @@ pub(crate) fn gen_deserialize_body(
 }
 
 /// Generates the `__Visitor` for deserialization.
-fn gen_visitor(
-    ctx: &SchemaCtx,
-    def: &ir::Def,
-    ty: &RustTy,
-    ty_json_attrs: &JsonRecordTypeAttrs,
-    fields: &[SerdeField],
-) -> TokenStream {
+fn gen_visitor(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
     let ty_ident = &ty.ident;
 
-    let num_fields = fields.len();
+    let num_fields = record_ty.fields.len();
 
     let (field_variants, field_identifiers_enum) = gen_identifier_enum(
-        fields
-            .iter()
-            .map(|field| ty_json_attrs.field_name(&field.field, &field.json_attrs)),
+        record_ty.fields.iter().map(|field| &field.json_name),
         IdentifierKind::Field,
     );
 
     let field_indices = (0..num_fields).collect::<Vec<_>>();
 
-    let field_idents = fields
+    let field_idents = record_ty
+        .fields
         .iter()
-        .map(|field| &field.rust_field.ident)
+        .map(|field| &field.ident)
         .collect::<Vec<_>>();
 
     let field_vars = (0..num_fields)
         .map(|idx| format_ident!("__field{idx}"))
         .collect::<Vec<_>>();
 
-    let field_tys = fields
+    let field_tys = record_ty
+        .fields
         .iter()
-        .map(|field| &field.rust_field.ty)
+        .map(|field| &field.ty)
         .collect::<Vec<_>>();
 
-    let field_names = fields.iter().map(|field| &field.name).collect::<Vec<_>>();
+    let field_names = record_ty
+        .fields
+        .iter()
+        .map(|field| &field.json_name)
+        .collect::<Vec<_>>();
 
     let expecting = format!("record {}", ty.name);
 
     let expected_length = format!("record with {num_fields} fields");
 
-    let extract_values = fields
+    let extract_values = record_ty
+        .fields
         .iter()
         .zip(field_vars.iter())
         .map(|(field, var)| {
-            if !field.field.is_optional {
-                let name = &field.name;
+            if !field.is_optional {
+                let name = &field.json_name;
                 quote! {
                     let #var = match #var {
                         ::core::option::Option::Some(__value) => __value,
@@ -117,21 +105,19 @@ fn gen_visitor(
         })
     };
 
-    let vars = ctx.generic_type_vars(def);
-
-    let vars_with_bounds =
-        ctx.generic_type_vars_with_bounds(def, quote! { __serde::Deserialize<'de> });
+    let type_generics = ty.type_generics();
+    let impl_generics = ty.type_generics_with_bounds(&quote! { __serde::Deserialize<'de> });
 
     quote! {
         #field_identifiers_enum
 
         #[doc(hidden)]
-        struct __Visitor < #vars > {
-            __phantom_vars: ::core::marker::PhantomData<fn(&( #vars ))>,
+        struct __Visitor <#type_generics> {
+            __phantom_vars: ::core::marker::PhantomData<fn(&( #type_generics ))>,
         }
 
-        impl <'de, #vars_with_bounds > __serde::de::Visitor<'de> for __Visitor < #vars > {
-            type Value = #ty_ident < #vars >;
+        impl <'de, #impl_generics> __serde::de::Visitor<'de> for __Visitor <#type_generics> {
+            type Value = #ty_ident <#type_generics>;
 
             fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
                 ::core::fmt::Formatter::write_str(__formatter, #expecting)
@@ -198,8 +184,8 @@ fn gen_visitor(
 }
 
 /// Generates the `__FIELDS` array constant with the field names.
-fn gen_fields_array_const(fields: &[SerdeField]) -> TokenStream {
-    let names = fields.iter().map(|field| &field.name);
+fn gen_fields_array_const(fields: &[RsField]) -> TokenStream {
+    let names = fields.iter().map(|field| &field.json_name);
     quote! {
         #[doc(hidden)]
         const __FIELDS: &'static [&'static str] = &[#(#names,)*];
