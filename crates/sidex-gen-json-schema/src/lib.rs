@@ -406,10 +406,20 @@ impl<'cx> JsonSchemaCtx<'cx> {
                     .set_allowed_types(Some(Type::Integer.into()))
                     .set_format(Some("int32".to_owned()));
             }
+            "::core::builtins::i64" => {
+                json_schema
+                    .set_allowed_types(Some(Type::Integer.into()))
+                    .set_format(Some("int64".to_owned()));
+            }
             "::core::builtins::u32" => {
                 json_schema
                     .set_allowed_types(Some(Type::Integer.into()))
                     .set_format(Some("uint32".to_owned()));
+            }
+            "::core::builtins::u64" => {
+                json_schema
+                    .set_allowed_types(Some(Type::Integer.into()))
+                    .set_format(Some("uint64".to_owned()));
             }
             "::core::builtins::f64" => {
                 json_schema.set_allowed_types(Some(Type::Number.into()));
@@ -537,6 +547,42 @@ impl Generator for JsonSchemaGenerator {
             let schema_file = job.output.join(format!("{name}.schema.json"));
             std::fs::write(schema_file, serde_json::to_string_pretty(&root_schema)?)?;
         }
+
+        let mut config = JsonSchemaConfig::default();
+        config.emit_ids = false;
+
+        let mut ctx = JsonSchemaCtx::new(&job.unit, config);
+        ctx.set_def_prefix("#/components/schemas/");
+
+        for bundle in &job.unit.bundles {
+            for schema in &bundle.schemas {
+                for (idx, def) in schema.defs.iter().enumerate() {
+                    if matches!(def.kind, ir::DefKind::Interface(_)) {
+                        // Do not generate JSON schemas for interface types.
+                        continue;
+                    }
+                    let typ = ir::Type::new(ir::TypeKind::Instance(
+                        ir::InstanceType::new(bundle.idx, schema.idx, idx.into()).with_subst(
+                            def.vars
+                                .iter()
+                                .enumerate()
+                                .map(|(idx, _)| {
+                                    ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
+                                        idx.into(),
+                                    )))
+                                })
+                                .collect(),
+                        ),
+                    ));
+                    ctx.resolve(&typ)?;
+                }
+            }
+        }
+
+        let defs = ctx.into_defs();
+
+        let schema_file = job.output.join(format!("schema-defs.json"));
+        std::fs::write(schema_file, serde_json::to_string_pretty(&defs)?)?;
 
         Ok(())
     }

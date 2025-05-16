@@ -23,8 +23,7 @@
     ],
     "extensions": {
         "recommendations": [
-            "esbenp.prettier-vscode"
-            "fill-labs.dependi",
+            "esbenp.prettier-vscode",
             "panicbit.cargo",
             "rust-lang.rust-analyzer",
         ]
