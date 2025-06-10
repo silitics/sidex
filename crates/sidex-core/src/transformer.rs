@@ -218,10 +218,20 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     LookupEntry::Bundle(*self.dependencies.get(first.as_str()).unwrap())
                 }
                 LookupEntry::Bundle(idx) => {
-                    let schema = self.transformer.loaded[idx.idx()]
+                    let Some(schema) = self.transformer.loaded[idx.idx()]
                         .schema_by_name
                         .get(first.as_str())
-                        .unwrap();
+                    else {
+                        panic!(
+                            "unable to find schema {} in bundle {}.",
+                            first.as_str(),
+                            self.transformer.loaded[idx.idx()]
+                                .source
+                                .manifest
+                                .metadata
+                                .name
+                        );
+                    };
                     LookupEntry::Schema {
                         bundle: idx,
                         schema: *schema,
