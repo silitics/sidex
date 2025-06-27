@@ -664,7 +664,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -678,7 +678,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Server>>,
+                        ::std::option::Option<::std::vec::Vec<Server>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -692,7 +692,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Paths>,
+                        ::std::option::Option<Paths>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -706,7 +706,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<PathItem>>,
                         >,
                     >(&mut __seq)?
@@ -722,7 +722,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Components>,
+                        ::std::option::Option<Components>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -736,7 +736,7 @@ pub mod openapi {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<SecurityRequirement>>,
+                        ::std::option::Option<::std::vec::Vec<SecurityRequirement>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -750,7 +750,7 @@ pub mod openapi {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Tag>>,
+                        ::std::option::Option<::std::vec::Vec<Tag>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -764,7 +764,7 @@ pub mod openapi {
                         }
                     };
                     let __field9 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<ExternalDocumentation>,
+                        ::std::option::Option<ExternalDocumentation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -802,28 +802,28 @@ pub mod openapi {
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Info> = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Server>>,
+                        ::std::option::Option<::std::vec::Vec<Server>>,
                     > = ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<Paths>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<Paths>> =
                         ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<PathItem>>,
                         >,
                     > = ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<Components>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<Components>> =
                         ::core::option::Option::None;
                     let mut __field7: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<SecurityRequirement>>,
+                        ::std::option::Option<::std::vec::Vec<SecurityRequirement>>,
                     > = ::core::option::Option::None;
                     let mut __field8: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Tag>>,
+                        ::std::option::Option<::std::vec::Vec<Tag>>,
                     > = ::core::option::Option::None;
                     let mut __field9: ::core::option::Option<
-                        ::core::option::Option<ExternalDocumentation>,
+                        ::std::option::Option<ExternalDocumentation>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -863,7 +863,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -877,7 +877,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Server>>,
+                                        ::std::option::Option<::std::vec::Vec<Server>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -891,7 +891,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Paths>,
+                                        ::std::option::Option<Paths>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -905,7 +905,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<PathItem>,
@@ -924,7 +924,7 @@ pub mod openapi {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Components>,
+                                        ::std::option::Option<Components>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -938,9 +938,7 @@ pub mod openapi {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::std::vec::Vec<SecurityRequirement>,
-                                        >,
+                                        ::std::option::Option<::std::vec::Vec<SecurityRequirement>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -952,7 +950,7 @@ pub mod openapi {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Tag>>,
+                                        ::std::option::Option<::std::vec::Vec<Tag>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -966,7 +964,7 @@ pub mod openapi {
                                 }
                                 __field9 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<ExternalDocumentation>,
+                                        ::std::option::Option<ExternalDocumentation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1357,7 +1355,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1368,7 +1366,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1379,7 +1377,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Url>,
+                        ::std::option::Option<Url>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1390,7 +1388,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Contact>,
+                        ::std::option::Option<Contact>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1401,7 +1399,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<License>,
+                        ::std::option::Option<License>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1434,15 +1432,15 @@ pub mod openapi {
                     let mut __field1: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<Url>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<Url>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<Contact>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<Contact>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<License>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<License>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -1486,7 +1484,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1500,7 +1498,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1513,9 +1511,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Url>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Url>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier5 => {
@@ -1528,7 +1526,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Contact>,
+                                        ::std::option::Option<Contact>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1542,7 +1540,7 @@ pub mod openapi {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<License>,
+                                        ::std::option::Option<License>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1792,7 +1790,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1803,7 +1801,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Url>,
+                        ::std::option::Option<Url>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1814,7 +1812,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Email>,
+                        ::std::option::Option<Email>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1839,11 +1837,11 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Url>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Url>> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Email>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Email>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -1857,7 +1855,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1868,9 +1866,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Url>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Url>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -1883,7 +1881,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Email>,
+                                        ::std::option::Option<Email>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2107,7 +2105,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2118,7 +2116,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Url>,
+                        ::std::option::Option<Url>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2145,9 +2143,9 @@ pub mod openapi {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Url>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Url>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -2175,7 +2173,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2186,9 +2184,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Url>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Url>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             _ => {
@@ -2423,7 +2421,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2434,7 +2432,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, ServerVariable>,
                         >,
                     >(&mut __seq)?
@@ -2461,10 +2459,10 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<Url> = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, ServerVariable>,
                         >,
                     > = ::core::option::Option::None;
@@ -2492,7 +2490,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2506,7 +2504,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 ServerVariable,
@@ -2732,7 +2730,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2754,7 +2752,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2779,11 +2777,11 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -2797,7 +2795,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             ::std::vec::Vec<::std::string::String>,
                                         >,
                                     >(&mut __map)?,
@@ -2827,7 +2825,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2878,10 +2876,7 @@ pub mod openapi {
     pub struct Components {
         #[doc = ""]
         pub schemas: ::std::option::Option<
-            indexmap::IndexMap<
-                ::std::string::String,
-                ::sidex_gen_json_schema::types::schema::SchemaObject,
-            >,
+            indexmap::IndexMap<::std::string::String, crate::schema::SchemaObject>,
         >,
         #[doc = ""]
         pub responses:
@@ -2931,10 +2926,7 @@ pub mod openapi {
         pub fn set_schemas(
             &mut self,
             schemas: ::std::option::Option<
-                indexmap::IndexMap<
-                    ::std::string::String,
-                    ::sidex_gen_json_schema::types::schema::SchemaObject,
-                >,
+                indexmap::IndexMap<::std::string::String, crate::schema::SchemaObject>,
             >,
         ) -> &mut Self {
             self.schemas = schemas;
@@ -2944,10 +2936,7 @@ pub mod openapi {
         pub fn with_schemas(
             mut self,
             schemas: ::std::option::Option<
-                indexmap::IndexMap<
-                    ::std::string::String,
-                    ::sidex_gen_json_schema::types::schema::SchemaObject,
-                >,
+                indexmap::IndexMap<::std::string::String, crate::schema::SchemaObject>,
             >,
         ) -> Self {
             self.schemas = schemas;
@@ -3324,11 +3313,8 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
-                            indexmap::IndexMap<
-                                ::std::string::String,
-                                ::sidex_gen_json_schema::types::schema::SchemaObject,
-                            >,
+                        ::std::option::Option<
+                            indexmap::IndexMap<::std::string::String, crate::schema::SchemaObject>,
                         >,
                     >(&mut __seq)?
                     {
@@ -3343,7 +3329,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Response>>,
                         >,
                     >(&mut __seq)?
@@ -3359,7 +3345,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Parameter>>,
                         >,
                     >(&mut __seq)?
@@ -3375,7 +3361,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     >(&mut __seq)?
@@ -3391,7 +3377,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<RequestBody>>,
                         >,
                     >(&mut __seq)?
@@ -3407,7 +3393,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Header>>,
                         >,
                     >(&mut __seq)?
@@ -3423,7 +3409,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<SecurityScheme>>,
                         >,
                     >(&mut __seq)?
@@ -3439,7 +3425,7 @@ pub mod openapi {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Link>>,
                         >,
                     >(&mut __seq)?
@@ -3455,7 +3441,7 @@ pub mod openapi {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Callback>>,
                         >,
                     >(&mut __seq)?
@@ -3471,7 +3457,7 @@ pub mod openapi {
                         }
                     };
                     let __field9 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<PathItem>>,
                         >,
                     >(&mut __seq)?
@@ -3508,55 +3494,52 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<
-                            indexmap::IndexMap<
-                                ::std::string::String,
-                                ::sidex_gen_json_schema::types::schema::SchemaObject,
-                            >,
+                        ::std::option::Option<
+                            indexmap::IndexMap<::std::string::String, crate::schema::SchemaObject>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Response>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Parameter>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<RequestBody>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Header>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field6: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<SecurityScheme>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field7: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Link>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field8: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Callback>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field9: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<PathItem>>,
                         >,
                     > = ::core::option::Option::None;
@@ -3572,7 +3555,16 @@ pub mod openapi {
                                         ),
                                     );
                                 }
-                                __field0 = :: core :: option :: Option :: Some (__serde :: de :: MapAccess :: next_value :: < :: core :: option :: Option < indexmap :: IndexMap < :: std :: string :: String < > , :: sidex_gen_json_schema :: types :: schema :: SchemaObject < > , > > > (& mut __map) ?) ;
+                                __field0 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        ::std::option::Option<
+                                            indexmap::IndexMap<
+                                                ::std::string::String,
+                                                crate::schema::SchemaObject,
+                                            >,
+                                        >,
+                                    >(&mut __map)?,
+                                );
                             }
                             __Identifier::__Identifier1 => {
                                 if ::core::option::Option::is_some(&__field1) {
@@ -3584,7 +3576,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Response>,
@@ -3603,7 +3595,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Parameter>,
@@ -3622,7 +3614,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Example>,
@@ -3641,7 +3633,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<RequestBody>,
@@ -3660,7 +3652,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Header>,
@@ -3679,7 +3671,7 @@ pub mod openapi {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<SecurityScheme>,
@@ -3698,7 +3690,7 @@ pub mod openapi {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Link>,
@@ -3717,7 +3709,7 @@ pub mod openapi {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Callback>,
@@ -3736,7 +3728,7 @@ pub mod openapi {
                                 }
                                 __field9 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<PathItem>,
@@ -4264,7 +4256,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4278,7 +4270,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4292,7 +4284,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4306,7 +4298,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4320,7 +4312,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4334,7 +4326,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4348,7 +4340,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4362,7 +4354,7 @@ pub mod openapi {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4376,7 +4368,7 @@ pub mod openapi {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4390,7 +4382,7 @@ pub mod openapi {
                         }
                     };
                     let __field9 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4404,7 +4396,7 @@ pub mod openapi {
                         }
                     };
                     let __field10 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Operation>,
+                        ::std::option::Option<Operation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4418,7 +4410,7 @@ pub mod openapi {
                         }
                     };
                     let __field11 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Server>>,
+                        ::std::option::Option<::std::vec::Vec<Server>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4432,7 +4424,7 @@ pub mod openapi {
                         }
                     };
                     let __field12 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
+                        ::std::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4470,34 +4462,34 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
-                    let mut __field7: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field7: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
-                    let mut __field8: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field8: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
-                    let mut __field9: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field9: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
-                    let mut __field10: ::core::option::Option<::core::option::Option<Operation>> =
+                    let mut __field10: ::core::option::Option<::std::option::Option<Operation>> =
                         ::core::option::Option::None;
                     let mut __field11: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Server>>,
+                        ::std::option::Option<::std::vec::Vec<Server>>,
                     > = ::core::option::Option::None;
                     let mut __field12: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
+                        ::std::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -4511,7 +4503,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4525,7 +4517,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4539,7 +4531,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4551,7 +4543,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4563,7 +4555,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4575,7 +4567,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4589,7 +4581,7 @@ pub mod openapi {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4603,7 +4595,7 @@ pub mod openapi {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4615,7 +4607,7 @@ pub mod openapi {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4629,7 +4621,7 @@ pub mod openapi {
                                 }
                                 __field9 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4643,7 +4635,7 @@ pub mod openapi {
                                 }
                                 __field10 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Operation>,
+                                        ::std::option::Option<Operation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4657,7 +4649,7 @@ pub mod openapi {
                                 }
                                 __field11 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Server>>,
+                                        ::std::option::Option<::std::vec::Vec<Server>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4671,9 +4663,7 @@ pub mod openapi {
                                 }
                                 __field12 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::std::vec::Vec<MaybeRef<Parameter>>,
-                                        >,
+                                        ::std::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5216,7 +5206,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5230,7 +5220,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5244,7 +5234,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5258,7 +5248,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<ExternalDocumentation>,
+                        ::std::option::Option<ExternalDocumentation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5272,7 +5262,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5286,7 +5276,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
+                        ::std::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5300,7 +5290,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<MaybeRef<RequestBody>>,
+                        ::std::option::Option<MaybeRef<RequestBody>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5314,7 +5304,7 @@ pub mod openapi {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Responses>,
+                        ::std::option::Option<Responses>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5328,7 +5318,7 @@ pub mod openapi {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Callback>>,
                         >,
                     >(&mut __seq)?
@@ -5344,7 +5334,7 @@ pub mod openapi {
                         }
                     };
                     let __field9 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5358,7 +5348,7 @@ pub mod openapi {
                         }
                     };
                     let __field10 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<SecurityRequirement>>,
+                        ::std::option::Option<::std::vec::Vec<SecurityRequirement>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5372,7 +5362,7 @@ pub mod openapi {
                         }
                     };
                     let __field11 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Server>>,
+                        ::std::option::Option<::std::vec::Vec<Server>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5409,39 +5399,39 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<ExternalDocumentation>,
+                        ::std::option::Option<ExternalDocumentation>,
                     > = ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
+                        ::std::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
                     > = ::core::option::Option::None;
                     let mut __field6: ::core::option::Option<
-                        ::core::option::Option<MaybeRef<RequestBody>>,
+                        ::std::option::Option<MaybeRef<RequestBody>>,
                     > = ::core::option::Option::None;
-                    let mut __field7: ::core::option::Option<::core::option::Option<Responses>> =
+                    let mut __field7: ::core::option::Option<::std::option::Option<Responses>> =
                         ::core::option::Option::None;
                     let mut __field8: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Callback>>,
                         >,
                     > = ::core::option::Option::None;
-                    let mut __field9: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field9: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     let mut __field10: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<SecurityRequirement>>,
+                        ::std::option::Option<::std::vec::Vec<SecurityRequirement>>,
                     > = ::core::option::Option::None;
                     let mut __field11: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Server>>,
+                        ::std::option::Option<::std::vec::Vec<Server>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -5455,7 +5445,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             ::std::vec::Vec<::std::string::String>,
                                         >,
                                     >(&mut __map)?,
@@ -5471,7 +5461,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5485,7 +5475,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5499,7 +5489,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<ExternalDocumentation>,
+                                        ::std::option::Option<ExternalDocumentation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5513,7 +5503,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5527,9 +5517,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::std::vec::Vec<MaybeRef<Parameter>>,
-                                        >,
+                                        ::std::option::Option<::std::vec::Vec<MaybeRef<Parameter>>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5543,7 +5531,7 @@ pub mod openapi {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<MaybeRef<RequestBody>>,
+                                        ::std::option::Option<MaybeRef<RequestBody>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5557,7 +5545,7 @@ pub mod openapi {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Responses>,
+                                        ::std::option::Option<Responses>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5571,7 +5559,7 @@ pub mod openapi {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Callback>,
@@ -5590,7 +5578,7 @@ pub mod openapi {
                                 }
                                 __field9 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5604,9 +5592,7 @@ pub mod openapi {
                                 }
                                 __field10 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::std::vec::Vec<SecurityRequirement>,
-                                        >,
+                                        ::std::option::Option<::std::vec::Vec<SecurityRequirement>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5620,7 +5606,7 @@ pub mod openapi {
                                 }
                                 __field11 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Server>>,
+                                        ::std::option::Option<::std::vec::Vec<Server>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5873,7 +5859,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5904,7 +5890,7 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
-                    let mut __field0: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field0: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Url> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
@@ -5921,7 +5907,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -6281,7 +6267,7 @@ pub mod openapi {
         #[doc = ""]
         pub allow_reserved: ::std::option::Option<bool>,
         #[doc = ""]
-        pub schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+        pub schema: ::std::option::Option<crate::schema::SchemaObject>,
         #[doc = ""]
         pub example: ::std::option::Option<Any>,
         #[doc = ""]
@@ -6417,7 +6403,7 @@ pub mod openapi {
         #[doc = "Sets the value of `schema`."]
         pub fn set_schema(
             &mut self,
-            schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+            schema: ::std::option::Option<crate::schema::SchemaObject>,
         ) -> &mut Self {
             self.schema = schema;
             self
@@ -6425,7 +6411,7 @@ pub mod openapi {
         #[doc = "Sets the value of `schema`."]
         pub fn with_schema(
             mut self,
-            schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+            schema: ::std::option::Option<crate::schema::SchemaObject>,
         ) -> Self {
             self.schema = schema;
             self
@@ -6712,7 +6698,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6726,7 +6712,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6740,7 +6726,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6754,7 +6740,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6768,7 +6754,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6782,7 +6768,7 @@ pub mod openapi {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6796,7 +6782,7 @@ pub mod openapi {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6810,9 +6796,7 @@ pub mod openapi {
                         }
                     };
                     let __field9 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
-                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                        >,
+                        ::std::option::Option<crate::schema::SchemaObject>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6826,7 +6810,7 @@ pub mod openapi {
                         }
                     };
                     let __field10 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6840,7 +6824,7 @@ pub mod openapi {
                         }
                     };
                     let __field11 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     >(&mut __seq)?
@@ -6856,9 +6840,7 @@ pub mod openapi {
                         }
                     };
                     let __field12 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
-                            indexmap::IndexMap<::std::string::String, MediaType>,
-                        >,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, MediaType>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6899,37 +6881,33 @@ pub mod openapi {
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<ParameterLocation> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     let mut __field6: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field7: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field7: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field8: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field8: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     let mut __field9: ::core::option::Option<
-                        ::core::option::Option<
-                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                        >,
+                        ::std::option::Option<crate::schema::SchemaObject>,
                     > = ::core::option::Option::None;
-                    let mut __field10: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field10: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
                     let mut __field11: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field12: ::core::option::Option<
-                        ::core::option::Option<
-                            indexmap::IndexMap<::std::string::String, MediaType>,
-                        >,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, MediaType>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -6969,7 +6947,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -6983,7 +6961,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -6997,7 +6975,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7011,7 +6989,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7025,7 +7003,7 @@ pub mod openapi {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7039,7 +7017,7 @@ pub mod openapi {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7053,7 +7031,7 @@ pub mod openapi {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7067,9 +7045,7 @@ pub mod openapi {
                                 }
                                 __field9 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                                        >,
+                                        ::std::option::Option<crate::schema::SchemaObject>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7082,9 +7058,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field10 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier11 => {
@@ -7097,7 +7073,7 @@ pub mod openapi {
                                 }
                                 __field11 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Example>,
@@ -7116,7 +7092,7 @@ pub mod openapi {
                                 }
                                 __field12 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, MediaType>,
                                         >,
                                     >(&mut __map)?,
@@ -7612,7 +7588,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -7634,7 +7610,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -7658,12 +7634,12 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
-                    let mut __field0: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field0: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
                         indexmap::IndexMap<::std::string::String, MediaType>,
                     > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -7679,7 +7655,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7707,7 +7683,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7757,7 +7733,7 @@ pub mod openapi {
     #[derive(Clone, Debug)]
     pub struct MediaType {
         #[doc = ""]
-        pub schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+        pub schema: ::std::option::Option<crate::schema::SchemaObject>,
         #[doc = ""]
         pub example: ::std::option::Option<Any>,
         #[doc = ""]
@@ -7779,7 +7755,7 @@ pub mod openapi {
         #[doc = "Sets the value of `schema`."]
         pub fn set_schema(
             &mut self,
-            schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+            schema: ::std::option::Option<crate::schema::SchemaObject>,
         ) -> &mut Self {
             self.schema = schema;
             self
@@ -7787,7 +7763,7 @@ pub mod openapi {
         #[doc = "Sets the value of `schema`."]
         pub fn with_schema(
             mut self,
-            schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+            schema: ::std::option::Option<crate::schema::SchemaObject>,
         ) -> Self {
             self.schema = schema;
             self
@@ -7972,9 +7948,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
-                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                        >,
+                        ::std::option::Option<crate::schema::SchemaObject>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -7985,7 +7959,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -7996,7 +7970,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     >(&mut __seq)?
@@ -8009,7 +7983,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Encoding>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Encoding>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -8035,19 +8009,17 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<
-                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                        >,
+                        ::std::option::Option<crate::schema::SchemaObject>,
                     > = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Encoding>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Encoding>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -8063,9 +8035,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                                        >,
+                                        ::std::option::Option<crate::schema::SchemaObject>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -8078,9 +8048,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -8093,7 +8063,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Example>,
@@ -8112,7 +8082,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, Encoding>,
                                         >,
                                     >(&mut __map)?,
@@ -8412,7 +8382,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -8423,7 +8393,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Header>>,
                         >,
                     >(&mut __seq)?
@@ -8436,7 +8406,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -8447,7 +8417,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -8458,7 +8428,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -8485,20 +8455,20 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Header>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -8514,7 +8484,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -8528,7 +8498,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Header>,
@@ -8547,7 +8517,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -8561,7 +8531,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -8575,7 +8545,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -8885,7 +8855,7 @@ pub mod openapi {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Header>>,
                         >,
                     >(&mut __seq)?
@@ -8898,9 +8868,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
-                            indexmap::IndexMap<::std::string::String, MediaType>,
-                        >,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, MediaType>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -8911,7 +8879,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Link>>,
                         >,
                     >(&mut __seq)?
@@ -8941,17 +8909,15 @@ pub mod openapi {
                     let mut __field0: ::core::option::Option<Markdown> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Header>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<
-                            indexmap::IndexMap<::std::string::String, MediaType>,
-                        >,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, MediaType>>,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Link>>,
                         >,
                     > = ::core::option::Option::None;
@@ -8981,7 +8947,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Header>,
@@ -9000,7 +8966,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, MediaType>,
                                         >,
                                     >(&mut __map)?,
@@ -9016,7 +8982,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Link>,
@@ -9311,7 +9277,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9322,7 +9288,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9333,7 +9299,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9344,7 +9310,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9370,14 +9336,14 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -9393,7 +9359,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -9407,7 +9373,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -9420,9 +9386,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier3 => {
@@ -9435,7 +9401,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -9750,7 +9716,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9761,7 +9727,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9772,7 +9738,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9783,7 +9749,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9794,7 +9760,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9805,7 +9771,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Server>,
+                        ::std::option::Option<Server>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9833,20 +9799,20 @@ pub mod openapi {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
                     > = ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<Server>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<Server>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -9862,7 +9828,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -9876,7 +9842,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -9890,7 +9856,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, Any>,
                                         >,
                                     >(&mut __map)?,
@@ -9905,9 +9871,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier4 => {
@@ -9920,7 +9886,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -9934,7 +9900,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Server>,
+                                        ::std::option::Option<Server>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10016,7 +9982,7 @@ pub mod openapi {
         #[doc = ""]
         pub allow_reserved: ::std::option::Option<bool>,
         #[doc = ""]
-        pub schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+        pub schema: ::std::option::Option<crate::schema::SchemaObject>,
         #[doc = ""]
         pub example: ::std::option::Option<Any>,
         #[doc = ""]
@@ -10130,7 +10096,7 @@ pub mod openapi {
         #[doc = "Sets the value of `schema`."]
         pub fn set_schema(
             &mut self,
-            schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+            schema: ::std::option::Option<crate::schema::SchemaObject>,
         ) -> &mut Self {
             self.schema = schema;
             self
@@ -10138,7 +10104,7 @@ pub mod openapi {
         #[doc = "Sets the value of `schema`."]
         pub fn with_schema(
             mut self,
-            schema: ::std::option::Option<::sidex_gen_json_schema::types::schema::SchemaObject>,
+            schema: ::std::option::Option<crate::schema::SchemaObject>,
         ) -> Self {
             self.schema = schema;
             self
@@ -10391,7 +10357,7 @@ pub mod openapi {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10405,7 +10371,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10419,7 +10385,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10433,7 +10399,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10447,7 +10413,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10461,7 +10427,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10475,7 +10441,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10489,9 +10455,7 @@ pub mod openapi {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
-                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                        >,
+                        ::std::option::Option<crate::schema::SchemaObject>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10505,7 +10469,7 @@ pub mod openapi {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10519,7 +10483,7 @@ pub mod openapi {
                         }
                     };
                     let __field9 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     >(&mut __seq)?
@@ -10535,9 +10499,7 @@ pub mod openapi {
                         }
                     };
                     let __field10 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
-                            indexmap::IndexMap<::std::string::String, MediaType>,
-                        >,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, MediaType>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10572,37 +10534,33 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
-                    let mut __field0: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field0: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     let mut __field7: ::core::option::Option<
-                        ::core::option::Option<
-                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                        >,
+                        ::std::option::Option<crate::schema::SchemaObject>,
                     > = ::core::option::Option::None;
-                    let mut __field8: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field8: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
                     let mut __field9: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, MaybeRef<Example>>,
                         >,
                     > = ::core::option::Option::None;
                     let mut __field10: ::core::option::Option<
-                        ::core::option::Option<
-                            indexmap::IndexMap<::std::string::String, MediaType>,
-                        >,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, MediaType>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -10618,7 +10576,7 @@ pub mod openapi {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10632,7 +10590,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10646,7 +10604,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10660,7 +10618,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10674,7 +10632,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10688,7 +10646,7 @@ pub mod openapi {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10702,7 +10660,7 @@ pub mod openapi {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10716,9 +10674,7 @@ pub mod openapi {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::sidex_gen_json_schema::types::schema::SchemaObject,
-                                        >,
+                                        ::std::option::Option<crate::schema::SchemaObject>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10731,9 +10687,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field8 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier9 => {
@@ -10746,7 +10702,7 @@ pub mod openapi {
                                 }
                                 __field9 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 MaybeRef<Example>,
@@ -10765,7 +10721,7 @@ pub mod openapi {
                                 }
                                 __field10 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, MediaType>,
                                         >,
                                     >(&mut __map)?,
@@ -11049,7 +11005,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -11060,7 +11016,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<ExternalDocumentation>,
+                        ::std::option::Option<ExternalDocumentation>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -11086,10 +11042,10 @@ pub mod openapi {
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<ExternalDocumentation>,
+                        ::std::option::Option<ExternalDocumentation>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -11117,7 +11073,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -11131,7 +11087,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<ExternalDocumentation>,
+                                        ::std::option::Option<ExternalDocumentation>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -11365,7 +11321,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -11376,7 +11332,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -11403,9 +11359,9 @@ pub mod openapi {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -11433,7 +11389,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -11447,7 +11403,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -11662,7 +11618,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, ::std::string::String>,
                         >,
                     >(&mut __seq)?
@@ -11690,7 +11646,7 @@ pub mod openapi {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, ::std::string::String>,
                         >,
                     > = ::core::option::Option::None;
@@ -11722,7 +11678,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 ::std::string::String,
@@ -12084,7 +12040,7 @@ pub mod openapi {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Markdown>,
+                        ::std::option::Option<Markdown>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -12095,7 +12051,7 @@ pub mod openapi {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -12106,7 +12062,7 @@ pub mod openapi {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -12117,7 +12073,7 @@ pub mod openapi {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -12128,7 +12084,7 @@ pub mod openapi {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -12139,7 +12095,7 @@ pub mod openapi {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Url>,
+                        ::std::option::Option<Url>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -12169,20 +12125,20 @@ pub mod openapi {
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Markdown>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<Url>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<Url>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -12210,7 +12166,7 @@ pub mod openapi {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Markdown>,
+                                        ::std::option::Option<Markdown>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -12222,7 +12178,7 @@ pub mod openapi {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -12236,7 +12192,7 @@ pub mod openapi {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -12250,7 +12206,7 @@ pub mod openapi {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -12263,9 +12219,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field5 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier6 => {
@@ -12277,9 +12233,9 @@ pub mod openapi {
                                     );
                                 }
                                 __field6 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Url>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Url>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             _ => {

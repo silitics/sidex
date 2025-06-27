@@ -16,3 +16,5 @@ serde_yaml = "0.9"
 sidex-attrs-http = { version = "0.1.0", path = "../sidex-attrs-http" }
 indexmap = { version = "2.0.0", features = ["serde"] }
 sidex-gen-json-schema = { path = "../sidex-gen-json-schema" }
+sidex-types-json-schema.workspace = true
+sidex-types-openapi.workspace = true

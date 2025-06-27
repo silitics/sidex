@@ -1388,7 +1388,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1399,7 +1399,7 @@ pub mod ir {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1426,10 +1426,10 @@ pub mod ir {
                     let mut __field0: ::core::option::Option<SourceIdx> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -1455,7 +1455,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1467,7 +1467,7 @@ pub mod ir {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2348,7 +2348,7 @@ pub mod ir {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2359,7 +2359,7 @@ pub mod ir {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2389,10 +2389,10 @@ pub mod ir {
                     let mut __field1: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -2434,7 +2434,7 @@ pub mod ir {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2448,7 +2448,7 @@ pub mod ir {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             ::std::vec::Vec<::std::string::String>,
                                         >,
                                     >(&mut __map)?,
@@ -2662,7 +2662,7 @@ pub mod ir {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Span>,
+                        ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2687,7 +2687,7 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -2715,7 +2715,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Span>,
+                                        ::std::option::Option<Span>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3244,7 +3244,7 @@ pub mod ir {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Docs>,
+                        ::std::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3276,7 +3276,7 @@ pub mod ir {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<SourceIdx>,
+                        ::std::option::Option<SourceIdx>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3322,13 +3322,13 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<Docs>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<Docs>> =
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<::std::vec::Vec<Def>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<SourceIdx>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<SourceIdx>> =
                         ::core::option::Option::None;
                     let mut __field7: ::core::option::Option<
                         ::std::collections::HashMap<::std::string::String, ItemRef>,
@@ -3379,7 +3379,7 @@ pub mod ir {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Docs>,
+                                        ::std::option::Option<Docs>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3419,7 +3419,7 @@ pub mod ir {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<SourceIdx>,
+                                        ::std::option::Option<SourceIdx>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3542,93 +3542,17 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if __serde::Serializer::is_human_readable(&__serializer) {
-                match self {
-                    Self::Def(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "ItemRef", 3usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Def",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "schema",
-                            &__value.schema,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "def",
-                            &__value.def,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Schema(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "ItemRef", 3usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Schema",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "bundle",
-                            &__value.bundle,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "schema",
-                            &__value.schema,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Bundle(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "ItemRef", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Bundle",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "content",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
+            let __serializer = __sidex_serde::ser::VariantSerializer::new(__serializer, "ItemRef");
+            match self {
+                Self::Def(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "Def", 0u32, __value)
                 }
-            } else {
-                match self {
-                    Self::Def(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "ItemRef",
-                            0u32,
-                            "Def",
-                            __value,
-                        )
-                    }
-                    Self::Schema(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "ItemRef",
-                            1u32,
-                            "Schema",
-                            __value,
-                        )
-                    }
-                    Self::Bundle(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "ItemRef",
-                            2u32,
-                            "Bundle",
-                            __value,
-                        )
-                    }
+                Self::Schema(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "Schema", 1u32, __value)
+                }
+                Self::Bundle(__value) => {
+                    __serializer
+                        .serialize_adjacently_tagged("tag", "content", "Bundle", 2u32, __value)
                 }
             }
         }
@@ -4054,7 +3978,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Docs>,
+                        ::std::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4128,7 +4052,7 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Docs>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<TypeVar>> =
                         ::core::option::Option::None;
@@ -4160,7 +4084,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Docs>,
+                                        ::std::option::Option<Docs>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4501,169 +4425,28 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if __serde::Serializer::is_human_readable(&__serializer) {
-                match self {
-                    Self::TypeAlias(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "TypeAlias",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "aliased",
-                            &__value.aliased,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::OpaqueType(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 1usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "OpaqueType",
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::RecordType(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "RecordType",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "fields",
-                            &__value.fields,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::VariantType(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "VariantType",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "variants",
-                            &__value.variants,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::WrapperType(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "WrapperType",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "wrapped",
-                            &__value.wrapped,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::DerivedType(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 1usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "DerivedType",
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Interface(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "DefKind", 2usize)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Interface",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "methods",
-                            &__value.methods,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
+            let __serializer = __sidex_serde::ser::VariantSerializer::new(__serializer, "DefKind");
+            match self {
+                Self::TypeAlias(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "TypeAlias", 0u32, __value)
                 }
-            } else {
-                match self {
-                    Self::TypeAlias(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            0u32,
-                            "TypeAlias",
-                            __value,
-                        )
-                    }
-                    Self::OpaqueType(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            1u32,
-                            "OpaqueType",
-                            __value,
-                        )
-                    }
-                    Self::RecordType(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            2u32,
-                            "RecordType",
-                            __value,
-                        )
-                    }
-                    Self::VariantType(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            3u32,
-                            "VariantType",
-                            __value,
-                        )
-                    }
-                    Self::WrapperType(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            4u32,
-                            "WrapperType",
-                            __value,
-                        )
-                    }
-                    Self::DerivedType(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            5u32,
-                            "DerivedType",
-                            __value,
-                        )
-                    }
-                    Self::Interface(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "DefKind",
-                            6u32,
-                            "Interface",
-                            __value,
-                        )
-                    }
+                Self::OpaqueType(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "OpaqueType", 1u32, __value)
+                }
+                Self::RecordType(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "RecordType", 2u32, __value)
+                }
+                Self::VariantType(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "VariantType", 3u32, __value)
+                }
+                Self::WrapperType(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "WrapperType", 4u32, __value)
+                }
+                Self::DerivedType(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "DerivedType", 5u32, __value)
+                }
+                Self::Interface(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "Interface", 6u32, __value)
                 }
             }
         }
@@ -5684,7 +5467,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Docs>,
+                        ::std::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5739,7 +5522,7 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Docs>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
@@ -5767,7 +5550,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Docs>,
+                                        ::std::option::Option<Docs>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -6267,7 +6050,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Docs>,
+                        ::std::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6289,7 +6072,7 @@ pub mod ir {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Type>,
+                        ::std::option::Option<Type>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -6316,11 +6099,11 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Docs>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<Type>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<Type>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -6344,7 +6127,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Docs>,
+                                        ::std::option::Option<Docs>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -6370,7 +6153,7 @@ pub mod ir {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Type>,
+                                        ::std::option::Option<Type>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7176,7 +6959,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Docs>,
+                        ::std::option::Option<Docs>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -7209,7 +6992,7 @@ pub mod ir {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Type>,
+                        ::std::option::Option<Type>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -7237,13 +7020,13 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<Identifier> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Docs>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Docs>> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<::std::vec::Vec<MethodParam>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<Type>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<Type>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -7267,7 +7050,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Docs>,
+                                        ::std::option::Option<Docs>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7309,7 +7092,7 @@ pub mod ir {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Type>,
+                                        ::std::option::Option<Type>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7880,7 +7663,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Span>,
+                        ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -7905,7 +7688,7 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<TypeKind> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -7929,7 +7712,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Span>,
+                                        ::std::option::Option<Span>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -7984,80 +7767,13 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if __serde::Serializer::is_human_readable(&__serializer) {
-                match self {
-                    Self::TypeVar(__value) => {
-                        let mut __struct = __serde::Serializer::serialize_struct(
-                            __serializer,
-                            "TypeKind",
-                            2usize,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "TypeVar",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "idx",
-                            &__value.idx,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Instance(__value) => {
-                        let mut __struct = __serde::Serializer::serialize_struct(
-                            __serializer,
-                            "TypeKind",
-                            5usize,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Instance",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "bundle",
-                            &__value.bundle,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "schema",
-                            &__value.schema,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "def",
-                            &__value.def,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "subst",
-                            &__value.subst,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
+            let __serializer = __sidex_serde::ser::VariantSerializer::new(__serializer, "TypeKind");
+            match self {
+                Self::TypeVar(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "TypeVar", 0u32, __value)
                 }
-            } else {
-                match self {
-                    Self::TypeVar(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "TypeKind",
-                            0u32,
-                            "TypeVar",
-                            __value,
-                        )
-                    }
-                    Self::Instance(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "TypeKind",
-                            1u32,
-                            "Instance",
-                            __value,
-                        )
-                    }
+                Self::Instance(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "Instance", 1u32, __value)
                 }
             }
         }
@@ -9232,7 +8948,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Span>,
+                        ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -9257,7 +8973,7 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<TokenKind> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -9281,7 +8997,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Span>,
+                                        ::std::option::Option<Span>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -9340,107 +9056,39 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if __serde::Serializer::is_human_readable(&__serializer) {
-                match self {
-                    Self::Punctuation(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Punctuation",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "token",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Delimiter(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Delimiter",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "token",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Literal(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Literal",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "literal",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Identifier(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "TokenKind", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Identifier",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "token",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
+            let __serializer =
+                __sidex_serde::ser::VariantSerializer::new(__serializer, "TokenKind");
+            match self {
+                Self::Punctuation(__value) => {
+                    __serializer.serialize_adjacently_tagged(
+                        "tag",
+                        "token",
+                        "Punctuation",
+                        0u32,
+                        __value,
+                    )
                 }
-            } else {
-                match self {
-                    Self::Punctuation(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "TokenKind",
-                            0u32,
-                            "Punctuation",
-                            __value,
-                        )
-                    }
-                    Self::Delimiter(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "TokenKind",
-                            1u32,
-                            "Delimiter",
-                            __value,
-                        )
-                    }
-                    Self::Literal(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "TokenKind",
-                            2u32,
-                            "Literal",
-                            __value,
-                        )
-                    }
-                    Self::Identifier(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "TokenKind",
-                            3u32,
-                            "Identifier",
-                            __value,
-                        )
-                    }
+                Self::Delimiter(__value) => {
+                    __serializer.serialize_adjacently_tagged(
+                        "tag",
+                        "token",
+                        "Delimiter",
+                        1u32,
+                        __value,
+                    )
+                }
+                Self::Literal(__value) => {
+                    __serializer
+                        .serialize_adjacently_tagged("tag", "literal", "Literal", 2u32, __value)
+                }
+                Self::Identifier(__value) => {
+                    __serializer.serialize_adjacently_tagged(
+                        "tag",
+                        "token",
+                        "Identifier",
+                        3u32,
+                        __value,
+                    )
                 }
             }
         }
@@ -9676,83 +9324,18 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if __serde::Serializer::is_human_readable(&__serializer) {
-                match self {
-                    Self::String(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "type",
-                            "String",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "value",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Number(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "type",
-                            "Number",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "value",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Bool(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "Literal", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "type",
-                            "Bool",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "value",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
+            let __serializer = __sidex_serde::ser::VariantSerializer::new(__serializer, "Literal");
+            match self {
+                Self::String(__value) => {
+                    __serializer
+                        .serialize_adjacently_tagged("type", "value", "String", 0u32, __value)
                 }
-            } else {
-                match self {
-                    Self::String(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "Literal",
-                            0u32,
-                            "String",
-                            __value,
-                        )
-                    }
-                    Self::Number(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "Literal",
-                            1u32,
-                            "Number",
-                            __value,
-                        )
-                    }
-                    Self::Bool(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "Literal",
-                            2u32,
-                            "Bool",
-                            __value,
-                        )
-                    }
+                Self::Number(__value) => {
+                    __serializer
+                        .serialize_adjacently_tagged("type", "value", "Number", 1u32, __value)
+                }
+                Self::Bool(__value) => {
+                    __serializer.serialize_adjacently_tagged("type", "value", "Bool", 2u32, __value)
                 }
             }
         }
@@ -10159,7 +9742,7 @@ pub mod ir {
                             }
                         };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Span>,
+                        ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -10184,7 +9767,7 @@ pub mod ir {
                 {
                     let mut __field0: ::core::option::Option<AttrKind> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Span>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -10208,7 +9791,7 @@ pub mod ir {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Span>,
+                                        ::std::option::Option<Span>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -10267,123 +9850,20 @@ pub mod ir {
             &self,
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            if __serde::Serializer::is_human_readable(&__serializer) {
-                match self {
-                    Self::Path(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "AttrKind", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Path",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "path",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::List(__value) => {
-                        let mut __struct = __serde::Serializer::serialize_struct(
-                            __serializer,
-                            "AttrKind",
-                            3usize,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "List",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "path",
-                            &__value.path,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "args",
-                            &__value.args,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Assign(__value) => {
-                        let mut __struct = __serde::Serializer::serialize_struct(
-                            __serializer,
-                            "AttrKind",
-                            3usize,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Assign",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "path",
-                            &__value.path,
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "value",
-                            &__value.value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
-                    Self::Tokens(__value) => {
-                        let mut __struct =
-                            __serde::Serializer::serialize_struct(__serializer, "AttrKind", 2)?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "tag",
-                            "Tokens",
-                        )?;
-                        __serde::ser::SerializeStruct::serialize_field(
-                            &mut __struct,
-                            "content",
-                            &__value,
-                        )?;
-                        __serde::ser::SerializeStruct::end(__struct)
-                    }
+            let __serializer = __sidex_serde::ser::VariantSerializer::new(__serializer, "AttrKind");
+            match self {
+                Self::Path(__value) => {
+                    __serializer.serialize_adjacently_tagged("tag", "path", "Path", 0u32, __value)
                 }
-            } else {
-                match self {
-                    Self::Path(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "AttrKind",
-                            0u32,
-                            "Path",
-                            __value,
-                        )
-                    }
-                    Self::List(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "AttrKind",
-                            1u32,
-                            "List",
-                            __value,
-                        )
-                    }
-                    Self::Assign(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "AttrKind",
-                            2u32,
-                            "Assign",
-                            __value,
-                        )
-                    }
-                    Self::Tokens(__value) => {
-                        __serde::Serializer::serialize_newtype_variant(
-                            __serializer,
-                            "AttrKind",
-                            3u32,
-                            "Tokens",
-                            __value,
-                        )
-                    }
+                Self::List(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "List", 1u32, __value)
+                }
+                Self::Assign(__value) => {
+                    __serializer.serialize_internally_tagged("tag", "Assign", 2u32, __value)
+                }
+                Self::Tokens(__value) => {
+                    __serializer
+                        .serialize_adjacently_tagged("tag", "content", "Tokens", 3u32, __value)
                 }
             }
         }

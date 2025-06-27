@@ -381,7 +381,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -404,7 +404,7 @@ pub mod schema {
                             }
                         };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -429,12 +429,12 @@ pub mod schema {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<SchemaObject> =
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -450,7 +450,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -476,7 +476,7 @@ pub mod schema {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, Schema>,
                                         >,
                                     >(&mut __map)?,
@@ -1001,7 +1001,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1015,7 +1015,7 @@ pub mod schema {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<MaybeArray<Type>>,
+                        ::std::option::Option<MaybeArray<Type>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1029,7 +1029,7 @@ pub mod schema {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Any>>,
+                        ::std::option::Option<::std::vec::Vec<Any>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1043,7 +1043,7 @@ pub mod schema {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1057,7 +1057,7 @@ pub mod schema {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1071,7 +1071,7 @@ pub mod schema {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<SchemaRef>,
+                        ::std::option::Option<SchemaRef>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1085,7 +1085,7 @@ pub mod schema {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1099,7 +1099,7 @@ pub mod schema {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<Metadata>>,
+                        ::std::option::Option<::std::boxed::Box<Metadata>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1113,7 +1113,7 @@ pub mod schema {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<SubschemaKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<SubschemaKeywords>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1127,7 +1127,7 @@ pub mod schema {
                         }
                     };
                     let __field9 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<NumberKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<NumberKeywords>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1141,7 +1141,7 @@ pub mod schema {
                         }
                     };
                     let __field10 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<StringKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<StringKeywords>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1155,7 +1155,7 @@ pub mod schema {
                         }
                     };
                     let __field11 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<ArrayKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<ArrayKeywords>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1169,7 +1169,7 @@ pub mod schema {
                         }
                     };
                     let __field12 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<ObjectKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<ObjectKeywords>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1183,7 +1183,7 @@ pub mod schema {
                         }
                     };
                     let __field13 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -1222,44 +1222,44 @@ pub mod schema {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<MaybeArray<Type>>,
+                        ::std::option::Option<MaybeArray<Type>>,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Any>>,
+                        ::std::option::Option<::std::vec::Vec<Any>>,
                     > = ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<SchemaRef>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<SchemaRef>> =
                         ::core::option::Option::None;
                     let mut __field6: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field7: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<Metadata>>,
+                        ::std::option::Option<::std::boxed::Box<Metadata>>,
                     > = ::core::option::Option::None;
                     let mut __field8: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<SubschemaKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<SubschemaKeywords>>,
                     > = ::core::option::Option::None;
                     let mut __field9: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<NumberKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<NumberKeywords>>,
                     > = ::core::option::Option::None;
                     let mut __field10: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<StringKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<StringKeywords>>,
                     > = ::core::option::Option::None;
                     let mut __field11: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<ArrayKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<ArrayKeywords>>,
                     > = ::core::option::Option::None;
                     let mut __field12: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<ObjectKeywords>>,
+                        ::std::option::Option<::std::boxed::Box<ObjectKeywords>>,
                     > = ::core::option::Option::None;
                     let mut __field13: ::core::option::Option<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -1273,7 +1273,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1285,7 +1285,7 @@ pub mod schema {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<MaybeArray<Type>>,
+                                        ::std::option::Option<MaybeArray<Type>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1297,7 +1297,7 @@ pub mod schema {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Any>>,
+                                        ::std::option::Option<::std::vec::Vec<Any>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1310,9 +1310,9 @@ pub mod schema {
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier4 => {
@@ -1325,7 +1325,7 @@ pub mod schema {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1337,7 +1337,7 @@ pub mod schema {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<SchemaRef>,
+                                        ::std::option::Option<SchemaRef>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1351,7 +1351,7 @@ pub mod schema {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1365,7 +1365,7 @@ pub mod schema {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<Metadata>>,
+                                        ::std::option::Option<::std::boxed::Box<Metadata>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1379,9 +1379,7 @@ pub mod schema {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
-                                            ::std::boxed::Box<SubschemaKeywords>,
-                                        >,
+                                        ::std::option::Option<::std::boxed::Box<SubschemaKeywords>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1395,7 +1393,7 @@ pub mod schema {
                                 }
                                 __field9 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<NumberKeywords>>,
+                                        ::std::option::Option<::std::boxed::Box<NumberKeywords>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1409,7 +1407,7 @@ pub mod schema {
                                 }
                                 __field10 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<StringKeywords>>,
+                                        ::std::option::Option<::std::boxed::Box<StringKeywords>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1423,7 +1421,7 @@ pub mod schema {
                                 }
                                 __field11 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<ArrayKeywords>>,
+                                        ::std::option::Option<::std::boxed::Box<ArrayKeywords>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1437,7 +1435,7 @@ pub mod schema {
                                 }
                                 __field12 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<ObjectKeywords>>,
+                                        ::std::option::Option<::std::boxed::Box<ObjectKeywords>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -1451,7 +1449,7 @@ pub mod schema {
                                 }
                                 __field13 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, Any>,
                                         >,
                                     >(&mut __map)?,
@@ -2593,7 +2591,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2604,7 +2602,7 @@ pub mod schema {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2615,7 +2613,7 @@ pub mod schema {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Any>,
+                        ::std::option::Option<Any>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2626,7 +2624,7 @@ pub mod schema {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2637,7 +2635,7 @@ pub mod schema {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2648,7 +2646,7 @@ pub mod schema {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2659,7 +2657,7 @@ pub mod schema {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Any>>,
+                        ::std::option::Option<::std::vec::Vec<Any>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2688,21 +2686,21 @@ pub mod schema {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Any>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Any>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
                     let mut __field6: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Any>>,
+                        ::std::option::Option<::std::vec::Vec<Any>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -2718,7 +2716,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2732,7 +2730,7 @@ pub mod schema {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
+                                        ::std::option::Option<::std::string::String>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2745,9 +2743,9 @@ pub mod schema {
                                     );
                                 }
                                 __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Any>,
-                                    >(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<::std::option::Option<Any>>(
+                                        &mut __map,
+                                    )?,
                                 );
                             }
                             __Identifier::__Identifier3 => {
@@ -2760,7 +2758,7 @@ pub mod schema {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2774,7 +2772,7 @@ pub mod schema {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2788,7 +2786,7 @@ pub mod schema {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2802,7 +2800,7 @@ pub mod schema {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Any>>,
+                                        ::std::option::Option<::std::vec::Vec<Any>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3189,7 +3187,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3200,7 +3198,7 @@ pub mod schema {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3211,7 +3209,7 @@ pub mod schema {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3222,7 +3220,7 @@ pub mod schema {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3233,7 +3231,7 @@ pub mod schema {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Schema>,
+                        ::std::option::Option<Schema>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3244,7 +3242,7 @@ pub mod schema {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Schema>,
+                        ::std::option::Option<Schema>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3255,7 +3253,7 @@ pub mod schema {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Schema>,
+                        ::std::option::Option<Schema>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3266,7 +3264,7 @@ pub mod schema {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3296,25 +3294,25 @@ pub mod schema {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     > = ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<Schema>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<Schema>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<Schema>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<Schema>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<Schema>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<Schema>> =
                         ::core::option::Option::None;
                     let mut __field7: ::core::option::Option<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -3330,7 +3328,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                                        ::std::option::Option<::std::vec::Vec<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3344,7 +3342,7 @@ pub mod schema {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                                        ::std::option::Option<::std::vec::Vec<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3358,7 +3356,7 @@ pub mod schema {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                                        ::std::option::Option<::std::vec::Vec<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3370,7 +3368,7 @@ pub mod schema {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                                        ::std::option::Option<::std::vec::Vec<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3382,7 +3380,7 @@ pub mod schema {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Schema>,
+                                        ::std::option::Option<Schema>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3394,7 +3392,7 @@ pub mod schema {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Schema>,
+                                        ::std::option::Option<Schema>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3406,7 +3404,7 @@ pub mod schema {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Schema>,
+                                        ::std::option::Option<Schema>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3420,7 +3418,7 @@ pub mod schema {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, Schema>,
                                         >,
                                     >(&mut __map)?,
@@ -3741,7 +3739,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Number>,
+                        ::std::option::Option<Number>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3752,7 +3750,7 @@ pub mod schema {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Number>,
+                        ::std::option::Option<Number>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3763,7 +3761,7 @@ pub mod schema {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Number>,
+                        ::std::option::Option<Number>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3774,7 +3772,7 @@ pub mod schema {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Number>,
+                        ::std::option::Option<Number>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3785,7 +3783,7 @@ pub mod schema {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Number>,
+                        ::std::option::Option<Number>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3811,15 +3809,15 @@ pub mod schema {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
-                    let mut __field0: ::core::option::Option<::core::option::Option<Number>> =
+                    let mut __field0: ::core::option::Option<::std::option::Option<Number>> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<Number>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<Number>> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Number>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Number>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<Number>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<Number>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<Number>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<Number>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -3835,7 +3833,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Number>,
+                                        ::std::option::Option<Number>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3849,7 +3847,7 @@ pub mod schema {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Number>,
+                                        ::std::option::Option<Number>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3863,7 +3861,7 @@ pub mod schema {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Number>,
+                                        ::std::option::Option<Number>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3877,7 +3875,7 @@ pub mod schema {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Number>,
+                                        ::std::option::Option<Number>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -3891,7 +3889,7 @@ pub mod schema {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Number>,
+                                        ::std::option::Option<Number>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4322,7 +4320,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4333,7 +4331,7 @@ pub mod schema {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4344,7 +4342,7 @@ pub mod schema {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<Pattern>,
+                        ::std::option::Option<Pattern>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4368,11 +4366,11 @@ pub mod schema {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
-                    let mut __field0: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field0: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field1: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<Pattern>> =
+                    let mut __field2: ::core::option::Option<::std::option::Option<Pattern>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -4388,7 +4386,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4402,7 +4400,7 @@ pub mod schema {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4416,7 +4414,7 @@ pub mod schema {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<Pattern>,
+                                        ::std::option::Option<Pattern>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4826,7 +4824,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4837,7 +4835,7 @@ pub mod schema {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4848,7 +4846,7 @@ pub mod schema {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4859,7 +4857,7 @@ pub mod schema {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4870,7 +4868,7 @@ pub mod schema {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4881,7 +4879,7 @@ pub mod schema {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
+                        ::std::option::Option<bool>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4892,7 +4890,7 @@ pub mod schema {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4903,7 +4901,7 @@ pub mod schema {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4914,7 +4912,7 @@ pub mod schema {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4945,26 +4943,26 @@ pub mod schema {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                        ::std::option::Option<::std::vec::Vec<Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     > = ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field3: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<bool>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<bool>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
-                    let mut __field7: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field7: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
                     let mut __field8: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -4980,7 +4978,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::vec::Vec<Schema>>,
+                                        ::std::option::Option<::std::vec::Vec<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4994,7 +4992,7 @@ pub mod schema {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                                        ::std::option::Option<::std::boxed::Box<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5008,7 +5006,7 @@ pub mod schema {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                                        ::std::option::Option<::std::boxed::Box<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5022,7 +5020,7 @@ pub mod schema {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5036,7 +5034,7 @@ pub mod schema {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5050,7 +5048,7 @@ pub mod schema {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
+                                        ::std::option::Option<bool>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5064,7 +5062,7 @@ pub mod schema {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5078,7 +5076,7 @@ pub mod schema {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5092,7 +5090,7 @@ pub mod schema {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                                        ::std::option::Option<::std::boxed::Box<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5560,7 +5558,7 @@ pub mod schema {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5571,7 +5569,7 @@ pub mod schema {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5582,7 +5580,7 @@ pub mod schema {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5593,7 +5591,7 @@ pub mod schema {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5604,7 +5602,7 @@ pub mod schema {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5615,7 +5613,7 @@ pub mod schema {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<usize>,
+                        ::std::option::Option<usize>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5626,7 +5624,7 @@ pub mod schema {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5637,7 +5635,7 @@ pub mod schema {
                         }
                     };
                     let __field7 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<
                                 ::std::string::String,
                                 ::std::vec::Vec<::std::string::String>,
@@ -5653,7 +5651,7 @@ pub mod schema {
                         }
                     };
                     let __field8 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5684,26 +5682,26 @@ pub mod schema {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     let mut __field0: ::core::option::Option<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
-                        ::core::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
+                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     > = ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     > = ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field4: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::core::option::Option<usize>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<usize>> =
                         ::core::option::Option::None;
                     let mut __field6: ::core::option::Option<
-                        ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     > = ::core::option::Option::None;
                     let mut __field7: ::core::option::Option<
-                        ::core::option::Option<
+                        ::std::option::Option<
                             indexmap::IndexMap<
                                 ::std::string::String,
                                 ::std::vec::Vec<::std::string::String>,
@@ -5711,7 +5709,7 @@ pub mod schema {
                         >,
                     > = ::core::option::Option::None;
                     let mut __field8: ::core::option::Option<
-                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                        ::std::option::Option<::std::boxed::Box<Schema>>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -5727,7 +5725,7 @@ pub mod schema {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, Schema>,
                                         >,
                                     >(&mut __map)?,
@@ -5743,7 +5741,7 @@ pub mod schema {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<::std::string::String, Schema>,
                                         >,
                                     >(&mut __map)?,
@@ -5759,7 +5757,7 @@ pub mod schema {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                                        ::std::option::Option<::std::boxed::Box<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5773,7 +5771,7 @@ pub mod schema {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                                        ::std::option::Option<::std::boxed::Box<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5787,7 +5785,7 @@ pub mod schema {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5801,7 +5799,7 @@ pub mod schema {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<usize>,
+                                        ::std::option::Option<usize>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5815,7 +5813,7 @@ pub mod schema {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             ::std::vec::Vec<::std::string::String>,
                                         >,
                                     >(&mut __map)?,
@@ -5831,7 +5829,7 @@ pub mod schema {
                                 }
                                 __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<
+                                        ::std::option::Option<
                                             indexmap::IndexMap<
                                                 ::std::string::String,
                                                 ::std::vec::Vec<::std::string::String>,
@@ -5850,7 +5848,7 @@ pub mod schema {
                                 }
                                 __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::boxed::Box<Schema>>,
+                                        ::std::option::Option<::std::boxed::Box<Schema>>,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5925,681 +5923,6 @@ pub mod schema {
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "ObjectKeywords",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
-        }
-    }
-    #[doc = ""]
-    #[derive(Clone, Debug)]
-    pub struct IdlVariantsExt(pub(crate) ::std::vec::Vec<IdlVariant>);
-    impl ::std::convert::From<IdlVariantsExt> for ::std::vec::Vec<IdlVariant> {
-        fn from(wrapped: IdlVariantsExt) -> Self {
-            wrapped.0
-        }
-    }
-    #[automatically_derived]
-    impl __serde::Serialize for IdlVariantsExt {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            self.0.serialize(__serializer)
-        }
-    }
-    #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for IdlVariantsExt {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(IdlVariantsExt(__serde::Deserialize::deserialize(
-                __deserializer,
-            )?))
-        }
-    }
-    #[doc = ""]
-    #[derive(Clone, Debug)]
-    pub struct IdlVariant {
-        #[doc = ""]
-        pub name: ::std::string::String,
-        #[doc = ""]
-        pub type_ref: ::std::option::Option<::std::string::String>,
-    }
-    impl IdlVariant {
-        #[doc = "Creates a new [`IdlVariant`]."]
-        pub fn new(name: ::std::string::String) -> Self {
-            Self {
-                name,
-                type_ref: ::std::default::Default::default(),
-            }
-        }
-        #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
-            self.name = name;
-            self
-        }
-        #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
-            self.name = name;
-            self
-        }
-        #[doc = "Sets the value of `type_ref`."]
-        pub fn set_type_ref(
-            &mut self,
-            type_ref: ::std::option::Option<::std::string::String>,
-        ) -> &mut Self {
-            self.type_ref = type_ref;
-            self
-        }
-        #[doc = "Sets the value of `type_ref`."]
-        pub fn with_type_ref(
-            mut self,
-            type_ref: ::std::option::Option<::std::string::String>,
-        ) -> Self {
-            self.type_ref = type_ref;
-            self
-        }
-    }
-    #[automatically_derived]
-    impl __serde::Serialize for IdlVariant {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "IdlVariant", 2usize)?;
-            __record.serialize_field("name", &self.name)?;
-            __record.serialize_optional_field(
-                "typeRef",
-                ::core::option::Option::as_ref(&self.type_ref),
-            )?;
-            __record.end()
-        }
-    }
-    #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for IdlVariant {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["name", "typeRef"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"name\", \"typeRef\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "typeRef" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"typeRef" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
-            }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = IdlVariant;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record IdlVariant")
-                }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::std::string::String,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
-                            );
-                        }
-                    };
-                    let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<::std::string::String>,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(IdlVariant {
-                        name: __field0,
-                        type_ref: __field1,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    let mut __field0: ::core::option::Option<::std::string::String> =
-                        ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<
-                        ::core::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<::std::string::String>(
-                                        &mut __map,
-                                    )?,
-                                );
-                            }
-                            __Identifier::__Identifier1 => {
-                                if ::core::option::Option::is_some(&__field1) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "typeRef",
-                                        ),
-                                    );
-                                }
-                                __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<::std::string::String>,
-                                    >(&mut __map)?,
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("name"),
-                            );
-                        }
-                    };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    ::core::result::Result::Ok(IdlVariant {
-                        name: __field0,
-                        type_ref: __field1,
-                    })
-                }
-            }
-            #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["name", "typeRef"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "IdlVariant",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
-        }
-    }
-    #[doc = ""]
-    #[derive(Clone, Debug)]
-    pub struct IdlFieldsExt(pub(crate) ::std::vec::Vec<IdlField>);
-    impl ::std::convert::From<IdlFieldsExt> for ::std::vec::Vec<IdlField> {
-        fn from(wrapped: IdlFieldsExt) -> Self {
-            wrapped.0
-        }
-    }
-    #[automatically_derived]
-    impl __serde::Serialize for IdlFieldsExt {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            self.0.serialize(__serializer)
-        }
-    }
-    #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for IdlFieldsExt {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            Ok(IdlFieldsExt(__serde::Deserialize::deserialize(
-                __deserializer,
-            )?))
-        }
-    }
-    #[doc = ""]
-    #[derive(Clone, Debug)]
-    pub struct IdlField {
-        #[doc = ""]
-        pub name: ::std::string::String,
-        #[doc = ""]
-        pub type_ref: ::std::string::String,
-        #[doc = ""]
-        pub optional: ::std::option::Option<bool>,
-        #[doc = ""]
-        pub inlined: ::std::option::Option<bool>,
-    }
-    impl IdlField {
-        #[doc = "Creates a new [`IdlField`]."]
-        pub fn new(name: ::std::string::String, type_ref: ::std::string::String) -> Self {
-            Self {
-                name,
-                type_ref,
-                optional: ::std::default::Default::default(),
-                inlined: ::std::default::Default::default(),
-            }
-        }
-        #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
-            self.name = name;
-            self
-        }
-        #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
-            self.name = name;
-            self
-        }
-        #[doc = "Sets the value of `type_ref`."]
-        pub fn set_type_ref(&mut self, type_ref: ::std::string::String) -> &mut Self {
-            self.type_ref = type_ref;
-            self
-        }
-        #[doc = "Sets the value of `type_ref`."]
-        pub fn with_type_ref(mut self, type_ref: ::std::string::String) -> Self {
-            self.type_ref = type_ref;
-            self
-        }
-        #[doc = "Sets the value of `optional`."]
-        pub fn set_optional(&mut self, optional: ::std::option::Option<bool>) -> &mut Self {
-            self.optional = optional;
-            self
-        }
-        #[doc = "Sets the value of `optional`."]
-        pub fn with_optional(mut self, optional: ::std::option::Option<bool>) -> Self {
-            self.optional = optional;
-            self
-        }
-        #[doc = "Sets the value of `inlined`."]
-        pub fn set_inlined(&mut self, inlined: ::std::option::Option<bool>) -> &mut Self {
-            self.inlined = inlined;
-            self
-        }
-        #[doc = "Sets the value of `inlined`."]
-        pub fn with_inlined(mut self, inlined: ::std::option::Option<bool>) -> Self {
-            self.inlined = inlined;
-            self
-        }
-    }
-    #[automatically_derived]
-    impl __serde::Serialize for IdlField {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "IdlField", 4usize)?;
-            __record.serialize_field("name", &self.name)?;
-            __record.serialize_field("typeRef", &self.type_ref)?;
-            __record.serialize_optional_field(
-                "optional",
-                ::core::option::Option::as_ref(&self.optional),
-            )?;
-            __record.serialize_optional_field(
-                "inlined",
-                ::core::option::Option::as_ref(&self.inlined),
-            )?;
-            __record.end()
-        }
-    }
-    #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for IdlField {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] =
-                &["name", "typeRef", "optional", "inlined"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"name\", \"typeRef\", \"optional\", \"inlined\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "typeRef" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "optional" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "inlined" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"typeRef" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"optional" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"inlined" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
-            }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = IdlField;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record IdlField")
-                }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::std::string::String,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::std::string::String,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::core::option::Option<bool>,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(IdlField {
-                        name: __field0,
-                        type_ref: __field1,
-                        optional: __field2,
-                        inlined: __field3,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    let mut __field0: ::core::option::Option<::std::string::String> =
-                        ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<::std::string::String> =
-                        ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::core::option::Option<bool>> =
-                        ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::core::option::Option<bool>> =
-                        ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<::std::string::String>(
-                                        &mut __map,
-                                    )?,
-                                );
-                            }
-                            __Identifier::__Identifier1 => {
-                                if ::core::option::Option::is_some(&__field1) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "typeRef",
-                                        ),
-                                    );
-                                }
-                                __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<::std::string::String>(
-                                        &mut __map,
-                                    )?,
-                                );
-                            }
-                            __Identifier::__Identifier2 => {
-                                if ::core::option::Option::is_some(&__field2) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "optional",
-                                        ),
-                                    );
-                                }
-                                __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
-                                    >(&mut __map)?,
-                                );
-                            }
-                            __Identifier::__Identifier3 => {
-                                if ::core::option::Option::is_some(&__field3) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "inlined",
-                                        ),
-                                    );
-                                }
-                                __field3 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        ::core::option::Option<bool>,
-                                    >(&mut __map)?,
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("name"),
-                            );
-                        }
-                    };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("typeRef"),
-                            );
-                        }
-                    };
-                    let __field2 = match __field2 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field3 = match __field3 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    ::core::result::Result::Ok(IdlField {
-                        name: __field0,
-                        type_ref: __field1,
-                        optional: __field2,
-                        inlined: __field3,
-                    })
-                }
-            }
-            #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["name", "typeRef", "optional", "inlined"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "IdlField",
                 __FIELDS,
                 __Visitor {
                     __phantom_vars: ::core::marker::PhantomData,

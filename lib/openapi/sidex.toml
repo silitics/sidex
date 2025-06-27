@@ -12,7 +12,7 @@ derive = ["Clone", "Debug"]
 plugins = ["builder", "serde"]
 
 [backend.rust.external]
-"json_schema" = "::sidex_gen_json_schema::types"
+"json_schema" = "crate"
 
 [backend.rust.plugin.serde]
 sidex_serde_path = "::sidex_serde"

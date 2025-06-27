@@ -14,3 +14,4 @@ indexmap = { version = "2.0.0", features = ["serde"] }
 serde_json = "1"
 sidex-gen = { path = "../sidex-gen", version = "0.1" }
 sidex-attrs-json = { version = "0.1.0", path = "../sidex-attrs-json" }
+sidex-types-json-schema.workspace = true

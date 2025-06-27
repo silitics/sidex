@@ -348,19 +348,3 @@ record ObjectKeywords {
     #[rust(box)]
     unevaluated_properties?: Schema,
 }
-
-wrapper IdlVariantsExt: [IdlVariant]
-
-record IdlVariant {
-    name: string,
-    type_ref?: string,
-}
-
-wrapper IdlFieldsExt: [IdlField]
-
-record IdlField {
-    name: string,
-    type_ref: string,
-    optional?: bool,
-    inlined?: bool,
-}

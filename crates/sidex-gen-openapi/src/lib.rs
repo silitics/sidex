@@ -4,11 +4,9 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize, de::IntoDeserializer};
 use sidex_attrs_http::{HttpInterfaceAttrs, HttpMethod, HttpOperationAttrs};
 use sidex_gen::{Generator, attrs::TryFromAttrs, diagnostics, ir};
-use sidex_gen_json_schema::{JsonSchemaConfig, types::schema};
-
-#[doc(hidden)]
-mod generated;
-pub use generated::openapi::openapi as types;
+use sidex_gen_json_schema::JsonSchemaConfig;
+use sidex_types_json_schema as schema;
+use sidex_types_openapi as types;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
@@ -138,7 +136,7 @@ impl Generator for OpenApiGenerator {
                     metadata
                         .description
                         .as_deref()
-                        .map(|description| types::Markdown(description.to_owned())),
+                        .map(|description| types::Markdown::new(description.to_owned())),
                 )
             }),
         );
@@ -216,11 +214,11 @@ impl Generator for OpenApiGenerator {
                     responses.insert(
                         "200".to_owned(),
                         types::MaybeRef::Value(
-                            types::Response::new(types::Markdown("XYZ".to_owned()))
+                            types::Response::new(types::Markdown::new("XYZ".to_owned()))
                                 .with_content(Some(content)),
                         ),
                     );
-                    operation.set_responses(Some(types::Responses(responses)));
+                    operation.set_responses(Some(types::Responses::new(responses)));
                     tree.operations.insert(operation_attrs.method, operation);
                 }
             }
@@ -274,7 +272,7 @@ impl Generator for OpenApiGenerator {
             }
         }
 
-        openapi.set_paths(Some(types::Paths(paths)));
+        openapi.set_paths(Some(types::Paths::new(paths)));
         openapi.set_tags(config.tags.clone());
         openapi.set_servers(config.servers.clone());
         let mut schemas = ctx.into_defs().into_iter().collect::<Vec<_>>();

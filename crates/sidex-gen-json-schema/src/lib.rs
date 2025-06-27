@@ -1,8 +1,4 @@
-pub mod generated;
-
 use builder::{RecordTypeSchemaBuilder, VariantTypeSchemaBuilder};
-pub use generated as types;
-pub use generated::schema::*;
 use indexmap::{IndexMap, indexmap};
 use serde::{Deserialize, Serialize};
 use sidex_attrs_json::{
@@ -16,6 +12,7 @@ use sidex_gen::{
     ir::{self, STD_BUNDLE_IDX, TypeVarType},
     rename::RenameFunction,
 };
+use sidex_types_json_schema::*;
 
 pub mod builder;
 
@@ -109,62 +106,6 @@ impl Default for JsonSchemaConfig {
 //     Oas,
 // }
 
-impl From<serde_json::Value> for Any {
-    fn from(value: serde_json::Value) -> Self {
-        match value {
-            serde_json::Value::Null => todo!(),
-            serde_json::Value::Bool(v) => Self::Boolean(v),
-            serde_json::Value::Number(_) => {
-                todo!()
-            }
-            serde_json::Value::String(v) => Self::String(v),
-            serde_json::Value::Array(v) => Self::Array(v.into_iter().map(Into::into).collect()),
-            serde_json::Value::Object(v) => {
-                Self::Object(v.into_iter().map(|(k, v)| (k, v.into())).collect())
-            }
-        }
-    }
-}
-
-impl SchemaObject {
-    pub fn set_extension<V: Serialize>(&mut self, name: &str, value: V) {
-        let value = Any::from(serde_json::to_value(value).unwrap());
-        self.extensions
-            .get_or_insert_with(Default::default)
-            .insert(name.to_owned(), value);
-    }
-}
-
-impl From<SchemaObject> for Schema {
-    fn from(value: SchemaObject) -> Self {
-        Schema::Object(value)
-    }
-}
-
-impl From<bool> for Schema {
-    fn from(value: bool) -> Self {
-        Schema::Bool(value)
-    }
-}
-
-impl<T> From<T> for MaybeArray<T> {
-    fn from(value: T) -> Self {
-        MaybeArray::Single(value)
-    }
-}
-
-impl<T> From<Vec<T>> for MaybeArray<T> {
-    fn from(value: Vec<T>) -> Self {
-        MaybeArray::Array(value)
-    }
-}
-
-impl From<i8> for Number {
-    fn from(value: i8) -> Self {
-        Number::Integer(value.into())
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     id_prefix: Option<String>,
@@ -192,7 +133,7 @@ pub struct JsonSchemaCtx<'cx> {
 }
 
 fn make_schema_ref<S: AsRef<str>>(string: S) -> SchemaObject {
-    SchemaObject::new().with_reference(Some(SchemaRef(string.as_ref().to_owned())))
+    SchemaObject::new().with_reference(Some(SchemaRef::new(string.as_ref().to_owned())))
 }
 
 fn make_schema_var<S: AsRef<str>>(name: S) -> TypeSchema {
@@ -469,22 +410,22 @@ impl<'cx> JsonSchemaCtx<'cx> {
         let json_type_attrs = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
         let mut builder = RecordTypeSchemaBuilder::new();
         // builder.deny_other_fields();
-        let mut idl_fields = Vec::new();
+        // let mut idl_fields = Vec::new();
         for field in &record_type.fields {
             let json_field_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
             let field_name = json_type_attrs.field_name(field, &json_field_attrs);
             let type_schema = self.resolve(&field.typ)?;
-            let mut idl_field = IdlField::new(field_name.clone(), type_schema.name.clone());
+            // let mut idl_field = IdlField::new(field_name.clone(), type_schema.name.clone());
             if json_field_attrs.inline {
                 builder.add_inline_field(type_schema);
-                idl_field.set_inlined(Some(true));
+                // idl_field.set_inlined(Some(true));
             } else if field.is_optional {
                 builder.add_optional_field(field_name, type_schema);
-                idl_field.set_optional(Some(true));
+                // idl_field.set_optional(Some(true));
             } else {
                 builder.add_field(field_name, type_schema);
             }
-            idl_fields.push(idl_field);
+            // idl_fields.push(idl_field);
         }
         let inline_schema = builder.build_ref();
         builder.deny_other_fields();
@@ -501,21 +442,21 @@ impl<'cx> JsonSchemaCtx<'cx> {
         let json_type_attrs = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
         let tag_field = json_type_attrs.tag_field_name();
         let mut builder = VariantTypeSchemaBuilder::new(tag_field, json_type_attrs.tagged);
-        let mut idl_variants = Vec::new();
+        // let mut idl_variants = Vec::new();
         for variant in &variant_type.variants {
             let json_variant_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
             let variant_name = json_type_attrs.variant_name(variant, &json_variant_attrs);
-            let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
+            // let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
             if let Some(typ) = &variant.typ {
                 let content_field = json_type_attrs.content_field_name(&json_variant_attrs);
                 let type_schema = self.resolve(typ)?;
                 let may_inline = self.unit.record_type(typ).is_some();
-                idl_variant.set_type_ref(Some(type_schema.name.clone()));
+                // idl_variant.set_type_ref(Some(type_schema.name.clone()));
                 builder.add_data_variant(&content_field, &variant_name, type_schema, may_inline);
             } else {
                 builder.add_unit_variant(&variant_name);
             }
-            idl_variants.push(idl_variant);
+            // idl_variants.push(idl_variant);
         }
         let def_schema = builder.build();
         let inline_schema = def_schema.clone();
