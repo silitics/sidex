@@ -34,12 +34,49 @@ pub(crate) fn gen_deserialize_body(ty: &RsType, record_ty: &RsTypeRecord) -> Tok
 fn gen_visitor(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
     let ty_ident = &ty.ident;
 
-    let num_fields = record_ty.fields.len();
+    let expecting = format!("record {}", ty.name);
 
-    let (field_variants, field_identifiers_enum) = gen_identifier_enum(
-        record_ty.fields.iter().map(|field| &field.json_name),
-        IdentifierKind::Field,
-    );
+    let type_generics = ty.type_generics();
+    let impl_generics = ty.type_generics_with_bounds(&quote! { __serde::Deserialize<'de> });
+
+    let visit_map_body = gen_visit_map_body(ty, record_ty);
+    let visit_seq_body = gen_visit_seq_body(ty, record_ty);
+
+    quote! {
+        #[doc(hidden)]
+        struct __Visitor <#type_generics> {
+            __phantom_vars: ::core::marker::PhantomData<fn(&( #type_generics ))>,
+        }
+
+        impl <'de, #impl_generics> __serde::de::Visitor<'de> for __Visitor <#type_generics> {
+            type Value = #ty_ident <#type_generics>;
+
+            fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::write_str(__formatter, #expecting)
+            }
+
+            #[inline]
+            fn visit_seq<__A>(self, mut __seq: __A) -> ::core::result::Result<Self::Value, __A::Error>
+            where
+                __A: __serde::de::SeqAccess<'de>,
+            {
+                #visit_seq_body
+            }
+            #[inline]
+            fn visit_map<__A>(self, mut __map: __A) -> ::core::result::Result<Self::Value, __A::Error>
+            where
+                __A: __serde::de::MapAccess<'de>,
+            {
+                #visit_map_body
+            }
+        }
+    }
+}
+
+fn gen_visit_seq_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
+    let ty_ident = &ty.ident;
+
+    let num_fields = record_ty.fields.len();
 
     let field_indices = (0..num_fields).collect::<Vec<_>>();
 
@@ -59,15 +96,71 @@ fn gen_visitor(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
         .map(|field| &field.ty)
         .collect::<Vec<_>>();
 
+    let expected_length = format!("record with {num_fields} fields");
+
+    let constructor = quote! {
+        ::core::result::Result::Ok(#ty_ident {
+            #(
+                #field_idents: #field_vars,
+            )*
+        })
+    };
+
+    quote! {
+        #(
+            // Optional fields are deserialized as `Option<T>` and, hence, need no special treatment.
+            let #field_vars = match __serde::de::SeqAccess::next_element::<#field_tys>(&mut __seq)? {
+                ::core::option::Option::Some(__value) => __value,
+                ::core::option::Option::None => {
+                    return ::core::result::Result::Err(
+                        __serde::de::Error::invalid_length(#field_indices, &#expected_length)
+                    );
+                }
+            };
+        )*
+
+        #constructor
+    }
+}
+
+fn gen_visit_map_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
+    let ty_ident = &ty.ident;
+
+    let (field_variants, field_identifiers_enum) = gen_identifier_enum(
+        record_ty
+            .fields
+            .iter()
+            .filter(|f| !f.json_attrs.inline)
+            .map(|field| &field.json_name),
+        IdentifierKind::Field,
+    );
+
+    let num_fields = field_variants.len();
+
+    let field_idents = record_ty
+        .fields
+        .iter()
+        .filter(|f| !f.json_attrs.inline)
+        .map(|field| &field.ident)
+        .collect::<Vec<_>>();
+
+    let field_vars = (0..num_fields)
+        .map(|idx| format_ident!("__field{idx}"))
+        .collect::<Vec<_>>();
+
+    let field_tys = record_ty
+        .fields
+        .iter()
+        .filter(|f| !f.json_attrs.inline)
+        .map(|field| &field.ty)
+        .collect::<Vec<_>>();
+
     let field_names = record_ty
         .fields
         .iter()
+        .filter(|f| !f.json_attrs.inline)
         .map(|field| &field.json_name)
         .collect::<Vec<_>>();
-
-    let expecting = format!("record {}", ty.name);
-
-    let expected_length = format!("record with {num_fields} fields");
 
     let extract_values = record_ty
         .fields
@@ -97,88 +190,98 @@ fn gen_visitor(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
         })
         .collect::<Vec<_>>();
 
+    let inline_field_idents = record_ty
+        .fields
+        .iter()
+        .filter(|f| f.json_attrs.inline)
+        .map(|field| &field.ident)
+        .collect::<Vec<_>>();
+
     let constructor = quote! {
         ::core::result::Result::Ok(#ty_ident {
             #(
                 #field_idents: #field_vars,
             )*
+            #(
+                #inline_field_idents: __sidex_serde::de::content::deserialize_content_ref(&__content)?,
+            )*
         })
     };
 
-    let type_generics = ty.type_generics();
-    let impl_generics = ty.type_generics_with_bounds(&quote! { __serde::Deserialize<'de> });
+    let has_inline_fields = record_ty.fields.iter().any(|f| f.json_attrs.inline);
 
-    quote! {
-        #field_identifiers_enum
+    if !has_inline_fields {
+        quote! {
+            #field_identifiers_enum
 
-        #[doc(hidden)]
-        struct __Visitor <#type_generics> {
-            __phantom_vars: ::core::marker::PhantomData<fn(&( #type_generics ))>,
-        }
-
-        impl <'de, #impl_generics> __serde::de::Visitor<'de> for __Visitor <#type_generics> {
-            type Value = #ty_ident <#type_generics>;
-
-            fn expecting(&self, __formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-                ::core::fmt::Formatter::write_str(__formatter, #expecting)
-            }
-
-            #[inline]
-            fn visit_seq<__A>(self, mut __seq: __A) -> ::core::result::Result<Self::Value, __A::Error>
-            where
-                __A: __serde::de::SeqAccess<'de>,
-            {
-                #(
-                    // Optional fields are deserialized as `Option<T>` and, hence, need no special treatment.
-                    let #field_vars = match __serde::de::SeqAccess::next_element::<#field_tys>(&mut __seq)? {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(#field_indices, &#expected_length)
-                            );
-                        }
-                    };
-                )*
-
-                #constructor
-            }
-            #[inline]
-            fn visit_map<__A>(self, mut __map: __A) -> ::core::result::Result<Self::Value, __A::Error>
-            where
-                __A: __serde::de::MapAccess<'de>,
-            {
-                #(
-                    // We use the inner type here so optional fields end up with only one level of `Option`.
-                    let mut #field_vars: ::core::option::Option<#field_tys> = ::core::option::Option::None;
-                )*
-                while let ::core::option::Option::Some(__key) = __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)? {
-                    match __key {
-                        #(
-                            __Identifier::#field_variants => {
-                                if ::core::option::Option::is_some(&#field_vars) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(#field_names)
-                                    );
-                                }
-                                #field_vars = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<#field_tys>(&mut __map)?
+            #(
+                // We use the inner type here so optional fields end up with only one level of `Option`.
+                let mut #field_vars: ::core::option::Option<#field_tys> = ::core::option::Option::None;
+            )*
+            while let ::core::option::Option::Some(__key) = __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)? {
+                match __key {
+                    #(
+                        __Identifier::#field_variants => {
+                            if ::core::option::Option::is_some(&#field_vars) {
+                                return ::core::result::Result::Err(
+                                    <__A::Error as __serde::de::Error>::duplicate_field(#field_names)
                                 );
-                            },
-                        )*
-                        _ => {
-                            // Unknown fields are simply ignored.
-                            //
-                            // 🔮 At a later point in time, we may want attributes to disallow unknown fields.
-                            __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(&mut __map)?;
-                        }
+                            }
+                            #field_vars = ::core::option::Option::Some(
+                                __serde::de::MapAccess::next_value::<#field_tys>(&mut __map)?
+                            );
+                        },
+                    )*
+                    _ => {
+                        // Unknown fields are simply ignored.
+                        //
+                        // 🔮 At a later point in time, we may want attributes to disallow unknown fields.
+                        __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(&mut __map)?;
                     }
-                };
+                }
+            };
 
-                // Extract the values of non-optional fields.
-                #(#extract_values)*
+            // Extract the values of non-optional fields.
+            #(#extract_values)*
 
-                #constructor
+            #constructor
+        }
+    } else {
+        quote! {
+            #field_identifiers_enum
+
+            let __content = __sidex_serde::de::content::deserialize_content_map(__map)?;
+            #(
+                // We use the inner type here so optional fields end up with only one level of `Option`.
+                let mut #field_vars: ::core::option::Option<#field_tys> = ::core::option::Option::None;
+            )*
+            let __sidex_serde::de::content::Content::Map(__map) = &__content else {
+                panic!("expected a map");
+            };
+            for (__key, __value) in __map.iter() {
+                let __key: __Identifier = __sidex_serde::de::content::deserialize_content_ref(__key)?;
+                match __key {
+                    #(
+                        __Identifier::#field_variants => {
+                            if ::core::option::Option::is_some(&#field_vars) {
+                                return ::core::result::Result::Err(
+                                    <__A::Error as __serde::de::Error>::duplicate_field(#field_names)
+                                );
+                            }
+                            #field_vars = ::core::option::Option::Some(
+                                __sidex_serde::de::content::deserialize_content_ref(__value)?
+                            );
+                        },
+                    )*
+                    _ => {
+                        // Ignore unknown fields.
+                    }
+                }
             }
+            // Extract the values of non-optional fields.
+            #(#extract_values)*
+
+            #constructor
         }
     }
 }

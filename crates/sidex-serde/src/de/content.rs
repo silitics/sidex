@@ -9,11 +9,11 @@ mod theirs;
 
 #[cfg(not(feature = "serde-private-content"))]
 /// Alias to the `Content` enum selected via the `serde-private-content` feature.
-pub(crate) type Content<'de> = ours::Content<'de>;
+pub type Content<'de> = ours::Content<'de>;
 
 #[cfg(feature = "serde-private-content")]
 /// Alias to the `Content` enum selected via the `serde-private-content` feature.
-pub(crate) type Content<'de> = theirs::Content<'de>;
+pub type Content<'de> = theirs::Content<'de>;
 
 /// Deserializes [`Content`] into `T`.
 pub(crate) fn deserialize_content<'de, T: Deserialize<'de>, E: serde::de::Error>(
@@ -54,6 +54,13 @@ pub(crate) fn content_str_eq<'de>(content: &Content<'de>, string: &str) -> bool 
         Content::Bytes(v) => *v == string.as_bytes(),
         _ => false,
     }
+}
+
+/// Deserialize a content map.
+pub fn deserialize_content_map<'de, A: serde::de::MapAccess<'de>>(
+    map: A,
+) -> Result<Content<'de>, A::Error> {
+    ContentVisitor.visit_map(map)
 }
 
 /// Visitor for deserializing into [`Content`].

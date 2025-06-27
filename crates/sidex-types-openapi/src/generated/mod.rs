@@ -505,120 +505,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "openapi",
-                "info",
-                "jsonSchemaDialect",
-                "servers",
-                "paths",
-                "webhooks",
-                "components",
-                "security",
-                "tags",
-                "externalDocs",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"openapi\", \"info\", \"jsonSchemaDialect\", \"servers\", \"paths\", \"webhooks\", \"components\", \"security\", \"tags\", \"externalDocs\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Identifier7,
-                __Identifier8,
-                __Identifier9,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "openapi" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "info" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "jsonSchemaDialect" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier2)
-                        }
-                        "servers" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "paths" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "webhooks" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "components" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        "security" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "tags" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        "externalDocs" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"openapi" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"info" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"jsonSchemaDialect" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier2)
-                        }
-                        b"servers" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"paths" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"webhooks" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"components" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        b"security" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"tags" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        b"externalDocs" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -798,6 +684,152 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "openapi",
+                        "info",
+                        "jsonSchemaDialect",
+                        "servers",
+                        "paths",
+                        "webhooks",
+                        "components",
+                        "security",
+                        "tags",
+                        "externalDocs",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"openapi\", \"info\", \"jsonSchemaDialect\", \"servers\", \"paths\", \"webhooks\", \"components\", \"security\", \"tags\", \"externalDocs\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Identifier7,
+                        __Identifier8,
+                        __Identifier9,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "openapi" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "info" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                "jsonSchemaDialect" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "servers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "paths" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                "webhooks" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "components" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                "security" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                "tags" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                "externalDocs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"openapi" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"info" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                b"jsonSchemaDialect" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"servers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"paths" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                b"webhooks" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"components" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                b"security" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                b"tags" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                b"externalDocs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Info> = ::core::option::Option::None;
@@ -1216,103 +1248,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "title",
-                "version",
-                "summary",
-                "description",
-                "termsOfService",
-                "contact",
-                "license",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"title\", \"version\", \"summary\", \"description\", \"termsOfService\", \"contact\", \"license\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "title" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "version" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "summary" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "termsOfService" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "contact" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "license" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"title" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"version" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"summary" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"termsOfService" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier4)
-                        }
-                        b"contact" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"license" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -1427,6 +1362,133 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "title",
+                        "version",
+                        "summary",
+                        "description",
+                        "termsOfService",
+                        "contact",
+                        "license",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"title\", \"version\", \"summary\", \"description\", \"termsOfService\", \"contact\", \"license\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "title" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "version" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "termsOfService" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                "contact" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "license" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"title" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"version" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"termsOfService" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                b"contact" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"license" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::string::String> =
@@ -1698,78 +1760,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["name", "url", "email"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"name\", \"url\", \"email\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "email" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"email" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -1836,6 +1826,86 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &["name", "url", "email"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"name\", \"url\", \"email\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                "email" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                b"email" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
@@ -2002,78 +2072,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["name", "identifier", "url"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"name\", \"identifier\", \"url\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "identifier" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "url" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"identifier" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"url" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -2140,6 +2138,90 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &["name", "identifier", "url"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"name\", \"identifier\", \"url\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "identifier" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "url" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"identifier" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"url" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
@@ -2321,78 +2403,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["url", "description", "variables"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"url\", \"description\", \"variables\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "url" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "variables" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"url" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"variables" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -2458,6 +2468,95 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["url", "description", "variables"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"url\", \"description\", \"variables\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "url" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "variables" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"url" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"variables" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<Url> = ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
@@ -2638,78 +2737,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["enum", "default", "description"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"enum\", \"default\", \"description\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "enum" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "default" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"enum" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"default" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -2776,6 +2803,95 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["enum", "default", "description"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"enum\", \"default\", \"description\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "enum" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "default" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"enum" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"default" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     > = ::core::option::Option::None;
@@ -3179,120 +3295,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "schemas",
-                "responses",
-                "parameters",
-                "examples",
-                "requestBodies",
-                "headers",
-                "securitySchemes",
-                "links",
-                "callbacks",
-                "pathItems",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"schemas\", \"responses\", \"parameters\", \"examples\", \"requestBodies\", \"headers\", \"securitySchemes\", \"links\", \"callbacks\", \"pathItems\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Identifier7,
-                __Identifier8,
-                __Identifier9,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "schemas" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "responses" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "parameters" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "examples" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "requestBodies" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "headers" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "securitySchemes" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier6)
-                        }
-                        "links" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "callbacks" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        "pathItems" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"schemas" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"responses" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"parameters" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"examples" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"requestBodies" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"headers" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"securitySchemes" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier6)
-                        }
-                        b"links" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"callbacks" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        b"pathItems" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -3493,6 +3495,160 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "schemas",
+                        "responses",
+                        "parameters",
+                        "examples",
+                        "requestBodies",
+                        "headers",
+                        "securitySchemes",
+                        "links",
+                        "callbacks",
+                        "pathItems",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"schemas\", \"responses\", \"parameters\", \"examples\", \"requestBodies\", \"headers\", \"securitySchemes\", \"links\", \"callbacks\", \"pathItems\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Identifier7,
+                        __Identifier8,
+                        __Identifier9,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "schemas" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "responses" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "requestBodies" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                "headers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "securitySchemes" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                "links" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                "callbacks" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                "pathItems" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"schemas" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"responses" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"requestBodies" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                b"headers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"securitySchemes" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                b"links" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                b"callbacks" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                b"pathItems" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<
                             indexmap::IndexMap<::std::string::String, crate::schema::SchemaObject>,
@@ -4111,131 +4267,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "$ref",
-                "summary",
-                "description",
-                "get",
-                "put",
-                "post",
-                "delete",
-                "options",
-                "head",
-                "patch",
-                "trace",
-                "servers",
-                "parameters",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"$ref\", \"summary\", \"description\", \"get\", \"put\", \"post\", \"delete\", \"options\", \"head\", \"patch\", \"trace\", \"servers\", \"parameters\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Identifier7,
-                __Identifier8,
-                __Identifier9,
-                __Identifier10,
-                __Identifier11,
-                __Identifier12,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        11u64 => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        12u64 => ::core::result::Result::Ok(__Identifier::__Identifier12),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "summary" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "get" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "put" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "post" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "delete" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        "options" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "head" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        "patch" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        "trace" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        "servers" => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        "parameters" => ::core::result::Result::Ok(__Identifier::__Identifier12),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"summary" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"get" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"put" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"post" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"delete" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        b"options" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"head" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        b"patch" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        b"trace" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        b"servers" => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        b"parameters" => ::core::result::Result::Ok(__Identifier::__Identifier12),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -4461,6 +4492,163 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "$ref",
+                        "summary",
+                        "description",
+                        "get",
+                        "put",
+                        "post",
+                        "delete",
+                        "options",
+                        "head",
+                        "patch",
+                        "trace",
+                        "servers",
+                        "parameters",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"$ref\", \"summary\", \"description\", \"get\", \"put\", \"post\", \"delete\", \"options\", \"head\", \"patch\", \"trace\", \"servers\", \"parameters\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Identifier7,
+                        __Identifier8,
+                        __Identifier9,
+                        __Identifier10,
+                        __Identifier11,
+                        __Identifier12,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
+                                11u64 => ::core::result::Result::Ok(__Identifier::__Identifier11),
+                                12u64 => ::core::result::Result::Ok(__Identifier::__Identifier12),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "get" => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                "put" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                "post" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                "delete" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                "options" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                "head" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                "patch" => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                "trace" => ::core::result::Result::Ok(__Identifier::__Identifier10),
+                                "servers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier11)
+                                }
+                                "parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier12)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"get" => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                b"put" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                b"post" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                b"delete" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                b"options" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                b"head" => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                b"patch" => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                b"trace" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier10)
+                                }
+                                b"servers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier11)
+                                }
+                                b"parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier12)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
@@ -5066,126 +5254,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "tags",
-                "summary",
-                "description",
-                "externalDocs",
-                "operationId",
-                "parameters",
-                "requestBody",
-                "responses",
-                "callbacks",
-                "deprecated",
-                "security",
-                "servers",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"tags\", \"summary\", \"description\", \"externalDocs\", \"operationId\", \"parameters\", \"requestBody\", \"responses\", \"callbacks\", \"deprecated\", \"security\", \"servers\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Identifier7,
-                __Identifier8,
-                __Identifier9,
-                __Identifier10,
-                __Identifier11,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        11u64 => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "tags" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "summary" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "externalDocs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "operationId" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "parameters" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "requestBody" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        "responses" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "callbacks" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        "deprecated" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        "security" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        "servers" => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"tags" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"summary" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"externalDocs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"operationId" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"parameters" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"requestBody" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        b"responses" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"callbacks" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        b"deprecated" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        b"security" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        b"servers" => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -5398,6 +5466,178 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "tags",
+                        "summary",
+                        "description",
+                        "externalDocs",
+                        "operationId",
+                        "parameters",
+                        "requestBody",
+                        "responses",
+                        "callbacks",
+                        "deprecated",
+                        "security",
+                        "servers",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"tags\", \"summary\", \"description\", \"externalDocs\", \"operationId\", \"parameters\", \"requestBody\", \"responses\", \"callbacks\", \"deprecated\", \"security\", \"servers\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Identifier7,
+                        __Identifier8,
+                        __Identifier9,
+                        __Identifier10,
+                        __Identifier11,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
+                                11u64 => ::core::result::Result::Ok(__Identifier::__Identifier11),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "tags" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "externalDocs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "operationId" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                "parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "requestBody" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                "responses" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                "callbacks" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                "deprecated" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                "security" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier10)
+                                }
+                                "servers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier11)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"tags" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"externalDocs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"operationId" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                b"parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"requestBody" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                b"responses" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                b"callbacks" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                b"deprecated" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                b"security" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier10)
+                                }
+                                b"servers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier11)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                     > = ::core::option::Option::None;
@@ -5771,74 +6011,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["description", "url"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"description\", \"url\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -5890,6 +6062,86 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &["description", "url"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"description\", \"url\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"url" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<Url> = ::core::option::Option::None;
@@ -6522,135 +6774,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "name",
-                "in",
-                "description",
-                "required",
-                "deprecated",
-                "allowEmptyValue",
-                "style",
-                "explode",
-                "allowReserved",
-                "schema",
-                "example",
-                "examples",
-                "content",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"in\", \"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Identifier7,
-                __Identifier8,
-                __Identifier9,
-                __Identifier10,
-                __Identifier11,
-                __Identifier12,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        11u64 => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        12u64 => ::core::result::Result::Ok(__Identifier::__Identifier12),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "in" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "required" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "deprecated" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "allowEmptyValue" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier5)
-                        }
-                        "style" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        "explode" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "allowReserved" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        "schema" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        "example" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        "examples" => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        "content" => ::core::result::Result::Ok(__Identifier::__Identifier12),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"in" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"required" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"deprecated" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"allowEmptyValue" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier5)
-                        }
-                        b"style" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        b"explode" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"allowReserved" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        b"schema" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        b"example" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        b"examples" => ::core::result::Result::Ok(__Identifier::__Identifier11),
-                        b"content" => ::core::result::Result::Ok(__Identifier::__Identifier12),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -6877,6 +7000,177 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "name",
+                        "in",
+                        "description",
+                        "required",
+                        "deprecated",
+                        "allowEmptyValue",
+                        "style",
+                        "explode",
+                        "allowReserved",
+                        "schema",
+                        "example",
+                        "examples",
+                        "content",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"in\", \"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Identifier7,
+                        __Identifier8,
+                        __Identifier9,
+                        __Identifier10,
+                        __Identifier11,
+                        __Identifier12,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
+                                11u64 => ::core::result::Result::Ok(__Identifier::__Identifier11),
+                                12u64 => ::core::result::Result::Ok(__Identifier::__Identifier12),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "in" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "required" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "deprecated" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                "allowEmptyValue" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "style" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                "explode" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                "allowReserved" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                "schema" => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                "example" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier10)
+                                }
+                                "examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier11)
+                                }
+                                "content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier12)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"in" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"required" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"deprecated" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                b"allowEmptyValue" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"style" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                b"explode" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                b"allowReserved" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                b"schema" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                b"example" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier10)
+                                }
+                                b"examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier11)
+                                }
+                                b"content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier12)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<ParameterLocation> =
@@ -7496,78 +7790,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["description", "content", "required"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"description\", \"content\", \"required\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "content" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "required" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"content" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"required" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -7634,6 +7856,99 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["description", "content", "required"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"description\", \"content\", \"required\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "required" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"required" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
@@ -7851,83 +8166,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] =
-                &["schema", "example", "examples", "encoding"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"schema\", \"example\", \"examples\", \"encoding\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "schema" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "example" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "examples" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "encoding" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"schema" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"example" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"examples" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"encoding" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -8008,6 +8246,105 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["schema", "example", "examples", "encoding"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"schema\", \"example\", \"examples\", \"encoding\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "schema" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "example" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "encoding" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"schema" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"example" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"encoding" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<crate::schema::SchemaObject>,
                     > = ::core::option::Option::None;
@@ -8277,91 +8614,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "contentType",
-                "headers",
-                "style",
-                "explode",
-                "allowReserved",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"contentType\", \"headers\", \"style\", \"explode\", \"allowReserved\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "contentType" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "headers" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "style" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "explode" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "allowReserved" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"contentType" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"headers" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"style" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"explode" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"allowReserved" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -8454,6 +8706,115 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "contentType",
+                        "headers",
+                        "style",
+                        "explode",
+                        "allowReserved",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"contentType\", \"headers\", \"style\", \"explode\", \"allowReserved\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "contentType" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "headers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "style" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                "explode" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "allowReserved" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"contentType" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"headers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"style" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                b"explode" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"allowReserved" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
@@ -8746,83 +9107,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] =
-                &["description", "headers", "content", "links"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"description\", \"headers\", \"content\", \"links\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "headers" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "content" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "links" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"headers" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"content" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"links" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -8906,6 +9190,103 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["description", "headers", "content", "links"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"description\", \"headers\", \"content\", \"links\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "headers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "links" => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"headers" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"links" => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<Markdown> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
@@ -9180,83 +9561,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] =
-                &["summary", "description", "value", "externalValue"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"summary\", \"description\", \"value\", \"externalValue\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "summary" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "value" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "externalValue" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"summary" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"value" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"externalValue" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -9335,6 +9639,102 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["summary", "description", "value", "externalValue"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"summary\", \"description\", \"value\", \"externalValue\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "value" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                "externalValue" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"value" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                b"externalValue" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
@@ -9606,96 +10006,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "operationRef",
-                "operationId",
-                "parameters",
-                "requestBody",
-                "description",
-                "server",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"operationRef\", \"operationId\", \"parameters\", \"requestBody\", \"description\", \"server\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "operationRef" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "operationId" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "parameters" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "requestBody" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "server" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"operationRef" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"operationId" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"parameters" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"requestBody" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"server" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -9798,6 +10108,126 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "operationRef",
+                        "operationId",
+                        "parameters",
+                        "requestBody",
+                        "description",
+                        "server",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"operationRef\", \"operationId\", \"parameters\", \"requestBody\", \"description\", \"server\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "operationRef" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "operationId" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "requestBody" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                "server" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"operationRef" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"operationId" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"parameters" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"requestBody" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                b"server" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<
                         ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
@@ -10218,125 +10648,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "description",
-                "required",
-                "deprecated",
-                "allowEmptyValue",
-                "style",
-                "explode",
-                "allowReserved",
-                "schema",
-                "example",
-                "examples",
-                "content",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Identifier7,
-                __Identifier8,
-                __Identifier9,
-                __Identifier10,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "required" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "deprecated" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "allowEmptyValue" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier3)
-                        }
-                        "style" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "explode" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "allowReserved" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        "schema" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        "example" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        "examples" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        "content" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"required" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"deprecated" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"allowEmptyValue" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier3)
-                        }
-                        b"style" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"explode" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"allowReserved" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        b"schema" => ::core::result::Result::Ok(__Identifier::__Identifier7),
-                        b"example" => ::core::result::Result::Ok(__Identifier::__Identifier8),
-                        b"examples" => ::core::result::Result::Ok(__Identifier::__Identifier9),
-                        b"content" => ::core::result::Result::Ok(__Identifier::__Identifier10),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -10534,6 +10845,167 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "description",
+                        "required",
+                        "deprecated",
+                        "allowEmptyValue",
+                        "style",
+                        "explode",
+                        "allowReserved",
+                        "schema",
+                        "example",
+                        "examples",
+                        "content",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"description\", \"required\", \"deprecated\", \"allowEmptyValue\", \"style\", \"explode\", \"allowReserved\", \"schema\", \"example\", \"examples\", \"content\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Identifier7,
+                        __Identifier8,
+                        __Identifier9,
+                        __Identifier10,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
+                                9u64 => ::core::result::Result::Ok(__Identifier::__Identifier9),
+                                10u64 => ::core::result::Result::Ok(__Identifier::__Identifier10),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "required" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "deprecated" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                "allowEmptyValue" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "style" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                "explode" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "allowReserved" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                "schema" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                "example" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                "examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                "content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier10)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"required" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"deprecated" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"allowEmptyValue" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"style" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                b"explode" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"allowReserved" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                b"schema" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                b"example" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier8)
+                                }
+                                b"examples" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier9)
+                                }
+                                b"content" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier10)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::option::Option<Markdown>> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::option::Option<bool>> =
@@ -10902,78 +11374,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["name", "description", "externalDocs"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"name\", \"description\", \"externalDocs\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "externalDocs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"externalDocs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -11040,6 +11440,95 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["name", "description", "externalDocs"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"name\", \"description\", \"externalDocs\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "externalDocs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"externalDocs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::option::Option<Markdown>> =
@@ -11218,78 +11707,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["$ref", "summary", "description"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"$ref\", \"summary\", \"description\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "summary" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"summary" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -11356,6 +11773,95 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["$ref", "summary", "description"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"$ref\", \"summary\", \"description\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"$ref" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"summary" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
@@ -11519,74 +12025,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["propertyName", "mapping"];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"propertyName\", \"mapping\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "propertyName" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "mapping" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"propertyName" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"mapping" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -11643,6 +12081,90 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &["propertyName", "mapping"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"propertyName\", \"mapping\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "propertyName" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                "mapping" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"propertyName" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
+                                }
+                                b"mapping" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<
@@ -11910,105 +12432,6 @@ pub mod openapi {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &[
-                "type",
-                "description",
-                "name",
-                "scheme",
-                "bearerFormat",
-                "flows",
-                "openIdConnectUrl",
-            ];
-            #[doc(hidden)]
-            const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"type\", \"description\", \"name\", \"scheme\", \"bearerFormat\", \"flows\", \"openIdConnectUrl\"]";
-            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-            #[doc(hidden)]
-            enum __Identifier {
-                __Identifier0,
-                __Identifier1,
-                __Identifier2,
-                __Identifier3,
-                __Identifier4,
-                __Identifier5,
-                __Identifier6,
-                __Unknown,
-            }
-            #[doc(hidden)]
-            struct __IdentifierVisitor;
-            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                type Value = __Identifier;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                }
-                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        "type" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        "description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        "name" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        "scheme" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        "bearerFormat" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        "flows" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        "openIdConnectUrl" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier6)
-                        }
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-                fn visit_bytes<__E>(
-                    self,
-                    __value: &[u8],
-                ) -> ::core::result::Result<Self::Value, __E>
-                where
-                    __E: __serde::de::Error,
-                {
-                    match __value {
-                        b"type" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                        b"description" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                        b"name" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                        b"scheme" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                        b"bearerFormat" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                        b"flows" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                        b"openIdConnectUrl" => {
-                            ::core::result::Result::Ok(__Identifier::__Identifier6)
-                        }
-                        _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                    }
-                }
-            }
-            impl<'de> __serde::Deserialize<'de> for __Identifier {
-                #[inline]
-                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
-                where
-                    __D: __serde::Deserializer<'de>,
-                {
-                    __serde::Deserializer::deserialize_identifier(
-                        __deserializer,
-                        __IdentifierVisitor,
-                    )
-                }
-            }
-            #[doc(hidden)]
             struct __Visitor {
                 __phantom_vars: ::core::marker::PhantomData<fn(&())>,
             }
@@ -12123,6 +12546,123 @@ pub mod openapi {
                 where
                     __A: __serde::de::MapAccess<'de>,
                 {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "type",
+                        "description",
+                        "name",
+                        "scheme",
+                        "bearerFormat",
+                        "flows",
+                        "openIdConnectUrl",
+                    ];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"type\", \"description\", \"name\", \"scheme\", \"bearerFormat\", \"flows\", \"openIdConnectUrl\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Identifier2,
+                        __Identifier3,
+                        __Identifier4,
+                        __Identifier5,
+                        __Identifier6,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "type" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                "name" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                "scheme" => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                                "bearerFormat" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                "flows" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                "openIdConnectUrl" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"type" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"description" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"name" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                b"scheme" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"bearerFormat" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                b"flows" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                b"openIdConnectUrl" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
                     let mut __field0: ::core::option::Option<::std::string::String> =
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::option::Option<Markdown>> =
