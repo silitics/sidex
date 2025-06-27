@@ -28,15 +28,6 @@ impl From<serde_json::Value> for Any {
     }
 }
 
-impl SchemaObject {
-    pub fn set_extension<V: Serialize>(&mut self, name: &str, value: V) {
-        let value = Any::from(serde_json::to_value(value).unwrap());
-        self.extensions
-            .get_or_insert_with(Default::default)
-            .insert(name.to_owned(), value);
-    }
-}
-
 impl From<SchemaObject> for Schema {
     fn from(value: SchemaObject) -> Self {
         Schema::Object(value)

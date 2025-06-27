@@ -137,9 +137,10 @@ fn make_schema_ref<S: AsRef<str>>(string: S) -> SchemaObject {
 }
 
 fn make_schema_var<S: AsRef<str>>(name: S) -> TypeSchema {
-    let schema = SchemaObject::new().with_extensions(Some(indexmap! {
-        "x-sidex-var".to_owned() => Any::String(name.as_ref().to_owned()),
-    }));
+    let schema = SchemaObject::new();
+    // .with_extensions(Some(indexmap! {
+    //     "x-sidex-var".to_owned() => Any::String(name.as_ref().to_owned()),
+    // }));
     TypeSchema {
         name: "A-TYPE-VARIABLE".to_owned(),
         use_schema: schema.clone(),

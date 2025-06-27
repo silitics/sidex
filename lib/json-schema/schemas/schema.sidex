@@ -95,9 +95,9 @@ record SchemaObject {
     #[json(inline)]
     #[rust(box)]
     object_keywords?: ObjectKeywords,
-    /// Schema extensions.
-    #[json(inline)]
-    extensions?: [string: Any],
+    // /// Schema extensions.
+    // #[json(inline)]
+    // extensions?: [string: Any],
 }
 
 /// Types for the `type` keyword.

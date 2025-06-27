@@ -537,8 +537,6 @@ pub mod schema {
         pub array_keywords: ::std::option::Option<::std::boxed::Box<ArrayKeywords>>,
         #[doc = "Keywords applying to objects.\n"]
         pub object_keywords: ::std::option::Option<::std::boxed::Box<ObjectKeywords>>,
-        #[doc = "Schema extensions.\n"]
-        pub extensions: ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
     }
     impl SchemaObject {
         #[doc = "Creates a new [`SchemaObject`]."]
@@ -557,7 +555,6 @@ pub mod schema {
                 string_keywords: ::std::default::Default::default(),
                 array_keywords: ::std::default::Default::default(),
                 object_keywords: ::std::default::Default::default(),
-                extensions: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `id`."]
@@ -750,22 +747,6 @@ pub mod schema {
             self.object_keywords = object_keywords;
             self
         }
-        #[doc = "Sets the value of `extensions`."]
-        pub fn set_extensions(
-            &mut self,
-            extensions: ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
-        ) -> &mut Self {
-            self.extensions = extensions;
-            self
-        }
-        #[doc = "Sets the value of `extensions`."]
-        pub fn with_extensions(
-            mut self,
-            extensions: ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
-        ) -> Self {
-            self.extensions = extensions;
-            self
-        }
     }
     impl ::std::default::Default for SchemaObject {
         fn default() -> Self {
@@ -779,7 +760,7 @@ pub mod schema {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "SchemaObject", 14usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "SchemaObject", 13usize)?;
             __record.serialize_optional_field("$id", ::core::option::Option::as_ref(&self.id))?;
             __record.serialize_optional_field(
                 "type",
@@ -809,7 +790,6 @@ pub mod schema {
             __record.serialize_inlined_field("stringKeywords", &self.string_keywords)?;
             __record.serialize_inlined_field("arrayKeywords", &self.array_keywords)?;
             __record.serialize_inlined_field("objectKeywords", &self.object_keywords)?;
-            __record.serialize_inlined_field("extensions", &self.extensions)?;
             __record.end()
         }
     }
@@ -847,7 +827,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     0usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -861,7 +841,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     1usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -875,7 +855,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     2usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -889,7 +869,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     3usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -903,7 +883,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     4usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -917,7 +897,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     5usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -931,7 +911,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     6usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -945,7 +925,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     7usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -959,7 +939,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     8usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -973,7 +953,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     9usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -987,7 +967,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     10usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -1001,7 +981,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     11usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -1015,21 +995,7 @@ pub mod schema {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(
                                     12usize,
-                                    &"record with 14 fields",
-                                ),
-                            );
-                        }
-                    };
-                    let __field13 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<indexmap::IndexMap<::std::string::String, Any>>,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(
-                                    13usize,
-                                    &"record with 14 fields",
+                                    &"record with 13 fields",
                                 ),
                             );
                         }
@@ -1048,7 +1014,6 @@ pub mod schema {
                         string_keywords: __field10,
                         array_keywords: __field11,
                         object_keywords: __field12,
-                        extensions: __field13,
                     })
                 }
                 #[inline]
@@ -1319,9 +1284,6 @@ pub mod schema {
                         object_keywords: __sidex_serde::de::content::deserialize_content_ref(
                             &__content,
                         )?,
-                        extensions: __sidex_serde::de::content::deserialize_content_ref(
-                            &__content,
-                        )?,
                     })
                 }
             }
@@ -1340,7 +1302,6 @@ pub mod schema {
                 "stringKeywords",
                 "arrayKeywords",
                 "objectKeywords",
-                "extensions",
             ];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
