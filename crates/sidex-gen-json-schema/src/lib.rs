@@ -608,7 +608,9 @@ impl Generator for JsonSchemaGenerator {
             }
         }
 
-        let defs = ctx.into_defs();
+        let mut defs = ctx.into_defs();
+
+        defs.sort_by(|k1, _, k2, _| k1.cmp(k2));
 
         let schema_file = job.output.join(format!("schema-defs.json"));
         std::fs::write(schema_file, serde_json::to_string_pretty(&defs)?)?;
