@@ -1,8 +1,8 @@
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use sidex_attrs_json::{
-    JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs, JsonVariantTypeAttrs, OpaqueTypeAttrs,
-    atoms::JsonTaggedAttr,
+    JsonFieldAttrs, JsonOpaqueTypeAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
+    JsonVariantTypeAttrs, atoms::JsonTaggedAttr,
 };
 use sidex_gen::{
     attrs::TryFromAttrs,
@@ -31,7 +31,7 @@ impl Plugin for Types {
                 ctx.resolve_type(def, &typ.aliased)
             }
             ir::DefKind::OpaqueType(_) => {
-                let ty_json_attrs = OpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+                let ty_json_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
                 ty_json_attrs.typ.map_or_else(
                     || TypeExpr::any(),
                     |typ_attr| TypeExpr::union(typ_attr.typ.types.iter().map(TypeExpr::from)),

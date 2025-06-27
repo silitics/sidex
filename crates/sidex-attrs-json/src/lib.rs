@@ -11,12 +11,12 @@ pub mod types;
 
 /// JSON attributes of an opaque type.
 #[derive(Debug, Clone, Default)]
-pub struct OpaqueTypeAttrs {
+pub struct JsonOpaqueTypeAttrs {
     pub typ: Option<atoms::TypeAttr>,
     pub schema: Option<atoms::SchemaAttr>,
 }
 
-impl TryApplyAttr for OpaqueTypeAttrs {
+impl TryApplyAttr for JsonOpaqueTypeAttrs {
     fn try_apply_attr(&mut self, attr: &ir::Attr) -> diagnostics::Result<()> {
         if let Ok(list) = attr.expect_list_with("json") {
             list.args

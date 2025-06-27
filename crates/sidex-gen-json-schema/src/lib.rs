@@ -6,7 +6,8 @@ pub use generated::schema::*;
 use indexmap::{IndexMap, indexmap};
 use serde::{Deserialize, Serialize};
 use sidex_attrs_json::{
-    JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs, JsonVariantTypeAttrs,
+    JsonFieldAttrs, JsonOpaqueTypeAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
+    JsonVariantTypeAttrs, types::JsonType,
 };
 use sidex_gen::{
     Generator,
@@ -368,10 +369,38 @@ impl<'cx> JsonSchemaCtx<'cx> {
     fn opaque_type_schema(
         &mut self,
         instance: &ir::InstanceType,
-        _: &ir::Def,
+        def: &ir::Def,
         _: &ir::OpaqueTypeDef,
     ) -> diagnostics::Result<SchemaObject> {
         let mut json_schema = SchemaObject::new();
+        let json_type_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+        if let Some(typ) = json_type_attrs.typ {
+            let types = typ.typ.types;
+            let mut includes_any = false;
+            json_schema.set_allowed_types(Some(MaybeArray::Array(
+                types
+                    .iter()
+                    .filter_map(|typ| {
+                        Some(match typ {
+                            JsonType::Any => {
+                                includes_any = true;
+                                return None;
+                            }
+                            JsonType::Number => Type::Number,
+                            JsonType::Boolean => Type::Boolean,
+                            JsonType::String => Type::String,
+                            JsonType::Null => Type::Null,
+                            JsonType::Object => Type::Object,
+                            JsonType::Array => Type::Array,
+                        })
+                    })
+                    .collect(),
+            )));
+            if includes_any {
+                json_schema.set_allowed_types(None);
+            }
+            return Ok(json_schema);
+        }
         let name = self.qualified_path(instance);
         match name.as_str() {
             "::core::builtins::Sequence" => {
