@@ -249,6 +249,8 @@ record Tag {
     name: string,
     description?: Markdown,
     external_docs?: ExternalDocumentation,
+    #[json(name = "x-displayName")]
+    display_name?: string,
 }
 
 /// A [Reference Object](https://spec.openapis.org/oas/v3.1.0#reference-object) (4.8.23).
