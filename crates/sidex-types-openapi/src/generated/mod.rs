@@ -11298,6 +11298,8 @@ pub mod openapi {
         pub description: ::std::option::Option<Markdown>,
         #[doc = ""]
         pub external_docs: ::std::option::Option<ExternalDocumentation>,
+        #[doc = ""]
+        pub display_name: ::std::option::Option<::std::string::String>,
     }
     impl Tag {
         #[doc = "Creates a new [`Tag`]."]
@@ -11306,6 +11308,7 @@ pub mod openapi {
                 name,
                 description: ::std::default::Default::default(),
                 external_docs: ::std::default::Default::default(),
+                display_name: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `name`."]
@@ -11347,6 +11350,22 @@ pub mod openapi {
             self.external_docs = external_docs;
             self
         }
+        #[doc = "Sets the value of `display_name`."]
+        pub fn set_display_name(
+            &mut self,
+            display_name: ::std::option::Option<::std::string::String>,
+        ) -> &mut Self {
+            self.display_name = display_name;
+            self
+        }
+        #[doc = "Sets the value of `display_name`."]
+        pub fn with_display_name(
+            mut self,
+            display_name: ::std::option::Option<::std::string::String>,
+        ) -> Self {
+            self.display_name = display_name;
+            self
+        }
     }
     #[automatically_derived]
     impl __serde::Serialize for Tag {
@@ -11355,7 +11374,7 @@ pub mod openapi {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "Tag", 3usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Tag", 4usize)?;
             __record.serialize_field("name", &self.name)?;
             __record.serialize_optional_field(
                 "description",
@@ -11364,6 +11383,10 @@ pub mod openapi {
             __record.serialize_optional_field(
                 "externalDocs",
                 ::core::option::Option::as_ref(&self.external_docs),
+            )?;
+            __record.serialize_optional_field(
+                "x-displayName",
+                ::core::option::Option::as_ref(&self.display_name),
             )?;
             __record.end()
         }
@@ -11400,7 +11423,7 @@ pub mod openapi {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -11411,7 +11434,7 @@ pub mod openapi {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -11422,7 +11445,18 @@ pub mod openapi {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
+                            );
+                        }
+                    };
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
+                        ::std::option::Option<::std::string::String>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
                             );
                         }
                     };
@@ -11430,6 +11464,7 @@ pub mod openapi {
                         name: __field0,
                         description: __field1,
                         external_docs: __field2,
+                        display_name: __field3,
                     })
                 }
                 #[inline]
@@ -11442,16 +11477,16 @@ pub mod openapi {
                 {
                     #[doc(hidden)]
                     const __IDENTIFIERS: &'static [&'static str] =
-                        &["name", "description", "externalDocs"];
+                        &["name", "description", "externalDocs", "x-displayName"];
                     #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"name\", \"description\", \"externalDocs\"]";
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"description\", \"externalDocs\", \"x-displayName\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {
                         __Identifier0,
                         __Identifier1,
                         __Identifier2,
+                        __Identifier3,
                         __Unknown,
                     }
                     #[doc(hidden)]
@@ -11475,6 +11510,7 @@ pub mod openapi {
                                 0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
                                 1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
                                 2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -11493,6 +11529,9 @@ pub mod openapi {
                                 "externalDocs" => {
                                     ::core::result::Result::Ok(__Identifier::__Identifier2)
                                 }
+                                "x-displayName" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -11510,6 +11549,9 @@ pub mod openapi {
                                 }
                                 b"externalDocs" => {
                                     ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
+                                b"x-displayName" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
                                 }
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
@@ -11535,6 +11577,9 @@ pub mod openapi {
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<
                         ::std::option::Option<ExternalDocumentation>,
+                    > = ::core::option::Option::None;
+                    let mut __field3: ::core::option::Option<
+                        ::std::option::Option<::std::string::String>,
                     > = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -11580,6 +11625,20 @@ pub mod openapi {
                                     >(&mut __map)?,
                                 );
                             }
+                            __Identifier::__Identifier3 => {
+                                if ::core::option::Option::is_some(&__field3) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "x-displayName",
+                                        ),
+                                    );
+                                }
+                                __field3 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        ::std::option::Option<::std::string::String>,
+                                    >(&mut __map)?,
+                                );
+                            }
                             _ => {
                                 __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
@@ -11603,15 +11662,21 @@ pub mod openapi {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => ::core::option::Option::None,
                     };
+                    let __field3 = match __field3 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
                     ::core::result::Result::Ok(Tag {
                         name: __field0,
                         description: __field1,
                         external_docs: __field2,
+                        display_name: __field3,
                     })
                 }
             }
             #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["name", "description", "externalDocs"];
+            const __FIELDS: &'static [&'static str] =
+                &["name", "description", "externalDocs", "x-displayName"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Tag",
