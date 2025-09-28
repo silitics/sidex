@@ -138,7 +138,6 @@ impl Generator for RustGenerator {
 
         let mut mod_code = String::new();
         mod_code.push_str("/* GENERATED WITH SIDEX. DO NOT MODIFY! */\n\n");
-        mod_code.push_str("#![allow(warnings)]\n\n");
         mod_code.push_str(
             &generator
                 .generate_bundle_inner(&config, job.unit, job.bundle)?
