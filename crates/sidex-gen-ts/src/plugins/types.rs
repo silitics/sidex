@@ -63,9 +63,13 @@ impl Plugin for Types {
                         TokenStream::default()
                     }
                 });
-                TypeExpr(quote! {
-                    { #( #names #optional : #types ),* }
-                })
+                if names.is_empty() {
+                    TypeExpr(quote! { Record<string, never> })
+                } else {
+                    TypeExpr(quote! {
+                        { #( #names #optional : #types ),* }
+                    })
+                }
             }
             ir::DefKind::VariantType(typ) => {
                 is_nominal = false;
