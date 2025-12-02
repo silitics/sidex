@@ -45,10 +45,8 @@ impl Plugin for Types {
                     .iter()
                     .map(|field| {
                         let json_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
-                        Ok(format_ident!(
-                            "{}",
-                            ty_json_attrs.field_name(field, &json_attrs)
-                        ))
+                        let field_name = ty_json_attrs.field_name(field, &json_attrs);
+                        Ok(quote! { #field_name })
                     })
                     .collect::<Result<Vec<_>>>()?;
                 let types = typ
