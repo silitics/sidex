@@ -537,8 +537,8 @@ Some(
                                                     src: SourceIdx(
                                                         0,
                                                     ),
-                                                    start: 537,
-                                                    end: 548,
+                                                    start: 533,
+                                                    end: 544,
                                                 },
                                             ),
                                         },
@@ -552,8 +552,8 @@ Some(
                                                         src: SourceIdx(
                                                             0,
                                                         ),
-                                                        start: 488,
-                                                        end: 533,
+                                                        start: 484,
+                                                        end: 529,
                                                     },
                                                 ),
                                             },
@@ -574,8 +574,8 @@ Some(
                                                                     src: SourceIdx(
                                                                         0,
                                                                     ),
-                                                                    start: 551,
-                                                                    end: 559,
+                                                                    start: 547,
+                                                                    end: 555,
                                                                 },
                                                             ),
                                                         },

@@ -237,8 +237,8 @@ Some(
                                     src: SourceIdx(
                                         0,
                                     ),
-                                    start: 250,
-                                    end: 258,
+                                    start: 287,
+                                    end: 295,
                                 },
                             ),
                         },
@@ -260,7 +260,141 @@ Some(
                         ],
                     ),
                     vars: [],
-                    attrs: [],
+                    attrs: [
+                        Attr {
+                            kind: List(
+                                AttrList {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: Heap(
+                                                        "rust",
+                                                    ),
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 244,
+                                                            end: 248,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    elements: [
+                                        Attr {
+                                            kind: List(
+                                                AttrList {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: Heap(
+                                                                        "derive",
+                                                                    ),
+                                                                    span: Span(
+                                                                        Span {
+                                                                            src: SourceIdx(
+                                                                                0,
+                                                                            ),
+                                                                            start: 249,
+                                                                            end: 255,
+                                                                        },
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    elements: [
+                                                        Attr {
+                                                            kind: Path(
+                                                                Path {
+                                                                    segments: [
+                                                                        Identifier(
+                                                                            Node {
+                                                                                inner: Heap(
+                                                                                    "PartialEq",
+                                                                                ),
+                                                                                span: Span(
+                                                                                    Span {
+                                                                                        src: SourceIdx(
+                                                                                            0,
+                                                                                        ),
+                                                                                        start: 256,
+                                                                                        end: 265,
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                    is_absolute: false,
+                                                                },
+                                                            ),
+                                                        },
+                                                        Attr {
+                                                            kind: Path(
+                                                                Path {
+                                                                    segments: [
+                                                                        Identifier(
+                                                                            Node {
+                                                                                inner: Heap(
+                                                                                    "Eq",
+                                                                                ),
+                                                                                span: Span(
+                                                                                    Span {
+                                                                                        src: SourceIdx(
+                                                                                            0,
+                                                                                        ),
+                                                                                        start: 267,
+                                                                                        end: 269,
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                    is_absolute: false,
+                                                                },
+                                                            ),
+                                                        },
+                                                        Attr {
+                                                            kind: Path(
+                                                                Path {
+                                                                    segments: [
+                                                                        Identifier(
+                                                                            Node {
+                                                                                inner: Heap(
+                                                                                    "Hash",
+                                                                                ),
+                                                                                span: Span(
+                                                                                    Span {
+                                                                                        src: SourceIdx(
+                                                                                            0,
+                                                                                        ),
+                                                                                        start: 271,
+                                                                                        end: 275,
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                    is_absolute: false,
+                                                                },
+                                                            ),
+                                                        },
+                                                    ],
+                                                },
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ),
+                        },
+                    ],
                     args: [],
                     kind: WrapperType(
                         WrapperTypeDef {
@@ -278,8 +412,8 @@ Some(
                                                             src: SourceIdx(
                                                                 0,
                                                             ),
-                                                            start: 260,
-                                                            end: 264,
+                                                            start: 297,
+                                                            end: 301,
                                                         },
                                                     ),
                                                 },
@@ -306,8 +440,8 @@ Some(
                                     src: SourceIdx(
                                         0,
                                     ),
-                                    start: 338,
-                                    end: 344,
+                                    start: 412,
+                                    end: 418,
                                 },
                             ),
                         },
@@ -321,15 +455,149 @@ Some(
                                         src: SourceIdx(
                                             0,
                                         ),
-                                        start: 294,
-                                        end: 330,
+                                        start: 331,
+                                        end: 367,
                                     },
                                 ),
                             },
                         ],
                     ),
                     vars: [],
-                    attrs: [],
+                    attrs: [
+                        Attr {
+                            kind: List(
+                                AttrList {
+                                    path: Path {
+                                        segments: [
+                                            Identifier(
+                                                Node {
+                                                    inner: Heap(
+                                                        "rust",
+                                                    ),
+                                                    span: Span(
+                                                        Span {
+                                                            src: SourceIdx(
+                                                                0,
+                                                            ),
+                                                            start: 369,
+                                                            end: 373,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                        is_absolute: false,
+                                    },
+                                    elements: [
+                                        Attr {
+                                            kind: List(
+                                                AttrList {
+                                                    path: Path {
+                                                        segments: [
+                                                            Identifier(
+                                                                Node {
+                                                                    inner: Heap(
+                                                                        "derive",
+                                                                    ),
+                                                                    span: Span(
+                                                                        Span {
+                                                                            src: SourceIdx(
+                                                                                0,
+                                                                            ),
+                                                                            start: 374,
+                                                                            end: 380,
+                                                                        },
+                                                                    ),
+                                                                },
+                                                            ),
+                                                        ],
+                                                        is_absolute: false,
+                                                    },
+                                                    elements: [
+                                                        Attr {
+                                                            kind: Path(
+                                                                Path {
+                                                                    segments: [
+                                                                        Identifier(
+                                                                            Node {
+                                                                                inner: Heap(
+                                                                                    "PartialEq",
+                                                                                ),
+                                                                                span: Span(
+                                                                                    Span {
+                                                                                        src: SourceIdx(
+                                                                                            0,
+                                                                                        ),
+                                                                                        start: 381,
+                                                                                        end: 390,
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                    is_absolute: false,
+                                                                },
+                                                            ),
+                                                        },
+                                                        Attr {
+                                                            kind: Path(
+                                                                Path {
+                                                                    segments: [
+                                                                        Identifier(
+                                                                            Node {
+                                                                                inner: Heap(
+                                                                                    "Eq",
+                                                                                ),
+                                                                                span: Span(
+                                                                                    Span {
+                                                                                        src: SourceIdx(
+                                                                                            0,
+                                                                                        ),
+                                                                                        start: 392,
+                                                                                        end: 394,
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                    is_absolute: false,
+                                                                },
+                                                            ),
+                                                        },
+                                                        Attr {
+                                                            kind: Path(
+                                                                Path {
+                                                                    segments: [
+                                                                        Identifier(
+                                                                            Node {
+                                                                                inner: Heap(
+                                                                                    "Hash",
+                                                                                ),
+                                                                                span: Span(
+                                                                                    Span {
+                                                                                        src: SourceIdx(
+                                                                                            0,
+                                                                                        ),
+                                                                                        start: 396,
+                                                                                        end: 400,
+                                                                                    },
+                                                                                ),
+                                                                            },
+                                                                        ),
+                                                                    ],
+                                                                    is_absolute: false,
+                                                                },
+                                                            ),
+                                                        },
+                                                    ],
+                                                },
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ),
+                        },
+                    ],
                     args: [],
                     kind: WrapperType(
                         WrapperTypeDef {
@@ -347,8 +615,8 @@ Some(
                                                             src: SourceIdx(
                                                                 0,
                                                             ),
-                                                            start: 346,
-                                                            end: 350,
+                                                            start: 420,
+                                                            end: 424,
                                                         },
                                                     ),
                                                 },

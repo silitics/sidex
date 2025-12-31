@@ -389,6 +389,233 @@ Some(
             ),
         },
         Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Hash,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 242,
+                    end: 243,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 243,
+                    end: 244,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "rust",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 244,
+                    end: 248,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 248,
+                    end: 249,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "derive",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 249,
+                    end: 255,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 255,
+                    end: 256,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "PartialEq",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 256,
+                    end: 265,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 265,
+                    end: 266,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "Eq",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 267,
+                    end: 269,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 269,
+                    end: 270,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "Hash",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 271,
+                    end: 275,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 275,
+                    end: 276,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 276,
+                    end: 277,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 277,
+                    end: 278,
+                },
+            ),
+        },
+        Token {
             kind: Identifier(
                 Heap(
                     "wrapper",
@@ -399,8 +626,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 242,
-                    end: 249,
+                    start: 279,
+                    end: 286,
                 },
             ),
         },
@@ -415,8 +642,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 250,
-                    end: 258,
+                    start: 287,
+                    end: 295,
                 },
             ),
         },
@@ -432,8 +659,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 258,
-                    end: 259,
+                    start: 295,
+                    end: 296,
                 },
             ),
         },
@@ -448,8 +675,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 260,
-                    end: 264,
+                    start: 297,
+                    end: 301,
                 },
             ),
         },
@@ -463,8 +690,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 266,
-                    end: 293,
+                    start: 303,
+                    end: 330,
                 },
             ),
         },
@@ -478,8 +705,235 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 294,
-                    end: 330,
+                    start: 331,
+                    end: 367,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Hash,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 367,
+                    end: 368,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 368,
+                    end: 369,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "rust",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 369,
+                    end: 373,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 373,
+                    end: 374,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "derive",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 374,
+                    end: 380,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Open(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 380,
+                    end: 381,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "PartialEq",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 381,
+                    end: 390,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 390,
+                    end: 391,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "Eq",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 392,
+                    end: 394,
+                },
+            ),
+        },
+        Token {
+            kind: Punctuation(
+                PunctuationSymbol {
+                    kind: Comma,
+                    is_composed: false,
+                },
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 394,
+                    end: 395,
+                },
+            ),
+        },
+        Token {
+            kind: Identifier(
+                Heap(
+                    "Hash",
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 396,
+                    end: 400,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 400,
+                    end: 401,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Parenthesis,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 401,
+                    end: 402,
+                },
+            ),
+        },
+        Token {
+            kind: Delimiter(
+                Close(
+                    Bracket,
+                ),
+            ),
+            span: Span(
+                Span {
+                    src: SourceIdx(
+                        0,
+                    ),
+                    start: 402,
+                    end: 403,
                 },
             ),
         },
@@ -494,8 +948,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 330,
-                    end: 337,
+                    start: 404,
+                    end: 411,
                 },
             ),
         },
@@ -510,8 +964,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 338,
-                    end: 344,
+                    start: 412,
+                    end: 418,
                 },
             ),
         },
@@ -527,8 +981,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 344,
-                    end: 345,
+                    start: 418,
+                    end: 419,
                 },
             ),
         },
@@ -543,8 +997,8 @@ Some(
                     src: SourceIdx(
                         0,
                     ),
-                    start: 346,
-                    end: 350,
+                    start: 420,
+                    end: 424,
                 },
             ),
         },
