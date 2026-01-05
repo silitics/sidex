@@ -14,6 +14,11 @@
       version = "latest";
       mold.enable = true;
     };
+    javascript ={
+      enable = true;
+      pnpm.enable = true;
+      npm.enable = true;
+    };
     nix = {
       enable = true;
     };

@@ -1,38 +1,36 @@
-lockfileVersion: 5.4
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 importers:
 
-  .:
-    specifiers:
-      prettier: latest
-    devDependencies:
-      prettier: 2.8.1
+  .: {}
 
   examples/todo-list:
-    specifiers:
-      '@sidex/types': workspace:*
-      typescript: ^4.8.4
     dependencies:
-      '@sidex/types': link:../../packages/types
+      '@sidex/types':
+        specifier: workspace:*
+        version: link:../../packages/types
     devDependencies:
-      typescript: 4.9.3
+      typescript:
+        specifier: ^4.8.4
+        version: 4.9.5
 
   packages/types:
-    specifiers:
-      typescript: ^4.8.4
     devDependencies:
-      typescript: 4.9.3
+      typescript:
+        specifier: ^4.8.4
+        version: 4.9.5
 
 packages:
 
-  /prettier/2.8.1:
-    resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
-    engines: {node: '>=10.13.0'}
-    hasBin: true
-    dev: true
-
-  /typescript/4.9.3:
-    resolution: {integrity: sha512-CIfGzTelbKNEnLpLdGFgdyKhG23CKdKgQPOBc+OUNrkJ2vr+KSzsSV5kq5iWhEQbok+quxgGzrAtGWCyU7tHnA==}
+  typescript@4.9.5:
+    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
-    dev: true
+
+snapshots:
+
+  typescript@4.9.5: {}

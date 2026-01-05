@@ -9,12 +9,10 @@
   "scripts": {
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
-  "devDependencies": {
-    "prettier": "latest"
-  },
+  "devDependencies": {},
   "engines": {
-    "npm": ">=8.0.0",
-    "node": ">=18.0.0"
+    "npm": ">=10.0.0",
+    "node": ">=22.0.0"
   },
-  "packageManager": "pnpm@7.17.1"
+  "packageManager": "pnpm@10.26.1"
 }

@@ -145,7 +145,7 @@ export type U32 = Nominal<number, "::std::builtins::u32">
 /**
  * A 64-bit unsigned integer.
  */
-export type U64 = Nominal<string, "::std::builtins::u64">
+export type U64 = Nominal<string | number, "::std::builtins::u64">
 
 /**
  * An unsigned integer.
