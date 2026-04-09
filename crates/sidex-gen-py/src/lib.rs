@@ -484,6 +484,7 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<String> {
     ));
     w.blank();
     w.line("import pydantic  # noqa: F401");
+    w.line("import pydantic_core  # noqa: F401");
 
     let needed_schemas = referenced_schemas(ctx.schema, ctx.bundle_ctx.bundle.idx);
     let mut others: Vec<_> = ctx
@@ -618,7 +619,7 @@ fn generate_opaque(def: &ir::Def, resolved: &OpaqueResolvedType, w: &mut PyWrite
             write_docstring(def, w);
             w.blank();
             w.line("@classmethod");
-            w.line("def __get_pydantic_core_schema__(cls, source_type, handler):");
+            w.line("def __get_pydantic_core_schema__(cls, source_type: type, handler: pydantic.GetCoreSchemaHandler) -> pydantic_core.CoreSchema:");
             w.indent();
             w.line(&format!("return handler({base})"));
             w.dedent();
@@ -683,14 +684,14 @@ fn generate_record_field(
         let type_str = format!("{field_type} | None");
         if needs_alias {
             w.line(&format!(
-                "{py_name}: {type_str} = pydantic.Field(default=None, alias=\"{json_name}\")"
+                "{py_name}: {type_str} = pydantic.Field(default=None, validation_alias=\"{json_name}\", serialization_alias=\"{json_name}\")"
             ));
         } else {
             w.line(&format!("{py_name}: {type_str} = None"));
         }
     } else if needs_alias {
         w.line(&format!(
-            "{py_name}: {field_type} = pydantic.Field(alias=\"{json_name}\")"
+            "{py_name}: {field_type} = pydantic.Field(validation_alias=\"{json_name}\", serialization_alias=\"{json_name}\")"
         ));
     } else {
         w.line(&format!("{py_name}: {field_type}"));
@@ -760,7 +761,7 @@ fn generate_variant_inner(
                     w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
                     w.blank();
                     w.line(&format!(
-                        "value: {inner} = pydantic.Field(alias=\"{json_name}\")"
+                        "value: {inner} = pydantic.Field(validation_alias=\"{json_name}\", serialization_alias=\"{json_name}\")"
                     ));
                     w.dedent();
                 } else {
@@ -939,7 +940,7 @@ fn write_tag_field(
 ) {
     if needs_alias {
         w.line(&format!(
-            "{py_name}: Literal[\"{value}\"] = pydantic.Field(\"{value}\", alias=\"{json_name}\")"
+            "{py_name}: Literal[\"{value}\"] = pydantic.Field(\"{value}\", validation_alias=\"{json_name}\", serialization_alias=\"{json_name}\")"
         ));
     } else {
         w.line(&format!("{py_name}: Literal[\"{value}\"] = \"{value}\""));
@@ -955,7 +956,7 @@ fn write_content_field(
 ) {
     if needs_alias {
         w.line(&format!(
-            "{py_name}: {type_expr} = pydantic.Field(alias=\"{json_name}\")"
+            "{py_name}: {type_expr} = pydantic.Field(validation_alias=\"{json_name}\", serialization_alias=\"{json_name}\")"
         ));
     } else {
         w.line(&format!("{py_name}: {type_expr}"));
