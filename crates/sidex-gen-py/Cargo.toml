@@ -1,0 +1,15 @@
+[package]
+name = "sidex-gen-py"
+description = "Sidex code generation for Python."
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+sidex-gen = { path = "../sidex-gen" }
+sidex-attrs-json = { path = "../sidex-attrs-json" }
+serde = "1"
+serde_json = "1"

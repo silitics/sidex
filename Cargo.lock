@@ -1373,6 +1373,7 @@ dependencies = [
  "sidex-gen-ir",
  "sidex-gen-json-schema",
  "sidex-gen-openapi",
+ "sidex-gen-py",
  "sidex-gen-rs",
  "sidex-gen-ts",
  "toml",
@@ -1465,6 +1466,16 @@ dependencies = [
  "sidex-serde",
  "sidex-types-json-schema",
  "sidex-types-openapi",
+]
+
+[[package]]
+name = "sidex-gen-py"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sidex-attrs-json",
+ "sidex-gen",
 ]
 
 [[package]]

@@ -21,6 +21,11 @@ doc:
 # Run all tests.
 test:
     cargo test
+    just test-py
+
+# Run Python integration tests for the Python backend.
+test-py:
+    cd tests/py && uv run pytest -v
 
 regenerate-ir:
     cd lib/meta && cargo run --bin sidex -- generate rust ../../crates/sidex-ir/src/generated

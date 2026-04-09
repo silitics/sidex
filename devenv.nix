@@ -19,6 +19,10 @@
       pnpm.enable = true;
       npm.enable = true;
     };
+    python = {
+      enable = true;
+      uv.enable = true;
+    };
     nix = {
       enable = true;
     };
