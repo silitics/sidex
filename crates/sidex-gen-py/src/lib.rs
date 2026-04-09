@@ -444,7 +444,7 @@ fn generate_init(ctx: &BundleCtx) -> String {
     w.line("for _attr in dir(_mod):");
     w.indent();
     w.line("_obj = getattr(_mod, _attr)");
-    w.line("if isinstance(_obj, type) and issubclass(_obj, pydantic.BaseModel):");
+    w.line("if isinstance(_obj, type) and issubclass(_obj, pydantic.BaseModel) and not _obj.__pydantic_complete__:");
     w.indent();
     w.line("_obj.model_rebuild()");
     w.dedent();
@@ -832,15 +832,17 @@ fn generate_variant_inner(
     write_doc_comments(def, w);
 
     let union_expr = union_members.join(" | ");
-    match ty_json.tagged {
-        JsonTaggedAttr::Internally | JsonTaggedAttr::Adjacently => {
-            w.line(&format!(
-                "type {name}{params} = Annotated[{union_expr}, pydantic.Discriminator(\"{tag_py}\")]"
-            ));
-        }
-        _ => {
-            w.line(&format!("type {name}{params} = {union_expr}"));
-        }
+    let use_discriminator = union_members.len() > 1
+        && matches!(
+            ty_json.tagged,
+            JsonTaggedAttr::Internally | JsonTaggedAttr::Adjacently
+        );
+    if use_discriminator {
+        w.line(&format!(
+            "type {name}{params} = Annotated[{union_expr}, pydantic.Discriminator(\"{tag_py}\")]"
+        ));
+    } else {
+        w.line(&format!("type {name}{params} = {union_expr}"));
     }
 
     Ok(())
