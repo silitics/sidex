@@ -646,17 +646,8 @@ fn generate_record(
 
     let mut has_preamble = write_docstring(def, w);
 
-    let any_alias = rec.fields.iter().any(|field| {
-        let json_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs).unwrap_or_default();
-        let json_name = ty_json.field_name(field, &json_attrs);
-        let py_name = sanitize_py_name(&to_snake_case(field.name.as_str()));
-        py_name != json_name
-    });
-
-    if any_alias {
-        w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
-        has_preamble = true;
-    }
+    w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
+    has_preamble = true;
 
     if rec.fields.is_empty() {
         if !has_preamble {
@@ -766,7 +757,7 @@ fn generate_variant_inner(
                     let inner = ctx.resolve_type(def, typ);
                     w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
                     w.indent();
-                    w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
+                    w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
                     w.blank();
                     w.line(&format!(
                         "value: {inner} = pydantic.Field(alias=\"{json_name}\")"
@@ -872,10 +863,8 @@ fn generate_internally_tagged_variant(
             let base = ctx.resolve_type(def, &resolved);
             w.line(&format!("class {class_name}({base}):"));
             w.indent();
-            if tag_needs_alias {
-                w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
-                w.blank();
-            }
+            w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
+            w.blank();
             write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
             w.dedent();
         } else {
@@ -887,10 +876,8 @@ fn generate_internally_tagged_variant(
 
             w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
             w.indent();
-            if tag_needs_alias || content_alias {
-                w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
-                w.blank();
-            }
+            w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
+            w.blank();
             write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
             write_content_field(w, &content_py, &content_json, &inner, content_alias);
             w.dedent();
@@ -899,10 +886,8 @@ fn generate_internally_tagged_variant(
         let gen_bases = generic_bases_for(used_vars);
         w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
         w.indent();
-        if tag_needs_alias {
-            w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
-            w.blank();
-        }
+        w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
+        w.blank();
         write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
         w.dedent();
     }
@@ -930,12 +915,9 @@ fn generate_adjacently_tagged_variant(
     let content_json = ty_json.content_field_name(json_attrs);
     let content_py = sanitize_py_name(&to_snake_case(&content_json));
     let content_alias = content_py != content_json;
-    let any_alias = tag_needs_alias || (variant.typ.is_some() && content_alias);
 
-    if any_alias {
-        w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
-        w.blank();
-    }
+    w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
+    w.blank();
 
     write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
 
