@@ -578,9 +578,13 @@ fn generate_opaque(def: &ir::Def, resolved: &OpaqueResolvedType, w: &mut PyWrite
         OpaqueResolvedType::Wrapper(base) => {
             w.line(&format!("class {name}({base}):"));
             w.indent();
-            if !write_docstring(def, w) {
-                w.line("...");
-            }
+            write_docstring(def, w);
+            w.blank();
+            w.line("@classmethod");
+            w.line("def __get_pydantic_core_schema__(cls, source_type, handler):");
+            w.indent();
+            w.line(&format!("return handler({base})"));
+            w.dedent();
             w.dedent();
         }
         OpaqueResolvedType::Alias(aliased) => {
