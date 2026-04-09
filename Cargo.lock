@@ -1338,6 +1338,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-attrs-py"
+version = "0.1.0"
+dependencies = [
+ "sidex-gen",
+]
+
+[[package]]
 name = "sidex-attrs-rust"
 version = "0.1.0"
 dependencies = [
@@ -1475,6 +1482,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sidex-attrs-json",
+ "sidex-attrs-py",
  "sidex-gen",
 ]
 

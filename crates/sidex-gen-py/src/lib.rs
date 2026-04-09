@@ -4,9 +4,10 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 use sidex_attrs_json::{
-    JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs, JsonVariantTypeAttrs,
-    atoms::JsonTaggedAttr,
+    JsonFieldAttrs, JsonOpaqueTypeAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
+    JsonVariantTypeAttrs, atoms::JsonTaggedAttr, types::JsonType,
 };
+use sidex_attrs_py::PyOpaqueTypeAttrs;
 use sidex_gen::{
     Generator, Job,
     attrs::TryFromAttrs,
@@ -298,6 +299,73 @@ fn escape_docstring(s: &str) -> String {
         .replace("\"\"\"", "\\\"\\\"\\\"")
 }
 
+/// Resolved Python type for an opaque type definition.
+enum OpaqueResolvedType {
+    /// Subclassable base type (e.g., `str`, `float`, `uuid.UUID`).
+    Wrapper(String),
+    /// Type alias expression (e.g., `pydantic.JsonValue`, `dict[str, pydantic.JsonValue]`).
+    Alias(String),
+}
+
+/// Maps a single JSON type to a Python type string and whether it is subclassable.
+fn json_type_to_py(ty: &JsonType) -> OpaqueResolvedType {
+    match ty {
+        JsonType::String => OpaqueResolvedType::Wrapper("str".into()),
+        JsonType::Number => OpaqueResolvedType::Wrapper("float".into()),
+        JsonType::Boolean => OpaqueResolvedType::Wrapper("int".into()),
+        JsonType::Object => OpaqueResolvedType::Alias("dict[str, pydantic.JsonValue]".into()),
+        JsonType::Array => OpaqueResolvedType::Alias("list[pydantic.JsonValue]".into()),
+        JsonType::Null => OpaqueResolvedType::Alias("None".into()),
+        JsonType::Any => OpaqueResolvedType::Alias("pydantic.JsonValue".into()),
+    }
+}
+
+/// Resolves the Python type for an opaque type definition.
+fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
+    let py_attrs = PyOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+    if let Some(typ) = py_attrs.typ {
+        return Ok(Some(OpaqueResolvedType::Wrapper(typ.path)));
+    }
+
+    let json_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+    if let Some(typ_attr) = json_attrs.typ {
+        let types: Vec<_> = typ_attr.typ.types.iter().collect();
+        if types.len() == 1 {
+            return Ok(Some(json_type_to_py(types[0])));
+        }
+        // Union of JSON types — cannot subclass, emit a type alias.
+        let parts: Vec<_> = types
+            .iter()
+            .map(|ty| match json_type_to_py(ty) {
+                OpaqueResolvedType::Wrapper(s) | OpaqueResolvedType::Alias(s) => s,
+            })
+            .collect();
+        return Ok(Some(OpaqueResolvedType::Alias(parts.join(" | "))));
+    }
+
+    Ok(None)
+}
+
+/// Collects module imports required by opaque types with explicit `#[py(type = ...)]`.
+fn collect_opaque_imports(schema: &ir::Schema) -> Result<Vec<String>> {
+    let mut modules = Vec::new();
+    for def in &schema.defs {
+        if let ir::DefKind::OpaqueType(_) = &def.kind {
+            let py_attrs = PyOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+            if let Some(typ) = py_attrs.typ {
+                if let Some(dot) = typ.path.rfind('.') {
+                    let module = &typ.path[..dot];
+                    if !modules.contains(&module.to_owned()) {
+                        modules.push(module.to_owned());
+                    }
+                }
+            }
+        }
+    }
+    modules.sort();
+    Ok(modules)
+}
+
 /// Implements [`Generator`] for Python.
 pub struct PyGenerator;
 
@@ -381,9 +449,7 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<String> {
         typing_imports.join(", ")
     ));
     w.blank();
-    w.line(
-        "from pydantic import BaseModel, ConfigDict, Discriminator, Field, RootModel  # noqa: F401",
-    );
+    w.line("import pydantic  # noqa: F401");
 
     let needed_schemas = referenced_schemas(ctx.schema, ctx.bundle_ctx.bundle.idx);
     let mut others: Vec<_> = ctx
@@ -407,6 +473,14 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<String> {
         w.blank();
         for (_, path) in &externals {
             w.line(&format!("import {path}  # noqa: F401"));
+        }
+    }
+
+    let opaque_imports = collect_opaque_imports(ctx.schema)?;
+    if !opaque_imports.is_empty() {
+        w.blank();
+        for module in &opaque_imports {
+            w.line(&format!("import {module}  # noqa: F401"));
         }
     }
 
@@ -445,7 +519,13 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def, w: &mut PyWriter) -> Result<()> 
             write_doc_comments(def, w);
             w.line(&format!("type {name}{params} = {aliased}"));
         }
-        ir::DefKind::OpaqueType(_) => {}
+        ir::DefKind::OpaqueType(_) => {
+            if let Some(resolved) = resolve_opaque_type(def)? {
+                w.blank();
+                w.blank();
+                generate_opaque(def, &resolved, w);
+            }
+        }
         ir::DefKind::RecordType(rec) => {
             w.blank();
             w.blank();
@@ -492,6 +572,24 @@ fn write_docstring(def: &ir::Def, w: &mut PyWriter) -> bool {
     false
 }
 
+fn generate_opaque(def: &ir::Def, resolved: &OpaqueResolvedType, w: &mut PyWriter) {
+    let name = def.name.as_str();
+    match resolved {
+        OpaqueResolvedType::Wrapper(base) => {
+            w.line(&format!("class {name}({base}):"));
+            w.indent();
+            if !write_docstring(def, w) {
+                w.line("...");
+            }
+            w.dedent();
+        }
+        OpaqueResolvedType::Alias(aliased) => {
+            write_doc_comments(def, w);
+            w.line(&format!("type {name} = {aliased}"));
+        }
+    }
+}
+
 fn generate_record(
     ctx: &SchemaCtx,
     def: &ir::Def,
@@ -502,7 +600,7 @@ fn generate_record(
     let generics = generic_bases(def);
     let ty_json = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
 
-    w.line(&format!("class {name}(BaseModel{generics}):"));
+    w.line(&format!("class {name}(pydantic.BaseModel{generics}):"));
     w.indent();
 
     let mut has_preamble = write_docstring(def, w);
@@ -515,7 +613,7 @@ fn generate_record(
     });
 
     if any_alias {
-        w.line("model_config = ConfigDict(populate_by_name=True)");
+        w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
         has_preamble = true;
     }
 
@@ -553,14 +651,14 @@ fn generate_record_field(
         let type_str = format!("{field_type} | None");
         if needs_alias {
             w.line(&format!(
-                "{py_name}: {type_str} = Field(default=None, alias=\"{json_name}\")"
+                "{py_name}: {type_str} = pydantic.Field(default=None, alias=\"{json_name}\")"
             ));
         } else {
             w.line(&format!("{py_name}: {type_str} = None"));
         }
     } else if needs_alias {
         w.line(&format!(
-            "{py_name}: {field_type} = Field(alias=\"{json_name}\")"
+            "{py_name}: {field_type} = pydantic.Field(alias=\"{json_name}\")"
         ));
     } else {
         w.line(&format!("{py_name}: {field_type}"));
@@ -610,7 +708,7 @@ fn generate_variant_inner(
                     // a model so that adding data later is non-breaking.
                     let gen_bases = generic_bases_for(&used_vars);
                     let subscript = subscript_for(&used_vars);
-                    w.line(&format!("class {class_name}(RootModel[Literal[\"{json_name}\"]]{gen_bases}):"));
+                    w.line(&format!("class {class_name}(pydantic.RootModel[Literal[\"{json_name}\"]]{gen_bases}):"));
                     w.indent();
                     w.line("pass");
                     w.dedent();
@@ -625,18 +723,18 @@ fn generate_variant_inner(
 
                 if let Some(typ) = &variant.typ {
                     let inner = ctx.resolve_type(def, typ);
-                    w.line(&format!("class {class_name}(BaseModel{gen_bases}):"));
+                    w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
                     w.indent();
-                    w.line("model_config = ConfigDict(populate_by_name=True)");
+                    w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
                     w.blank();
                     w.line(&format!(
-                        "value: {inner} = Field(alias=\"{json_name}\")"
+                        "value: {inner} = pydantic.Field(alias=\"{json_name}\")"
                     ));
                     w.dedent();
                 } else {
                     // Unit variant — JSON is the bare string "VariantName".
                     w.line(&format!(
-                        "class {class_name}(RootModel[Literal[\"{json_name}\"]]{gen_bases}):"
+                        "class {class_name}(pydantic.RootModel[Literal[\"{json_name}\"]]{gen_bases}):"
                     ));
                     w.indent();
                     w.line("pass");
@@ -696,7 +794,7 @@ fn generate_variant_inner(
     match ty_json.tagged {
         JsonTaggedAttr::Internally | JsonTaggedAttr::Adjacently => {
             w.line(&format!(
-                "type {name}{params} = Annotated[{union_expr}, Discriminator(\"{tag_py}\")]"
+                "type {name}{params} = Annotated[{union_expr}, pydantic.Discriminator(\"{tag_py}\")]"
             ));
         }
         _ => {
@@ -732,7 +830,7 @@ fn generate_internally_tagged_variant(
             w.line(&format!("class {class_name}({base}):"));
             w.indent();
             if tag_needs_alias {
-                w.line("model_config = ConfigDict(populate_by_name=True)");
+                w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
                 w.blank();
             }
             write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
@@ -744,10 +842,10 @@ fn generate_internally_tagged_variant(
             let inner = ctx.resolve_type(def, typ);
             let gen_bases = generic_bases_for(used_vars);
 
-            w.line(&format!("class {class_name}(BaseModel{gen_bases}):"));
+            w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
             w.indent();
             if tag_needs_alias || content_alias {
-                w.line("model_config = ConfigDict(populate_by_name=True)");
+                w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
                 w.blank();
             }
             write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
@@ -756,10 +854,10 @@ fn generate_internally_tagged_variant(
         }
     } else {
         let gen_bases = generic_bases_for(used_vars);
-        w.line(&format!("class {class_name}(BaseModel{gen_bases}):"));
+        w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
         w.indent();
         if tag_needs_alias {
-            w.line("model_config = ConfigDict(populate_by_name=True)");
+            w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
             w.blank();
         }
         write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
@@ -783,7 +881,7 @@ fn generate_adjacently_tagged_variant(
     w: &mut PyWriter,
 ) -> Result<()> {
     let gen_bases = generic_bases_for(used_vars);
-    w.line(&format!("class {class_name}(BaseModel{gen_bases}):"));
+    w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
     w.indent();
 
     let content_json = ty_json.content_field_name(json_attrs);
@@ -792,7 +890,7 @@ fn generate_adjacently_tagged_variant(
     let any_alias = tag_needs_alias || (variant.typ.is_some() && content_alias);
 
     if any_alias {
-        w.line("model_config = ConfigDict(populate_by_name=True)");
+        w.line("model_config = pydantic.ConfigDict(populate_by_name=True)");
         w.blank();
     }
 
@@ -816,7 +914,7 @@ fn write_tag_field(
 ) {
     if needs_alias {
         w.line(&format!(
-            "{py_name}: Literal[\"{value}\"] = Field(\"{value}\", alias=\"{json_name}\")"
+            "{py_name}: Literal[\"{value}\"] = pydantic.Field(\"{value}\", alias=\"{json_name}\")"
         ));
     } else {
         w.line(&format!("{py_name}: Literal[\"{value}\"] = \"{value}\""));
@@ -832,7 +930,7 @@ fn write_content_field(
 ) {
     if needs_alias {
         w.line(&format!(
-            "{py_name}: {type_expr} = Field(alias=\"{json_name}\")"
+            "{py_name}: {type_expr} = pydantic.Field(alias=\"{json_name}\")"
         ));
     } else {
         w.line(&format!("{py_name}: {type_expr}"));
