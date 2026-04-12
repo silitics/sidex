@@ -104,7 +104,7 @@ impl<'cx> SchemaCtx<'cx> {
                     if instance.schema == self.schema.idx {
                         instance_def.name.as_str().to_owned()
                     } else {
-                        format!("{}.{}", schema.name, instance_def.name.as_str())
+                        format!("_schema_{}.{}", schema.name, instance_def.name.as_str())
                     }
                 } else {
                     let ext = self
@@ -438,18 +438,19 @@ fn generate_init(ctx: &BundleCtx) -> String {
         .map(|s| format!("\"{0}\": {0}", s.name))
         .collect::<Vec<_>>()
         .join(", ")));
-    w.line(&format!("for _mod in [{}]:", schema_list));
+    w.line(&format!("for _m in [{}]:", schema_list));
     w.indent();
     w.line("for _name, _other in _schemas.items():");
     w.indent();
-    w.line("if not hasattr(_mod, _name):");
+    w.line("_alias = f\"_schema_{_name}\"");
+    w.line("if not hasattr(_m, _alias):");
     w.indent();
-    w.line("setattr(_mod, _name, _other)");
+    w.line("setattr(_m, _alias, _other)");
     w.dedent();
     w.dedent();
-    w.line("for _attr in dir(_mod):");
+    w.line("for _attr in dir(_m):");
     w.indent();
-    w.line("_obj = getattr(_mod, _attr)");
+    w.line("_obj = getattr(_m, _attr)");
     w.line("if isinstance(_obj, type) and issubclass(_obj, pydantic.BaseModel) and not _obj.__pydantic_complete__:");
     w.indent();
     w.line("_obj.model_rebuild()");
@@ -506,7 +507,10 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<String> {
         w.line("if TYPE_CHECKING:");
         w.indent();
         for schema in &others {
-            w.line(&format!("from . import {}  # noqa: F401", schema.name));
+            w.line(&format!(
+                "from . import {} as _schema_{}  # noqa: F401",
+                schema.name, schema.name
+            ));
         }
         w.dedent();
     }
