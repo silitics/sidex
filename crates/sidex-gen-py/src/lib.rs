@@ -226,7 +226,10 @@ fn collect_referenced_schemas(
     match &typ.kind {
         ir::TypeKind::TypeVar(_) => {}
         ir::TypeKind::Instance(inst) => {
-            if inst.bundle == bundle_idx && inst.schema != current_schema && !out.contains(&inst.schema) {
+            if inst.bundle == bundle_idx
+                && inst.schema != current_schema
+                && !out.contains(&inst.schema)
+            {
                 out.push(inst.schema);
             }
             for sub in &inst.subst {
@@ -285,9 +288,9 @@ fn subscript_for(var_names: &[String]) -> String {
 fn sanitize_py_name(name: &str) -> String {
     match name {
         "False" | "None" | "True" | "and" | "as" | "assert" | "async" | "await" | "break"
-        | "class" | "continue" | "def" | "del" | "elif" | "else" | "except" | "finally"
-        | "for" | "from" | "global" | "if" | "import" | "in" | "is" | "lambda" | "nonlocal"
-        | "not" | "or" | "pass" | "raise" | "return" | "try" | "while" | "with" | "yield" => {
+        | "class" | "continue" | "def" | "del" | "elif" | "else" | "except" | "finally" | "for"
+        | "from" | "global" | "if" | "import" | "in" | "is" | "lambda" | "nonlocal" | "not"
+        | "or" | "pass" | "raise" | "return" | "try" | "while" | "with" | "yield" => {
             format!("{name}_")
         }
         _ => name.to_owned(),
@@ -295,8 +298,7 @@ fn sanitize_py_name(name: &str) -> String {
 }
 
 fn escape_docstring(s: &str) -> String {
-    s.replace('\\', "\\\\")
-        .replace("\"\"\"", "\\\"\\\"\\\"")
+    s.replace('\\', "\\\\").replace("\"\"\"", "\\\"\\\"\\\"")
 }
 
 fn escape_string_literal(s: &str) -> String {
@@ -428,17 +430,15 @@ fn generate_init(ctx: &BundleCtx) -> String {
     // Inject cross-schema references into each module's namespace so that
     // pydantic can resolve forward references at model_rebuild time.
     w.blank();
-    let schema_list = schemas
-        .iter()
-        .map(|s| s.name.as_str())
-        .collect::<Vec<_>>()
-        .join(", ");
-    w.line(&format!("_schemas = {{{}}}", schemas
-        .iter()
-        .map(|s| format!("\"{0}\": {0}", s.name))
-        .collect::<Vec<_>>()
-        .join(", ")));
-    w.line(&format!("for _m in [{}]:", schema_list));
+    w.line(&format!(
+        "_schemas = {{{}}}",
+        schemas
+            .iter()
+            .map(|s| format!("\"{0}\": {0}", s.name))
+            .collect::<Vec<_>>()
+            .join(", ")
+    ));
+    w.line("for _m in _schemas.values():");
     w.indent();
     w.line("for _name, _other in _schemas.items():");
     w.indent();
@@ -448,6 +448,9 @@ fn generate_init(ctx: &BundleCtx) -> String {
     w.line("setattr(_m, _alias, _other)");
     w.dedent();
     w.dedent();
+    w.dedent();
+    w.line("for _m in _schemas.values():");
+    w.indent();
     w.line("for _attr in dir(_m):");
     w.indent();
     w.line("_obj = getattr(_m, _attr)");
@@ -692,7 +695,11 @@ fn generate_record_field(
 
     let description = field.docs.as_ref().and_then(|docs| {
         let text = docs.text.trim();
-        if text.is_empty() { None } else { Some(escape_string_literal(text)) }
+        if text.is_empty() {
+            None
+        } else {
+            Some(escape_string_literal(text))
+        }
     });
 
     let mut field_args = Vec::new();
@@ -781,7 +788,9 @@ fn generate_variant_inner(
 
                 if let Some(typ) = &variant.typ {
                     let inner = ctx.resolve_type(def, typ);
-                    w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
+                    w.line(&format!(
+                        "class {class_name}(pydantic.BaseModel{gen_bases}):"
+                    ));
                     w.indent();
                     w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
                     w.blank();
@@ -900,7 +909,9 @@ fn generate_internally_tagged_variant(
             let inner = ctx.resolve_type(def, typ);
             let gen_bases = generic_bases_for(used_vars);
 
-            w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
+            w.line(&format!(
+                "class {class_name}(pydantic.BaseModel{gen_bases}):"
+            ));
             w.indent();
             w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
             w.blank();
@@ -910,9 +921,13 @@ fn generate_internally_tagged_variant(
         }
     } else {
         let gen_bases = generic_bases_for(used_vars);
-        w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
+        w.line(&format!(
+            "class {class_name}(pydantic.BaseModel{gen_bases}):"
+        ));
         w.indent();
-        w.line("model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)");
+        w.line(
+            "model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)",
+        );
         w.blank();
         write_tag_field(w, tag_py, tag_json, json_name, tag_needs_alias);
         w.dedent();
@@ -935,7 +950,9 @@ fn generate_adjacently_tagged_variant(
     w: &mut PyWriter,
 ) -> Result<()> {
     let gen_bases = generic_bases_for(used_vars);
-    w.line(&format!("class {class_name}(pydantic.BaseModel{gen_bases}):"));
+    w.line(&format!(
+        "class {class_name}(pydantic.BaseModel{gen_bases}):"
+    ));
     w.indent();
 
     let content_json = ty_json.content_field_name(json_attrs);
