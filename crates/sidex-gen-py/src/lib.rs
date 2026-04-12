@@ -299,6 +299,12 @@ fn escape_docstring(s: &str) -> String {
         .replace("\"\"\"", "\\\"\\\"\\\"")
 }
 
+fn escape_string_literal(s: &str) -> String {
+    s.replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('\n', "\\n")
+}
+
 /// Resolved Python type for an opaque type definition.
 enum OpaqueResolvedType {
     /// Subclassable base type (e.g., `str`, `float`, `uuid.UUID`).
@@ -680,21 +686,36 @@ fn generate_record_field(
     let field_type = ctx.resolve_type(def, &field.typ);
     let needs_alias = py_name != json_name;
 
+    let description = field.docs.as_ref().and_then(|docs| {
+        let text = docs.text.trim();
+        if text.is_empty() { None } else { Some(escape_string_literal(text)) }
+    });
+
+    let mut field_args = Vec::new();
     if field.is_optional {
-        let type_str = format!("{field_type} | None");
-        if needs_alias {
-            w.line(&format!(
-                "{py_name}: {type_str} = pydantic.Field(default=None, validation_alias=\"{json_name}\", serialization_alias=\"{json_name}\")"
-            ));
-        } else {
-            w.line(&format!("{py_name}: {type_str} = None"));
-        }
-    } else if needs_alias {
-        w.line(&format!(
-            "{py_name}: {field_type} = pydantic.Field(validation_alias=\"{json_name}\", serialization_alias=\"{json_name}\")"
-        ));
+        field_args.push("default=None".to_owned());
+    }
+    if let Some(desc) = &description {
+        field_args.push(format!("description=\"{desc}\""));
+    }
+    if needs_alias {
+        field_args.push(format!("validation_alias=\"{json_name}\""));
+        field_args.push(format!("serialization_alias=\"{json_name}\""));
+    }
+
+    let type_str = if field.is_optional {
+        format!("{field_type} | None")
     } else {
-        w.line(&format!("{py_name}: {field_type}"));
+        field_type
+    };
+
+    if field_args.is_empty() {
+        w.line(&format!("{py_name}: {type_str}"));
+    } else {
+        w.line(&format!(
+            "{py_name}: {type_str} = pydantic.Field({})",
+            field_args.join(", ")
+        ));
     }
     Ok(())
 }
