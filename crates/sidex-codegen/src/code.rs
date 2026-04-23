@@ -54,7 +54,8 @@ impl Code {
         }
     }
 
-    /// Joins items vertically (one per line at `column`), with `separator` after each except the last.
+    /// Joins items vertically (one per line at `column`), with `separator` after each
+    /// except the last.
     pub fn join_vertical(
         &mut self,
         items: impl IntoIterator<Item = Code>,

@@ -311,7 +311,8 @@ fn escape_string_literal(s: &str) -> String {
 enum OpaqueResolvedType {
     /// Subclassable base type (e.g., `str`, `float`, `uuid.UUID`).
     Wrapper(String),
-    /// Type alias expression (e.g., `pydantic.JsonValue`, `dict[str, pydantic.JsonValue]`).
+    /// Type alias expression (e.g., `pydantic.JsonValue`, `dict[str,
+    /// pydantic.JsonValue]`).
     Alias(String),
 }
 
@@ -344,8 +345,10 @@ fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
         // Union of JSON types — cannot subclass, emit a type alias.
         let parts: Vec<_> = types
             .iter()
-            .map(|ty| match json_type_to_py(ty) {
-                OpaqueResolvedType::Wrapper(s) | OpaqueResolvedType::Alias(s) => s,
+            .map(|ty| {
+                match json_type_to_py(ty) {
+                    OpaqueResolvedType::Wrapper(s) | OpaqueResolvedType::Alias(s) => s,
+                }
             })
             .collect();
         return Ok(Some(OpaqueResolvedType::Alias(parts.join(" | "))));

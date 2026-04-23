@@ -203,10 +203,12 @@ impl<'a> Parser<'a> {
                     column: at_column,
                 })
             }
-            _ => Err(ParseError {
-                message: "expected identifier, `(`, or `@` after `@`".to_owned(),
-                position: at_pos,
-            }),
+            _ => {
+                Err(ParseError {
+                    message: "expected identifier, `(`, or `@` after `@`".to_owned(),
+                    position: at_pos,
+                })
+            }
         }
     }
 

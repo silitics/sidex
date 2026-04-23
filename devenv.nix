@@ -10,11 +10,11 @@
   languages = {
     rust = {
       enable = true;
-      channel = "stable";
+      channel = "nightly";
       version = "latest";
       mold.enable = true;
     };
-    javascript ={
+    javascript = {
       enable = true;
       pnpm.enable = true;
       npm.enable = true;
