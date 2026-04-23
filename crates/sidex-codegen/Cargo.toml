@@ -1,0 +1,12 @@
+[package]
+name = "sidex-codegen"
+description = "Indentation-aware code generation for Sidex."
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+sidex-codegen-macros = { path = "../sidex-codegen-macros" }

@@ -1,0 +1,18 @@
+[package]
+name = "sidex-codegen-macros"
+description = "Proc macros for sidex-codegen."
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+sidex-codegen-syntax = { path = "../sidex-codegen-syntax" }
+proc-macro2 = "1"
+quote = "1"
+syn = "2"

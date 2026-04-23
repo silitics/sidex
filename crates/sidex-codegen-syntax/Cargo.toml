@@ -1,0 +1,11 @@
+[package]
+name = "sidex-codegen-syntax"
+description = "Template syntax parsing for sidex-codegen."
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
