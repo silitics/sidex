@@ -121,7 +121,14 @@ fn schema(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
             },
         }
     }
-    let trailing_buffer = buffer;
+    let mut trailing_buffer = buffer;
+
+    // If the schema contained no items at all, what looks like "trailing"
+    // is in fact the entire file — treat it as the header so inline `//!`
+    // docs are rendered in the schema-doc path.
+    if !seen_first_item {
+        header_buffer = std::mem::take(&mut trailing_buffer);
+    }
 
     let (external, internal) = classify_imports(imports, opts);
 
@@ -155,12 +162,15 @@ fn schema(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
         parts.push(render_defs(defs, cx, opts));
     }
 
-    // Trailing comments at end of file (rare). Always blank-line separated
-    // from the preceding section.
+    // Trailing comments at end of file (rare). Blank-line separated from
+    // the preceding section only when there *is* one — otherwise the
+    // schema has no items and the comments are effectively the whole file.
     let trailing_doc = render_trailing(&trailing_buffer, cx);
     if !matches!(trailing_doc, Doc::Nil) {
-        parts.push(Doc::HardLine);
-        parts.push(Doc::HardLine);
+        if !parts.is_empty() {
+            parts.push(Doc::HardLine);
+            parts.push(Doc::HardLine);
+        }
         parts.push(trailing_doc);
     }
 
