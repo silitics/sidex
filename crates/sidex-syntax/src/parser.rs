@@ -4,7 +4,7 @@ use chumsky::{Stream, prelude::*};
 use sidex_ir as ir;
 
 use crate::{
-    ast::{self, MethodParam},
+    ast::{self},
     span::Span,
     tokens::{
         Delimiter, DocKind, Punctuation, Token, TokenKind, delimiters, diagnostic_from_error,
@@ -134,11 +134,6 @@ fn double_colon()
 -> impl Parser<TokenKind, (TokenKind, TokenKind), Error = Simple<TokenKind, Span>> + Clone {
     just(punctuations::Colon::COMPOSED)
         .then(just(punctuations::Colon::ALONE).or(just(punctuations::Colon::COMPOSED)))
-}
-
-fn arrow() -> impl Parser<TokenKind, (TokenKind, TokenKind), Error = Simple<TokenKind, Span>> + Clone
-{
-    just(punctuations::Minus::COMPOSED).then(just(punctuations::AngleClose::ALONE))
 }
 
 fn path_parser() -> impl Parser<TokenKind, ast::Path, Error = Simple<TokenKind, Span>> + Clone {
@@ -276,16 +271,12 @@ fn def_with_inner_parser(
     inner: impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone,
 ) -> impl Parser<
     TokenKind,
-    (
-        ((ast::Identifier, Vec<ast::TypeVar>), Vec<MethodParam>),
-        ast::DefKind,
-    ),
+    ((ast::Identifier, Vec<ast::TypeVar>), ast::DefKind),
     Error = Simple<TokenKind, Span>,
 > + Clone {
     just(keyword)
         .ignore_then(name_parser())
         .then(type_vars_parser())
-        .then(args_parser(false))
         .then(inner.delimited_by(
             just(delimiters::Brace::OPEN),
             just(delimiters::Brace::CLOSE),
@@ -308,103 +299,21 @@ fn variant_def_inner_parser()
         .map(|variants| ast::DefKind::VariantType(ast::VariantTypeDef { variants }))
 }
 
-fn method_param_parser()
--> impl Parser<TokenKind, ast::MethodParam, Error = Simple<TokenKind, Span>> + Clone {
-    attrs_parser()
-        .then(
-            name_parser()
-                .then(
-                    just(punctuations::QuestionMark::ALONE)
-                        .or(just(punctuations::QuestionMark::COMPOSED))
-                        .or_not(),
-                )
-                .then_ignore(just(punctuations::Colon::ALONE))
-                .then(type_expr_parser()),
-        )
-        .map(|(attrs, ((name, optional), typ))| {
-            ast::MethodParam {
-                name,
-                typ,
-                is_optional: optional.is_some(),
-                attrs,
-            }
-        })
-}
-
-fn args_parser(
-    required: bool,
-) -> impl Parser<TokenKind, Vec<ast::MethodParam>, Error = Simple<TokenKind, Span>> + Clone {
-    let inner = method_param_parser()
-        .separated_by(just(punctuations::Comma::ALONE))
-        .allow_trailing()
-        .delimited_by(
-            just(delimiters::Parenthesis::OPEN),
-            just(delimiters::Parenthesis::CLOSE),
-        )
-        .boxed();
-    if required {
-        inner
-    } else {
-        inner.or_not().map(|args| args.unwrap_or_default()).boxed()
-    }
-}
-
-fn method_parser() -> impl Parser<TokenKind, ast::Method, Error = Simple<TokenKind, Span>> + Clone {
-    docs_parser(DocKind::Preceding)
-        .then(attrs_parser())
-        .then_ignore(just(keywords::FUN))
-        .then(name_parser())
-        .then(args_parser(true))
-        .then(arrow().ignore_then(type_expr_parser()).or_not())
-        .map(|((((docs, attrs), name), params), returns)| {
-            ast::Method {
-                name,
-                docs,
-                attrs,
-                params,
-                returns,
-            }
-        })
-}
-
-fn interface_def_inner_parser()
--> impl Parser<TokenKind, ast::DefKind, Error = Simple<TokenKind, Span>> + Clone {
-    method_parser()
-        .repeated()
-        .map(|functions| ast::DefKind::Interface(ast::InterfaceDef { methods: functions }))
-}
-
 fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, Span>> + Clone {
     docs_parser(DocKind::Preceding)
         .then(attrs_parser())
         .then(choice((
             def_with_inner_parser(keywords::RECORD, record_def_inner_parser()),
             def_with_inner_parser(keywords::VARIANT, variant_def_inner_parser()),
-            def_with_inner_parser(keywords::INTERFACE, interface_def_inner_parser()),
             just(keywords::OPAQUE)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())
-                .then(args_parser(false))
                 .map(|(name, vars)| {
-                    (
-                        (name, vars),
-                        ast::DefKind::OpaqueType(ast::OpaqueTypeDef {}),
-                    )
-                }),
-            just(keywords::DERIVED)
-                .ignore_then(name_parser())
-                .then(type_vars_parser())
-                .then(args_parser(false))
-                .map(|(name, vars)| {
-                    (
-                        (name, vars),
-                        ast::DefKind::DerivedType(ast::DerivedTypeDef {}),
-                    )
+                    ((name, vars), ast::DefKind::OpaqueType(ast::OpaqueTypeDef {}))
                 }),
             just(keywords::ALIAS)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())
-                .then(args_parser(false))
                 .then_ignore(just(punctuations::Colon::ALONE))
                 .then(
                     type_expr_parser()
@@ -413,20 +322,18 @@ fn item_parser() -> impl Parser<TokenKind, ast::Item, Error = Simple<TokenKind, 
             just(keywords::WRAPPER)
                 .ignore_then(name_parser())
                 .then(type_vars_parser())
-                .then(args_parser(false))
                 .then_ignore(just(punctuations::Colon::ALONE))
                 .then(
                     type_expr_parser()
                         .map(|wrapped| ast::DefKind::WrapperType(ast::WrapperTypeDef { wrapped })),
                 ),
         )))
-        .map(|((docs, attrs), (((name, vars), args), kind))| {
+        .map(|((docs, attrs), ((name, vars), kind))| {
             ast::Item::Def(ast::Def {
                 name,
                 docs,
                 vars,
                 attrs,
-                args,
                 kind,
             })
         })
@@ -508,39 +415,3 @@ pub fn parse(source: &ir::Source) -> Option<ast::Schema> {
     tokenize(source).and_then(|tokens| parse_schema(source, tokens))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    macro_rules! make_test_from_file {
-        ($name:ident, $path:literal) => {
-            #[test]
-            fn $name() {
-                let mut storage = ir::SourceStorage::new();
-                let id = storage.insert(include_str!($path).to_owned(), None);
-                let result = parse(&storage[id]);
-                insta::assert_debug_snapshot!(stringify!($name), result);
-            }
-        };
-    }
-
-    make_test_from_file!(
-        test_todo_list_api_manager,
-        "../../../examples/todo-list/todo_list_api/schemas/manager.sidex"
-    );
-
-    make_test_from_file!(
-        test_todo_list_data_ids,
-        "../../../examples/todo-list/todo_list_data/schemas/ids.sidex"
-    );
-
-    make_test_from_file!(
-        test_todo_list_data_person,
-        "../../../examples/todo-list/todo_list_data/schemas/person.sidex"
-    );
-
-    make_test_from_file!(
-        test_todo_list_data_task,
-        "../../../examples/todo-list/todo_list_data/schemas/task.sidex"
-    );
-}

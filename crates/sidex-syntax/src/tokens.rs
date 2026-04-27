@@ -255,9 +255,6 @@ pub mod keywords {
         (RECORD, "record", "The `record` keyword."),
         (VARIANT, "variant", "The `variant` keyword."),
         (WRAPPER, "wrapper", "The `wrapper` keyword."),
-        (DERIVED, "derived", "The `derived` keyword."),
-        (FUN, "fun", "The `fun` keyword."),
-        (INTERFACE, "interface", "The `interface` keyword."),
         (IMPORT, "import", "The `import` keyword."),
     ];
 }
@@ -616,39 +613,3 @@ pub fn tokenize(source: &ir::Source) -> Option<Vec<Token>> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    macro_rules! make_test_from_file {
-        ($name:ident, $path:literal) => {
-            #[test]
-            fn $name() {
-                let mut storage = ir::SourceStorage::new();
-                let id = storage.insert(include_str!($path).to_owned(), None);
-                let result = tokenize(&storage[id]);
-                insta::assert_debug_snapshot!(stringify!($name), result);
-            }
-        };
-    }
-
-    make_test_from_file!(
-        test_todo_list_api_manager,
-        "../../../examples/todo-list/todo_list_api/schemas/manager.sidex"
-    );
-
-    make_test_from_file!(
-        test_todo_list_data_ids,
-        "../../../examples/todo-list/todo_list_data/schemas/ids.sidex"
-    );
-
-    make_test_from_file!(
-        test_todo_list_data_person,
-        "../../../examples/todo-list/todo_list_data/schemas/person.sidex"
-    );
-
-    make_test_from_file!(
-        test_todo_list_data_task,
-        "../../../examples/todo-list/todo_list_data/schemas/task.sidex"
-    );
-}

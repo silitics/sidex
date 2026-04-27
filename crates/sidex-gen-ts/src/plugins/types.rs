@@ -107,10 +107,6 @@ impl Plugin for Types {
                 TypeExpr::union(variant_ts_types.into_iter())
             }
             ir::DefKind::WrapperType(typ) => ctx.resolve_type(def, &typ.wrapped),
-            _ => {
-                // Service definitions and derived types are handled separately.
-                return Ok(Code::new());
-            }
         };
 
         if is_nominal {

@@ -15,7 +15,7 @@ fmt:
 
 # Generate the API documentation using Rustdoc.
 doc:
-    RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --bin todo_list_backend --lib --document-private-items --all-features
+    RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --lib --document-private-items --all-features
 
 
 # Run all tests.
@@ -29,10 +29,6 @@ test-py:
 
 regenerate-ir:
     cd lib/meta && cargo run --bin sidex -- generate rust ../../crates/sidex-ir/src/generated
-    cargo +nightly fmt
-
-regenerate-openapi:
-    cd lib/openapi && cargo run --bin sidex -- generate rust ../../crates/sidex-types-openapi/src/generated
     cargo +nightly fmt
 
 regenerate-json-schema:

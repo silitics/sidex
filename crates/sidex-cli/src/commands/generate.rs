@@ -6,7 +6,6 @@ use clap::Parser;
 use sidex_gen::Generator;
 use sidex_gen_ir::IrGenerator;
 use sidex_gen_json_schema::JsonSchemaGenerator;
-use sidex_gen_openapi::OpenApiGenerator;
 use sidex_gen_py::PyGenerator;
 use sidex_gen_rs::RustGenerator;
 use sidex_gen_ts::TsGenerator;
@@ -29,7 +28,6 @@ impl GeneratorRegistry {
         registry.insert("ir".to_owned(), Box::new(IrGenerator));
         registry.insert("rust".to_owned(), Box::new(RustGenerator::new()));
         registry.insert("ts".to_owned(), Box::new(TsGenerator::new()));
-        registry.insert("openapi".to_owned(), Box::new(OpenApiGenerator));
         registry.insert("json-schema".to_owned(), Box::new(JsonSchemaGenerator));
         registry.insert("py".to_owned(), Box::new(PyGenerator::new()));
         Self { registry }

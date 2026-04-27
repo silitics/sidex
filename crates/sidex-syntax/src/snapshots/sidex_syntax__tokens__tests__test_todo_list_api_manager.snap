@@ -1,7 +1,0 @@
----
-source: crates/sidex-syntax/src/tokens.rs
-expression: result
----
-Some(
-    [],
-)

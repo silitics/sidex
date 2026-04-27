@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/*", "examples/petstore/rust-backend", "examples/todo-list/todo_list_backend"]
+members = ["crates/*"]
 
 [workspace.package]
 # We have no `version` here because the different crates can evolve independently.
@@ -11,9 +11,6 @@ repository = "https://github.com/silitics/sidex"
 homepage = "https://oss.silitics.com/sidex"
 
 [workspace.dependencies]
-sidex-rpc = { path = "crates/sidex-rpc" }
-sidex-rpc-core = { path = "crates/sidex-rpc-core" }
 sidex-serde = { path = "crates/sidex-serde" }
 sidex-types-json-schema = { path = "crates/sidex-types-json-schema" }
-sidex-types-openapi = { path = "crates/sidex-types-openapi" }
 serde = "1.0.219"

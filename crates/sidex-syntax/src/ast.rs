@@ -206,8 +206,6 @@ pub struct Def {
     pub vars: Vec<TypeVar>,
     /// The attributes of the definition.
     pub attrs: Vec<Attr>,
-    /// The arguments of the definition.
-    pub args: Vec<MethodParam>,
     /// The kind of the definition.
     pub kind: DefKind,
 }
@@ -233,10 +231,6 @@ pub enum DefKind {
     VariantType(VariantTypeDef),
     /// Definition of a wrapper type.
     WrapperType(WrapperTypeDef),
-    /// Definition of a derived type.
-    DerivedType(DerivedTypeDef),
-    /// Definition of an interface.
-    Interface(InterfaceDef),
 }
 
 /// Definition of a type alias.
@@ -304,49 +298,6 @@ pub struct Field {
 pub struct WrapperTypeDef {
     /// The type expression describing the wrapped type.
     pub wrapped: TypeExpr,
-}
-
-/// Definition of a wrapper type.
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct DerivedTypeDef {}
-
-/// Definition of an interface.
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct InterfaceDef {
-    /// The methods provided by the interface.
-    pub methods: Vec<Method>,
-}
-
-/// A method of an interface definition.
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct Method {
-    /// The name of the method.
-    pub name: Identifier,
-    /// The documentation of the method.
-    pub docs: Docs,
-    /// The attributes of the method.
-    pub attrs: Vec<Attr>,
-    /// The parameters of the method.
-    pub params: Vec<MethodParam>,
-    /// An optional type expression describing the return type of the method.
-    pub returns: Option<TypeExpr>,
-}
-
-/// A parameter of a method.
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct MethodParam {
-    /// The name of the parameter.
-    pub name: Identifier,
-    /// The type expression describing the type of the parameter.
-    pub typ: TypeExpr,
-    /// Indicates whether the parameter is optional.
-    pub is_optional: bool,
-    /// The attributes of the parameter.
-    pub attrs: Vec<Attr>,
 }
 
 /// An expression describing a type.

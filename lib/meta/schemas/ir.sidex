@@ -171,8 +171,6 @@ record Def {
     attrs: [Attr],
     /// The kind of the definition.
     kind: DefKind,
-    #[default]
-    args: [MethodParam],
 }
 
 /// A type variable of a definition.
@@ -195,10 +193,6 @@ variant DefKind {
     VariantType: VariantTypeDef,
     /// Definition of a wrapper type.
     WrapperType: WrapperTypeDef,
-    /// Definition of a derived type.
-    DerivedType: DerivedTypeDef,
-    /// Definition of an interface.
-    Interface: InterfaceDef,
 }
 
 /// A definition of a type alias.
@@ -264,50 +258,6 @@ record Variant {
 record WrapperTypeDef {
     /// The type that is wrapped.
     wrapped: Type,
-}
-
-/// A definition of a derived type.
-#[rust(attr(non_exhaustive))]
-record DerivedTypeDef {}
-
-
-/// A definition of an interface.
-#[rust(attr(non_exhaustive))]
-record InterfaceDef {
-    /// The methods provided by the interface.
-    #[default]
-    methods: [Method],
-}
-
-/// A method of a interface definition.
-#[rust(attr(non_exhaustive))]
-record Method {
-    /// The name of the method.
-    name: Identifier,
-    /// The documentation of the method.
-    docs?: Docs,
-    /// The attributes of the method.
-    #[default]
-    attrs: [Attr],
-    /// The parameters of the method.
-    #[default]
-    parameters: [MethodParam],
-    /// The optional return type of the method.
-    returns?: Type,
-}
-
-/// A parameter of a method.
-#[rust(attr(non_exhaustive))]
-record MethodParam {
-    /// The name of the parameter.
-    name: Identifier,
-    /// The type of the parameter.
-    typ: Type,
-    /// Indicates whether the parameter is optional.
-    #[default]
-    is_optional: bool,
-    #[default]
-    attrs: [Attr],
 }
 
 /// A type.

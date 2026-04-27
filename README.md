@@ -5,7 +5,7 @@
     Sidex
 </h1>
 <h4 align="center">
-    Simplifies data exchange across your entire stack.
+    A data modeling language for cross-stack data exchange.
 </h4>
 <p align="center">
   <a href="https://crates.io/crates/sidex-cli"><img alt="Sidex CLI Crate" src="https://img.shields.io/crates/v/sidex-cli?label=sidex-cli"></a>
@@ -18,23 +18,23 @@
 >
 > Sidex **is still under construction**. In particular, the functionality described here may not exist yet, may change considerably in the future, or may even be completely abandoned at a later point in time. We are actively working on the design, features, and vision of Sidex. ⚠️
 
-_Sidex_ is a format- and language-agnostic data modeling and API definition framework with a focus on type safety, extensibility, and developer ergonomics. Sidex aims to simplify data exchange between different programming languages and platforms via potentially multiple interchange formats and storage backends.
+_Sidex_ is a format- and language-agnostic data modeling language with a focus on type safety, extensibility, and developer ergonomics. Sidex aims to simplify data exchange between different programming languages and platforms via potentially multiple interchange formats and storage backends.
 
-💡 **Idea:** The idea is simple, define your data model and API once with Sidex and then generate code for different languages, interchange formats, and storage backends from this single Sidex ground truth.
+💡 **Idea:** Define your data model once with Sidex and then generate code for different languages and interchange formats from this single ground truth.
 
-Sidex's type system and definition language have been inspired by [Rust](https://www.rust-lang.org/). With _custom attributes_, similar to [Rust's attributes](https://doc.rust-lang.org/reference/attributes.html), the possibilities for code generation become almost limitless. You can easily develop your own code generator or extend an existing one to fit your needs (e.g., for generating additional methods).
+Sidex's type system and definition language are inspired by [Rust](https://www.rust-lang.org/). With _custom attributes_, similar to [Rust's attributes](https://doc.rust-lang.org/reference/attributes.html), the possibilities for code generation become almost limitless. You can easily develop your own code generator or extend an existing one to fit your needs.
 
 To learn more, [checkout Sidex's website](https://oss.silitics.com/sidex/). 🚀
 
 ## ✨ Features
 
-- **Schema-first** definition of data structures and APIs.
+- **Schema-first** definition of data structures.
 - Designed for **format- and language-agnostic** definitions.
 - Modern **algebraic data types** and **non-null** by default.
 - **Extensible** with user-defined opaque types.
 - Support for **generics**, **recursive types**, and **custom attributes**.
 - Language server and [VS Code extension](https://marketplace.visualstudio.com/items?itemName=silitics.sidex) for increased productivity.
-- Out-of-the-box support for [Rust](https://rust-lang.org), [TypeScript](https://www.typescriptlang.org), and [JSON](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+- Out-of-the-box support for [Rust](https://rust-lang.org), [TypeScript](https://www.typescriptlang.org), [Python](https://www.python.org), and [JSON Schema](https://json-schema.org).
 
 ## ⚖️ Licensing
 

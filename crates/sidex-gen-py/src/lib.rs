@@ -402,7 +402,6 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
                 "#
             )
         }
-        _ => Code::new(),
     })
 }
 
@@ -887,7 +886,7 @@ fn referenced_schemas(schema: &ir::Schema, bundle_idx: ir::BundleIdx) -> Vec<ir:
             ir::DefKind::WrapperType(w) => {
                 collect_referenced_schemas(&w.wrapped, bundle_idx, schema.idx, &mut refs);
             }
-            _ => {}
+            ir::DefKind::OpaqueType(_) => {}
         }
     }
     refs

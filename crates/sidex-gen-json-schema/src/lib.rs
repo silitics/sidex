@@ -270,8 +270,6 @@ impl<'cx> JsonSchemaCtx<'cx> {
                         let resolved = self.resolve(&wrapper_type.wrapped)?;
                         (resolved.use_schema.clone(), resolved.use_schema)
                     }
-                    DerivedType(_) => todo!(),
-                    Interface(_) => todo!(),
                 };
 
                 if instance.bundle == STD_BUNDLE_IDX {
@@ -478,10 +476,6 @@ impl Generator for JsonSchemaGenerator {
         for bundle in &job.unit.bundles {
             for schema in &bundle.schemas {
                 for (idx, def) in schema.defs.iter().enumerate() {
-                    if matches!(def.kind, ir::DefKind::Interface(_)) {
-                        // Do not generate JSON schemas for interface types.
-                        continue;
-                    }
                     let typ = ir::Type::new(ir::TypeKind::Instance(
                         ir::InstanceType::new(bundle.idx, schema.idx, idx.into()).with_subst(
                             def.vars
@@ -535,10 +529,6 @@ impl Generator for JsonSchemaGenerator {
         for bundle in &job.unit.bundles {
             for schema in &bundle.schemas {
                 for (idx, def) in schema.defs.iter().enumerate() {
-                    if matches!(def.kind, ir::DefKind::Interface(_)) {
-                        // Do not generate JSON schemas for interface types.
-                        continue;
-                    }
                     let typ = ir::Type::new(ir::TypeKind::Instance(
                         ir::InstanceType::new(bundle.idx, schema.idx, idx.into()).with_subst(
                             def.vars
