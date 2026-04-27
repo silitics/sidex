@@ -177,7 +177,7 @@ impl Plugin for Types {
         });
         let mut external = ctx.bundle_ctx.cfg.external.iter().collect::<Vec<_>>();
         external.sort_by(|(x, _), (y, _)| x.cmp(y));
-        let external_imports = ctx.bundle_ctx.cfg.external.iter().map(|(name, path)| {
+        let external_imports = external.iter().map(|(name, path)| {
             let local_name = format_ident!("__bundle_{}", name);
             quote! {
                 import * as #local_name from #path;
