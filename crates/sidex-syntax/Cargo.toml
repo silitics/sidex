@@ -8,12 +8,6 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-# Required for nice and colorful error reporting.
-ariadne = "0.1"  # PRIVATE
-# Required for parsing.
-chumsky = "0.8"  # PRIVATE
-# Required for defining error types.
-thiserror = "1"  # PRIVATE
 sidex-ir = { path = "../sidex-ir" }
 sidex-diagnostics = { path = "../sidex-diagnostics" }
 

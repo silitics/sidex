@@ -1,4 +1,9 @@
-//! _Abstract Syntax Tree_ (AST) for Sidex schemas.
+//! Typed _Abstract Syntax Tree_ (AST) for Sidex schemas.
+//!
+//! The AST is the lowered representation produced from the [`crate::cst`].
+//! Semantic passes — name resolution, type checking, IR generation — work
+//! against this tree. The AST is owned data; navigating between siblings is
+//! done by indexing rather than pointer chasing.
 
 use std::{
     fmt::{self, Display, Write},
@@ -8,17 +13,14 @@ use std::{
 
 use sidex_ir as ir;
 
-use crate::{
-    span::Span,
-    tokens::{self, Token},
-};
+use crate::tokens::{self, Token};
 
-/// A stream of tokens.
+/// A stream of tokens carried inside an attribute's free-form body.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct TokenStream(pub(crate) Vec<Token>);
 
 impl TokenStream {
-    /// An iterator over the tokens.
+    /// Iterates over the tokens.
     pub fn iter(&self) -> impl Iterator<Item = &Token> {
         self.0.iter()
     }
@@ -34,7 +36,6 @@ impl Deref for TokenStream {
 
 impl IntoIterator for TokenStream {
     type Item = Token;
-
     type IntoIter = TokenStreamIntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -65,61 +66,48 @@ impl Iterator for TokenStreamIntoIter {
     }
 }
 
-/// A node of the AST behaving as a smart-pointer to `T`.
+/// An identifier with its source span.
 #[derive(Clone, Debug)]
-pub struct Node<T> {
-    /// The inner value.
-    pub(crate) inner: T,
-    /// The span of the node.
-    pub(crate) span: Span,
+pub struct Identifier {
+    pub(crate) text: tokens::Str,
+    pub(crate) span: ir::Span,
 }
-
-impl<T> Deref for Node<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.inner
-    }
-}
-
-impl<T> Node<T> {
-    /// Construct a new AST node from a given value and span.
-    pub(crate) fn new(inner: T, span: Span) -> Self {
-        Self { inner, span }
-    }
-
-    /// The source id of the node.
-    pub fn src(this: &Self) -> &ir::SourceIdx {
-        &this.span.0.src
-    }
-
-    /// The start position of the node.
-    pub fn start(this: &Self) -> usize {
-        this.span.0.start
-    }
-
-    /// The end position of the node.
-    pub fn end(this: &Self) -> usize {
-        this.span.0.end
-    }
-}
-
-/// An identifier.
-#[derive(Clone, Debug)]
-pub struct Identifier(pub(crate) Node<tokens::Str>);
 
 impl Identifier {
     /// The identifier as a `&str`.
     pub fn as_str(&self) -> &str {
-        self.0.as_str()
+        self.text.as_str()
+    }
+
+    /// The source span.
+    pub fn span(&self) -> &ir::Span {
+        &self.span
+    }
+}
+
+impl Display for Identifier {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
     }
 }
 
 /// A vector of doc strings.
 #[derive(Clone, Debug, Default)]
-pub struct Docs(pub(crate) Vec<Node<Arc<String>>>);
+pub struct Docs(pub(crate) Vec<Arc<String>>);
 
-impl fmt::Display for Docs {
+impl Docs {
+    /// Iterates over the doc strings.
+    pub fn iter(&self) -> impl Iterator<Item = &str> {
+        self.0.iter().map(|s| s.as_str())
+    }
+
+    /// True if there are no doc strings.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl Display for Docs {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for doc in &self.0 {
             f.write_str(doc.trim())?;
@@ -129,17 +117,17 @@ impl fmt::Display for Docs {
     }
 }
 
-/// A path is a `::` separated list of names.
+/// A `::`-separated list of identifiers.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct Path {
     /// The segments of the path.
     pub segments: Vec<Identifier>,
-    /// Indicates whether the path is absolute, i.e., starts with `::`.
+    /// True if the path begins with `::` (absolute).
     pub is_absolute: bool,
 }
 
-impl std::fmt::Display for Path {
+impl Display for Path {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.is_absolute {
             f.write_str("::")?;
@@ -186,11 +174,11 @@ pub struct Import {
 /// An import tree.
 #[derive(Clone, Debug)]
 pub enum ImportTree {
-    /// A path to import.
+    /// A single path.
     Path(Path),
-    /// An import wildcard.
+    /// A wildcard `*`.
     Wildcard,
-    /// An import group.
+    /// A grouped import `path::{ ... }`.
     Group { path: Path, trees: Vec<ImportTree> },
 }
 
@@ -218,18 +206,18 @@ pub struct TypeVar {
     pub name: Identifier,
 }
 
-/// A definition kind.
+/// A kind of definition.
 #[derive(Clone, Debug)]
 pub enum DefKind {
-    /// Definition of a type alias.
+    /// `alias`.
     Alias(AliasDef),
-    /// Definition of an opaque type.
+    /// `opaque`.
     OpaqueType(OpaqueTypeDef),
-    /// Definition of a record type.
+    /// `record`.
     RecordType(RecordTypeDef),
-    /// Definition of a variant type.
+    /// `variant`.
     VariantType(VariantTypeDef),
-    /// Definition of a wrapper type.
+    /// `wrapper`.
     WrapperType(WrapperTypeDef),
 }
 
@@ -237,7 +225,7 @@ pub enum DefKind {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct AliasDef {
-    /// The type expression of the aliased type.
+    /// The aliased type expression.
     pub aliased: TypeExpr,
 }
 
@@ -250,7 +238,7 @@ pub struct OpaqueTypeDef {}
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct VariantTypeDef {
-    /// The variants of the variant type.
+    /// The variants.
     pub variants: Vec<Variant>,
 }
 
@@ -258,13 +246,13 @@ pub struct VariantTypeDef {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct Variant {
-    /// The name of the variant.
+    /// The name.
     pub name: Identifier,
-    /// The documentation of the variant.
+    /// The documentation.
     pub docs: Docs,
-    /// The attributes of the variant.
+    /// The attributes.
     pub attrs: Vec<Attr>,
-    /// An optional type expression describing the type of the variant.
+    /// Optional payload type.
     pub typ: Option<TypeExpr>,
 }
 
@@ -272,7 +260,7 @@ pub struct Variant {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct RecordTypeDef {
-    /// The fields of the record type.
+    /// The fields.
     pub fields: Vec<Field>,
 }
 
@@ -280,15 +268,15 @@ pub struct RecordTypeDef {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct Field {
-    /// The name of the field.
+    /// The name.
     pub name: Identifier,
-    /// The documentation of the field.
+    /// The documentation.
     pub docs: Docs,
-    /// The attributes of the field.
+    /// The attributes.
     pub attrs: Vec<Attr>,
-    /// The type expression describing the type of the field.
+    /// The type expression.
     pub typ: TypeExpr,
-    /// Indicates whether the field is optional.
+    /// Whether the field is optional.
     pub is_optional: bool,
 }
 
@@ -296,30 +284,30 @@ pub struct Field {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct WrapperTypeDef {
-    /// The type expression describing the wrapped type.
+    /// The wrapped type expression.
     pub wrapped: TypeExpr,
 }
 
-/// An expression describing a type.
+/// A type expression.
 #[derive(Clone, Debug)]
 pub enum TypeExpr {
-    /// An instantiation of a type.
+    /// Instantiation of a named type.
     Instance(InstanceTypeExpr),
-    /// A sequence type expression.
+    /// Sequence type `[T]`.
     Sequence(SequenceTypeExpr),
-    /// A map type expression.
+    /// Map type `[K: V]`.
     Map(MapTypeExpr),
-    /// A unit type expression.
+    /// Unit type `()`.
     Unit,
 }
 
-/// An instantiation of a type.
+/// An instantiation of a named type.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct InstanceTypeExpr {
     /// The path of the instantiated type.
     pub path: Path,
-    /// Substitutions for the type variables of the instance.
+    /// Substitutions for type variables.
     pub subst: Vec<TypeExpr>,
 }
 
@@ -327,7 +315,7 @@ pub struct InstanceTypeExpr {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct SequenceTypeExpr {
-    /// The element type of the sequence type.
+    /// The element type.
     pub element: Box<TypeExpr>,
 }
 
@@ -335,9 +323,9 @@ pub struct SequenceTypeExpr {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct MapTypeExpr {
-    /// The key type of the map type.
+    /// The key type.
     pub key: Box<TypeExpr>,
-    /// The value type of the map type.
+    /// The value type.
     pub value: Box<TypeExpr>,
 }
 
@@ -345,26 +333,37 @@ pub struct MapTypeExpr {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct Attr {
-    /// The name of the attribute.
+    /// The kind of the attribute.
     pub kind: AttrKind,
 }
 
+/// The kind of an attribute.
 #[derive(Clone, Debug)]
 pub enum AttrKind {
+    /// A bare path, e.g. `inline`.
     Path(Path),
+    /// A list, e.g. `json(rename = "x")`.
     List(AttrList),
+    /// An assignment, e.g. `rename = "x"`.
     Assign(AttrAssign),
+    /// A free-form token stream.
     Tokens(TokenStream),
 }
 
+/// A list-form attribute body.
 #[derive(Clone, Debug)]
 pub struct AttrList {
+    /// The path being applied.
     pub path: Path,
+    /// The arguments.
     pub elements: Vec<Attr>,
 }
 
+/// An assignment-form attribute body.
 #[derive(Clone, Debug)]
 pub struct AttrAssign {
+    /// The left-hand path.
     pub path: Path,
+    /// The right-hand value (recursively another attribute).
     pub value: Box<Attr>,
 }

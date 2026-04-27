@@ -387,7 +387,10 @@ fn transform_token_stream(stream: &ast::TokenStream) -> ir::TokenStream {
                 }
             }
             tokens::TokenKind::Identifier(_) => TokenKind::Identifier(token.to_string()),
-            tokens::TokenKind::Comment { .. } | tokens::TokenKind::Doc { .. } => {
+            tokens::TokenKind::Comment { .. }
+            | tokens::TokenKind::Doc { .. }
+            | tokens::TokenKind::Whitespace
+            | tokens::TokenKind::Error => {
                 // Strip from IR.
                 start = None;
                 continue;
