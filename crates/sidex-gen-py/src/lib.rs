@@ -459,6 +459,7 @@ fn generate_record(ctx: &SchemaCtx, def: &ir::Def, rec: &ir::RecordTypeDef) -> R
         class @name(pydantic.BaseModel@generics):
             @(@docstring_block)*
             model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)
+
             @(@fields)*
         "#
     ))
