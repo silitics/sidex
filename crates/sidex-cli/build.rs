@@ -1,5 +1,4 @@
-use std::path::Path;
-use std::process::Command;
+use std::{path::Path, process::Command};
 
 fn main() {
     println!("cargo:rerun-if-env-changed=SIDEX_GIT_VERSION");
