@@ -1,3 +1,5 @@
+use std::collections::{BTreeSet, VecDeque};
+
 use builder::{RecordTypeSchemaBuilder, VariantTypeSchemaBuilder};
 use indexmap::{IndexMap, indexmap};
 use serde::{Deserialize, Serialize};
@@ -499,9 +501,10 @@ impl Generator for JsonSchemaGenerator {
         }
         let defs = ctx.into_defs();
         for (name, schema) in &defs {
-            let mut defs = defs
+            let reachable = transitive_def_refs(name, schema, &defs);
+            let mut filtered_defs = defs
                 .iter()
-                .filter(|(def_name, _)| *def_name != name)
+                .filter(|(def_name, _)| *def_name != name && reachable.contains(*def_name))
                 .map(|(name, schema)| {
                     (
                         name.clone(),
@@ -509,12 +512,16 @@ impl Generator for JsonSchemaGenerator {
                     )
                 })
                 .collect::<IndexMap<_, _>>();
-            defs.sort_keys();
+            filtered_defs.sort_keys();
             let root_schema = RootSchema::new(schema.clone())
                 .with_meta_schema(Some(
                     "https://json-schema.org/draft/2020-12/schema".to_owned(),
                 ))
-                .with_defs(Some(defs));
+                .with_defs(if filtered_defs.is_empty() {
+                    None
+                } else {
+                    Some(filtered_defs)
+                });
             let schema_file = job.output.join(format!("{name}.schema.json"));
             std::fs::write(schema_file, serde_json::to_string_pretty(&root_schema)?)?;
         }
@@ -558,5 +565,71 @@ impl Generator for JsonSchemaGenerator {
         std::fs::write(schema_file, serde_json::to_string_pretty(&defs)?)?;
 
         Ok(())
+    }
+}
+
+/// Compute the set of def names transitively reachable from `root` via
+/// `#/$defs/...` references, looking up further refs in `defs`. The root's own
+/// name is excluded from the result.
+fn transitive_def_refs(
+    root_name: &str,
+    root_schema: &SchemaObject,
+    defs: &IndexMap<String, SchemaObject>,
+) -> BTreeSet<String> {
+    const PREFIX: &str = "#/$defs/";
+    let mut reachable: BTreeSet<String> = BTreeSet::new();
+    let mut queue: VecDeque<String> = VecDeque::new();
+    let enqueue = |name: String, reachable: &mut BTreeSet<String>, queue: &mut VecDeque<String>| {
+        if reachable.insert(name.clone()) {
+            queue.push_back(name);
+        }
+    };
+    for r in collect_refs(root_schema, PREFIX) {
+        enqueue(r, &mut reachable, &mut queue);
+    }
+    while let Some(next) = queue.pop_front() {
+        if next == root_name {
+            continue;
+        }
+        if let Some(schema) = defs.get(&next) {
+            for r in collect_refs(schema, PREFIX) {
+                enqueue(r, &mut reachable, &mut queue);
+            }
+        }
+    }
+    reachable.remove(root_name);
+    reachable
+}
+
+/// Serialize a schema and collect every `$ref` value that starts with `prefix`,
+/// returning the suffix (the def name) for each match.
+fn collect_refs(schema: &SchemaObject, prefix: &str) -> Vec<String> {
+    let value = serde_json::to_value(schema).expect("schema must be serializable");
+    let mut out = Vec::new();
+    walk_refs(&value, prefix, &mut out);
+    out
+}
+
+fn walk_refs(value: &serde_json::Value, prefix: &str, out: &mut Vec<String>) {
+    match value {
+        serde_json::Value::Object(map) => {
+            for (key, v) in map {
+                if key == "$ref" {
+                    if let serde_json::Value::String(s) = v {
+                        if let Some(name) = s.strip_prefix(prefix) {
+                            out.push(name.to_owned());
+                        }
+                    }
+                } else {
+                    walk_refs(v, prefix, out);
+                }
+            }
+        }
+        serde_json::Value::Array(arr) => {
+            for v in arr {
+                walk_refs(v, prefix, out);
+            }
+        }
+        _ => {}
     }
 }
