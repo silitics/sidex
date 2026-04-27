@@ -1104,6 +1104,7 @@ dependencies = [
  "serde_json",
  "sidex-core",
  "sidex-diagnostics",
+ "sidex-fmt",
  "sidex-gen",
  "sidex-gen-ir",
  "sidex-gen-json-schema",

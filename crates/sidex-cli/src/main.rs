@@ -32,6 +32,8 @@ pub enum Command {
     New(commands::new::NewArgs),
     /// Check the current definition for validity.
     Check(commands::check::CheckArgs),
+    /// Format Sidex schemas.
+    Fmt(commands::fmt::FmtArgs),
     /// Generate code.
     Generate(commands::generate::GenerateArgs),
     /// Validate a Sidex IR JSON file.
@@ -47,6 +49,7 @@ pub fn main() -> color_eyre::Result<()> {
     match &args.command {
         Command::New(new_args) => commands::new::exec(new_args),
         Command::Check(check_args) => commands::check::exec(check_args),
+        Command::Fmt(fmt_args) => commands::fmt::exec(fmt_args),
         Command::Generate(generate_args) => commands::generate::exec(generate_args),
         Command::ValidateIr(args) => commands::validate_ir::exec(args),
     }
