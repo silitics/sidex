@@ -10,6 +10,7 @@ homepage.workspace = true
 
 [dependencies]
 sidex-gen = { path = "../sidex-gen" }
+sidex-codegen = { path = "../sidex-codegen" }
 sidex-attrs-json = { path = "../sidex-attrs-json" }
 sidex-attrs-py = { path = "../sidex-attrs-py" }
 serde = "1"

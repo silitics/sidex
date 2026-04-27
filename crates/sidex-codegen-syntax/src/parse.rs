@@ -45,16 +45,32 @@ fn mark_block_iterations(fragments: &mut Vec<Fragment>) {
     let mut i = fragments.len();
     while i > 0 {
         i -= 1;
-        // Require an explicit `Newline` on both sides — the iteration must be
-        // visibly on its own line. A bare `@(@items)*` template (with no
-        // surrounding newlines at all) keeps its inline semantics.
-        let prev_is_newline = i > 0 && matches!(fragments[i - 1], Fragment::Newline);
+        // The iteration is "alone on its line" if everything between the
+        // preceding and following newlines is just whitespace. Most commonly
+        // the only intervening fragment is a leading-indent whitespace literal
+        // (the column the iteration starts at), but we also handle the bare
+        // case of `\n@(...)*\n` with no indent.
+        let lead_indent = i > 0
+            && match &fragments[i - 1] {
+                Fragment::Literal(s) => s.chars().all(|c| c == ' ' || c == '\t'),
+                _ => false,
+            };
+        let prev_newline_pos = if lead_indent {
+            i.checked_sub(2).filter(|j| matches!(fragments[*j], Fragment::Newline))
+        } else if i > 0 && matches!(fragments[i - 1], Fragment::Newline) {
+            Some(i - 1)
+        } else {
+            None
+        };
         let next_is_newline = i + 1 < fragments.len()
             && matches!(fragments[i + 1], Fragment::Newline);
-        if prev_is_newline && next_is_newline {
+        if prev_newline_pos.is_some() && next_is_newline {
             if let Fragment::Iteration { block, .. } = &mut fragments[i] {
                 *block = true;
                 fragments.remove(i + 1);
+                if lead_indent {
+                    fragments.remove(i - 1);
+                }
             }
         }
     }
