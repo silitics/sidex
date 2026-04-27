@@ -51,6 +51,39 @@ import std::result::{Result, Error}
 }
 
 #[test]
+fn sub_groups_external_by_bundle() {
+    // External imports from two different bundles (`std`, `other`) plus
+    // internal imports. External should be split into per-bundle subgroups.
+    let input = r#"
+import std::option::Option
+import ::other::Foo
+import schema::Bar
+import std::result::Result
+import ::other::{Baz, Quux}
+"#;
+    let opts = sidex_fmt::FormatOptions {
+        external_bundles: vec!["std".to_owned(), "other".to_owned()],
+        ..Default::default()
+    };
+    let out = sidex_fmt::format_with(input, &opts).unwrap();
+    insta::assert_snapshot!("subgrouped_imports", out);
+}
+
+#[test]
+fn flattens_nested_import_groups() {
+    let input = r#"
+import ::ec_pdm::{programs::*, strings::*}
+import ::ec_pdm::strings::{NameStr, PathStr, MarkdownStr}
+"#;
+    let opts = sidex_fmt::FormatOptions {
+        external_bundles: vec!["std".to_owned(), "ec_pdm".to_owned()],
+        ..Default::default()
+    };
+    let out = sidex_fmt::format_with(input, &opts).unwrap();
+    insta::assert_snapshot!("flattened_imports", out);
+}
+
+#[test]
 fn preserves_comments() {
     let input = r#"
 // schema-level comment

@@ -1,0 +1,9 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+import ::ec_pdm::programs::*
+import ::ec_pdm::strings::*
+import ::ec_pdm::strings::MarkdownStr
+import ::ec_pdm::strings::NameStr
+import ::ec_pdm::strings::PathStr

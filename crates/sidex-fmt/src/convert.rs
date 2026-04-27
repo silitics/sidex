@@ -133,8 +133,11 @@ fn schema(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
         parts.push(header_doc);
     }
 
-    // Imports section.
-    let imports_doc = render_imports(external, internal, cx, opts);
+    // Imports section: flatten all brace groups, sub-group external by
+    // bundle, render alpha-sorted within each sub-group.
+    let external_flats = flatten_all(external);
+    let internal_flats = flatten_all(internal);
+    let imports_doc = render_imports(external_flats, internal_flats, cx);
     if !matches!(imports_doc, Doc::Nil) {
         if !parts.is_empty() {
             parts.push(Doc::HardLine);
@@ -177,40 +180,198 @@ fn render_trailing(tokens: &[Token], cx: &Cx<'_>) -> Doc {
     join_pieces_top_level(pieces)
 }
 
-fn render_imports(
-    external: Vec<LogicalItem>,
-    internal: Vec<LogicalItem>,
-    cx: &Cx<'_>,
-    opts: &FormatOptions,
-) -> Doc {
-    if external.is_empty() && internal.is_empty() {
-        return Doc::Nil;
+/// A single flat import, derived from one (possibly grouped) source `import`
+/// statement. Brace groups are flattened so each leaf becomes its own
+/// `import` line; wildcards stay attached to their path (`a::b::*`).
+struct FlatImport {
+    /// Leading trivia from the source statement. Only the *first* flat
+    /// derived from a given source Import inherits the leading; subsequent
+    /// flats have an empty leading buffer.
+    leading: Vec<Token>,
+    /// Text rendered after `import `, e.g. `::ec_pdm::foo` or `strings::*`.
+    rendered: String,
+    /// Bundle key for sub-grouping external imports (the first non-`::`
+    /// segment).
+    bundle: String,
+}
+
+fn flatten_all(items: Vec<LogicalItem>) -> Vec<FlatImport> {
+    let mut out = Vec::new();
+    for item in items {
+        let leading = item.leading;
+        let mut produced = Vec::new();
+        if let Some(tree) = first_node_of_kind(&item.node, SyntaxKind::ImportTree) {
+            flatten_tree(&tree, "", false, &mut produced);
+        }
+        for (i, mut flat) in produced.into_iter().enumerate() {
+            if i == 0 {
+                flat.leading = leading.clone();
+            }
+            out.push(flat);
+        }
     }
-    let ext_doc = render_import_group(external, cx, opts);
-    let int_doc = render_import_group(internal, cx, opts);
-    match (matches!(ext_doc, Doc::Nil), matches!(int_doc, Doc::Nil)) {
-        (true, _) => int_doc,
-        (_, true) => ext_doc,
-        _ => Doc::concat([ext_doc, Doc::HardLine, Doc::HardLine, int_doc]),
+    out
+}
+
+fn flatten_tree(
+    tree: &SyntaxNode,
+    parent_prefix: &str,
+    parent_absolute: bool,
+    out: &mut Vec<FlatImport>,
+) {
+    let mut segments: Vec<String> = Vec::new();
+    let mut local_absolute = false;
+    let mut wildcard = false;
+    let mut has_brace = false;
+    let mut group_children: Vec<&SyntaxNode> = Vec::new();
+    let mut seen_brace = false;
+
+    for el in &tree.children {
+        match el {
+            SyntaxElement::Token(tok) => match &tok.kind {
+                TokenKind::Identifier(s) if !seen_brace => {
+                    segments.push(s.as_str().to_owned())
+                }
+                TokenKind::Punctuation(s)
+                    if s.kind == PunctuationKind::Colon && s.is_composed && !seen_brace =>
+                {
+                    if segments.is_empty() {
+                        local_absolute = true;
+                    }
+                }
+                TokenKind::Punctuation(s)
+                    if s.kind == PunctuationKind::Asterisk && !seen_brace =>
+                {
+                    wildcard = true;
+                }
+                TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace)) => {
+                    has_brace = true;
+                    seen_brace = true;
+                }
+                _ => {}
+            },
+            SyntaxElement::Node(child) => {
+                if child.kind == SyntaxKind::ImportTree {
+                    group_children.push(child);
+                }
+            }
+        }
+    }
+
+    let absolute = parent_absolute || local_absolute;
+    let local_path = segments.join("::");
+    let path_so_far = if parent_prefix.is_empty() {
+        local_path
+    } else if local_path.is_empty() {
+        parent_prefix.to_owned()
+    } else {
+        format!("{}::{}", parent_prefix, local_path)
+    };
+
+    if has_brace {
+        for child in group_children {
+            flatten_tree(child, &path_so_far, absolute, out);
+        }
+    } else if wildcard {
+        if path_so_far.is_empty() {
+            return;
+        }
+        let rendered = if absolute {
+            format!("::{}::*", path_so_far)
+        } else {
+            format!("{}::*", path_so_far)
+        };
+        let bundle = first_segment_of(&path_so_far);
+        out.push(FlatImport {
+            leading: Vec::new(),
+            rendered,
+            bundle,
+        });
+    } else if !path_so_far.is_empty() {
+        let rendered = if absolute {
+            format!("::{}", path_so_far)
+        } else {
+            path_so_far.clone()
+        };
+        let bundle = first_segment_of(&path_so_far);
+        out.push(FlatImport {
+            leading: Vec::new(),
+            rendered,
+            bundle,
+        });
     }
 }
 
-fn render_import_group(items: Vec<LogicalItem>, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
+fn first_segment_of(path: &str) -> String {
+    path.splitn(2, "::").next().unwrap_or("").to_owned()
+}
+
+/// Render the imports section: external (sub-grouped by bundle) then
+/// internal (single alpha-sorted block).
+fn render_imports(
+    mut external: Vec<FlatImport>,
+    mut internal: Vec<FlatImport>,
+    cx: &Cx<'_>,
+) -> Doc {
+    external.sort_by(|a, b| a.rendered.cmp(&b.rendered));
+    internal.sort_by(|a, b| a.rendered.cmp(&b.rendered));
+
+    // Partition external by bundle, preserving alpha order of bundles.
+    let mut subgroups: Vec<Vec<FlatImport>> = Vec::new();
+    {
+        let mut current_bundle: Option<String> = None;
+        for flat in external {
+            if Some(&flat.bundle) != current_bundle.as_ref() {
+                current_bundle = Some(flat.bundle.clone());
+                subgroups.push(Vec::new());
+            }
+            subgroups.last_mut().unwrap().push(flat);
+        }
+    }
+
+    let mut subgroup_docs: Vec<Doc> = subgroups
+        .into_iter()
+        .map(|group| render_flat_block(group, cx))
+        .filter(|d| !matches!(d, Doc::Nil))
+        .collect();
+
+    let internal_doc = render_flat_block(internal, cx);
+    if !matches!(internal_doc, Doc::Nil) {
+        subgroup_docs.push(internal_doc);
+    }
+
+    if subgroup_docs.is_empty() {
+        return Doc::Nil;
+    }
+
+    let mut parts: Vec<Doc> = Vec::new();
+    for (i, d) in subgroup_docs.into_iter().enumerate() {
+        if i > 0 {
+            parts.push(Doc::HardLine);
+            parts.push(Doc::HardLine);
+        }
+        parts.push(d);
+    }
+    Doc::concat(parts)
+}
+
+/// Render a contiguous block of flat imports: leading comments preserved,
+/// HardLine between items.
+fn render_flat_block(items: Vec<FlatImport>, cx: &Cx<'_>) -> Doc {
     if items.is_empty() {
         return Doc::Nil;
     }
     let mut parts: Vec<Doc> = Vec::new();
     for (i, item) in items.into_iter().enumerate() {
-        let leading = render_leading_comments(&item.leading, cx, /*allow_blank_line=*/ i > 0);
-        if !matches!(leading, Doc::Nil) {
-            if i > 0 {
-                parts.push(Doc::HardLine);
-            }
-            parts.push(leading);
-        } else if i > 0 {
+        let leading = render_leading_comments(&item.leading, cx, /*allow_blank_line=*/ false);
+        if i > 0 {
             parts.push(Doc::HardLine);
         }
-        parts.push(import_node(&item.node, opts));
+        if !matches!(leading, Doc::Nil) {
+            parts.push(leading);
+            parts.push(Doc::HardLine);
+        }
+        parts.push(Doc::string(format!("import {}", item.rendered)));
     }
     Doc::concat(parts)
 }
@@ -252,8 +413,7 @@ fn classify_imports(
             internal.push(item);
         }
     }
-    external.sort_by(|a, b| import_sort_key(&a.node).cmp(&import_sort_key(&b.node)));
-    internal.sort_by(|a, b| import_sort_key(&a.node).cmp(&import_sort_key(&b.node)));
+    // Final sort happens on the flattened list per render_imports.
     (external, internal)
 }
 
@@ -310,174 +470,9 @@ fn first_path_segment_text(tree: &SyntaxNode) -> Option<String> {
     None
 }
 
-/// Sort key for an import: render the import's logical target as a string.
-fn import_sort_key(import: &SyntaxNode) -> String {
-    let Some(tree) = first_node_of_kind(import, SyntaxKind::ImportTree) else {
-        return String::new();
-    };
-    render_import_tree_to_string(&tree, true)
-}
-
-/// Render an import tree to a stable string for sorting. Group bodies are
-/// rendered as `{name1,name2,...}` with sorted names so that two imports that
-/// would format identically have the same sort key.
-fn render_import_tree_to_string(tree: &SyntaxNode, sort_groups: bool) -> String {
-    let mut out = String::new();
-    let mut path_segments: Vec<String> = Vec::new();
-    let mut absolute = false;
-    let mut group_node: Option<&SyntaxNode> = None;
-    let mut wildcard = false;
-
-    for el in &tree.children {
-        match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Identifier(s) => path_segments.push(s.as_str().to_owned()),
-                TokenKind::Punctuation(s)
-                    if s.kind == PunctuationKind::Colon && s.is_composed =>
-                {
-                    if path_segments.is_empty() {
-                        absolute = true;
-                    }
-                }
-                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Asterisk => {
-                    wildcard = true;
-                }
-                _ => {}
-            },
-            SyntaxElement::Node(child) => {
-                if child.kind == SyntaxKind::ImportTree {
-                    group_node = Some(child);
-                }
-            }
-        }
-    }
-
-    if absolute {
-        out.push_str("::");
-    }
-    out.push_str(&path_segments.join("::"));
-
-    // Detect group-body delimited by braces.
-    let is_group = tree.children.iter().any(|el| {
-        matches!(
-            el,
-            SyntaxElement::Token(t) if matches!(
-                t.kind,
-                TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace))
-            )
-        )
-    });
-
-    if is_group {
-        let mut group_children: Vec<String> = Vec::new();
-        for el in &tree.children {
-            if let SyntaxElement::Node(child) = el {
-                if child.kind == SyntaxKind::ImportTree {
-                    group_children.push(render_import_tree_to_string(child, sort_groups));
-                }
-            }
-        }
-        if sort_groups {
-            group_children.sort();
-        }
-        out.push_str("::{");
-        out.push_str(&group_children.join(","));
-        out.push('}');
-    } else if wildcard {
-        out.push_str("::*");
-    }
-
-    let _ = group_node; // future use
-    out
-}
-
 // ---------------------------------------------------------------------------
 // Items
 // ---------------------------------------------------------------------------
-
-fn import_node(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
-    debug_assert_eq!(node.kind, SyntaxKind::Import);
-    // Find the ImportTree.
-    let Some(tree) = first_node_of_kind(node, SyntaxKind::ImportTree) else {
-        return Doc::text("import");
-    };
-    Doc::concat([
-        Doc::text("import "),
-        import_tree(&tree, opts, /*top=*/ true),
-    ])
-}
-
-fn import_tree(tree: &SyntaxNode, opts: &FormatOptions, _top: bool) -> Doc {
-    let mut absolute = false;
-    let mut path_segments: Vec<String> = Vec::new();
-    let mut group_children: Vec<&SyntaxNode> = Vec::new();
-    let mut wildcard = false;
-    let mut has_brace = false;
-
-    for el in &tree.children {
-        match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Identifier(s) => path_segments.push(s.as_str().to_owned()),
-                TokenKind::Punctuation(s)
-                    if s.kind == PunctuationKind::Colon && s.is_composed =>
-                {
-                    if path_segments.is_empty() {
-                        absolute = true;
-                    }
-                }
-                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Asterisk => {
-                    wildcard = true;
-                }
-                TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace)) => {
-                    has_brace = true;
-                }
-                _ => {}
-            },
-            SyntaxElement::Node(child) => {
-                if child.kind == SyntaxKind::ImportTree {
-                    group_children.push(child);
-                }
-            }
-        }
-    }
-
-    let mut prefix = String::new();
-    if absolute {
-        prefix.push_str("::");
-    }
-    prefix.push_str(&path_segments.join("::"));
-
-    if has_brace {
-        // Sort group children by their rendered form.
-        group_children.sort_by_key(|child| render_import_tree_to_string(child, true));
-        let mut parts: Vec<Doc> = Vec::new();
-        if !prefix.is_empty() {
-            parts.push(Doc::string(prefix));
-            parts.push(Doc::text("::"));
-        }
-        parts.push(Doc::text("{"));
-        let mut inner: Vec<Doc> = Vec::new();
-        for (i, child) in group_children.iter().enumerate() {
-            inner.push(Doc::HardLine);
-            inner.push(import_tree(child, opts, false));
-            if i + 1 < group_children.len() || true {
-                inner.push(Doc::text(","));
-            }
-        }
-        parts.push(Doc::concat(inner).nest(opts.indent));
-        parts.push(Doc::HardLine);
-        parts.push(Doc::text("}"));
-        Doc::concat(parts)
-    } else if wildcard {
-        if !prefix.is_empty() {
-            Doc::string(format!("{}::*", prefix))
-        } else {
-            Doc::text("*")
-        }
-    } else {
-        Doc::string(prefix)
-    }
-}
 
 fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
     debug_assert_eq!(node.kind, SyntaxKind::Def);
