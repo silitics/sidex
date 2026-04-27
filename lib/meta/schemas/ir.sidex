@@ -57,7 +57,7 @@ record Unit {
 record SourceStorage {
     /// The sources.
     #[default]
-    sources: [Source]
+    sources: [Source],
 }
 
 /// A *source* is simply a chunk of text.
@@ -147,7 +147,7 @@ record Schema {
     source?: SourceIdx,
     /// The imported bundles, schemas, and definitions.
     #[default]
-    imports: [string: ItemRef]
+    imports: [string: ItemRef],
 }
 
 variant ItemRef {
@@ -300,10 +300,7 @@ record InstanceType {
 }
 
 /// A *span* identifies a range of text in a source.
-#[rust(
-    derive(PartialEq, Eq, Hash),
-    attr(non_exhaustive)
-)]
+#[rust(derive(PartialEq, Eq, Hash), attr(non_exhaustive))]
 record Span {
     /// The source.
     src: SourceIdx,

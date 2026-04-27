@@ -1,3 +1,2 @@
-//! An embedded JSON document.
 #[rust(type = "crate::json::Value")]
 opaque Embedded

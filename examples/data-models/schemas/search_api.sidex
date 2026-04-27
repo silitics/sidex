@@ -6,7 +6,7 @@ record Pagination {
 record SearchRequest {
     query: string,
     #[json(inline)]
-    pagination?: Pagination
+    pagination?: Pagination,
 }
 
 record SearchResults {

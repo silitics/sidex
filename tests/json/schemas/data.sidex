@@ -33,10 +33,14 @@ variant VariantExternallyTagged<T> {
     A,
     B: u64,
     C: VariantTestRecord,
-    D: T
+    D: T,
 }
 
-#[json(tagged = adjacently, tag = "tagFieldName", content = "defaultContentField")]
+#[json(
+    tagged = adjacently,
+    tag = "tagFieldName",
+    content = "defaultContentField"
+)]
 variant VariantAdjacentlyTagged<T> {
     A,
     B: u64,
