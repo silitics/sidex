@@ -44,6 +44,7 @@ fn expand_fragment(fragment: &Fragment) -> TokenStream {
             mode,
             separator,
             column,
+            block,
         } => {
             let vars = collect_vars(body);
             if vars.is_empty() {
@@ -57,8 +58,13 @@ fn expand_fragment(fragment: &Fragment) -> TokenStream {
 
             match mode {
                 IterMode::Vertical => {
+                    let method = if *block {
+                        quote! { join_vertical_block }
+                    } else {
+                        quote! { join_vertical }
+                    };
                     quote! {
-                        __code.join_vertical(
+                        __code.#method(
                             #iter_expr.map(|#destructure| {
                                 let mut __code = ::sidex_codegen::Code::new();
                                 #inner_body

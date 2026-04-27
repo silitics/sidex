@@ -19,8 +19,45 @@ impl std::error::Error for ParseError {}
 pub fn parse(input: &str) -> Result<Template, ParseError> {
     let dedented = dedent(input);
     let mut parser = Parser::new(&dedented);
-    let fragments = parser.parse_fragments(false)?;
+    let mut fragments = parser.parse_fragments(false)?;
+    mark_block_iterations(&mut fragments);
     Ok(Template { fragments })
+}
+
+/// Tags iterations that occupy their entire line as `block: true` and absorbs
+/// the trailing newline that delimits them. After this pass, a vertical
+/// iteration like `\n@(@items)*\n` becomes a single block fragment whose
+/// rendering provides the line ending when items are present and disappears
+/// entirely when items are empty.
+fn mark_block_iterations(fragments: &mut Vec<Fragment>) {
+    // Walk left-to-right but iterate by index so we can remove trailing
+    // newlines as we go. Recurse into iteration bodies first, then process the
+    // current level.
+    for fragment in fragments.iter_mut() {
+        if let Fragment::Iteration { body, .. } = fragment {
+            mark_block_iterations(body);
+        }
+    }
+
+    // Iterate right-to-left so that absorbing a trailing `Newline` on one
+    // iteration does not interfere with detecting the iteration that precedes
+    // it (in the case of two block iterations on adjacent lines).
+    let mut i = fragments.len();
+    while i > 0 {
+        i -= 1;
+        // Require an explicit `Newline` on both sides — the iteration must be
+        // visibly on its own line. A bare `@(@items)*` template (with no
+        // surrounding newlines at all) keeps its inline semantics.
+        let prev_is_newline = i > 0 && matches!(fragments[i - 1], Fragment::Newline);
+        let next_is_newline = i + 1 < fragments.len()
+            && matches!(fragments[i + 1], Fragment::Newline);
+        if prev_is_newline && next_is_newline {
+            if let Fragment::Iteration { block, .. } = &mut fragments[i] {
+                *block = true;
+                fragments.remove(i + 1);
+            }
+        }
+    }
 }
 
 /// Strips leading/trailing blank lines and common indentation.
@@ -175,6 +212,7 @@ impl<'a> Parser<'a> {
                                 mode: IterMode::Vertical,
                                 separator,
                                 column: at_column,
+                                block: false,
                             });
                         }
                         Some('+') => {
@@ -184,6 +222,7 @@ impl<'a> Parser<'a> {
                                 mode: IterMode::Horizontal,
                                 separator,
                                 column: at_column,
+                                block: false,
                             });
                         }
                         Some(ch) => {
@@ -289,6 +328,7 @@ mod tests {
                 mode,
                 separator,
                 column,
+                ..
             } => {
                 assert_eq!(*mode, IterMode::Vertical);
                 assert_eq!(separator, "");

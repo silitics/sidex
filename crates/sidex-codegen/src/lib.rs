@@ -200,6 +200,47 @@ mod tests {
     }
 
     #[test]
+    fn test_block_iteration_empty_collapses_line() {
+        let items: Vec<Code> = vec![];
+        let code = quote!(
+            "
+            header
+            @(@items)*
+            footer
+        "
+        );
+        assert_eq!(code.to_string(), "header\nfooter");
+    }
+
+    #[test]
+    fn test_block_iteration_non_empty_keeps_line() {
+        let items = vec![Code::from("middle1"), Code::from("middle2")];
+        let code = quote!(
+            "
+            header
+            @(@items)*
+            footer
+        "
+        );
+        assert_eq!(code.to_string(), "header\nmiddle1\nmiddle2\nfooter");
+    }
+
+    #[test]
+    fn test_block_iteration_two_in_a_row_one_empty() {
+        let first: Vec<Code> = vec![Code::from("a")];
+        let second: Vec<Code> = vec![];
+        let code = quote!(
+            "
+            header
+            @(@first)*
+            @(@second)*
+            footer
+        "
+        );
+        assert_eq!(code.to_string(), "header\na\nfooter");
+    }
+
+    #[test]
     fn test_complex_python_class() {
         let class_name = Code::from("Point");
         let base = Code::from("pydantic.BaseModel");

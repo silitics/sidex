@@ -77,6 +77,33 @@ impl Code {
         self.parts.push(Part::Dedent);
     }
 
+    /// Joins items vertically as a block — same as [`Self::join_vertical`]
+    /// when `items` is non-empty, but additionally appends a trailing newline
+    /// (unless the last item already ends with one, which avoids duplicating
+    /// newlines when block iterations are nested). When `items` is empty,
+    /// emits nothing at all (so the line that contains the iteration
+    /// disappears entirely). The macro uses this for vertical iterations that
+    /// occupy their entire line in the template.
+    pub fn join_vertical_block(
+        &mut self,
+        items: impl IntoIterator<Item = Code>,
+        column: usize,
+        separator: &str,
+    ) {
+        let items: Vec<Code> = items.into_iter().collect();
+        if items.is_empty() {
+            return;
+        }
+        let needs_trailing_newline = items
+            .last()
+            .map(|c| !ends_with_newline(&c.parts))
+            .unwrap_or(false);
+        self.join_vertical(items, column, separator);
+        if needs_trailing_newline {
+            self.parts.push(Part::Newline);
+        }
+    }
+
     /// Joins items horizontally (inline), with `separator` between each.
     pub fn join_horizontal(&mut self, items: impl IntoIterator<Item = Code>, separator: &str) {
         let mut first = true;
@@ -163,6 +190,48 @@ impl From<&str> for Code {
             parts: string_to_parts(s),
         }
     }
+}
+
+/// Returns `true` if the rendered content of `parts` would end with a newline
+/// character. Walks parts in reverse, ignoring layout-only parts (Indent and
+/// Dedent) and recursing into nested `Parts`.
+fn ends_with_newline(parts: &[Part]) -> bool {
+    for part in parts.iter().rev() {
+        match part {
+            Part::Newline => return true,
+            Part::Literal(s) => {
+                if s.is_empty() {
+                    continue;
+                }
+                return s.ends_with('\n');
+            }
+            Part::Owned(s) => {
+                if s.is_empty() {
+                    continue;
+                }
+                return s.ends_with('\n');
+            }
+            Part::Indent(_) | Part::Dedent => continue,
+            Part::Parts(inner) => {
+                // Look for the last non-layout part inside.
+                if has_visible_content(inner) {
+                    return ends_with_newline(inner);
+                }
+            }
+        }
+    }
+    false
+}
+
+/// Returns `true` if any part inside emits visible characters.
+fn has_visible_content(parts: &[Part]) -> bool {
+    parts.iter().any(|part| match part {
+        Part::Newline => true,
+        Part::Literal(s) => !s.is_empty(),
+        Part::Owned(s) => !s.is_empty(),
+        Part::Indent(_) | Part::Dedent => false,
+        Part::Parts(inner) => has_visible_content(inner),
+    })
 }
 
 /// Splits a string on newlines into Parts.

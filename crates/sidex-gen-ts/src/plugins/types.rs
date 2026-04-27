@@ -136,7 +136,7 @@ impl Plugin for Types {
     fn visit_schema(&self, ctx: &SchemaCtx) -> diagnostics::Result<Code> {
         let mut schemas: Vec<&ir::Schema> = ctx.bundle_ctx.bundle.schemas.iter().collect();
         schemas.sort_by(|a, b| a.name.cmp(&b.name));
-        let mut imports: Vec<Code> = schemas
+        let schema_imports: Vec<Code> = schemas
             .iter()
             .map(|schema| {
                 let alias = format!("__schema_{}", schema.name);
@@ -147,16 +147,20 @@ impl Plugin for Types {
 
         let mut external: Vec<(&String, &String)> = ctx.bundle_ctx.cfg.external.iter().collect();
         external.sort_by(|(a, _), (b, _)| a.cmp(b));
-        for (name, path) in external {
-            let alias = format!("__bundle_{}", name);
-            let path = ts_string_literal(path);
-            imports.push(quote!("import * as @alias from @path;"));
-        }
+        let external_imports: Vec<Code> = external
+            .iter()
+            .map(|(name, path)| {
+                let alias = format!("__bundle_{}", name);
+                let path = ts_string_literal(path);
+                quote!("import * as @alias from @path;")
+            })
+            .collect();
 
         Ok(quote!(
             r#"
             import * as __sidex_types from "@@sidex/types";
-            @(@imports)*
+            @(@schema_imports)*
+            @(@external_imports)*
             "#
         ))
     }
