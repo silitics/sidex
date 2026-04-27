@@ -343,7 +343,7 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
             defs.push(generate_def(ctx, def)?);
         }
     }
-    let defs: Vec<Code> = defs.into_iter().filter(|d| !is_empty_code(d)).collect();
+    let defs: Vec<Code> = defs.into_iter().filter(|d| !d.is_empty()).collect();
 
     Ok(quote!(
         r#"
@@ -995,17 +995,10 @@ fn collect_opaque_imports(schema: &ir::Schema) -> Result<Vec<String>> {
     Ok(modules)
 }
 
-/// Returns `true` if `code` would render as an empty string. Used to suppress
-/// definitions that have no Python output (e.g. `OpaqueType` defs without
-/// resolved types).
-fn is_empty_code(code: &Code) -> bool {
-    code.to_string().is_empty()
-}
-
 /// Wraps `code` in a `Vec` containing it iff it has any rendered content. Used
 /// in templates as `@(@block)*` so that an absent value collapses its line.
 fn optional_block(code: Code) -> Vec<Code> {
-    if is_empty_code(&code) {
+    if code.is_empty() {
         Vec::new()
     } else {
         vec![code]

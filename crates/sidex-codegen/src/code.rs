@@ -28,6 +28,14 @@ impl Code {
         Self { parts: Vec::new() }
     }
 
+    /// Returns `true` if rendering this fragment would produce no characters.
+    /// Layout-only parts (`Indent`, `Dedent`) and empty literals do not count
+    /// as content. Computed by walking the parts tree without materializing
+    /// the rendered string.
+    pub fn is_empty(&self) -> bool {
+        !has_visible_content(&self.parts)
+    }
+
     /// Appends a static literal.
     pub fn push_static(&mut self, s: &'static str) {
         self.parts.push(Part::Literal(s));
