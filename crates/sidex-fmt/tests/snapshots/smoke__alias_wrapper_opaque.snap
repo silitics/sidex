@@ -1,0 +1,7 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+alias Foo: idx
+wrapper Bar: string
+opaque Baz

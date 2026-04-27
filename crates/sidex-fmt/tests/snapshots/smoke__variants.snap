@@ -1,0 +1,9 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+variant Either<L, R> {
+    None,
+    Left: L,
+    Right: R,
+}

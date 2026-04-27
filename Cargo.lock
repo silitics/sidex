@@ -1166,6 +1166,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-fmt"
+version = "0.1.0"
+dependencies = [
+ "insta",
+ "sidex-diagnostics",
+ "sidex-ir",
+ "sidex-syntax",
+]
+
+[[package]]
 name = "sidex-gen"
 version = "0.1.0"
 dependencies = [

@@ -1,0 +1,16 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+// schema-level comment
+//! schema doc
+
+// before record
+/// doc
+record Foo {
+    /// field doc
+    // before field
+    a: int,
+}
+
+// trailing

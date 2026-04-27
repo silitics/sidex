@@ -1,0 +1,12 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+import std::option::Option
+import std::result::{
+    Error,
+    Result,
+}
+
+import a::A
+import b::B

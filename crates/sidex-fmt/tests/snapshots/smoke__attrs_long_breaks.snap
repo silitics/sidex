@@ -1,0 +1,10 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+#[rust(
+    derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, ExtraTrait)
+)]
+record VeryLong {
+    a: int,
+}

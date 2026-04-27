@@ -1,0 +1,8 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+record Person {
+    id?: idx,
+    first_name: string,
+}

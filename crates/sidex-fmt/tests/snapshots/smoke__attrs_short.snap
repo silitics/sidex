@@ -1,0 +1,9 @@
+---
+source: crates/sidex-fmt/tests/smoke.rs
+expression: out
+---
+#[json(rename_all = "camelCase")]
+record Foo {
+    #[json(rename = "x")]
+    a: string,
+}
