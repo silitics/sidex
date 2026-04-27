@@ -142,8 +142,8 @@ fn schema(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
 
     // Imports section: flatten all brace groups, sub-group external by
     // bundle, render alpha-sorted within each sub-group.
-    let external_flats = flatten_all(external);
-    let internal_flats = flatten_all(internal);
+    let external_flats = flatten_all(external, opts);
+    let internal_flats = flatten_all(internal, opts);
     let imports_doc = render_imports(external_flats, internal_flats, cx);
     if !matches!(imports_doc, Doc::Nil) {
         if !parts.is_empty() {
@@ -205,7 +205,7 @@ struct FlatImport {
     bundle: String,
 }
 
-fn flatten_all(items: Vec<LogicalItem>) -> Vec<FlatImport> {
+fn flatten_all(items: Vec<LogicalItem>, opts: &FormatOptions) -> Vec<FlatImport> {
     let mut out = Vec::new();
     for item in items {
         let leading = item.leading;
@@ -213,6 +213,9 @@ fn flatten_all(items: Vec<LogicalItem>) -> Vec<FlatImport> {
         if let Some(tree) = first_node_of_kind(&item.node, SyntaxKind::ImportTree) {
             flatten_tree(&tree, "", false, &mut produced);
         }
+        // Drop any flats whose rendered path is in the excluded set
+        // (`sidex check --fix` uses this to strip unused imports).
+        produced.retain(|f| !opts.excluded_imports.contains(&f.rendered));
         for (i, mut flat) in produced.into_iter().enumerate() {
             if i == 0 {
                 flat.leading = leading.clone();

@@ -4,33 +4,73 @@
 //! active diagnostic context. They are non-fatal — typically `Warning`
 //! severity — and do not stop further compilation.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use sidex_diagnostics::{Diagnostic, Label};
 use sidex_ir as ir;
 use sidex_syntax::ast;
 
-use crate::transformer::Transformer;
+use crate::transformer::{ParsedSchema, Transformer};
+
+/// A single unused-import finding.
+#[derive(Debug, Clone)]
+pub struct UnusedImport {
+    /// The schema that contains the unused import.
+    pub schema: ir::SchemaIdx,
+    /// The imported name (last segment of the path).
+    pub name: String,
+    /// Span of the imported name in the source.
+    pub span: ir::Span,
+    /// The full rendered import path — matches what the formatter would
+    /// emit. Used by `sidex check --fix` to filter the import out.
+    pub rendered_path: String,
+}
+
+/// Collect all unused-import findings for `bundle` without emitting them.
+pub fn collect_unused_imports(
+    transformer: &Transformer,
+    bundle: ir::BundleIdx,
+) -> Vec<UnusedImport> {
+    let mut out = Vec::new();
+    for schema in transformer.iter_user_schemas(bundle) {
+        collect_for_schema(schema, &mut out);
+    }
+    out
+}
 
 /// Emit `unused-import` warnings for every schema in `bundle`.
-///
-/// An import is considered unused when its imported name (the last segment
-/// of a path import, or each name inside a brace group) does not appear as
-/// the head of any path used in the schema's definitions. Wildcard imports
-/// (`path::*`) are skipped — we cannot tell which names they bring in.
-///
-/// Type variables of the enclosing definition are not counted as references
-/// to imports.
 pub fn lint_unused_imports(transformer: &Transformer, bundle: ir::BundleIdx) {
-    for schema in transformer.iter_user_schemas(bundle) {
-        lint_schema(schema);
+    for finding in collect_unused_imports(transformer, bundle) {
+        Diagnostic::warning(format!("Unused import `{}`.", finding.name))
+            .with_span(Some(finding.span.clone()))
+            .with_label(Label::new(finding.span, "unused import"))
+            .with_help("Remove the import or run `sidex check --fix`.")
+            .emit();
     }
 }
 
-fn lint_schema(schema: &crate::transformer::ParsedSchema) {
-    let mut imported: Vec<&ast::Identifier> = Vec::new();
+/// Group findings by schema. The returned map keys are schema indices and
+/// the values are the rendered import paths of every unused import in that
+/// schema — exactly what [`sidex_fmt::FormatOptions::excluded_imports`]
+/// consumes.
+pub fn unused_imports_by_schema(
+    findings: &[UnusedImport],
+) -> HashMap<ir::SchemaIdx, HashSet<String>> {
+    let mut out: HashMap<ir::SchemaIdx, HashSet<String>> = HashMap::new();
+    for f in findings {
+        out.entry(f.schema)
+            .or_default()
+            .insert(f.rendered_path.clone());
+    }
+    out
+}
+
+fn collect_for_schema(schema: &ParsedSchema, out: &mut Vec<UnusedImport>) {
+    let mut imported: Vec<(&ast::Identifier, String)> = Vec::new();
     for import in schema.imports() {
-        collect_imported_names(&import.tree, &mut imported);
+        walk_import_leaves(&import.tree, "", &mut |last, full_path| {
+            imported.push((last, full_path));
+        });
     }
     if imported.is_empty() {
         return;
@@ -47,8 +87,6 @@ fn lint_schema(schema: &crate::transformer::ParsedSchema) {
                 continue;
             }
             let head = p.segments[0].as_str();
-            // A bare single-segment path may be a type variable of the
-            // enclosing def; skip those.
             if p.segments.len() == 1 && var_names.contains(head) {
                 continue;
             }
@@ -56,34 +94,65 @@ fn lint_schema(schema: &crate::transformer::ParsedSchema) {
         }
     }
 
-    for ident in imported {
+    for (ident, rendered_path) in imported {
         if !referenced.contains(ident.as_str()) {
-            let span = ident.span().clone();
-            Diagnostic::warning(format!("Unused import `{}`.", ident.as_str()))
-                .with_span(Some(span.clone()))
-                .with_label(Label::new(span, "unused import"))
-                .with_help("Remove the import or `sidex check --fix` to clean up.")
-                .emit();
+            out.push(UnusedImport {
+                schema: schema.idx(),
+                name: ident.as_str().to_owned(),
+                span: ident.span().clone(),
+                rendered_path,
+            });
         }
     }
 }
 
-fn collect_imported_names<'a>(
+/// Walk an import tree, invoking `visit` once per leaf path with the leaf's
+/// last identifier and the full rendered path string.
+fn walk_import_leaves<'a, F: FnMut(&'a ast::Identifier, String)>(
     tree: &'a ast::ImportTree,
-    out: &mut Vec<&'a ast::Identifier>,
+    prefix: &str,
+    visit: &mut F,
 ) {
     match tree {
         ast::ImportTree::Path(p) => {
+            let local = render_path_text(p);
+            let full = compose(prefix, &local);
             if let Some(last) = p.segments.last() {
-                out.push(last);
+                visit(last, full);
             }
         }
         ast::ImportTree::Wildcard => {}
-        ast::ImportTree::Group { trees, .. } => {
+        ast::ImportTree::Group { path, trees } => {
+            let local = render_path_text(path);
+            let new_prefix = compose(prefix, &local);
             for t in trees {
-                collect_imported_names(t, out);
+                walk_import_leaves(t, &new_prefix, visit);
             }
         }
+    }
+}
+
+fn render_path_text(p: &ast::Path) -> String {
+    let mut s = String::new();
+    if p.is_absolute {
+        s.push_str("::");
+    }
+    for (i, seg) in p.segments.iter().enumerate() {
+        if i > 0 {
+            s.push_str("::");
+        }
+        s.push_str(seg.as_str());
+    }
+    s
+}
+
+fn compose(prefix: &str, local: &str) -> String {
+    if prefix.is_empty() {
+        local.to_owned()
+    } else if local.is_empty() {
+        prefix.to_owned()
+    } else {
+        format!("{}::{}", prefix, local)
     }
 }
 

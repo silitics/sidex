@@ -51,6 +51,11 @@ pub struct ParsedSchema {
 }
 
 impl ParsedSchema {
+    /// The schema's index within its bundle.
+    pub fn idx(&self) -> ir::SchemaIdx {
+        self.idx
+    }
+
     /// The parsed `import` directives.
     pub fn imports(&self) -> &[ast::Import] {
         &self.imports
@@ -467,6 +472,17 @@ impl Transformer {
     /// Iterate the parsed schemas of `bundle`.
     pub fn iter_user_schemas(&self, bundle: ir::BundleIdx) -> impl Iterator<Item = &ParsedSchema> {
         self.loaded[bundle.idx()].schemas.iter()
+    }
+
+    /// The source-storage index of `schema` in `bundle`.
+    pub fn schema_source_idx(
+        &self,
+        bundle: ir::BundleIdx,
+        schema: ir::SchemaIdx,
+    ) -> Option<ir::SourceIdx> {
+        let loaded = self.loaded.get(bundle.idx())?;
+        let schema = loaded.schemas.get(schema.idx())?;
+        loaded.source.schemas.get(&schema.name).copied()
     }
 
     fn get_bundle_by_path(&self, path: &Path) -> Option<&LoadedBundle> {

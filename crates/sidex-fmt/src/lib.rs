@@ -26,6 +26,11 @@ pub struct FormatOptions {
     ///
     /// `std` is always treated as external.
     pub external_bundles: Vec<String>,
+    /// Fully-rendered import paths to drop from the output. Used by
+    /// `sidex check --fix` to remove unused imports. The string format
+    /// matches what the formatter would emit, e.g. `"::other::Foo"` or
+    /// `"types::Color"`.
+    pub excluded_imports: std::collections::HashSet<String>,
 }
 
 impl Default for FormatOptions {
@@ -34,6 +39,7 @@ impl Default for FormatOptions {
             max_width: 80,
             indent: 4,
             external_bundles: vec!["std".to_owned()],
+            excluded_imports: std::collections::HashSet::new(),
         }
     }
 }
