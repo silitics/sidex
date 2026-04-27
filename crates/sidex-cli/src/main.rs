@@ -9,7 +9,7 @@ pub mod utils;
 #[derive(Parser, Debug)]
 #[clap(
     name = "sidex",
-    version,
+    version = env!("SIDEX_GIT_VERSION"),
     about = "A format- and language-agnostic data modeling and API definition framework.",
     long_about = concat!(
         "A format- and language-agnostic data modeling and API definition framework.\n\n",
