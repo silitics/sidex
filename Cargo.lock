@@ -1388,6 +1388,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-codegen"
+version = "0.1.0"
+dependencies = [
+ "sidex-codegen-macros",
+]
+
+[[package]]
+name = "sidex-codegen-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "sidex-codegen-syntax",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "sidex-codegen-syntax"
+version = "0.1.0"
+
+[[package]]
 name = "sidex-core"
 version = "0.1.0"
 dependencies = [
