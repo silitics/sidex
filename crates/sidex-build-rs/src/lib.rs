@@ -78,6 +78,10 @@ impl Generator {
     ///
     /// If enabled, the generated code is formatted by calling `rustfmt`.
     ///
+    /// A failure to run `rustfmt` (for instance, because it is not installed
+    /// in the build environment) is reported as a `cargo:warning=` and does
+    /// not abort the build — the generated code is valid Rust either way.
+    ///
     /// By default, this option is enabled.
     pub fn format_generated_code(mut self, enabled: bool) -> Self {
         self.format_generated_code = enabled;
@@ -141,7 +145,23 @@ impl Generator {
             sidex_gen::Generator::generate(&generator, job).unwrap();
 
             if self.format_generated_code {
-                utils::run_rustfmt(output_path.join("mod.rs"))?;
+                let mod_rs = output_path.join("mod.rs");
+                match utils::run_rustfmt(&mod_rs) {
+                    Ok(status) if status.success() => {}
+                    Ok(status) => {
+                        println!(
+                            "cargo:warning=sidex-build-rs: rustfmt exited with status {status} \
+                             on {}; leaving generated code unformatted",
+                            mod_rs.display(),
+                        );
+                    }
+                    Err(err) => {
+                        println!(
+                            "cargo:warning=sidex-build-rs: failed to run rustfmt ({err}); \
+                             leaving generated code unformatted",
+                        );
+                    }
+                }
             }
 
             if self.emit_rerun_if_changed {
