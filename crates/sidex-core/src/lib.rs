@@ -5,5 +5,6 @@ pub use sidex_ir as ir;
 
 pub mod builtins;
 pub mod bundle;
+pub mod lints;
 pub mod transformer;
 pub mod utils;

@@ -50,6 +50,23 @@ pub struct ParsedSchema {
     def_by_name: HashMap<String, ir::DefIdx>,
 }
 
+impl ParsedSchema {
+    /// The parsed `import` directives.
+    pub fn imports(&self) -> &[ast::Import] {
+        &self.imports
+    }
+
+    /// The parsed top-level definitions.
+    pub fn defs(&self) -> &[ast::Def] {
+        &self.defs
+    }
+
+    /// The schema's name (file stem of the schema source).
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Transformer {
     pub storage: ir::SourceStorage,
@@ -445,6 +462,11 @@ impl Transformer {
 
     pub fn get_bundle_manifest(&self, idx: ir::BundleIdx) -> &Manifest {
         &self.loaded[idx.idx()].source.manifest
+    }
+
+    /// Iterate the parsed schemas of `bundle`.
+    pub fn iter_user_schemas(&self, bundle: ir::BundleIdx) -> impl Iterator<Item = &ParsedSchema> {
+        self.loaded[bundle.idx()].schemas.iter()
     }
 
     fn get_bundle_by_path(&self, path: &Path) -> Option<&LoadedBundle> {
