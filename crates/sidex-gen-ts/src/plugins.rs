@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use proc_macro2::TokenStream;
+use sidex_codegen::Code;
 use sidex_gen::{diagnostics::Result, ir};
 
 use crate::context::{BundleCtx, SchemaCtx};
@@ -8,16 +8,16 @@ use crate::context::{BundleCtx, SchemaCtx};
 pub mod types;
 
 pub trait Plugin {
-    fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<TokenStream>;
+    fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<Code>;
 
     #[allow(unused_variables)]
-    fn visit_bundle(&self, ctx: &BundleCtx) -> Result<TokenStream> {
-        Ok(Default::default())
+    fn visit_bundle(&self, ctx: &BundleCtx) -> Result<Code> {
+        Ok(Code::new())
     }
 
     #[allow(unused_variables)]
-    fn visit_schema(&self, ctx: &SchemaCtx) -> Result<TokenStream> {
-        Ok(Default::default())
+    fn visit_schema(&self, ctx: &SchemaCtx) -> Result<Code> {
+        Ok(Code::new())
     }
 }
 

@@ -1525,14 +1525,12 @@ dependencies = [
 name = "sidex-gen-ts"
 version = "0.1.0"
 dependencies = [
- "proc-macro2",
- "quote",
  "serde",
  "serde_json",
  "sidex-attrs-json",
  "sidex-attrs-rust",
+ "sidex-codegen",
  "sidex-gen",
- "syn 2.0.98",
 ]
 
 [[package]]

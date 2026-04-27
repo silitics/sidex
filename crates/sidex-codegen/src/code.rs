@@ -189,6 +189,18 @@ impl ToCode for Code {
     }
 }
 
+impl ToCode for str {
+    fn to_code(&self) -> Code {
+        Code::from(self)
+    }
+}
+
+impl ToCode for String {
+    fn to_code(&self) -> Code {
+        Code::from(self.as_str())
+    }
+}
+
 impl<T: ToCode + ?Sized> ToCode for &T {
     fn to_code(&self) -> Code {
         (*self).to_code()

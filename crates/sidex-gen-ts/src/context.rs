@@ -1,60 +1,61 @@
-use proc_macro2::TokenStream;
-use quote::{ToTokens, format_ident, quote};
 use sidex_attrs_json::types::JsonType;
+use sidex_codegen::{Code, ToCode, quote};
 use sidex_gen::ir;
 
 use crate::config::Config;
 
-/// A TypeScript type expression.
-pub struct TypeExpr(pub(crate) TokenStream);
+/// A TypeScript type expression. Wraps a [`Code`] with combinators for the
+/// common operations (union, intersection, tuple, array indexing).
+#[derive(Clone)]
+pub struct TypeExpr(pub Code);
 
 impl TypeExpr {
     pub fn any() -> Self {
-        Self(quote! { any })
+        Self(Code::from("any"))
     }
 
     pub fn number() -> Self {
-        Self(quote! { number })
+        Self(Code::from("number"))
     }
 
     pub fn string() -> Self {
-        Self(quote! { string })
+        Self(Code::from("string"))
     }
 
     pub fn boolean() -> Self {
-        Self(quote! { boolean })
+        Self(Code::from("boolean"))
     }
 
     pub fn null() -> Self {
-        Self(quote! { null })
+        Self(Code::from("null"))
     }
 
     pub fn string_literal(literal: &str) -> Self {
-        Self(quote! { #literal })
+        Self(Code::from(format!("\"{}\"", literal.replace('\\', "\\\\").replace('"', "\\\""))))
     }
 
     pub fn number_literal(literal: f64) -> Self {
-        Self(quote! { #literal })
+        Self(Code::from(literal.to_string()))
     }
 
-    pub fn union<'t, I: IntoIterator<Item = Self>>(types: I) -> Self {
-        let types = types.into_iter();
-        Self(quote! { ( #(#types)|* ) })
+    pub fn union<I: IntoIterator<Item = Self>>(types: I) -> Self {
+        let parts: Vec<Code> = types.into_iter().map(|t| t.0).collect();
+        Self(quote!("(@(@parts) | +)"))
     }
 
-    pub fn intersection<'t, I: IntoIterator<Item = Self>>(types: I) -> Self {
-        let types = types.into_iter();
-        Self(quote! { ( #(#types)&* ) })
+    pub fn intersection<I: IntoIterator<Item = Self>>(types: I) -> Self {
+        let parts: Vec<Code> = types.into_iter().map(|t| t.0).collect();
+        Self(quote!("(@(@parts) & +)"))
     }
 
     pub fn tuple<'t, I: IntoIterator<Item = &'t Self>>(elements: I) -> Self {
-        let elements = elements.into_iter();
-        Self(quote! { [ #(#elements),* ] })
+        let parts: Vec<Code> = elements.into_iter().map(|t| t.0.clone()).collect();
+        Self(quote!("[@(@parts), +]"))
     }
 
     pub fn array(&self) -> Self {
-        let inner = &self.0;
-        Self(quote! { #inner [] })
+        let inner = self.0.clone();
+        Self(quote!("@inner[]"))
     }
 }
 
@@ -72,9 +73,9 @@ impl From<&JsonType> for TypeExpr {
     }
 }
 
-impl ToTokens for TypeExpr {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        self.0.to_tokens(tokens)
+impl ToCode for TypeExpr {
+    fn to_code(&self) -> Code {
+        self.0.clone()
     }
 }
 
@@ -108,8 +109,8 @@ impl<'cx> SchemaCtx<'cx> {
     pub fn resolve_type(&self, def: &ir::Def, typ: &ir::Type) -> TypeExpr {
         match &typ.kind {
             ir::TypeKind::TypeVar(var) => {
-                let var = format_ident!("{}", def[var.idx].name.as_str());
-                TypeExpr(quote! { #var })
+                let name = def[var.idx].name.as_str().to_owned();
+                TypeExpr(Code::from(name))
             }
             ir::TypeKind::Instance(instance) => {
                 let bundle = &self.bundle_ctx.unit[instance.bundle];
@@ -123,36 +124,32 @@ impl<'cx> SchemaCtx<'cx> {
                     instance_def.name.as_str()
                 );
 
-                let typ = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path) {
-                    path.parse().unwrap()
-                } else {
-                    if instance.bundle == self.bundle_ctx.bundle.idx {
-                        let def_name = format_ident!("{}", &instance_def.name.as_str());
-                        if instance.schema == self.schema.idx {
-                            quote! { #def_name }
-                        } else {
-                            let schema_name = format_ident!("__schema_{}", &schema.name);
-                            quote! { #schema_name . #def_name }
-                        }
+                let base = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path) {
+                    Code::from(path.as_str())
+                } else if instance.bundle == self.bundle_ctx.bundle.idx {
+                    if instance.schema == self.schema.idx {
+                        Code::from(instance_def.name.as_str())
                     } else {
-                        let bundle_name = format_ident!("__bundle_{}", &bundle.metadata.name);
-                        let schema_name = format_ident!("{}", schema.name);
-                        let def_name = format_ident!("{}", &instance_def.name.as_str());
-
-                        quote! { #bundle_name . #schema_name . #def_name }
+                        Code::from(format!("__schema_{}.{}", schema.name, instance_def.name.as_str()))
                     }
+                } else {
+                    Code::from(format!(
+                        "__bundle_{}.{}.{}",
+                        bundle.metadata.name,
+                        schema.name,
+                        instance_def.name.as_str()
+                    ))
                 };
 
                 if instance_def.vars.is_empty() {
-                    TypeExpr(typ)
+                    TypeExpr(base)
                 } else {
-                    let subst = instance
+                    let subst: Vec<Code> = instance
                         .subst
                         .iter()
-                        .map(|typ| self.resolve_type(def, typ))
-                        .collect::<Vec<_>>();
-
-                    TypeExpr(quote! { #typ < #(#subst),* > })
+                        .map(|t| self.resolve_type(def, t).0)
+                        .collect();
+                    TypeExpr(quote!("@base<@(@subst), +>"))
                 }
             }
         }

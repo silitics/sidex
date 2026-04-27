@@ -1,29 +1,24 @@
-use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
 use sidex_attrs_json::{
     JsonFieldAttrs, JsonOpaqueTypeAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
     JsonVariantTypeAttrs, atoms::JsonTaggedAttr,
 };
-use sidex_gen::{
-    attrs::TryFromAttrs,
-    diagnostics::{self, Result},
-    ir,
-};
+use sidex_codegen::{Code, quote};
+use sidex_gen::{attrs::TryFromAttrs, diagnostics, ir};
 
 use super::Plugin;
-use crate::context::{SchemaCtx, TypeExpr};
+use crate::context::{BundleCtx, SchemaCtx, TypeExpr};
 
 pub struct Types;
 
 impl Plugin for Types {
-    fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> diagnostics::Result<TokenStream> {
-        let name = format_ident!("{}", def.name.as_str());
-        let qualified_name = format!(
+    fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> diagnostics::Result<Code> {
+        let name = def.name.as_str().to_owned();
+        let qualified_name = ts_string_literal(&format!(
             "::{}::{}::{}",
             ctx.bundle_ctx.bundle.metadata.name,
             ctx.schema.name,
             def.name.as_str()
-        );
+        ));
         let mut is_nominal = true;
         let mut type_expr = match &def.kind {
             ir::DefKind::TypeAlias(typ) => {
@@ -33,62 +28,49 @@ impl Plugin for Types {
             ir::DefKind::OpaqueType(_) => {
                 let ty_json_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
                 ty_json_attrs.typ.map_or_else(
-                    || TypeExpr::any(),
+                    TypeExpr::any,
                     |typ_attr| TypeExpr::union(typ_attr.typ.types.iter().map(TypeExpr::from)),
                 )
             }
             ir::DefKind::RecordType(typ) => {
                 is_nominal = false;
                 let ty_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
-                let names = typ
-                    .fields
-                    .iter()
-                    .map(|field| {
+                if typ.fields.is_empty() {
+                    TypeExpr(Code::from("Record<string, never>"))
+                } else {
+                    let mut field_names: Vec<Code> = Vec::with_capacity(typ.fields.len());
+                    let mut field_opts: Vec<Code> = Vec::with_capacity(typ.fields.len());
+                    let mut field_types: Vec<Code> = Vec::with_capacity(typ.fields.len());
+                    for field in &typ.fields {
                         let json_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
                         let field_name = ty_json_attrs.field_name(field, &json_attrs);
-                        Ok(quote! { #field_name })
-                    })
-                    .collect::<Result<Vec<_>>>()?;
-                let types = typ
-                    .fields
-                    .iter()
-                    .map(|field| ctx.resolve_type(def, &field.typ))
-                    .collect::<Vec<_>>();
-                let optional = typ.fields.iter().map(|field| {
-                    if field.is_optional {
-                        quote! { ? }
-                    } else {
-                        TokenStream::default()
+                        field_names.push(Code::from(ts_string_literal(&field_name)));
+                        field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
+                        field_types.push(ctx.resolve_type(def, &field.typ).0);
                     }
-                });
-                if names.is_empty() {
-                    TypeExpr(quote! { Record<string, never> })
-                } else {
-                    TypeExpr(quote! {
-                        { #( #names #optional : #types ),* }
-                    })
+                    TypeExpr(quote!("{ @(@field_names@field_opts: @field_types), + }"))
                 }
             }
             ir::DefKind::VariantType(typ) => {
                 is_nominal = false;
                 let ty_json_attrs = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
-                let ty_tag_field = format_ident!("{}", ty_json_attrs.tag_field_name());
-                let mut variant_ts_types = Vec::new();
+                let tag_field = ts_string_literal(&ty_json_attrs.tag_field_name());
+                let mut variant_ts_types: Vec<TypeExpr> = Vec::new();
                 for variant in &typ.variants {
                     let json_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
-                    let name = ty_json_attrs.variant_name(variant, &json_attrs);
+                    let variant_name = ts_string_literal(&ty_json_attrs.variant_name(variant, &json_attrs));
 
-                    if let Some(typ) = &variant.typ {
-                        let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
-                        let inner = ctx.resolve_type(def, typ);
+                    if let Some(typ_) = &variant.typ {
+                        let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ_);
+                        let inner = ctx.resolve_type(def, typ_);
 
                         match ty_json_attrs.tagged {
                             JsonTaggedAttr::Externally => {
-                                variant_ts_types.push(TypeExpr(quote! {
-                                    { #name : #inner }
-                                }))
+                                variant_ts_types.push(TypeExpr(quote!("{ @variant_name: @inner }")));
                             }
-                            JsonTaggedAttr::Implicitly => variant_ts_types.push(inner),
+                            JsonTaggedAttr::Implicitly => {
+                                variant_ts_types.push(inner);
+                            }
                             _ => {
                                 match ctx.bundle_ctx.unit.record_type(&resolved) {
                                     Some(_)
@@ -98,18 +80,17 @@ impl Plugin for Types {
                                                 JsonTaggedAttr::Internally
                                             ) =>
                                     {
-                                        variant_ts_types.push(TypeExpr(quote! {
-                                            ({ #ty_tag_field : #name } & #inner)
-                                        }))
+                                        variant_ts_types.push(TypeExpr(quote!(
+                                            "({ @tag_field: @variant_name } & @inner)"
+                                        )));
                                     }
                                     _ => {
-                                        let content_name = format_ident!(
-                                            "{}",
-                                            ty_json_attrs.content_field_name(&json_attrs)
+                                        let content_field = ts_string_literal(
+                                            &ty_json_attrs.content_field_name(&json_attrs),
                                         );
-                                        variant_ts_types.push(TypeExpr(quote! {
-                                            { #ty_tag_field : #name , #content_name : #inner }
-                                        }))
+                                        variant_ts_types.push(TypeExpr(quote!(
+                                            "{ @tag_field: @variant_name, @content_field: @inner }"
+                                        )));
                                     }
                                 }
                             }
@@ -117,14 +98,10 @@ impl Plugin for Types {
                     } else {
                         variant_ts_types.push(match ty_json_attrs.tagged {
                             JsonTaggedAttr::Externally | JsonTaggedAttr::Implicitly => {
-                                TypeExpr(quote! { #name })
+                                TypeExpr(Code::from(variant_name))
                             }
-                            _ => {
-                                TypeExpr(quote! {
-                                    { #ty_tag_field : #name }
-                                })
-                            }
-                        })
+                            _ => TypeExpr(quote!("{ @tag_field: @variant_name }")),
+                        });
                     }
                 }
                 TypeExpr::union(variant_ts_types.into_iter())
@@ -132,87 +109,76 @@ impl Plugin for Types {
             ir::DefKind::WrapperType(typ) => ctx.resolve_type(def, &typ.wrapped),
             _ => {
                 // Service definitions and derived types are handled separately.
-                return Ok(TokenStream::default());
+                return Ok(Code::new());
             }
         };
 
         if is_nominal {
-            type_expr = TypeExpr(quote! { __sidex_types.Nominal< #type_expr , #qualified_name > });
+            type_expr = TypeExpr(quote!(
+                "__sidex_types.Nominal<@type_expr, @qualified_name>"
+            ));
         }
 
-        let vars = if def.vars.is_empty() {
-            TokenStream::default()
+        let vars: Vec<Code> = def
+            .vars
+            .iter()
+            .map(|var| Code::from(var.name.as_str()))
+            .collect();
+        let vars_clause = if vars.is_empty() {
+            Code::new()
         } else {
-            let vars = def
-                .vars
-                .iter()
-                .map(|var| format_ident!("{}", var.name.as_str()));
-            quote! { < #(#vars),* > }
+            quote!("<@(@vars), +>")
         };
 
-        Ok(quote! {
-            export type #name #vars = #type_expr;
-        })
+        Ok(quote!("export type @name@vars_clause = @type_expr;"))
     }
 
-    fn visit_schema(&self, ctx: &SchemaCtx) -> diagnostics::Result<TokenStream> {
-        let mut import_paths = ctx
-            .bundle_ctx
-            .bundle
-            .schemas
+    fn visit_schema(&self, ctx: &SchemaCtx) -> diagnostics::Result<Code> {
+        let mut schemas: Vec<&ir::Schema> = ctx.bundle_ctx.bundle.schemas.iter().collect();
+        schemas.sort_by(|a, b| a.name.cmp(&b.name));
+        let mut imports: Vec<Code> = schemas
             .iter()
             .map(|schema| {
-                let mut path = String::with_capacity(schema.name.len() + 2);
-                path.push_str("./");
-                path.push_str(schema.name.as_str());
-                (path, schema)
+                let alias = format!("__schema_{}", schema.name);
+                let path = ts_string_literal(&format!("./{}", schema.name));
+                quote!("import * as @alias from @path;")
             })
-            .collect::<Vec<_>>();
-        import_paths.sort_by(|(x, _), (y, _)| x.cmp(y));
-        let schema_imports = import_paths.iter().map(|(path, schema)| {
-            let local_name = format_ident!("__schema_{}", schema.name);
-            quote! {
-                import * as #local_name from #path;
-            }
-        });
-        let mut external = ctx.bundle_ctx.cfg.external.iter().collect::<Vec<_>>();
-        external.sort_by(|(x, _), (y, _)| x.cmp(y));
-        let external_imports = external.iter().map(|(name, path)| {
-            let local_name = format_ident!("__bundle_{}", name);
-            quote! {
-                import * as #local_name from #path;
-            }
-        });
-        Ok(quote! {
-            import * as __sidex_types from "@sidex/types";
+            .collect();
 
-            #(#schema_imports)*
+        let mut external: Vec<(&String, &String)> = ctx.bundle_ctx.cfg.external.iter().collect();
+        external.sort_by(|(a, _), (b, _)| a.cmp(b));
+        for (name, path) in external {
+            let alias = format!("__bundle_{}", name);
+            let path = ts_string_literal(path);
+            imports.push(quote!("import * as @alias from @path;"));
+        }
 
-            #(#external_imports)*
-        })
+        Ok(quote!(
+            r#"
+            import * as __sidex_types from "@@sidex/types";
+            @(@imports)*
+            "#
+        ))
     }
 
-    fn visit_bundle(&self, ctx: &crate::context::BundleCtx) -> diagnostics::Result<TokenStream> {
-        let mut import_paths = ctx
-            .bundle
-            .schemas
+    fn visit_bundle(&self, ctx: &BundleCtx) -> diagnostics::Result<Code> {
+        let mut schemas: Vec<&ir::Schema> = ctx.bundle.schemas.iter().collect();
+        schemas.sort_by(|a, b| a.name.cmp(&b.name));
+        let exports: Vec<Code> = schemas
             .iter()
             .map(|schema| {
-                let mut path = String::with_capacity(schema.name.len() + 2);
-                path.push_str("./");
-                path.push_str(schema.name.as_str());
-                (path, schema)
+                let name = schema.name.as_str().to_owned();
+                let path = ts_string_literal(&format!("./{}", schema.name));
+                quote!("export * as @name from @path;")
             })
-            .collect::<Vec<_>>();
-        import_paths.sort_by(|(x, _), (y, _)| x.cmp(y));
-        let schema_exports = import_paths.iter().map(|(path, schema)| {
-            let name = format_ident!("{}", schema.name);
-            quote! {
-                export * as #name from #path;
-            }
-        });
-        Ok(quote! {
-            #(#schema_exports)*
-        })
+            .collect();
+        Ok(quote!("@(@exports)*"))
     }
+}
+
+fn ts_string_literal(s: &str) -> String {
+    format!(
+        "\"{}\"",
+        s.replace('\\', "\\\\").replace('"', "\\\"")
+    )
 }
