@@ -104,6 +104,8 @@ impl<'cx> SchemaCtx<'cx> {
                     if instance.schema == self.schema.idx {
                         instance_def.name.as_str().to_owned()
                     } else {
+                        // The alias `_schema_<name>` is always a valid identifier;
+                        // no sanitization needed on the alias side.
                         format!("_schema_{}.{}", schema.name, instance_def.name.as_str())
                     }
                 } else {
@@ -114,7 +116,11 @@ impl<'cx> SchemaCtx<'cx> {
                         .get(&bundle.metadata.name)
                         .map(String::as_str)
                         .unwrap_or(&bundle.metadata.name);
-                    format!("{ext}.{}.{}", schema.name, instance_def.name.as_str())
+                    format!(
+                        "{ext}.{}.{}",
+                        sanitize_py_name(schema.name.as_str()),
+                        instance_def.name.as_str()
+                    )
                 };
 
                 if instance.subst.is_empty() {
@@ -405,7 +411,8 @@ impl Generator for PyGenerator {
                 schema,
             };
             let source = generate_schema(&schema_ctx)?;
-            std::fs::write(job.output.join(format!("{}.py", schema.name)), source)?;
+            let module_name = sanitize_py_name(schema.name.as_str());
+            std::fs::write(job.output.join(format!("{module_name}.py")), source)?;
         }
 
         std::fs::write(job.output.join("__init__.py"), generate_init(&bundle_ctx))?;
@@ -427,17 +434,27 @@ fn generate_init(ctx: &BundleCtx) -> String {
     schemas.sort_by_key(|s| &s.name);
 
     for schema in &schemas {
-        w.line(&format!("from . import {}  # noqa: F401", schema.name));
+        w.line(&format!(
+            "from . import {}  # noqa: F401",
+            sanitize_py_name(schema.name.as_str())
+        ));
     }
 
     // Inject cross-schema references into each module's namespace so that
-    // pydantic can resolve forward references at model_rebuild time.
+    // pydantic can resolve forward references at model_rebuild time. The
+    // dict key uses the original schema name (it drives the `_schema_<name>`
+    // alias, which is always a valid identifier), while the value references
+    // the imported module by its sanitized identifier.
     w.blank();
     w.line(&format!(
         "_schemas = {{{}}}",
         schemas
             .iter()
-            .map(|s| format!("\"{0}\": {0}", s.name))
+            .map(|s| format!(
+                "\"{}\": {}",
+                s.name,
+                sanitize_py_name(s.name.as_str())
+            ))
             .collect::<Vec<_>>()
             .join(", ")
     ));
@@ -515,7 +532,8 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<String> {
         for schema in &others {
             w.line(&format!(
                 "from . import {} as _schema_{}  # noqa: F401",
-                schema.name, schema.name
+                sanitize_py_name(schema.name.as_str()),
+                schema.name
             ));
         }
         w.dedent();
