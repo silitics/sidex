@@ -81,9 +81,8 @@ fn apply_fixes(
             excluded_imports: excluded.iter().cloned().collect(),
             ..FormatOptions::default()
         };
-        let formatted = sidex_fmt::format_with(text, &opts).map_err(|e| {
-            eyre::eyre!("failed to format {}: {}", path, e)
-        })?;
+        let formatted = sidex_fmt::format_with(text, &opts)
+            .map_err(|e| eyre::eyre!("failed to format {}: {}", path, e))?;
         if &formatted != text {
             std::fs::write(path, &formatted)?;
             fixed_count += 1;

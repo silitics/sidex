@@ -88,17 +88,21 @@ pub struct SyntaxNode {
 impl SyntaxNode {
     /// Iterates over all child nodes (skipping tokens).
     pub fn child_nodes(&self) -> impl Iterator<Item = &Arc<SyntaxNode>> {
-        self.children.iter().filter_map(|el| match el {
-            SyntaxElement::Node(n) => Some(n),
-            SyntaxElement::Token(_) => None,
+        self.children.iter().filter_map(|el| {
+            match el {
+                SyntaxElement::Node(n) => Some(n),
+                SyntaxElement::Token(_) => None,
+            }
         })
     }
 
     /// Iterates over all child tokens (skipping nodes).
     pub fn child_tokens(&self) -> impl Iterator<Item = &Token> {
-        self.children.iter().filter_map(|el| match el {
-            SyntaxElement::Token(t) => Some(t),
-            SyntaxElement::Node(_) => None,
+        self.children.iter().filter_map(|el| {
+            match el {
+                SyntaxElement::Token(t) => Some(t),
+                SyntaxElement::Node(_) => None,
+            }
         })
     }
 }

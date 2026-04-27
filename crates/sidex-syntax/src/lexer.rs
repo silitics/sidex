@@ -164,14 +164,18 @@ impl<'a> Lexer<'a> {
         // terminating newline (which is consumed as whitespace in a later
         // iteration).
         let kind_token = match kind {
-            CommentVariety::Doc(doc_kind) => TokenKind::Doc {
-                doc: Arc::new(body),
-                kind: doc_kind,
-            },
-            CommentVariety::Line => TokenKind::Comment {
-                comment: Arc::new(body),
-                kind: CommentKind::Line,
-            },
+            CommentVariety::Doc(doc_kind) => {
+                TokenKind::Doc {
+                    doc: Arc::new(body),
+                    kind: doc_kind,
+                }
+            }
+            CommentVariety::Line => {
+                TokenKind::Comment {
+                    comment: Arc::new(body),
+                    kind: CommentKind::Line,
+                }
+            }
         };
         self.push(kind_token, start, self.pos);
     }
@@ -278,13 +282,10 @@ impl<'a> Lexer<'a> {
                             // Unknown escape — emit a diagnostic and keep both
                             // characters verbatim so spans stay sane.
                             let escape_span = self.span(self.pos - 1, self.pos + 1);
-                            Diagnostic::error(format!(
-                                "Unknown escape sequence `\\{}`.",
-                                other
-                            ))
-                            .with_span(Some(escape_span.clone()))
-                            .with_label(Label::new(escape_span, "Unknown escape sequence."))
-                            .emit();
+                            Diagnostic::error(format!("Unknown escape sequence `\\{}`.", other))
+                                .with_span(Some(escape_span.clone()))
+                                .with_label(Label::new(escape_span, "Unknown escape sequence."))
+                                .emit();
                             value.push('\\');
                             value.push(other);
                             self.pos += 1;

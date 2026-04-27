@@ -81,9 +81,14 @@ macro_rules! gen_delimiters {
 }
 
 gen_delimiters![
-    (Parenthesis, "(", ")", "A parenthesis delimiter, i.e., `(` or `)`."),
-    (Bracket,     "[", "]", "A bracket delimiter, i.e., `[` or `]`."),
-    (Brace,       "{", "}", "A brace delimiter, i.e., `{` or `}`."),
+    (
+        Parenthesis,
+        "(",
+        ")",
+        "A parenthesis delimiter, i.e., `(` or `)`."
+    ),
+    (Bracket, "[", "]", "A bracket delimiter, i.e., `[` or `]`."),
+    (Brace, "{", "}", "A brace delimiter, i.e., `{` or `}`."),
 ];
 
 /// A punctuation symbol like `+`, `.`, or `:`.
@@ -168,24 +173,24 @@ macro_rules! gen_punctuations {
 }
 
 gen_punctuations![
-    (Plus,            "+", "A plus `+`."),
-    (Minus,           "-", "A minus `-`."),
-    (Percent,         "%", "A percent `%`."),
-    (Slash,           "/", "A slash `/`."),
-    (Asterisk,        "*", "An asterisk `*`."),
-    (Hash,            "#", "A hash `#`."),
-    (Dot,             ".", "A dot `.`."),
-    (Comma,           ",", "A comma `,`."),
-    (Semicolon,       ";", "A semicolon `;`."),
-    (Dollar,          "$", "A dollar `$`."),
-    (Colon,           ":", "A colon `:`."),
-    (Equals,          "=", "An equals sign `=`."),
-    (Circumflex,      "^", "A circumflex `^`."),
-    (Ampersand,       "&", "An ampersand `&`."),
+    (Plus, "+", "A plus `+`."),
+    (Minus, "-", "A minus `-`."),
+    (Percent, "%", "A percent `%`."),
+    (Slash, "/", "A slash `/`."),
+    (Asterisk, "*", "An asterisk `*`."),
+    (Hash, "#", "A hash `#`."),
+    (Dot, ".", "A dot `.`."),
+    (Comma, ",", "A comma `,`."),
+    (Semicolon, ";", "A semicolon `;`."),
+    (Dollar, "$", "A dollar `$`."),
+    (Colon, ":", "A colon `:`."),
+    (Equals, "=", "An equals sign `=`."),
+    (Circumflex, "^", "A circumflex `^`."),
+    (Ampersand, "&", "An ampersand `&`."),
     (ExclamationMark, "!", "An exclamation mark `!`."),
-    (QuestionMark,    "?", "A question mark `?`."),
-    (AngleOpen,       "<", "An opening angle `<`."),
-    (AngleClose,      ">", "A closing angle `>`."),
+    (QuestionMark, "?", "A question mark `?`."),
+    (AngleOpen, "<", "An opening angle `<`."),
+    (AngleClose, ">", "A closing angle `>`."),
 ];
 
 /// Keywords like `record`, `variant`, or `import`.
@@ -208,12 +213,12 @@ pub mod keywords {
     }
 
     define![
-        (ALIAS,   "alias",   "The `alias` keyword."),
-        (OPAQUE,  "opaque",  "The `opaque` keyword."),
-        (RECORD,  "record",  "The `record` keyword."),
+        (ALIAS, "alias", "The `alias` keyword."),
+        (OPAQUE, "opaque", "The `opaque` keyword."),
+        (RECORD, "record", "The `record` keyword."),
         (VARIANT, "variant", "The `variant` keyword."),
         (WRAPPER, "wrapper", "The `wrapper` keyword."),
-        (IMPORT,  "import",  "The `import` keyword."),
+        (IMPORT, "import", "The `import` keyword."),
     ];
 }
 
@@ -370,14 +375,18 @@ impl fmt::Display for TokenKind {
             TokenKind::Punctuation(p) => p.fmt(f),
             TokenKind::Literal(l) => l.fmt(f),
             TokenKind::Identifier(i) => f.write_str(i.as_str()),
-            TokenKind::Comment { comment, kind } => match kind {
-                CommentKind::Line => write!(f, "//{comment}\n"),
-                CommentKind::Block => write!(f, "/*{comment}*/"),
-            },
-            TokenKind::Doc { doc, kind } => match kind {
-                DocKind::Inline => write!(f, "//!{doc}\n"),
-                DocKind::Preceding => write!(f, "///{doc}\n"),
-            },
+            TokenKind::Comment { comment, kind } => {
+                match kind {
+                    CommentKind::Line => write!(f, "//{comment}\n"),
+                    CommentKind::Block => write!(f, "/*{comment}*/"),
+                }
+            }
+            TokenKind::Doc { doc, kind } => {
+                match kind {
+                    DocKind::Inline => write!(f, "//!{doc}\n"),
+                    DocKind::Preceding => write!(f, "///{doc}\n"),
+                }
+            }
             TokenKind::Whitespace => Ok(()),
             TokenKind::Error => Ok(()),
         }

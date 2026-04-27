@@ -418,9 +418,7 @@ impl Parser {
                 TokenKind::Identifier(s) => {
                     return match s.as_str() {
                         "import" => Some(ItemKw::Import),
-                        "record" | "variant" | "alias" | "opaque" | "wrapper" => {
-                            Some(ItemKw::Def)
-                        }
+                        "record" | "variant" | "alias" | "opaque" | "wrapper" => Some(ItemKw::Def),
                         _ => None,
                     };
                 }
@@ -436,18 +434,22 @@ impl Parser {
 
         self.skip_trivia();
         let kw = match self.peek_significant().map(|t| &t.kind) {
-            Some(TokenKind::Identifier(s)) => match s.as_str() {
-                "record" => DefKw::Record,
-                "variant" => DefKw::Variant,
-                "alias" => DefKw::Alias,
-                "opaque" => DefKw::Opaque,
-                "wrapper" => DefKw::Wrapper,
-                _ => {
-                    self.error("Expected `record`, `variant`, `alias`, `opaque`, or `wrapper`.");
-                    self.builder.finish_node();
-                    return None;
+            Some(TokenKind::Identifier(s)) => {
+                match s.as_str() {
+                    "record" => DefKw::Record,
+                    "variant" => DefKw::Variant,
+                    "alias" => DefKw::Alias,
+                    "opaque" => DefKw::Opaque,
+                    "wrapper" => DefKw::Wrapper,
+                    _ => {
+                        self.error(
+                            "Expected `record`, `variant`, `alias`, `opaque`, or `wrapper`.",
+                        );
+                        self.builder.finish_node();
+                        return None;
+                    }
                 }
-            },
+            }
             _ => {
                 self.error("Expected a definition keyword.");
                 self.builder.finish_node();
@@ -766,9 +768,14 @@ impl Parser {
                     let Some(t) = self.peek_significant() else {
                         break;
                     };
-                    let is_open = matches!(t.kind, TokenKind::Delimiter(tokens::DelimiterSymbol::Open(_)));
-                    let is_close =
-                        matches!(t.kind, TokenKind::Delimiter(tokens::DelimiterSymbol::Close(_)));
+                    let is_open = matches!(
+                        t.kind,
+                        TokenKind::Delimiter(tokens::DelimiterSymbol::Open(_))
+                    );
+                    let is_close = matches!(
+                        t.kind,
+                        TokenKind::Delimiter(tokens::DelimiterSymbol::Close(_))
+                    );
                     let consumed = self.bump();
                     tokens.push(consumed);
                     if is_open {
@@ -795,7 +802,9 @@ impl Parser {
     fn starts_with_path(&self) -> bool {
         match self.peek_significant().map(|t| &t.kind) {
             Some(TokenKind::Identifier(_)) => true,
-            Some(TokenKind::Punctuation(s)) if s.kind == PunctuationKind::Colon && s.is_composed => {
+            Some(TokenKind::Punctuation(s))
+                if s.kind == PunctuationKind::Colon && s.is_composed =>
+            {
                 true
             }
             _ => false,
@@ -843,7 +852,8 @@ impl Parser {
                 break;
             }
             // After `::`, decide between continuing path, `{...}` group, or `*`.
-            if self.at_open(tokens::DelimiterKind::Brace) || self.at_punct(PunctuationKind::Asterisk)
+            if self.at_open(tokens::DelimiterKind::Brace)
+                || self.at_punct(PunctuationKind::Asterisk)
             {
                 break;
             }

@@ -8,10 +8,7 @@ fn parse_str(src: &str) -> ast::Schema {
     let ctx = DiagnosticCtx::new();
     let result = ctx.exec(|| parse(&storage[id]));
     let report = ctx.report();
-    assert!(
-        !report.has_error(),
-        "diagnostics emitted while parsing"
-    );
+    assert!(!report.has_error(), "diagnostics emitted while parsing");
     result.expect("parse failed")
 }
 
@@ -96,9 +93,11 @@ fn parses_imports() {
     let imports: Vec<_> = schema
         .items
         .iter()
-        .filter_map(|i| match i {
-            ast::Item::Import(im) => Some(im),
-            _ => None,
+        .filter_map(|i| {
+            match i {
+                ast::Item::Import(im) => Some(im),
+                _ => None,
+            }
         })
         .collect();
     assert_eq!(imports.len(), 3);
@@ -137,17 +136,18 @@ fn parses_nested_generics() {
 #[test]
 fn parses_real_ir_schema() {
     let src = std::fs::read_to_string(
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../lib/meta/schemas/ir.sidex"),
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../lib/meta/schemas/ir.sidex"),
     )
     .unwrap();
     let schema = parse_str(&src);
     let names: Vec<_> = schema
         .items
         .iter()
-        .filter_map(|i| match i {
-            ast::Item::Def(d) => Some(d.name.as_str().to_owned()),
-            _ => None,
+        .filter_map(|i| {
+            match i {
+                ast::Item::Def(d) => Some(d.name.as_str().to_owned()),
+                _ => None,
+            }
         })
         .collect();
     assert!(names.contains(&"Attr".to_string()), "got: {:?}", names);

@@ -31,7 +31,10 @@ impl TypeExpr {
     }
 
     pub fn string_literal(literal: &str) -> Self {
-        Self(Code::from(format!("\"{}\"", literal.replace('\\', "\\\\").replace('"', "\\\""))))
+        Self(Code::from(format!(
+            "\"{}\"",
+            literal.replace('\\', "\\\\").replace('"', "\\\"")
+        )))
     }
 
     pub fn number_literal(literal: f64) -> Self {
@@ -124,13 +127,18 @@ impl<'cx> SchemaCtx<'cx> {
                     instance_def.name.as_str()
                 );
 
-                let base = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path) {
+                let base = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path)
+                {
                     Code::from(path.as_str())
                 } else if instance.bundle == self.bundle_ctx.bundle.idx {
                     if instance.schema == self.schema.idx {
                         Code::from(instance_def.name.as_str())
                     } else {
-                        Code::from(format!("__schema_{}.{}", schema.name, instance_def.name.as_str()))
+                        Code::from(format!(
+                            "__schema_{}.{}",
+                            schema.name,
+                            instance_def.name.as_str()
+                        ))
                     }
                 } else {
                     Code::from(format!(

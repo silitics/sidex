@@ -233,12 +233,14 @@ fn ends_with_newline(parts: &[Part]) -> bool {
 
 /// Returns `true` if any part inside emits visible characters.
 fn has_visible_content(parts: &[Part]) -> bool {
-    parts.iter().any(|part| match part {
-        Part::Newline => true,
-        Part::Literal(s) => !s.is_empty(),
-        Part::Owned(s) => !s.is_empty(),
-        Part::Indent(_) | Part::Dedent => false,
-        Part::Parts(inner) => has_visible_content(inner),
+    parts.iter().any(|part| {
+        match part {
+            Part::Newline => true,
+            Part::Literal(s) => !s.is_empty(),
+            Part::Owned(s) => !s.is_empty(),
+            Part::Indent(_) | Part::Dedent => false,
+            Part::Parts(inner) => has_visible_content(inner),
+        }
     })
 }
 

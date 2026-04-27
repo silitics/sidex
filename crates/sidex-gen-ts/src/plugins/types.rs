@@ -27,10 +27,9 @@ impl Plugin for Types {
             }
             ir::DefKind::OpaqueType(_) => {
                 let ty_json_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
-                ty_json_attrs.typ.map_or_else(
-                    TypeExpr::any,
-                    |typ_attr| TypeExpr::union(typ_attr.typ.types.iter().map(TypeExpr::from)),
-                )
+                ty_json_attrs.typ.map_or_else(TypeExpr::any, |typ_attr| {
+                    TypeExpr::union(typ_attr.typ.types.iter().map(TypeExpr::from))
+                })
             }
             ir::DefKind::RecordType(typ) => {
                 is_nominal = false;
@@ -58,7 +57,8 @@ impl Plugin for Types {
                 let mut variant_ts_types: Vec<TypeExpr> = Vec::new();
                 for variant in &typ.variants {
                     let json_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
-                    let variant_name = ts_string_literal(&ty_json_attrs.variant_name(variant, &json_attrs));
+                    let variant_name =
+                        ts_string_literal(&ty_json_attrs.variant_name(variant, &json_attrs));
 
                     if let Some(typ_) = &variant.typ {
                         let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ_);
@@ -66,7 +66,8 @@ impl Plugin for Types {
 
                         match ty_json_attrs.tagged {
                             JsonTaggedAttr::Externally => {
-                                variant_ts_types.push(TypeExpr(quote!("{ @variant_name: @inner }")));
+                                variant_ts_types
+                                    .push(TypeExpr(quote!("{ @variant_name: @inner }")));
                             }
                             JsonTaggedAttr::Implicitly => {
                                 variant_ts_types.push(inner);
@@ -110,9 +111,7 @@ impl Plugin for Types {
         };
 
         if is_nominal {
-            type_expr = TypeExpr(quote!(
-                "__sidex_types.Nominal<@type_expr, @qualified_name>"
-            ));
+            type_expr = TypeExpr(quote!("__sidex_types.Nominal<@type_expr, @qualified_name>"));
         }
 
         let vars: Vec<Code> = def
@@ -177,8 +176,5 @@ impl Plugin for Types {
 }
 
 fn ts_string_literal(s: &str) -> String {
-    format!(
-        "\"{}\"",
-        s.replace('\\', "\\\\").replace('"', "\\\"")
-    )
+    format!("\"{}\"", s.replace('\\', "\\\\").replace('"', "\\\""))
 }

@@ -382,10 +382,12 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
                 "#
             )
         }
-        ir::DefKind::OpaqueType(_) => match resolve_opaque_type(def)? {
-            Some(resolved) => generate_opaque(def, &resolved),
-            None => Code::new(),
-        },
+        ir::DefKind::OpaqueType(_) => {
+            match resolve_opaque_type(def)? {
+                Some(resolved) => generate_opaque(def, &resolved),
+                None => Code::new(),
+            }
+        }
         ir::DefKind::RecordType(rec) => generate_record(ctx, def, rec)?,
         ir::DefKind::VariantType(var) => generate_variant(ctx, def, var)?,
         ir::DefKind::WrapperType(wrap) => {
@@ -511,11 +513,7 @@ fn generate_record_field(
     }
 }
 
-fn generate_variant(
-    ctx: &SchemaCtx,
-    def: &ir::Def,
-    var_def: &ir::VariantTypeDef,
-) -> Result<Code> {
+fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef) -> Result<Code> {
     let ty_json = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
     let name = def.name.as_str();
     let params = generic_params(def);
@@ -735,7 +733,12 @@ fn generate_adjacently_tagged_variant(
 
     let content_field_block = if let Some(typ) = &variant.typ {
         let inner = ctx.resolve_type(def, typ);
-        vec![content_field_line(&content_py, &content_json, &inner, content_alias)]
+        vec![content_field_line(
+            &content_py,
+            &content_json,
+            &inner,
+            content_alias,
+        )]
     } else {
         Vec::new()
     };
@@ -965,8 +968,10 @@ fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
         }
         let parts: Vec<_> = types
             .iter()
-            .map(|ty| match json_type_to_py(ty) {
-                OpaqueResolvedType::Wrapper(s) | OpaqueResolvedType::Alias(s) => s,
+            .map(|ty| {
+                match json_type_to_py(ty) {
+                    OpaqueResolvedType::Wrapper(s) | OpaqueResolvedType::Alias(s) => s,
+                }
             })
             .collect();
         return Ok(Some(OpaqueResolvedType::Alias(parts.join(" | "))));

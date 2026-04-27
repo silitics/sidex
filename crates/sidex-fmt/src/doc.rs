@@ -45,7 +45,10 @@ impl Doc {
 
     /// Concat helper.
     pub fn concat(parts: impl IntoIterator<Item = Doc>) -> Self {
-        let parts: Vec<Doc> = parts.into_iter().filter(|d| !matches!(d, Doc::Nil)).collect();
+        let parts: Vec<Doc> = parts
+            .into_iter()
+            .filter(|d| !matches!(d, Doc::Nil))
+            .collect();
         if parts.is_empty() {
             Doc::Nil
         } else if parts.len() == 1 {
@@ -97,25 +100,29 @@ pub fn render(doc: &Doc, opts: &LayoutOptions) -> String {
                 }
             }
             Doc::Nest(n, inner) => stack.push((indent + n, mode, inner)),
-            Doc::Line => match mode {
-                Mode::Flat => {
-                    out.push(' ');
-                    col += 1;
+            Doc::Line => {
+                match mode {
+                    Mode::Flat => {
+                        out.push(' ');
+                        col += 1;
+                    }
+                    Mode::Break => {
+                        out.push('\n');
+                        push_indent(&mut out, indent);
+                        col = indent;
+                    }
                 }
-                Mode::Break => {
-                    out.push('\n');
-                    push_indent(&mut out, indent);
-                    col = indent;
+            }
+            Doc::SoftLine => {
+                match mode {
+                    Mode::Flat => {}
+                    Mode::Break => {
+                        out.push('\n');
+                        push_indent(&mut out, indent);
+                        col = indent;
+                    }
                 }
-            },
-            Doc::SoftLine => match mode {
-                Mode::Flat => {}
-                Mode::Break => {
-                    out.push('\n');
-                    push_indent(&mut out, indent);
-                    col = indent;
-                }
-            },
+            }
             Doc::HardLine => {
                 out.push('\n');
                 push_indent(&mut out, indent);
@@ -165,19 +172,23 @@ fn fits(doc: &Doc, mut remaining: usize) -> bool {
                 }
             }
             Doc::Nest(_, inner) => stack.push((mode, inner)),
-            Doc::Line => match mode {
-                Mode::Flat => {
-                    if remaining == 0 {
-                        return false;
+            Doc::Line => {
+                match mode {
+                    Mode::Flat => {
+                        if remaining == 0 {
+                            return false;
+                        }
+                        remaining -= 1;
                     }
-                    remaining -= 1;
+                    Mode::Break => return true,
                 }
-                Mode::Break => return true,
-            },
-            Doc::SoftLine => match mode {
-                Mode::Flat => {}
-                Mode::Break => return true,
-            },
+            }
+            Doc::SoftLine => {
+                match mode {
+                    Mode::Flat => {}
+                    Mode::Break => return true,
+                }
+            }
             Doc::HardLine => return false,
             Doc::Group(inner) => stack.push((mode, inner)),
         }

@@ -51,7 +51,10 @@ impl<'a> Cx<'a> {
             char_to_byte.push(b);
         }
         char_to_byte.push(source.len());
-        Self { source, char_to_byte }
+        Self {
+            source,
+            char_to_byte,
+        }
     }
 
     fn text_at(&self, start: usize, end: usize) -> &'a str {
@@ -95,30 +98,32 @@ fn schema(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
             SyntaxElement::Token(tok) => {
                 buffer.push(tok.clone());
             }
-            SyntaxElement::Node(child) => match child.kind {
-                SyntaxKind::Import | SyntaxKind::Def => {
-                    let mut leading = std::mem::take(&mut buffer);
-                    if !seen_first_item {
-                        // Split off the schema header: trivia separated from
-                        // the first item by a blank line is part of the
-                        // header. Trivia adjacent to the item attaches to it.
-                        let (header, attached) = split_at_last_blank(leading, cx);
-                        header_buffer = header;
-                        leading = attached;
-                        seen_first_item = true;
+            SyntaxElement::Node(child) => {
+                match child.kind {
+                    SyntaxKind::Import | SyntaxKind::Def => {
+                        let mut leading = std::mem::take(&mut buffer);
+                        if !seen_first_item {
+                            // Split off the schema header: trivia separated from
+                            // the first item by a blank line is part of the
+                            // header. Trivia adjacent to the item attaches to it.
+                            let (header, attached) = split_at_last_blank(leading, cx);
+                            header_buffer = header;
+                            leading = attached;
+                            seen_first_item = true;
+                        }
+                        let item = LogicalItem {
+                            leading,
+                            node: child.clone(),
+                        };
+                        if child.kind == SyntaxKind::Import {
+                            imports.push(item);
+                        } else {
+                            defs.push(item);
+                        }
                     }
-                    let item = LogicalItem {
-                        leading,
-                        node: child.clone(),
-                    };
-                    if child.kind == SyntaxKind::Import {
-                        imports.push(item);
-                    } else {
-                        defs.push(item);
-                    }
+                    _ => {}
                 }
-                _ => {}
-            },
+            }
         }
     }
     let mut trailing_buffer = buffer;
@@ -181,12 +186,12 @@ fn render_header(tokens: &[Token], cx: &Cx<'_>) -> Doc {
     // Header carries inline `//!` doc tokens and any leading comments. We
     // preserve them in source order and use blank-line markers from
     // surrounding whitespace.
-    let pieces = collect_trivia_pieces(tokens, cx, /*include_doc_inline=*/ true);
+    let pieces = collect_trivia_pieces(tokens, cx, /* include_doc_inline= */ true);
     join_pieces_top_level(pieces)
 }
 
 fn render_trailing(tokens: &[Token], cx: &Cx<'_>) -> Doc {
-    let pieces = collect_trivia_pieces(tokens, cx, /*include_doc_inline=*/ true);
+    let pieces = collect_trivia_pieces(tokens, cx, /* include_doc_inline= */ true);
     join_pieces_top_level(pieces)
 }
 
@@ -241,28 +246,28 @@ fn flatten_tree(
 
     for el in &tree.children {
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Identifier(s) if !seen_brace => {
-                    segments.push(s.as_str().to_owned())
-                }
-                TokenKind::Punctuation(s)
-                    if s.kind == PunctuationKind::Colon && s.is_composed && !seen_brace =>
-                {
-                    if segments.is_empty() {
-                        local_absolute = true;
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Identifier(s) if !seen_brace => segments.push(s.as_str().to_owned()),
+                    TokenKind::Punctuation(s)
+                        if s.kind == PunctuationKind::Colon && s.is_composed && !seen_brace =>
+                    {
+                        if segments.is_empty() {
+                            local_absolute = true;
+                        }
                     }
+                    TokenKind::Punctuation(s)
+                        if s.kind == PunctuationKind::Asterisk && !seen_brace =>
+                    {
+                        wildcard = true;
+                    }
+                    TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace)) => {
+                        has_brace = true;
+                        seen_brace = true;
+                    }
+                    _ => {}
                 }
-                TokenKind::Punctuation(s)
-                    if s.kind == PunctuationKind::Asterisk && !seen_brace =>
-                {
-                    wildcard = true;
-                }
-                TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace)) => {
-                    has_brace = true;
-                    seen_brace = true;
-                }
-                _ => {}
-            },
+            }
             SyntaxElement::Node(child) => {
                 if child.kind == SyntaxKind::ImportTree {
                     group_children.push(child);
@@ -376,7 +381,8 @@ fn render_flat_block(items: Vec<FlatImport>, cx: &Cx<'_>) -> Doc {
     }
     let mut parts: Vec<Doc> = Vec::new();
     for (i, item) in items.into_iter().enumerate() {
-        let leading = render_leading_comments(&item.leading, cx, /*allow_blank_line=*/ false);
+        let leading =
+            render_leading_comments(&item.leading, cx, /* allow_blank_line= */ false);
         if i > 0 {
             parts.push(Doc::HardLine);
         }
@@ -393,7 +399,8 @@ fn render_defs(items: Vec<LogicalItem>, cx: &Cx<'_>, opts: &FormatOptions) -> Do
     let mut parts: Vec<Doc> = Vec::new();
     for (i, item) in items.into_iter().enumerate() {
         let had_blank_line = leading_has_blank_line(&item.leading, cx);
-        let leading = render_leading_comments(&item.leading, cx, /*allow_blank_line=*/ i > 0);
+        let leading =
+            render_leading_comments(&item.leading, cx, /* allow_blank_line= */ i > 0);
         if i > 0 {
             parts.push(Doc::HardLine);
             if had_blank_line || !matches!(leading, Doc::Nil) {
@@ -450,16 +457,20 @@ fn import_tree_is_absolute(tree: &SyntaxNode) -> bool {
     let mut iter = tree.children.iter();
     while let Some(el) = iter.next() {
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Whitespace
-                | TokenKind::Comment { .. }
-                | TokenKind::Doc { .. }
-                | TokenKind::Error => continue,
-                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon && s.is_composed => {
-                    return true;
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Whitespace
+                    | TokenKind::Comment { .. }
+                    | TokenKind::Doc { .. }
+                    | TokenKind::Error => continue,
+                    TokenKind::Punctuation(s)
+                        if s.kind == PunctuationKind::Colon && s.is_composed =>
+                    {
+                        return true;
+                    }
+                    _ => return false,
                 }
-                _ => return false,
-            },
+            }
             SyntaxElement::Node(_) => return false,
         }
     }
@@ -537,16 +548,18 @@ fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
                     }
                 }
             }
-            SyntaxElement::Node(child) => match child.kind {
-                SyntaxKind::Attr => {
-                    flush_def_trivia(&mut parts, &mut between_iter);
-                    parts.push(attr(child, opts));
-                    parts.push(Doc::HardLine);
+            SyntaxElement::Node(child) => {
+                match child.kind {
+                    SyntaxKind::Attr => {
+                        flush_def_trivia(&mut parts, &mut between_iter);
+                        parts.push(attr(child, opts));
+                        parts.push(Doc::HardLine);
+                    }
+                    _ => {
+                        // Unexpected — skip.
+                    }
                 }
-                _ => {
-                    // Unexpected — skip.
-                }
-            },
+            }
         }
         idx += 1;
     }
@@ -562,38 +575,40 @@ fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
     while idx < children.len() {
         let el = &children[idx];
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Whitespace
-                | TokenKind::Comment { .. }
-                | TokenKind::Doc { .. }
-                | TokenKind::Error => {}
-                TokenKind::Identifier(s) if !after_name => {
-                    name_parts.push(Doc::text(" "));
-                    name_parts.push(Doc::string(s.as_str().to_owned()));
-                    after_name = true;
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Whitespace
+                    | TokenKind::Comment { .. }
+                    | TokenKind::Doc { .. }
+                    | TokenKind::Error => {}
+                    TokenKind::Identifier(s) if !after_name => {
+                        name_parts.push(Doc::text(" "));
+                        name_parts.push(Doc::string(s.as_str().to_owned()));
+                        after_name = true;
+                    }
+                    TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => {
+                        // Alias / wrapper: `kw NAME: TYPE`.
+                        name_parts.push(Doc::text(":"));
+                        idx += 1;
+                        parts.extend(name_parts.drain(..));
+                        let ty = collect_type_expr_after(children, &mut idx, opts);
+                        parts.push(Doc::text(" "));
+                        parts.push(ty);
+                        return Doc::concat(parts);
+                    }
+                    TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace)) => {
+                        // Record/variant body.
+                        parts.extend(name_parts.drain(..));
+                        parts.push(Doc::text(" {"));
+                        idx += 1;
+                        let body = collect_brace_body(children, &mut idx, cx, opts);
+                        parts.push(body);
+                        parts.push(Doc::text("}"));
+                        return Doc::concat(parts);
+                    }
+                    _ => {}
                 }
-                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => {
-                    // Alias / wrapper: `kw NAME: TYPE`.
-                    name_parts.push(Doc::text(":"));
-                    idx += 1;
-                    parts.extend(name_parts.drain(..));
-                    let ty = collect_type_expr_after(children, &mut idx, opts);
-                    parts.push(Doc::text(" "));
-                    parts.push(ty);
-                    return Doc::concat(parts);
-                }
-                TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace)) => {
-                    // Record/variant body.
-                    parts.extend(name_parts.drain(..));
-                    parts.push(Doc::text(" {"));
-                    idx += 1;
-                    let body = collect_brace_body(children, &mut idx, cx, opts);
-                    parts.push(body);
-                    parts.push(Doc::text("}"));
-                    return Doc::concat(parts);
-                }
-                _ => {}
-            },
+            }
             SyntaxElement::Node(child) => {
                 if child.kind == SyntaxKind::TypeVars {
                     had_type_vars = true;
@@ -662,13 +677,15 @@ fn collect_type_expr_after(
 ) -> Doc {
     while *idx < children.len() {
         match &children[*idx] {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Whitespace
-                | TokenKind::Comment { .. }
-                | TokenKind::Doc { .. }
-                | TokenKind::Error => *idx += 1,
-                _ => break,
-            },
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Whitespace
+                    | TokenKind::Comment { .. }
+                    | TokenKind::Doc { .. }
+                    | TokenKind::Error => *idx += 1,
+                    _ => break,
+                }
+            }
             SyntaxElement::Node(child) => {
                 if child.kind == SyntaxKind::TypeExpr {
                     let d = type_expr(child);
@@ -703,33 +720,37 @@ fn collect_brace_body(
     while *idx < children.len() {
         let el = &children[*idx];
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Delimiter(DelimiterSymbol::Close(DelimiterKind::Brace)) => {
-                    *idx += 1;
-                    return assemble_body(pieces, opts);
-                }
-                TokenKind::Whitespace => {
-                    if cx.newlines_in(tok) >= 2 && !pieces.is_empty() && !last_was_blank {
-                        pieces.push(BodyPiece::BlankLine);
-                        last_was_blank = true;
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Delimiter(DelimiterSymbol::Close(DelimiterKind::Brace)) => {
+                        *idx += 1;
+                        return assemble_body(pieces, opts);
                     }
+                    TokenKind::Whitespace => {
+                        if cx.newlines_in(tok) >= 2 && !pieces.is_empty() && !last_was_blank {
+                            pieces.push(BodyPiece::BlankLine);
+                            last_was_blank = true;
+                        }
+                    }
+                    TokenKind::Comment { .. } => {
+                        pieces.push(BodyPiece::Comment(tok));
+                        last_was_blank = false;
+                    }
+                    TokenKind::Punctuation(s) if s.kind == PunctuationKind::Comma => {
+                        // Commas are absorbed; we emit our own.
+                    }
+                    _ => {}
                 }
-                TokenKind::Comment { .. } => {
-                    pieces.push(BodyPiece::Comment(tok));
-                    last_was_blank = false;
+            }
+            SyntaxElement::Node(child) => {
+                match child.kind {
+                    SyntaxKind::Field | SyntaxKind::Variant => {
+                        pieces.push(BodyPiece::Member(child));
+                        last_was_blank = false;
+                    }
+                    _ => {}
                 }
-                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Comma => {
-                    // Commas are absorbed; we emit our own.
-                }
-                _ => {}
-            },
-            SyntaxElement::Node(child) => match child.kind {
-                SyntaxKind::Field | SyntaxKind::Variant => {
-                    pieces.push(BodyPiece::Member(child));
-                    last_was_blank = false;
-                }
-                _ => {}
-            },
+            }
         }
         *idx += 1;
     }
@@ -784,20 +805,29 @@ fn field(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
     let mut attrs: Vec<&Arc<SyntaxNode>> = Vec::new();
     for el in &node.children {
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Doc { kind: DocKind::Preceding, .. } => docs.push(tok),
-                TokenKind::Comment { .. } => leading_comments.push(tok),
-                TokenKind::Identifier(s) if name.is_none() => name = Some(s.as_str().to_owned()),
-                TokenKind::Punctuation(s) if s.kind == PunctuationKind::QuestionMark => {
-                    optional = true;
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Doc {
+                        kind: DocKind::Preceding,
+                        ..
+                    } => docs.push(tok),
+                    TokenKind::Comment { .. } => leading_comments.push(tok),
+                    TokenKind::Identifier(s) if name.is_none() => {
+                        name = Some(s.as_str().to_owned())
+                    }
+                    TokenKind::Punctuation(s) if s.kind == PunctuationKind::QuestionMark => {
+                        optional = true;
+                    }
+                    _ => {}
                 }
-                _ => {}
-            },
-            SyntaxElement::Node(child) => match child.kind {
-                SyntaxKind::Attr => attrs.push(child),
-                SyntaxKind::TypeExpr => ty = Some(child),
-                _ => {}
-            },
+            }
+            SyntaxElement::Node(child) => {
+                match child.kind {
+                    SyntaxKind::Attr => attrs.push(child),
+                    SyntaxKind::TypeExpr => ty = Some(child),
+                    _ => {}
+                }
+            }
         }
     }
     for tok in docs {
@@ -830,18 +860,29 @@ fn variant(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
     let mut attrs: Vec<&Arc<SyntaxNode>> = Vec::new();
     for el in &node.children {
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Doc { kind: DocKind::Preceding, .. } => docs.push(tok),
-                TokenKind::Comment { .. } => leading_comments.push(tok),
-                TokenKind::Identifier(s) if name.is_none() => name = Some(s.as_str().to_owned()),
-                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => has_colon = true,
-                _ => {}
-            },
-            SyntaxElement::Node(child) => match child.kind {
-                SyntaxKind::Attr => attrs.push(child),
-                SyntaxKind::TypeExpr => ty = Some(child),
-                _ => {}
-            },
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Doc {
+                        kind: DocKind::Preceding,
+                        ..
+                    } => docs.push(tok),
+                    TokenKind::Comment { .. } => leading_comments.push(tok),
+                    TokenKind::Identifier(s) if name.is_none() => {
+                        name = Some(s.as_str().to_owned())
+                    }
+                    TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => {
+                        has_colon = true
+                    }
+                    _ => {}
+                }
+            }
+            SyntaxElement::Node(child) => {
+                match child.kind {
+                    SyntaxKind::Attr => attrs.push(child),
+                    SyntaxKind::TypeExpr => ty = Some(child),
+                    _ => {}
+                }
+            }
         }
     }
     for tok in docs {
@@ -882,67 +923,73 @@ fn type_expr(node: &SyntaxNode) -> Doc {
 fn render_type_expr_into(node: &SyntaxNode, out: &mut String) {
     for el in &node.children {
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Whitespace
-                | TokenKind::Comment { .. }
-                | TokenKind::Doc { .. }
-                | TokenKind::Error => {}
-                TokenKind::Identifier(s) => out.push_str(s.as_str()),
-                TokenKind::Punctuation(s) => match s.kind {
-                    PunctuationKind::Colon if s.is_composed => out.push(':'),
-                    PunctuationKind::Colon => {
-                        // Could be the second colon of `::` or the map-key
-                        // separator inside `[K: V]`. The composed flag of the
-                        // preceding colon disambiguates; here we just emit `:`
-                        // and the surrounding context handles spacing.
-                        if !out.ends_with(':') {
-                            out.push_str(": ");
-                        } else {
-                            out.push(':');
-                        }
-                    }
-                    PunctuationKind::Comma => out.push_str(", "),
-                    PunctuationKind::AngleOpen => out.push('<'),
-                    PunctuationKind::AngleClose => out.push('>'),
-                    other => {
-                        // Generic fallback.
-                        out.push_str(&other.to_string());
-                    }
-                },
-                TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Bracket)) => {
-                    out.push('[');
-                }
-                TokenKind::Delimiter(DelimiterSymbol::Close(DelimiterKind::Bracket)) => {
-                    out.push(']');
-                }
-                TokenKind::Delimiter(d) => out.push_str(&d.to_string()),
-                _ => {}
-            },
-            SyntaxElement::Node(child) => match child.kind {
-                SyntaxKind::Path => {
-                    render_path_into(child, out);
-                }
-                SyntaxKind::TypeExpr => {
-                    render_type_expr_into(child, out);
-                }
-                SyntaxKind::TypeSubst => {
-                    out.push('<');
-                    let mut first = true;
-                    for sub in &child.children {
-                        if let SyntaxElement::Node(n) = sub {
-                            if n.kind == SyntaxKind::TypeExpr {
-                                if !first {
-                                    out.push_str(", ");
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Whitespace
+                    | TokenKind::Comment { .. }
+                    | TokenKind::Doc { .. }
+                    | TokenKind::Error => {}
+                    TokenKind::Identifier(s) => out.push_str(s.as_str()),
+                    TokenKind::Punctuation(s) => {
+                        match s.kind {
+                            PunctuationKind::Colon if s.is_composed => out.push(':'),
+                            PunctuationKind::Colon => {
+                                // Could be the second colon of `::` or the map-key
+                                // separator inside `[K: V]`. The composed flag of the
+                                // preceding colon disambiguates; here we just emit `:`
+                                // and the surrounding context handles spacing.
+                                if !out.ends_with(':') {
+                                    out.push_str(": ");
+                                } else {
+                                    out.push(':');
                                 }
-                                first = false;
-                                render_type_expr_into(n, out);
+                            }
+                            PunctuationKind::Comma => out.push_str(", "),
+                            PunctuationKind::AngleOpen => out.push('<'),
+                            PunctuationKind::AngleClose => out.push('>'),
+                            other => {
+                                // Generic fallback.
+                                out.push_str(&other.to_string());
                             }
                         }
                     }
-                    out.push('>');
+                    TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Bracket)) => {
+                        out.push('[');
+                    }
+                    TokenKind::Delimiter(DelimiterSymbol::Close(DelimiterKind::Bracket)) => {
+                        out.push(']');
+                    }
+                    TokenKind::Delimiter(d) => out.push_str(&d.to_string()),
+                    _ => {}
                 }
-                _ => {}
-            },
+            }
+            SyntaxElement::Node(child) => {
+                match child.kind {
+                    SyntaxKind::Path => {
+                        render_path_into(child, out);
+                    }
+                    SyntaxKind::TypeExpr => {
+                        render_type_expr_into(child, out);
+                    }
+                    SyntaxKind::TypeSubst => {
+                        out.push('<');
+                        let mut first = true;
+                        for sub in &child.children {
+                            if let SyntaxElement::Node(n) = sub {
+                                if n.kind == SyntaxKind::TypeExpr {
+                                    if !first {
+                                        out.push_str(", ");
+                                    }
+                                    first = false;
+                                    render_type_expr_into(n, out);
+                                }
+                            }
+                        }
+                        out.push('>');
+                    }
+                    _ => {}
+                }
+            }
         }
     }
     // Trim trailing whitespace from naive emission.
@@ -1051,36 +1098,38 @@ fn render_attr_term(elements: &[&SyntaxElement], opts: &FormatOptions) -> Doc {
     }
 
     match elements[i] {
-        SyntaxElement::Token(t) => match &t.kind {
-            TokenKind::Punctuation(s) if s.kind == PunctuationKind::Equals => {
-                let value_doc = render_attr_term(&elements[i + 1..], opts);
-                Doc::concat([Doc::string(path_str), Doc::text(" = "), value_doc])
-            }
-            TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Parenthesis)) => {
-                let close_idx = find_matching_paren(elements, i);
-                let inner = &elements[i + 1..close_idx];
-                let groups = split_top_level_commas(inner);
-                if groups.is_empty() {
-                    return Doc::concat([Doc::string(path_str), Doc::text("()")]);
+        SyntaxElement::Token(t) => {
+            match &t.kind {
+                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Equals => {
+                    let value_doc = render_attr_term(&elements[i + 1..], opts);
+                    Doc::concat([Doc::string(path_str), Doc::text(" = "), value_doc])
                 }
-                let mut group_docs: Vec<Doc> = Vec::new();
-                for (j, g) in groups.iter().enumerate() {
-                    if j > 0 {
-                        group_docs.push(Doc::text(","));
-                        group_docs.push(Doc::Line);
+                TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Parenthesis)) => {
+                    let close_idx = find_matching_paren(elements, i);
+                    let inner = &elements[i + 1..close_idx];
+                    let groups = split_top_level_commas(inner);
+                    if groups.is_empty() {
+                        return Doc::concat([Doc::string(path_str), Doc::text("()")]);
                     }
-                    let g_refs: Vec<&SyntaxElement> = g.iter().copied().collect();
-                    group_docs.push(render_attr_term(&g_refs, opts));
+                    let mut group_docs: Vec<Doc> = Vec::new();
+                    for (j, g) in groups.iter().enumerate() {
+                        if j > 0 {
+                            group_docs.push(Doc::text(","));
+                            group_docs.push(Doc::Line);
+                        }
+                        let g_refs: Vec<&SyntaxElement> = g.iter().copied().collect();
+                        group_docs.push(render_attr_term(&g_refs, opts));
+                    }
+                    // Trailing comma when broken (empty when flat).
+                    group_docs.push(if_break_comma());
+                    let inner_doc = Doc::concat(group_docs);
+                    let nested = Doc::concat([Doc::SoftLine, inner_doc]).nest(opts.indent);
+                    let body = Doc::concat([nested, Doc::SoftLine]).group();
+                    Doc::concat([Doc::string(path_str), Doc::text("("), body, Doc::text(")")])
                 }
-                // Trailing comma when broken (empty when flat).
-                group_docs.push(if_break_comma());
-                let inner_doc = Doc::concat(group_docs);
-                let nested = Doc::concat([Doc::SoftLine, inner_doc]).nest(opts.indent);
-                let body = Doc::concat([nested, Doc::SoftLine]).group();
-                Doc::concat([Doc::string(path_str), Doc::text("("), body, Doc::text(")")])
+                _ => Doc::string(path_str),
             }
-            _ => Doc::string(path_str),
-        },
+        }
         _ => Doc::string(path_str),
     }
 }
@@ -1122,28 +1171,30 @@ fn render_attr_tokens(elements: &[&SyntaxElement], _opts: &FormatOptions) -> Doc
     let mut last_was_separated = true;
     for el in elements {
         match el {
-            SyntaxElement::Token(tok) => match &tok.kind {
-                TokenKind::Whitespace
-                | TokenKind::Comment { .. }
-                | TokenKind::Doc { .. }
-                | TokenKind::Error => {}
-                _ => {
-                    if !last_was_separated && !out.is_empty() {
-                        out.push(' ');
+            SyntaxElement::Token(tok) => {
+                match &tok.kind {
+                    TokenKind::Whitespace
+                    | TokenKind::Comment { .. }
+                    | TokenKind::Doc { .. }
+                    | TokenKind::Error => {}
+                    _ => {
+                        if !last_was_separated && !out.is_empty() {
+                            out.push(' ');
+                        }
+                        out.push_str(&render_token(tok));
+                        last_was_separated = matches!(
+                            tok.kind,
+                            TokenKind::Punctuation(PunctuationSymbol {
+                                is_composed: true,
+                                ..
+                            })
+                        );
+                        last_was_separated = !last_was_separated;
+                        let _ = last_was_separated;
+                        last_was_separated = !tok.is_separated();
                     }
-                    out.push_str(&render_token(tok));
-                    last_was_separated = matches!(
-                        tok.kind,
-                        TokenKind::Punctuation(PunctuationSymbol {
-                            is_composed: true,
-                            ..
-                        })
-                    );
-                    last_was_separated = !last_was_separated;
-                    let _ = last_was_separated;
-                    last_was_separated = !tok.is_separated();
                 }
-            },
+            }
             SyntaxElement::Node(_) => {}
         }
     }
@@ -1154,7 +1205,11 @@ fn render_token(tok: &Token) -> String {
     match &tok.kind {
         TokenKind::Identifier(s) => s.as_str().to_owned(),
         TokenKind::Literal(Literal::Boolean(b)) => if *b { "true" } else { "false" }.to_owned(),
-        TokenKind::Literal(Literal::Numeric { has_minus, integral, fractional }) => {
+        TokenKind::Literal(Literal::Numeric {
+            has_minus,
+            integral,
+            fractional,
+        }) => {
             let mut s = String::new();
             if *has_minus {
                 s.push('-');
@@ -1169,7 +1224,10 @@ fn render_token(tok: &Token) -> String {
         TokenKind::Literal(Literal::String(string)) => format!("\"{}\"", string),
         TokenKind::Punctuation(s) => s.kind.to_string(),
         TokenKind::Delimiter(d) => d.to_string(),
-        TokenKind::Comment { .. } | TokenKind::Doc { .. } | TokenKind::Whitespace | TokenKind::Error => String::new(),
+        TokenKind::Comment { .. }
+        | TokenKind::Doc { .. }
+        | TokenKind::Whitespace
+        | TokenKind::Error => String::new(),
     }
 }
 
@@ -1198,9 +1256,7 @@ fn find_matching_paren(elements: &[&SyntaxElement], open_idx: usize) -> usize {
 
 /// Splits elements on top-level commas (commas not inside any paren, bracket,
 /// or brace group). Returns a slice per group.
-fn split_top_level_commas<'a>(
-    elements: &'a [&'a SyntaxElement],
-) -> Vec<Vec<&'a SyntaxElement>> {
+fn split_top_level_commas<'a>(elements: &'a [&'a SyntaxElement]) -> Vec<Vec<&'a SyntaxElement>> {
     let mut groups: Vec<Vec<&SyntaxElement>> = Vec::new();
     let mut current: Vec<&SyntaxElement> = Vec::new();
     let mut depth = 0i32;
@@ -1217,9 +1273,7 @@ fn split_top_level_commas<'a>(
                     current.push(*el);
                     continue;
                 }
-                TokenKind::Punctuation(s)
-                    if s.kind == PunctuationKind::Comma && depth == 0 =>
-                {
+                TokenKind::Punctuation(s) if s.kind == PunctuationKind::Comma && depth == 0 => {
                     if !current.is_empty() || !groups.is_empty() {
                         groups.push(std::mem::take(&mut current));
                     }

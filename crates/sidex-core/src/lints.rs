@@ -78,8 +78,7 @@ fn collect_for_schema(schema: &ParsedSchema, out: &mut Vec<UnusedImport>) {
 
     let mut referenced: HashSet<String> = HashSet::new();
     for def in schema.defs() {
-        let var_names: HashSet<&str> =
-            def.vars.iter().map(|v| v.name.as_str()).collect();
+        let var_names: HashSet<&str> = def.vars.iter().map(|v| v.name.as_str()).collect();
         let mut paths: Vec<&ast::Path> = Vec::new();
         collect_paths_in_def(def, &mut paths);
         for p in paths {

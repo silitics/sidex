@@ -56,14 +56,15 @@ fn mark_block_iterations(fragments: &mut Vec<Fragment>) {
                 _ => false,
             };
         let prev_newline_pos = if lead_indent {
-            i.checked_sub(2).filter(|j| matches!(fragments[*j], Fragment::Newline))
+            i.checked_sub(2)
+                .filter(|j| matches!(fragments[*j], Fragment::Newline))
         } else if i > 0 && matches!(fragments[i - 1], Fragment::Newline) {
             Some(i - 1)
         } else {
             None
         };
-        let next_is_newline = i + 1 < fragments.len()
-            && matches!(fragments[i + 1], Fragment::Newline);
+        let next_is_newline =
+            i + 1 < fragments.len() && matches!(fragments[i + 1], Fragment::Newline);
         if prev_newline_pos.is_some() && next_is_newline {
             if let Fragment::Iteration { block, .. } = &mut fragments[i] {
                 *block = true;

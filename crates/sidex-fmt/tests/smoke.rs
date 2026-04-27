@@ -129,8 +129,8 @@ opaque Baz
 
 #[test]
 fn idempotent_on_real_ir_schema() {
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../lib/meta/schemas/ir.sidex");
+    let path =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../lib/meta/schemas/ir.sidex");
     let src = std::fs::read_to_string(&path).unwrap();
     let once = format(&src).unwrap();
     let twice = format(&once).unwrap();
@@ -166,12 +166,10 @@ fn assert_idempotent_under(root: &std::path::Path) {
             continue;
         }
         let src = std::fs::read_to_string(&entry).unwrap();
-        let once = format(&src).unwrap_or_else(|e| {
-            panic!("first format failed for {}: {:?}", entry.display(), e)
-        });
-        let twice = format(&once).unwrap_or_else(|e| {
-            panic!("second format failed for {}: {:?}", entry.display(), e)
-        });
+        let once = format(&src)
+            .unwrap_or_else(|e| panic!("first format failed for {}: {:?}", entry.display(), e));
+        let twice = format(&once)
+            .unwrap_or_else(|e| panic!("second format failed for {}: {:?}", entry.display(), e));
         assert_eq!(
             once,
             twice,
