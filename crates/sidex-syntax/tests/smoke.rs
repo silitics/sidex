@@ -4,10 +4,12 @@ use sidex_syntax::ast;
 use sidex_syntax::parse;
 
 fn parse_str(src: &str) -> ast::Schema {
-    let mut storage = ir::SourceStorage::new();
-    let id = storage.insert(src.to_owned(), None);
+    let id = ir::SourceIdx::from(0);
+    let source = ir::Source::new()
+        .with_text(Some(src.to_owned()))
+        .with_origin(None);
     let ctx = DiagnosticCtx::new();
-    let result = ctx.exec(|| parse(&storage[id]));
+    let result = ctx.exec(|| parse(id, &source));
     let report = ctx.report();
     assert!(!report.has_error(), "diagnostics emitted while parsing");
     result.expect("parse failed")
@@ -153,5 +155,5 @@ fn parses_real_ir_schema() {
         .collect();
     assert!(names.contains(&"Attr".to_string()), "got: {:?}", names);
     assert!(names.contains(&"Schema".to_string()));
-    assert!(names.contains(&"Token".to_string()));
+    assert!(names.contains(&"AttrValue".to_string()));
 }

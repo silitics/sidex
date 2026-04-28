@@ -143,7 +143,7 @@ impl Report {
     }
 
     /// Writes the complete report to the given *writer*.
-    fn write_to<W: std::io::Write>(&self, sources: &ir::SourceStorage, mut writer: W) {
+    fn write_to<W: std::io::Write>(&self, sources: &[ir::Source], mut writer: W) {
         let mut cache = render::Cache::new(sources);
         for diagnostic in self.diagnostics() {
             render::render(&mut cache, diagnostic, &mut writer).ok();
@@ -151,12 +151,12 @@ impl Report {
     }
 
     /// Prints the report on the standard error output.
-    pub fn eprint(&self, sources: &ir::SourceStorage) {
+    pub fn eprint(&self, sources: &[ir::Source]) {
         self.write_to(sources, std::io::stderr());
     }
 
     /// Prints the report on the standard output.
-    pub fn print(&self, sources: &ir::SourceStorage) {
+    pub fn print(&self, sources: &[ir::Source]) {
         self.write_to(sources, std::io::stdout());
     }
 }

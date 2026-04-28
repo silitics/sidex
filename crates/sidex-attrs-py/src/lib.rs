@@ -3,7 +3,7 @@
 use sidex_gen::attrs::AttrConvertExt;
 use sidex_gen::attrs::TryApplyAttr;
 use sidex_gen::attrs::TryFromAttr;
-use sidex_gen::attrs::accept;
+use sidex_gen::attrs::TryFromAttrValue;
 use sidex_gen::attrs::reject;
 use sidex_gen::diagnostics;
 use sidex_gen::ir;
@@ -16,12 +16,9 @@ pub struct PyTypeAttr {
 
 impl TryFromAttr for PyTypeAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
+        let assign = attr.expect_assign_with("type")?;
         Ok(Self {
-            path: attr
-                .expect_assign_with("type")?
-                .value
-                .expect_string_literal()?
-                .to_owned(),
+            path: String::try_from_attr_value(&assign.value, attr)?,
         })
     }
 }

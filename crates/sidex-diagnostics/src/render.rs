@@ -10,17 +10,14 @@ use crate::Severity;
 /// Source identifier for identifying an Ariadne source in [`Cache`].
 type SourceId = Option<ir::SourceIdx>;
 
-/// A source cache for Ariadne based on [`ir::SourceStorage`].
+/// A source cache for Ariadne backed by a slice of [`ir::Source`].
 pub(crate) struct Cache<'s> {
-    /// The underlying source storage.
-    sources: &'s ir::SourceStorage,
-    /// The cache for [`ariadne::Source`].
+    sources: &'s [ir::Source],
     cache: HashMap<SourceId, ariadne::Source>,
 }
 
 impl<'s> Cache<'s> {
-    /// Creates a new cache from the given source storage.
-    pub(crate) fn new(sources: &'s ir::SourceStorage) -> Self {
+    pub(crate) fn new(sources: &'s [ir::Source]) -> Self {
         Self {
             sources,
             cache: HashMap::new(),
@@ -34,7 +31,7 @@ impl<'s> ariadne::Cache<SourceId> for Cache<'s> {
             match id {
                 Some(idx) => {
                     ariadne::Source::from(
-                        self.sources[*idx]
+                        self.sources[idx.idx()]
                             .text
                             .as_ref()
                             .map(String::as_str)
@@ -49,7 +46,7 @@ impl<'s> ariadne::Cache<SourceId> for Cache<'s> {
     fn display<'a>(&self, id: &'a SourceId) -> Option<Box<dyn std::fmt::Display + 'a>> {
         match id {
             Some(idx) => {
-                match &self.sources[*idx].origin {
+                match &self.sources[idx.idx()].origin {
                     Some(origin) => Some(Box::new(origin.clone())),
                     None => None,
                 }

@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
-use sidex_ir as ir;
-
 use crate::bundle::BundleSource;
 use crate::bundle::{self};
+use crate::transformer::Transformer;
 
 macro_rules! read_std_bundle_file {
     ($($path:tt)*) => {
@@ -16,10 +15,10 @@ macro_rules! read_std_bundle_file {
 }
 
 macro_rules! std_bundle_schemas {
-    ($storage:expr, [ $($name:literal $(,)?)* ]) => {{
+    ($transformer:expr, [ $($name:literal $(,)?)* ]) => {{
         let mut schemas = HashMap::new();
         $(
-            let source_id = $storage.insert(
+            let source_id = $transformer.insert_source(
                 read_std_bundle_file!(concat!("schemas/", $name, ".sidex")).to_owned(),
                 None,
             );
@@ -29,10 +28,10 @@ macro_rules! std_bundle_schemas {
     }};
 }
 
-pub fn std_bundle(storage: &mut ir::SourceStorage) -> BundleSource {
+pub fn std_bundle(transformer: &mut Transformer) -> BundleSource {
     let manifest = bundle::try_parse_manifest(read_std_bundle_file!("sidex.toml"))
         .expect("Manifest of Sidex standard library should be valid.");
-    let schemas = std_bundle_schemas!(storage, ["builtins"]);
+    let schemas = std_bundle_schemas!(transformer, ["builtins"]);
 
     BundleSource {
         manifest,
@@ -44,12 +43,11 @@ pub fn std_bundle(storage: &mut ir::SourceStorage) -> BundleSource {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::transformer::Transformer;
 
     #[test]
     pub fn test_load_std_bundle() {
         let mut transformer = Transformer::new();
-        let bundle = std_bundle(&mut transformer.storage);
+        let bundle = std_bundle(&mut transformer);
         transformer.insert_bundle(bundle).unwrap();
     }
 }

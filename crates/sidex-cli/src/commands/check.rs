@@ -32,7 +32,7 @@ pub fn exec(args: &CheckArgs) -> Result<()> {
     let ctx = DiagnosticCtx::new();
     ctx.exec(|| lints::lint_unused_imports(&transformer, bundle_idx));
     let report = ctx.report();
-    report.eprint(&transformer.storage);
+    report.eprint(&transformer.sources);
 
     if report.has_error() {
         std::process::exit(1);
@@ -63,11 +63,11 @@ fn apply_fixes(
 
     let mut fixed_count = 0;
     let mut removed_count = 0;
-    for (schema_idx, excluded) in by_schema {
+    for (schema_name, excluded) in by_schema {
         let source_idx = transformer
-            .schema_source_idx(bundle_idx, schema_idx)
+            .schema_source_idx_by_name(bundle_idx, &schema_name)
             .ok_or_else(|| eyre::eyre!("schema source not found"))?;
-        let source = &transformer.storage[source_idx];
+        let source = &transformer.sources[source_idx.idx()];
         let path = source
             .origin
             .as_ref()

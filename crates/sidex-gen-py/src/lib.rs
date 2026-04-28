@@ -78,12 +78,14 @@ impl TypesConfig {
 
 struct BundleCtx<'cx> {
     cfg: &'cx Config,
-    unit: &'cx ir::Unit,
+    unit: &'cx ir::Ir,
+    bundle_idx: ir::BundleIdx,
     bundle: &'cx ir::Bundle,
 }
 
 struct SchemaCtx<'cx> {
     bundle_ctx: &'cx BundleCtx<'cx>,
+    schema_idx: ir::SchemaIdx,
     schema: &'cx ir::Schema,
 }
 
@@ -93,9 +95,10 @@ impl<'cx> SchemaCtx<'cx> {
         match &typ.kind {
             ir::TypeKind::TypeVar(var) => def[var.idx].name.as_str().to_owned(),
             ir::TypeKind::Instance(instance) => {
-                let bundle = &self.bundle_ctx.unit[instance.bundle];
-                let schema = &bundle[instance.schema];
-                let instance_def = &schema[instance.def];
+                let unit = self.bundle_ctx.unit;
+                let bundle = &unit[instance.def.bundle];
+                let schema = &unit[instance.def.schema];
+                let instance_def = &unit[instance.def];
 
                 let qualified = format!(
                     "::{}::{}::{}",
@@ -106,8 +109,8 @@ impl<'cx> SchemaCtx<'cx> {
 
                 let base = if let Some(mapped) = self.bundle_ctx.cfg.types.table.get(&qualified) {
                     mapped.clone()
-                } else if instance.bundle == self.bundle_ctx.bundle.idx {
-                    if instance.schema == self.schema.idx {
+                } else if instance.def.bundle == self.bundle_ctx.bundle_idx {
+                    if instance.def.schema == self.schema_idx {
                         instance_def.name.as_str().to_owned()
                     } else {
                         // The alias `_schema_<name>` is always a valid identifier;
@@ -169,12 +172,14 @@ impl Generator for PyGenerator {
         let bundle_ctx = BundleCtx {
             cfg: &cfg,
             unit: job.unit,
+            bundle_idx: job.bundle,
             bundle,
         };
 
-        for schema in &bundle.schemas {
+        for (schema_idx, schema) in job.unit.schemas_of(job.bundle) {
             let schema_ctx = SchemaCtx {
                 bundle_ctx: &bundle_ctx,
+                schema_idx,
                 schema,
             };
             let source = generate_schema(&schema_ctx)?.to_string();
@@ -194,7 +199,8 @@ impl Generator for PyGenerator {
 }
 
 fn generate_init(ctx: &BundleCtx) -> Code {
-    let mut schemas: Vec<_> = ctx.bundle.schemas.iter().collect();
+    let mut schemas: Vec<&ir::Schema> =
+        ctx.unit.schemas_of(ctx.bundle_idx).map(|(_, s)| s).collect();
     schemas.sort_by_key(|s| &s.name);
 
     let imports: Vec<Code> = schemas
@@ -241,8 +247,9 @@ fn generate_init(ctx: &BundleCtx) -> Code {
 }
 
 fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
+    let unit = ctx.bundle_ctx.unit;
     let mut type_vars = Vec::new();
-    for def in &ctx.schema.defs {
+    for (_, def) in unit.defs_of(ctx.schema_idx) {
         for var in &def.vars {
             let name = var.name.as_str().to_owned();
             if !type_vars.contains(&name) {
@@ -266,15 +273,13 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
     // that consecutive non-empty blocks are spaced by a blank line.
     let mut preamble_blocks: Vec<Code> = Vec::new();
 
-    let needed_schemas = referenced_schemas(ctx.schema, ctx.bundle_ctx.bundle.idx);
-    let mut others: Vec<_> = ctx
-        .bundle_ctx
-        .bundle
-        .schemas
-        .iter()
-        .filter(|s| needed_schemas.contains(&s.idx))
+    let needed_schemas =
+        referenced_schemas(unit, ctx.schema_idx, ctx.bundle_ctx.bundle_idx);
+    let mut others: Vec<(ir::SchemaIdx, &ir::Schema)> = unit
+        .schemas_of(ctx.bundle_ctx.bundle_idx)
+        .filter(|(idx, _)| needed_schemas.contains(idx))
         .collect();
-    others.sort_by_key(|s| &s.name);
+    others.sort_by_key(|(_, s)| s.name.clone());
     // Each preamble block carries a leading blank line so that consecutive
     // non-empty blocks are visually separated; the block iteration in the
     // schema template then handles the empty case (no preamble blocks at all)
@@ -282,7 +287,7 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
     if !others.is_empty() {
         let lines: Vec<Code> = others
             .iter()
-            .map(|s| {
+            .map(|(_, s)| {
                 let module = sanitize_py_name(s.name.as_str());
                 let alias = format!("_schema_{}", s.name);
                 quote!("from . import @module as @alias  # noqa: F401")
@@ -310,7 +315,7 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
         ));
     }
 
-    let opaque_imports = collect_opaque_imports(ctx.schema)?;
+    let opaque_imports = collect_opaque_imports(unit, ctx.schema_idx)?;
     if !opaque_imports.is_empty() {
         let lines: Vec<Code> = opaque_imports
             .iter()
@@ -338,12 +343,12 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
     // Emit non-variant defs first (record types must be available as base
     // classes for internally-tagged variant models).
     let mut defs: Vec<Code> = Vec::new();
-    for def in &ctx.schema.defs {
+    for (_, def) in unit.defs_of(ctx.schema_idx) {
         if !matches!(def.kind, ir::DefKind::VariantType(_)) {
             defs.push(generate_def(ctx, def)?);
         }
     }
-    for def in &ctx.schema.defs {
+    for (_, def) in unit.defs_of(ctx.schema_idx) {
         if matches!(def.kind, ir::DefKind::VariantType(_)) {
             defs.push(generate_def(ctx, def)?);
         }
@@ -859,11 +864,11 @@ fn collect_referenced_schemas(
     match &typ.kind {
         ir::TypeKind::TypeVar(_) => {}
         ir::TypeKind::Instance(inst) => {
-            if inst.bundle == bundle_idx
-                && inst.schema != current_schema
-                && !out.contains(&inst.schema)
+            if inst.def.bundle == bundle_idx
+                && inst.def.schema != current_schema
+                && !out.contains(&inst.def.schema)
             {
-                out.push(inst.schema);
+                out.push(inst.def.schema);
             }
             for sub in &inst.subst {
                 collect_referenced_schemas(sub, bundle_idx, current_schema, out);
@@ -872,27 +877,31 @@ fn collect_referenced_schemas(
     }
 }
 
-fn referenced_schemas(schema: &ir::Schema, bundle_idx: ir::BundleIdx) -> Vec<ir::SchemaIdx> {
+fn referenced_schemas(
+    unit: &ir::Ir,
+    schema_idx: ir::SchemaIdx,
+    bundle_idx: ir::BundleIdx,
+) -> Vec<ir::SchemaIdx> {
     let mut refs = Vec::new();
-    for def in &schema.defs {
+    for (_, def) in unit.defs_of(schema_idx) {
         match &def.kind {
             ir::DefKind::TypeAlias(a) => {
-                collect_referenced_schemas(&a.aliased, bundle_idx, schema.idx, &mut refs);
+                collect_referenced_schemas(&a.aliased, bundle_idx, schema_idx, &mut refs);
             }
             ir::DefKind::RecordType(r) => {
                 for field in &r.fields {
-                    collect_referenced_schemas(&field.typ, bundle_idx, schema.idx, &mut refs);
+                    collect_referenced_schemas(&field.typ, bundle_idx, schema_idx, &mut refs);
                 }
             }
             ir::DefKind::VariantType(v) => {
                 for variant in &v.variants {
                     if let Some(typ) = &variant.typ {
-                        collect_referenced_schemas(typ, bundle_idx, schema.idx, &mut refs);
+                        collect_referenced_schemas(typ, bundle_idx, schema_idx, &mut refs);
                     }
                 }
             }
             ir::DefKind::WrapperType(w) => {
-                collect_referenced_schemas(&w.wrapped, bundle_idx, schema.idx, &mut refs);
+                collect_referenced_schemas(&w.wrapped, bundle_idx, schema_idx, &mut refs);
             }
             ir::DefKind::OpaqueType(_) => {}
         }
@@ -985,9 +994,9 @@ fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
     Ok(None)
 }
 
-fn collect_opaque_imports(schema: &ir::Schema) -> Result<Vec<String>> {
+fn collect_opaque_imports(unit: &ir::Ir, schema_idx: ir::SchemaIdx) -> Result<Vec<String>> {
     let mut modules = Vec::new();
-    for def in &schema.defs {
+    for (_, def) in unit.defs_of(schema_idx) {
         if let ir::DefKind::OpaqueType(_) = &def.kind {
             let py_attrs = PyOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
             if let Some(typ) = py_attrs.typ {

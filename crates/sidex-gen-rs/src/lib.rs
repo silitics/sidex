@@ -41,7 +41,7 @@ impl RustGenerator {
     pub fn generate_macro(
         &self,
         config: &Config,
-        unit: &ir::Unit,
+        unit: &ir::Ir,
         bundle: ir::BundleIdx,
     ) -> diagnostics::Result<TokenStream> {
         let mut config = config.clone();
@@ -63,23 +63,30 @@ impl RustGenerator {
     pub fn generate_bundle_inner(
         &self,
         cfg: &Config,
-        unit: &ir::Unit,
-        bundle: ir::BundleIdx,
+        unit: &ir::Ir,
+        bundle_idx: ir::BundleIdx,
     ) -> diagnostics::Result<TokenStream> {
-        let bundle = &unit[bundle];
-        let bundle_ctx = BundleCtx { cfg, unit, bundle };
+        let bundle = &unit[bundle_idx];
+        let bundle_ctx = BundleCtx {
+            cfg,
+            unit,
+            bundle_idx,
+            bundle,
+        };
         let bundle_preambles = self
             .plugins
             .iter()
             .map(|plugin| plugin.visit_bundle(&bundle_ctx))
             .collect::<Result<Vec<_>>>()?;
-        let mut schemas = bundle.schemas.iter().collect::<Vec<_>>();
-        schemas.sort_by(|a, b| a.name.cmp(&b.name));
+        let mut schemas: Vec<(ir::SchemaIdx, &ir::Schema)> =
+            unit.schemas_of(bundle_idx).collect();
+        schemas.sort_by(|(_, a), (_, b)| a.name.cmp(&b.name));
         let schemas = schemas
             .iter()
-            .map(|schema| {
+            .map(|(schema_idx, schema)| {
                 let schema_ctx = SchemaCtx {
                     bundle_ctx: bundle_ctx.clone(),
+                    schema_idx: *schema_idx,
                     schema,
                 };
                 let name = format_ident!("{}", &schema.name);
@@ -88,10 +95,9 @@ impl RustGenerator {
                     .iter()
                     .map(|plugin| plugin.visit_schema(&schema_ctx))
                     .collect::<Result<Vec<_>>>()?;
-                let defs = schema
-                    .defs
-                    .iter()
-                    .map(|def| {
+                let defs = unit
+                    .defs_of(*schema_idx)
+                    .map(|(_, def)| {
                         let parts = self
                             .plugins
                             .iter()

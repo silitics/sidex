@@ -136,7 +136,12 @@ impl Plugin for Types {
     }
 
     fn visit_schema(&self, ctx: &SchemaCtx) -> diagnostics::Result<Code> {
-        let mut schemas: Vec<&ir::Schema> = ctx.bundle_ctx.bundle.schemas.iter().collect();
+        let mut schemas: Vec<&ir::Schema> = ctx
+            .bundle_ctx
+            .unit
+            .schemas_of(ctx.bundle_ctx.bundle_idx)
+            .map(|(_, s)| s)
+            .collect();
         schemas.sort_by(|a, b| a.name.cmp(&b.name));
         let schema_imports: Vec<Code> = schemas
             .iter()
@@ -168,7 +173,7 @@ impl Plugin for Types {
     }
 
     fn visit_bundle(&self, ctx: &BundleCtx) -> diagnostics::Result<Code> {
-        let mut schemas: Vec<&ir::Schema> = ctx.bundle.schemas.iter().collect();
+        let mut schemas: Vec<&ir::Schema> = ctx.unit.schemas_of(ctx.bundle_idx).map(|(_, s)| s).collect();
         schemas.sort_by(|a, b| a.name.cmp(&b.name));
         let exports: Vec<Code> = schemas
             .iter()

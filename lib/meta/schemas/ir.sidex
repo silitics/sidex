@@ -1,16 +1,16 @@
-/// Uniquely identifies a source in a unit.
+/// Uniquely identifies a source in an IR.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper SourceIdx: idx
 
-/// Uniquely identifies a bundle in a unit.
+/// Uniquely identifies a bundle in an IR.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper BundleIdx: idx
 
-/// Uniquely identifies a schema in bundle.
+/// Uniquely identifies a schema in an IR.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper SchemaIdx: idx
 
-/// Uniquely identifies a definition in a schema.
+/// Uniquely identifies a definition in an IR.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper DefIdx: idx
 
@@ -18,53 +18,46 @@ wrapper DefIdx: idx
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper TypeVarIdx: idx
 
-/// References a bundle.
-alias BundleRef: BundleIdx
-
-/// References a schema.
-#[rust(derive(PartialEq, Eq, Hash))]
-record SchemaRef {
-    bundle: BundleRef,
-    schema: SchemaIdx,
-}
-
 /// References a definition.
-#[rust(derive(PartialEq, Eq, Hash))]
+#[rust(derive(Copy, PartialEq, Eq, Hash))]
 record DefRef {
-    schema: SchemaRef,
+    /// The bundle containing the definition.
+    bundle: BundleIdx,
+    /// The schema containing the definition.
+    schema: SchemaIdx,
+    /// The definition.
     def: DefIdx,
 }
 
-/// A *unit* is a collection of bundles.
+/// Sidex IR — a fully-resolved, mostly-processed representation that
+/// downstream code generators consume.
+///
+/// Every [`DefRef`] reachable from the IR resolves to a real entry in
+/// [`Ir.defs`]. Codegens walk this graph without needing to think about
+/// names, imports, or version constraints — those concerns are handled
+/// before the IR is built.
 #[rust(attr(non_exhaustive))]
-record Unit {
-    /// The bundles of the unit.
+record Ir {
+    /// The bundles of the IR.
     #[default]
     bundles: [Bundle],
-    /// The schemas of the unit.
+    /// The schemas of the IR.
     #[default]
     schemas: [Schema],
-    /// The definitions of the unit.
+    /// The definitions of the IR.
     #[default]
     defs: [Def],
-    /// The sources of the unit.
-    #[default]
-    sources: SourceStorage,
-}
-
-/// A storage for sources.
-#[rust(attr(non_exhaustive))]
-record SourceStorage {
-    /// The sources.
+    /// The sources of the IR.
     #[default]
     sources: [Source],
+    /// The bundle this IR was assembled around. Codegens typically only
+    /// emit code for definitions belonging to schemas in this bundle.
+    root: BundleIdx,
 }
 
-/// A *source* is simply a chunk of text.
+/// A *source* is a chunk of text.
 #[rust(attr(non_exhaustive))]
 record Source {
-    /// The source index of the source.
-    idx: SourceIdx,
     /// The origin of the source, e.g., a filesystem path.
     origin?: string,
     /// The optional text of the source.
@@ -76,25 +69,11 @@ record Source {
 /// A bundle is a flat collection of schemas evolving together.
 #[rust(attr(non_exhaustive))]
 record Bundle {
-    /// The index of the bundle.
-    idx: BundleIdx,
     /// The metadata of the bundle.
     metadata: Metadata,
-    /// The dependencies of the bundle.
-    #[default]
-    dependencies: [Dependency],
     /// The schemas of the bundle.
     #[default]
-    schemas: [Schema],
-}
-
-/// A dependency of a bundle.
-#[rust(attr(non_exhaustive))]
-record Dependency {
-    /// The name of the dependency.
-    name: string,
-    /// The bundle.
-    bundle: BundleIdx,
+    schemas: [SchemaIdx],
 }
 
 /// Metadata of a bundle.
@@ -111,9 +90,9 @@ record Metadata {
 }
 
 /// An *identifier* with an optional span.
-record Identifier {
+record Ident {
     /// The identifier.
-    identifier: string,
+    name: string,
     /// The optional span of the identifier.
     span?: Span,
 }
@@ -125,13 +104,9 @@ record Docs {
 }
 
 /// A schema is a collection of definitions.
-///
-/// Note that imports have already been processed and resolved.
 #[rust(attr(non_exhaustive))]
 record Schema {
-    /// The index of the schema.
-    idx: SchemaIdx,
-    /// The index of the bundle the schema is part of.
+    /// The bundle the schema is part of.
     bundle: BundleIdx,
     /// The name of the schema.
     name: string,
@@ -142,25 +117,20 @@ record Schema {
     attrs: [Attr],
     /// The definitions of the schema.
     #[default]
-    defs: [Def],
+    defs: [DefIdx],
     /// The source of the schema.
     source?: SourceIdx,
-    /// The imported bundles, schemas, and definitions.
-    #[default]
-    imports: [string: ItemRef],
-}
-
-variant ItemRef {
-    Def: DefRef,
-    Schema: SchemaRef,
-    Bundle: BundleRef,
+    /// The optional span of the schema.
+    span?: Span,
 }
 
 /// A definition.
 #[rust(attr(non_exhaustive))]
 record Def {
+    /// The schema the definition belongs to.
+    schema: SchemaIdx,
     /// The name of the definition.
-    name: Identifier,
+    name: Ident,
     /// The documentation of the definition.
     docs?: Docs,
     /// The type variables of the definition.
@@ -171,13 +141,15 @@ record Def {
     attrs: [Attr],
     /// The kind of the definition.
     kind: DefKind,
+    /// The optional span of the definition.
+    span?: Span,
 }
 
 /// A type variable of a definition.
 #[rust(attr(non_exhaustive))]
 record TypeVar {
     /// The name of the type variable.
-    name: Identifier,
+    name: Ident,
 }
 
 /// A definition kind.
@@ -218,7 +190,7 @@ record RecordTypeDef {
 #[rust(attr(non_exhaustive))]
 record Field {
     /// The name of the field.
-    name: Identifier,
+    name: Ident,
     /// The documentation of the field.
     docs?: Docs,
     /// The attributes of the field.
@@ -229,6 +201,8 @@ record Field {
     /// Indicates whether the field is optional.
     #[default]
     is_optional: bool,
+    /// The optional span of the field.
+    span?: Span,
 }
 
 /// A definition of a variant type.
@@ -243,14 +217,16 @@ record VariantTypeDef {
 #[rust(attr(non_exhaustive))]
 record Variant {
     /// The name of the variant.
-    name: Identifier,
+    name: Ident,
     /// The documentation of the variant.
     docs?: Docs,
     /// The attributes of the variant.
     #[default]
     attrs: [Attr],
-    /// The optional type of the variant.
+    /// The optional payload type of the variant.
     typ?: Type,
+    /// The optional span of the variant.
+    span?: Span,
 }
 
 /// A definition of a wrapper type.
@@ -270,6 +246,10 @@ record Type {
 }
 
 /// An abstract type kind.
+///
+/// Built-in types like `[T]`, `[K: V]`, and `()` are represented as
+/// instantiations of `core::builtins::Sequence`, `core::builtins::Map`,
+/// and `core::builtins::unit`. There is no separate variant for them.
 #[json(tagged = internally)]
 variant TypeKind {
     /// A type to be determined via substitution of the respective type variable.
@@ -285,15 +265,11 @@ record TypeVarType {
     idx: TypeVarIdx,
 }
 
-/// An instantiation of a type defined in some schema of some bundle.
+/// An instantiation of a type defined in some schema.
 #[rust(attr(non_exhaustive))]
 record InstanceType {
-    /// The bundle containing the schema containing the definition.
-    bundle: BundleIdx,
-    /// The schema containing the definition.
-    schema: SchemaIdx,
-    /// The actual definition.
-    def: DefIdx,
+    /// The definition being instantiated.
+    def: DefRef,
     /// Substitutions for the type variables of the definition.
     #[default]
     subst: [Type],
@@ -310,37 +286,6 @@ record Span {
     end: idx,
 }
 
-/// A token.
-#[rust(attr(non_exhaustive))]
-record Token {
-    /// The token itself.
-    kind: TokenKind,
-    /// The span of the token.
-    span?: Span,
-}
-
-#[json(content = "token")]
-variant TokenKind {
-    Punctuation: string,
-    Delimiter: string,
-    #[json(content = "literal")]
-    Literal: Literal,
-    Identifier: string,
-}
-
-#[json(tag = "type", content = "value")]
-variant Literal {
-    String: string,
-    Number: string,
-    Bool: bool,
-}
-
-/// A `::` separated path of identifiers.
-wrapper Path: string
-
-/// A stream of tokens.
-wrapper TokenStream: [Token]
-
 /// An attribute.
 #[rust(attr(non_exhaustive))]
 record Attr {
@@ -350,35 +295,44 @@ record Attr {
     span?: Span,
 }
 
-/// The four kinds of attributes.
+/// The kinds of attributes.
 #[json(tagged = internally)]
 variant AttrKind {
-    /// A `::` separated path.
+    /// A bare `::`-separated path, e.g. `pub`.
     #[json(content = "path")]
-    Path: Path,
+    Path: string,
     /// A list attribute of the form `<PATH> ( <ARGS> )` where `<ARGS>` is a
     /// `,`-separated sequence of arguments.
     List: AttrList,
-    /// An assign attribute of the form `<PATH> = <ATTR>` where `<ATTR>` is an attribute.
+    /// An assign attribute of the form `<PATH> = <VALUE>`.
     Assign: AttrAssign,
-    /// A stream of tokens (if the other alternatives do not apply).
-    Tokens: TokenStream,
 }
 
-/// A list attribute of the form `<PATH> ( <ARGS> )` where `<ARGS>` is a `,`-separated
-/// sequence of arguments.
+/// A list attribute of the form `<PATH> ( <ARGS> )`.
 record AttrList {
     /// The path of the attribute.
-    path: Path,
+    path: string,
     /// The arguments of the attribute.
     args: [Attr],
 }
 
-/// An assign attribute of the form `<PATH> = <ATTR>` where `<ATTR>` is an attribute.
+/// An assign attribute of the form `<PATH> = <VALUE>`.
 record AttrAssign {
     /// The path of the attribute.
-    path: Path,
+    path: string,
     /// The assigned value.
-    #[rust(box)]
-    value: Attr,
+    value: AttrValue,
+}
+
+/// The value of an assign attribute.
+#[json(tagged = internally)]
+variant AttrValue {
+    /// A boolean value.
+    Bool: bool,
+    /// A numeric value (kept as a string to avoid lossy conversion).
+    Number: string,
+    /// A string value.
+    String: string,
+    /// A `::`-separated path.
+    Path: string,
 }

@@ -6,6 +6,7 @@ use quote::quote;
 use sidex_gen::attrs::AttrConvertExt;
 use sidex_gen::attrs::TryApplyAttr;
 use sidex_gen::attrs::TryFromAttr;
+use sidex_gen::attrs::TryFromAttrValue;
 use sidex_gen::attrs::accept;
 use sidex_gen::attrs::new_assign_attr;
 use sidex_gen::attrs::reject;
@@ -21,14 +22,11 @@ pub struct Type {
 
 impl TryFromAttr for Type {
     fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
-        match &attr.kind {
-            ir::AttrKind::Assign(assign) => {
-                if assign.path.as_str() == "type" {
-                    let path = String::try_from_attr(&assign.value)?;
-                    accept!(Self { path })
-                }
+        if let ir::AttrKind::Assign(assign) = &attr.kind {
+            if assign.path == "type" {
+                let path = String::try_from_attr_value(&assign.value, attr)?;
+                accept!(Self { path })
             }
-            _ => {}
         }
         reject!(attr, "Expected type attribute.")
     }
@@ -61,7 +59,7 @@ impl TryFromAttr for Visibility {
                     _ => {}
                 }
             }
-            ir::AttrKind::List(list) if list.path.as_str() == "pub" && list.args.len() == 1 => {
+            ir::AttrKind::List(list) if list.path == "pub" && list.args.len() == 1 => {
                 if let ir::AttrKind::Path(path) = &list.args[0].kind {
                     match path.as_str() {
                         "crate" => accept!(Self::Crate),
@@ -108,21 +106,18 @@ impl Wrapper {
 impl TryFromAttr for Wrapper {
     fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
         attr.expect_path()
-            .and_then(|path| {
-                match path.as_str() {
-                    "box" => accept!(Self::new("::std::boxed::Box")),
-                    "arc" => accept!(Self::new("::std::sync::Arc")),
-                    "rc" => accept!(Self::new("::std::rc::Rc")),
-                    _ => reject!(attr, ""),
-                }
+            .and_then(|path| match path {
+                "box" => accept!(Self::new("::std::boxed::Box")),
+                "arc" => accept!(Self::new("::std::sync::Arc")),
+                "rc" => accept!(Self::new("::std::rc::Rc")),
+                _ => reject!(attr, ""),
             })
             .or_else(|_| -> Result<Self> {
-                accept!(Self::new(
-                    attr.expect_assign_with("wrap")?
-                        .value
-                        .expect_path()?
-                        .as_str()
-                ))
+                let assign = attr.expect_assign_with("wrap")?;
+                match &assign.value {
+                    ir::AttrValue::Path(path) => accept!(Self::new(path)),
+                    _ => reject!(attr, "Expected `wrap = <PATH>`."),
+                }
             })
             .or_else(|_| {
                 reject!(
@@ -148,7 +143,7 @@ pub struct FieldAttrs {
 impl TryApplyAttr for FieldAttrs {
     fn try_apply_attr(&mut self, attr: &ir::Attr) -> Result<()> {
         if let ir::AttrKind::List(list) = &attr.kind {
-            if list.path.as_str() == "rust" {
+            if list.path == "rust" {
                 for attr in &list.args {
                     if let Ok(visibility) = Visibility::try_from_attr(attr) {
                         self.visibility = visibility;
@@ -186,7 +181,7 @@ impl TryFrom<&[ir::Attr]> for TypeAttrs {
             .filter_map(|attr| {
                 match &attr.kind {
                     ir::AttrKind::List(list) => {
-                        if list.path.as_str() == "rust" {
+                        if list.path == "rust" {
                             Some(list.args.iter())
                         } else {
                             None

@@ -112,12 +112,16 @@ impl Generator {
         {
             Ok(indices) => indices,
             Err(err) => {
-                ctx.report().eprint(&transformer.storage);
+                ctx.report().eprint(&transformer.sources);
                 return Err(Box::new(err));
             }
         };
 
-        let unit = transformer.transform();
+        let root = bundle_indices
+            .first()
+            .copied()
+            .unwrap_or(sidex_core::ir::STD_BUNDLE_IDX);
+        let unit = transformer.transform(root);
 
         for (bundle_idx, bundle) in bundle_indices.iter().zip(&self.bundles) {
             let null = serde_json::Value::Null;

@@ -31,19 +31,19 @@ pub struct Parsed {
 }
 
 /// Parse a source into a CST and an AST.
-pub fn parse_full(source: &ir::Source) -> Option<Parsed> {
+pub fn parse_full(idx: ir::SourceIdx, source: &ir::Source) -> Option<Parsed> {
     let text = source.text.as_ref()?;
-    let mut tokens = lexer::lex(source.idx, text);
+    let mut tokens = lexer::lex(idx, text);
     // Filter error tokens out for the parser's grammar layer — they remain
     // surfaced through the diagnostics emitted during lexing.
     tokens.retain(|t| !matches!(t.kind, TokenKind::Error));
-    let parser = Parser::new(source.idx, tokens);
+    let parser = Parser::new(idx, tokens);
     Some(parser.run())
 }
 
 /// Backwards-compatible entry point: returns just the AST.
-pub fn parse(source: &ir::Source) -> Option<ast::Schema> {
-    parse_full(source).map(|p| p.schema)
+pub fn parse(idx: ir::SourceIdx, source: &ir::Source) -> Option<ast::Schema> {
+    parse_full(idx, source).map(|p| p.schema)
 }
 
 struct Parser {

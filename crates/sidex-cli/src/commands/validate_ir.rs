@@ -10,7 +10,7 @@ pub struct ValidateIrArgs {
 
 pub fn exec(args: &ValidateIrArgs) -> eyre::Result<()> {
     let src = std::fs::read_to_string(&args.file)?;
-    let unit = serde_json::from_str::<ir::Unit>(&src)?;
+    let unit = serde_json::from_str::<ir::Ir>(&src)?;
 
     assert_eq!(src, serde_json::to_string(&unit)?);
 

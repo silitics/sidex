@@ -18,8 +18,10 @@ use crate::transformer::Transformer;
 /// A single unused-import finding.
 #[derive(Debug, Clone)]
 pub struct UnusedImport {
-    /// The schema that contains the unused import.
-    pub schema: ir::SchemaIdx,
+    /// The name of the schema that contains the unused import. Schema names
+    /// are unique within a bundle, so this is sufficient to identify the
+    /// schema for fix-up purposes.
+    pub schema: String,
     /// The imported name (last segment of the path).
     pub name: String,
     /// Span of the imported name in the source.
@@ -58,10 +60,10 @@ pub fn lint_unused_imports(transformer: &Transformer, bundle: ir::BundleIdx) {
 /// consumes.
 pub fn unused_imports_by_schema(
     findings: &[UnusedImport],
-) -> HashMap<ir::SchemaIdx, HashSet<String>> {
-    let mut out: HashMap<ir::SchemaIdx, HashSet<String>> = HashMap::new();
+) -> HashMap<String, HashSet<String>> {
+    let mut out: HashMap<String, HashSet<String>> = HashMap::new();
     for f in findings {
-        out.entry(f.schema)
+        out.entry(f.schema.clone())
             .or_default()
             .insert(f.rendered_path.clone());
     }
@@ -99,7 +101,7 @@ fn collect_for_schema(schema: &ParsedSchema, out: &mut Vec<UnusedImport>) {
     for (ident, rendered_path) in imported {
         if !referenced.contains(ident.as_str()) {
             out.push(UnusedImport {
-                schema: schema.idx(),
+                schema: schema.name().to_owned(),
                 name: ident.as_str().to_owned(),
                 span: ident.span().clone(),
                 rendered_path,

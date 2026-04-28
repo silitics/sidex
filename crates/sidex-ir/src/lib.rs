@@ -1,18 +1,14 @@
 #![doc = include_str!("../README.md")]
 //!
-//! The root structure of the SIR is a collection ([`Collection`]) of bundles
-//! ([`Bundle`]). These bundles, in turn, consist of multiple schemas ([`Schema`])
-//! containing the actual type and service definitions ([`Def`]).
+//! The root structure of the Sidex IR is [`Ir`], a flat collection of
+//! [`Bundle`]s, [`Schema`]s, [`Def`]s, and [`Source`]s. References between
+//! entities are typed indexes ([`BundleIdx`], [`SchemaIdx`], [`DefIdx`]) and
+//! cross-bundle references are [`DefRef`] triples.
 //!
-//! A code generator usually takes a [`Collection`] and generates code for a bundle
-//! identified by a given [`BundleIdx`].
-//!
-//! Note that the data structures in this crate have been generated with Sidex itself from
-//! the [`reflect`](https://github.com/silitics/sidex/blob/main/lib/meta/schemas/reflect.sidex)
-//! schema.
+//! Note that the data structures in this crate are generated with Sidex itself
+//! from [`lib/meta/schemas/ir.sidex`](https://github.com/silitics/sidex/blob/main/lib/meta/schemas/ir.sidex).
 
 use std::collections::HashMap;
-use std::fmt::Write;
 use std::ops::Index;
 use std::ops::IndexMut;
 
@@ -20,248 +16,253 @@ mod generated;
 
 pub use generated::ir::*;
 
-impl From<usize> for BundleIdx {
-    fn from(idx: usize) -> Self {
-        Self(idx)
-    }
+pub const STD_BUNDLE_IDX: BundleIdx = BundleIdx(0);
+
+// --- Index <-> usize -----------------------------------------------------
+
+macro_rules! idx_conversions {
+    ($($idx:ident),*) => {
+        $(
+            impl From<usize> for $idx {
+                fn from(idx: usize) -> Self { Self(idx) }
+            }
+            impl $idx {
+                pub fn idx(&self) -> usize { self.0 }
+            }
+        )*
+    };
 }
 
-impl Index<BundleIdx> for Unit {
+idx_conversions!(SourceIdx, BundleIdx, SchemaIdx, DefIdx, TypeVarIdx);
+
+// --- Indexing into Ir's flat arenas --------------------------------------
+
+impl Index<BundleIdx> for Ir {
     type Output = Bundle;
-
-    fn index(&self, index: BundleIdx) -> &Self::Output {
-        &self.bundles[index.0]
-    }
+    fn index(&self, idx: BundleIdx) -> &Bundle { &self.bundles[idx.0] }
+}
+impl IndexMut<BundleIdx> for Ir {
+    fn index_mut(&mut self, idx: BundleIdx) -> &mut Bundle { &mut self.bundles[idx.0] }
 }
 
-impl IndexMut<BundleIdx> for Unit {
-    fn index_mut(&mut self, index: BundleIdx) -> &mut Self::Output {
-        &mut self.bundles[index.0]
-    }
-}
-
-impl Index<InstanceType> for Unit {
-    type Output = Def;
-
-    fn index(&self, index: InstanceType) -> &Self::Output {
-        &self[index.bundle][index.schema][index.def]
-    }
-}
-
-impl IndexMut<InstanceType> for Unit {
-    fn index_mut(&mut self, index: InstanceType) -> &mut Self::Output {
-        &mut self[index.bundle][index.schema][index.def]
-    }
-}
-
-impl From<usize> for SchemaIdx {
-    fn from(idx: usize) -> Self {
-        Self(idx)
-    }
-}
-
-impl Index<SchemaIdx> for Bundle {
+impl Index<SchemaIdx> for Ir {
     type Output = Schema;
-
-    fn index(&self, index: SchemaIdx) -> &Self::Output {
-        &self.schemas[index.0]
-    }
+    fn index(&self, idx: SchemaIdx) -> &Schema { &self.schemas[idx.0] }
+}
+impl IndexMut<SchemaIdx> for Ir {
+    fn index_mut(&mut self, idx: SchemaIdx) -> &mut Schema { &mut self.schemas[idx.0] }
 }
 
-impl IndexMut<SchemaIdx> for Bundle {
-    fn index_mut(&mut self, index: SchemaIdx) -> &mut Self::Output {
-        &mut self.schemas[index.0]
-    }
-}
-
-impl From<usize> for DefIdx {
-    fn from(idx: usize) -> Self {
-        Self(idx)
-    }
-}
-
-impl Index<DefIdx> for Schema {
+impl Index<DefIdx> for Ir {
     type Output = Def;
-
-    fn index(&self, index: DefIdx) -> &Self::Output {
-        &self.defs[index.0]
-    }
+    fn index(&self, idx: DefIdx) -> &Def { &self.defs[idx.0] }
+}
+impl IndexMut<DefIdx> for Ir {
+    fn index_mut(&mut self, idx: DefIdx) -> &mut Def { &mut self.defs[idx.0] }
 }
 
-impl IndexMut<DefIdx> for Schema {
-    fn index_mut(&mut self, index: DefIdx) -> &mut Self::Output {
-        &mut self.defs[index.0]
-    }
+impl Index<DefRef> for Ir {
+    type Output = Def;
+    fn index(&self, def_ref: DefRef) -> &Def { &self.defs[def_ref.def.0] }
+}
+impl IndexMut<DefRef> for Ir {
+    fn index_mut(&mut self, def_ref: DefRef) -> &mut Def { &mut self.defs[def_ref.def.0] }
 }
 
-impl From<usize> for TypeVarIdx {
-    fn from(idx: usize) -> Self {
-        Self(idx)
-    }
+impl Index<SourceIdx> for Ir {
+    type Output = Source;
+    fn index(&self, idx: SourceIdx) -> &Source { &self.sources[idx.0] }
 }
 
 impl Index<TypeVarIdx> for Def {
     type Output = TypeVar;
-
-    fn index(&self, index: TypeVarIdx) -> &Self::Output {
-        &self.vars[index.0]
-    }
+    fn index(&self, idx: TypeVarIdx) -> &TypeVar { &self.vars[idx.0] }
 }
-
 impl IndexMut<TypeVarIdx> for Def {
-    fn index_mut(&mut self, index: TypeVarIdx) -> &mut Self::Output {
-        &mut self.vars[index.0]
+    fn index_mut(&mut self, idx: TypeVarIdx) -> &mut TypeVar { &mut self.vars[idx.0] }
+}
+
+// --- IR construction helpers ---------------------------------------------
+
+impl Ir {
+    /// Append a source to the IR and return its index.
+    pub fn insert_source(&mut self, text: Option<String>, origin: Option<String>) -> SourceIdx {
+        let idx = SourceIdx(self.sources.len());
+        self.sources
+            .push(Source::new().with_text(text).with_origin(origin));
+        idx
+    }
+
+    /// Append a bundle to the IR and return its index.
+    pub fn insert_bundle(&mut self, bundle: Bundle) -> BundleIdx {
+        let idx = BundleIdx(self.bundles.len());
+        self.bundles.push(bundle);
+        idx
+    }
+
+    /// Append a schema to the IR and return its index. Also records the
+    /// schema in its bundle's schema list.
+    pub fn insert_schema(&mut self, schema: Schema) -> SchemaIdx {
+        let idx = SchemaIdx(self.schemas.len());
+        let bundle = schema.bundle;
+        self.schemas.push(schema);
+        self.bundles[bundle.0].schemas.push(idx);
+        idx
+    }
+
+    /// Append a definition to the IR and return its index. Also records the
+    /// definition in its schema's def list.
+    pub fn insert_def(&mut self, def: Def) -> DefIdx {
+        let idx = DefIdx(self.defs.len());
+        let schema = def.schema;
+        self.defs.push(def);
+        self.schemas[schema.0].defs.push(idx);
+        idx
+    }
+
+    /// Iterate the schemas belonging to `bundle`, paired with their global indices.
+    pub fn schemas_of(&self, bundle: BundleIdx) -> impl Iterator<Item = (SchemaIdx, &Schema)> {
+        self.bundles[bundle.0]
+            .schemas
+            .iter()
+            .map(move |&idx| (idx, &self.schemas[idx.0]))
+    }
+
+    /// Iterate the definitions belonging to `schema`, paired with their global indices.
+    pub fn defs_of(&self, schema: SchemaIdx) -> impl Iterator<Item = (DefIdx, &Def)> {
+        self.schemas[schema.0]
+            .defs
+            .iter()
+            .map(move |&idx| (idx, &self.defs[idx.0]))
     }
 }
 
-impl From<usize> for SourceIdx {
-    fn from(idx: usize) -> Self {
-        Self(idx)
+// --- Type operations -----------------------------------------------------
+
+impl Ir {
+    pub fn is_concrete(&self, typ: &Type) -> bool {
+        match &typ.kind {
+            TypeKind::TypeVar(_) => false,
+            TypeKind::Instance(instance) => instance.subst.iter().all(|t| self.is_concrete(t)),
+        }
+    }
+
+    pub fn is_alias_free(&self, typ: &Type) -> bool {
+        match &typ.kind {
+            TypeKind::TypeVar(_) => true,
+            TypeKind::Instance(instance) => {
+                let def = &self[instance.def];
+                match &def.kind {
+                    DefKind::TypeAlias(_) => false,
+                    _ => instance.subst.iter().all(|t| self.is_alias_free(t)),
+                }
+            }
+        }
+    }
+
+    pub fn apply_subst(&self, typ: &Type, subst: &[Type]) -> Type {
+        let substitutions = subst
+            .iter()
+            .enumerate()
+            .map(|(i, s)| (TypeVarIdx::from(i), s.clone()))
+            .collect();
+        typ.substitute(&substitutions)
+    }
+
+    pub fn resolve_aliases(&self, typ: &Type) -> Type {
+        match &typ.kind {
+            TypeKind::TypeVar(_) => typ.clone(),
+            TypeKind::Instance(instance) => {
+                let def = &self[instance.def];
+                match &def.kind {
+                    DefKind::TypeAlias(alias) => {
+                        let aliased = self.apply_subst(&alias.aliased, &instance.subst);
+                        self.resolve_aliases(&aliased)
+                    }
+                    _ => Type {
+                        kind: TypeKind::Instance(InstanceType {
+                            subst: instance
+                                .subst
+                                .iter()
+                                .map(|t| self.resolve_aliases(t))
+                                .collect(),
+                            ..instance.clone()
+                        }),
+                        ..typ.clone()
+                    },
+                }
+            }
+        }
+    }
+
+    pub fn type_def(&self, typ: &Type) -> Option<&Def> {
+        self.type_def_ref(typ).map(|def_ref| &self[def_ref])
+    }
+
+    pub fn type_def_ref(&self, typ: &Type) -> Option<DefRef> {
+        let typ = self.resolve_aliases(typ);
+        match typ.kind {
+            TypeKind::TypeVar(_) => None,
+            TypeKind::Instance(instance) => Some(instance.def),
+        }
+    }
+
+    pub fn record_type(&self, typ: &Type) -> Option<&RecordTypeDef> {
+        self.type_def(typ).and_then(|def| match &def.kind {
+            DefKind::TypeAlias(alias) => self.record_type(&alias.aliased),
+            DefKind::RecordType(record) => Some(record),
+            _ => None,
+        })
     }
 }
 
-impl From<String> for Path {
-    fn from(path: String) -> Self {
-        Self(path)
-    }
-}
-
-impl Path {
-    pub fn as_str(&self) -> &str {
-        self.0.as_str()
-    }
-}
-
-impl std::ops::Deref for TokenStream {
-    type Target = [Token];
-
-    fn deref(&self) -> &Self::Target {
-        self.0.as_slice()
-    }
-}
-
-pub const STD_BUNDLE_IDX: BundleIdx = BundleIdx(0);
-
-impl BundleIdx {
-    pub fn idx(&self) -> usize {
-        self.0
-    }
-}
-
-impl SchemaIdx {
-    pub fn idx(&self) -> usize {
-        self.0
-    }
-}
-
-impl DefIdx {
-    pub fn idx(&self) -> usize {
-        self.0
-    }
-}
-
-impl SourceIdx {
-    pub fn idx(&self) -> usize {
-        self.0
-    }
-}
-
-impl TypeVarIdx {
-    pub fn idx(&self) -> usize {
-        self.0
-    }
-}
-
-impl From<Vec<Token>> for TokenStream {
-    fn from(tokens: Vec<Token>) -> Self {
-        Self(tokens)
-    }
-}
-
-impl std::fmt::Display for Attr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Type {
+    pub fn substitute(&self, substitutions: &HashMap<TypeVarIdx, Type>) -> Type {
         match &self.kind {
-            AttrKind::Path(path) => f.write_str(path.as_str()),
-            AttrKind::List(list) => {
-                f.write_str(list.path.as_str())?;
-                f.write_char('(')?;
-                for idx in 0..list.args.len() {
-                    if idx != 0 {
-                        f.write_str(", ")?;
-                    }
-                    std::fmt::Display::fmt(&list.args[idx], f)?;
-                }
-                f.write_char(')')
-            }
-            AttrKind::Assign(assign) => {
-                f.write_str(assign.path.as_str())?;
-                f.write_str(" = ")?;
-                std::fmt::Display::fmt(&assign.value, f)
-            }
-            AttrKind::Tokens(tokens) => {
-                for token in tokens.iter() {
-                    match &token.kind {
-                        TokenKind::Punctuation(token)
-                        | TokenKind::Delimiter(token)
-                        | TokenKind::Identifier(token) => {
-                            f.write_str(token)?;
-                        }
-                        TokenKind::Literal(literal) => {
-                            match literal {
-                                Literal::String(string) => {
-                                    f.write_fmt(format_args!("{:?}", string))?;
-                                }
-                                Literal::Number(string) => f.write_str(string)?,
-                                Literal::Bool(boolean) => {
-                                    f.write_str(if *boolean { "true" } else { "false" })?
-                                }
-                            }
-                        }
-                    }
-                    f.write_char(' ')?;
-                }
-                Ok(())
-            }
+            TypeKind::TypeVar(var) => substitutions.get(&var.idx).unwrap_or(self).clone(),
+            TypeKind::Instance(instance) => Type {
+                kind: TypeKind::Instance(InstanceType {
+                    subst: instance
+                        .subst
+                        .iter()
+                        .map(|t| t.substitute(substitutions))
+                        .collect(),
+                    ..instance.clone()
+                }),
+                ..self.clone()
+            },
         }
     }
 }
 
-impl SourceStorage {
-    /// Inserts a *source* into the storage.
-    pub fn insert(&mut self, text: String, origin: Option<String>) -> SourceIdx {
-        self.insert_with(|idx| Source::new(idx).with_text(Some(text)).with_origin(origin))
-    }
-    pub fn insert_with<F: FnOnce(SourceIdx) -> Source>(&mut self, make: F) -> SourceIdx {
-        let idx = SourceIdx::from(self.sources.len());
-        self.sources.push(make(idx));
-        idx
-    }
-}
-
-impl Index<SourceIdx> for SourceStorage {
-    type Output = Source;
-
-    fn index(&self, index: SourceIdx) -> &Self::Output {
-        &self.sources[index.0]
-    }
-}
+// --- Source helpers ------------------------------------------------------
 
 impl Source {
-    /// The end of the source.
-    pub fn end(&self) -> Span {
-        self.span_at(
-            self.text
-                .as_ref()
-                .map(|text| text.chars().count())
-                .unwrap_or(0),
-        )
+    /// Span pointing at the position past the last character of the source.
+    pub fn end_span(&self, idx: SourceIdx) -> Span {
+        let pos = self.text.as_ref().map(|t| t.chars().count()).unwrap_or(0);
+        Span::new(idx, pos, pos + 1)
     }
 
-    /// Create a span at the given position.
-    pub fn span_at(&self, pos: usize) -> Span {
-        Span::new(self.idx, pos, pos + 1)
+    /// One-character span at the given character offset.
+    pub fn span_at(&self, idx: SourceIdx, pos: usize) -> Span {
+        Span::new(idx, pos, pos + 1)
     }
 }
+
+impl Ident {
+    pub fn as_str(&self) -> &str {
+        self.name.as_str()
+    }
+}
+
+impl Docs {
+    pub fn as_str(&self) -> &str {
+        self.text.as_str()
+    }
+}
+
+// --- Spanned -------------------------------------------------------------
 
 pub trait Spanned {
     fn span(&self) -> Option<Span>;
@@ -279,201 +280,75 @@ impl Spanned for Attr {
     }
 }
 
-impl Identifier {
-    pub fn as_str(&self) -> &str {
-        self.identifier.as_str()
+// --- AttrValue accessors -------------------------------------------------
+
+impl AttrValue {
+    /// Returns the contained string if this is a [`AttrValue::String`].
+    pub fn as_string(&self) -> Option<&str> {
+        match self {
+            AttrValue::String(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    /// Returns the contained path if this is a [`AttrValue::Path`].
+    pub fn as_path(&self) -> Option<&str> {
+        match self {
+            AttrValue::Path(p) => Some(p),
+            _ => None,
+        }
+    }
+
+    /// Returns the contained boolean if this is a [`AttrValue::Bool`].
+    pub fn as_bool(&self) -> Option<bool> {
+        match self {
+            AttrValue::Bool(b) => Some(*b),
+            _ => None,
+        }
+    }
+
+    /// Returns the contained number (as a string) if this is a [`AttrValue::Number`].
+    pub fn as_number(&self) -> Option<&str> {
+        match self {
+            AttrValue::Number(n) => Some(n),
+            _ => None,
+        }
     }
 }
 
-impl Docs {
-    pub fn as_str(&self) -> &str {
-        self.text.as_str()
-    }
-}
+// --- Display for attributes ---------------------------------------------
 
-impl Type {
-    pub fn substitute(&self, substitutions: &HashMap<TypeVarIdx, Type>) -> Type {
+impl std::fmt::Display for Attr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.kind {
-            TypeKind::TypeVar(var) => substitutions.get(&var.idx).unwrap_or(self).clone(),
-            TypeKind::Instance(instance) => {
-                Type {
-                    kind: TypeKind::Instance(InstanceType {
-                        subst: instance
-                            .subst
-                            .iter()
-                            .map(|typ| typ.substitute(substitutions))
-                            .collect(),
-                        ..instance.clone()
-                    }),
-                    ..self.clone()
-                }
-            }
-        }
-    }
-}
-
-impl Unit {
-    pub fn is_concrete(&self, typ: &Type) -> bool {
-        match &typ.kind {
-            TypeKind::TypeVar(_) => false,
-            TypeKind::Instance(instance) => instance.subst.iter().all(|typ| self.is_concrete(typ)),
-        }
-    }
-
-    pub fn is_alias_free(&self, typ: &Type) -> bool {
-        match &typ.kind {
-            TypeKind::TypeVar(_) => true,
-            TypeKind::Instance(instance) => {
-                let def = &self[instance.bundle][instance.schema][instance.def];
-                match &def.kind {
-                    DefKind::TypeAlias(_) => false,
-                    _ => instance.subst.iter().all(|typ| self.is_alias_free(typ)),
-                }
-            }
-        }
-    }
-
-    pub fn apply_subst(&self, typ: &Type, subst: &[Type]) -> Type {
-        let substitutions = subst
-            .iter()
-            .enumerate()
-            .map(|(idx, subst)| (TypeVarIdx::from(idx), subst.clone()))
-            .collect();
-        typ.substitute(&substitutions)
-    }
-
-    pub fn resolve_aliases(&self, typ: &Type) -> Type {
-        match &typ.kind {
-            TypeKind::TypeVar(_) => typ.clone(),
-            TypeKind::Instance(instance) => {
-                let def = &self[instance.bundle][instance.schema][instance.def];
-                match &def.kind {
-                    DefKind::TypeAlias(alias) => {
-                        let aliased = self.apply_subst(&alias.aliased, &instance.subst);
-                        self.resolve_aliases(&aliased)
+            AttrKind::Path(path) => f.write_str(path),
+            AttrKind::List(list) => {
+                f.write_str(&list.path)?;
+                f.write_str("(")?;
+                for (idx, arg) in list.args.iter().enumerate() {
+                    if idx != 0 {
+                        f.write_str(", ")?;
                     }
-                    _ => {
-                        // Recursively resolve aliases.
-                        Type {
-                            kind: TypeKind::Instance(InstanceType {
-                                subst: instance
-                                    .subst
-                                    .iter()
-                                    .map(|typ| self.resolve_aliases(typ))
-                                    .collect(),
-                                ..instance.clone()
-                            }),
-                            ..typ.clone()
-                        }
-                    }
+                    std::fmt::Display::fmt(arg, f)?;
                 }
+                f.write_str(")")
+            }
+            AttrKind::Assign(assign) => {
+                f.write_str(&assign.path)?;
+                f.write_str(" = ")?;
+                std::fmt::Display::fmt(&assign.value, f)
             }
         }
-    }
-
-    pub fn type_def(&self, typ: &Type) -> Option<&Def> {
-        self.type_def_ref(typ).map(|def_ref| &self[def_ref])
-    }
-
-    pub fn type_def_ref(&self, typ: &Type) -> Option<DefRef> {
-        let typ = self.resolve_aliases(typ);
-        match &typ.kind {
-            TypeKind::TypeVar(_) => None,
-            TypeKind::Instance(instance) => {
-                Some(DefRef {
-                    schema: SchemaRef {
-                        bundle: instance.bundle,
-                        schema: instance.schema,
-                    },
-                    def: instance.def,
-                })
-            }
-        }
-    }
-
-    pub fn record_type(&self, typ: &Type) -> Option<&RecordTypeDef> {
-        self.type_def(typ).and_then(|def| {
-            match &def.kind {
-                DefKind::TypeAlias(alias) => self.record_type(&alias.aliased),
-                DefKind::RecordType(record) => Some(record),
-                _ => None,
-            }
-        })
-    }
-
-    pub fn resolve_path(&self, root: ItemRef, path: &Path) -> Result<ItemRef, String> {
-        let mut item = root;
-        for segment in path.segments() {
-            match &item {
-                ItemRef::Def(_) => return Err("Definition has no items.".to_owned()),
-                ItemRef::Schema(schema_ref) => {
-                    let schema = &self[schema_ref.bundle][schema_ref.schema];
-                    item = schema
-                        .resolve_name(segment)
-                        .ok_or_else(|| "Unable to resolve name.".to_owned())?;
-                }
-                ItemRef::Bundle(bundle_ref) => {
-                    let bundle = &self[*bundle_ref];
-                    item = bundle
-                        .resolve_name(segment)
-                        .ok_or_else(|| "Unable to resolve name.".to_owned())?;
-                }
-            }
-        }
-        Ok(item)
     }
 }
 
-impl Path {
-    pub fn segments(&self) -> impl Iterator<Item = &str> {
-        self.0.split("::")
-    }
-}
-
-impl Bundle {
-    pub fn resolve_name(&self, name: &str) -> Option<ItemRef> {
-        for schema in self.schemas.iter() {
-            if schema.name.as_str() == name {
-                return Some(ItemRef::Schema(schema.schema_ref()));
-            }
+impl std::fmt::Display for AttrValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            AttrValue::Bool(b) => write!(f, "{}", b),
+            AttrValue::Number(n) => f.write_str(n),
+            AttrValue::String(s) => write!(f, "{:?}", s),
+            AttrValue::Path(p) => f.write_str(p),
         }
-        None
-    }
-}
-
-impl Schema {
-    pub fn schema_ref(&self) -> SchemaRef {
-        SchemaRef {
-            bundle: self.bundle,
-            schema: self.idx,
-        }
-    }
-
-    pub fn resolve_name(&self, name: &str) -> Option<ItemRef> {
-        for (def_idx, def) in self.defs.iter().enumerate() {
-            if def.name.as_str() == name {
-                return Some(ItemRef::Def(DefRef {
-                    schema: self.schema_ref(),
-                    def: DefIdx(def_idx),
-                }));
-            }
-        }
-        self.imports.get(name).cloned()
-    }
-}
-
-impl Index<SchemaRef> for Unit {
-    type Output = Schema;
-
-    fn index(&self, index: SchemaRef) -> &Self::Output {
-        &self[index.bundle][index.schema]
-    }
-}
-
-impl Index<DefRef> for Unit {
-    type Output = Def;
-
-    fn index(&self, index: DefRef) -> &Self::Output {
-        &self[index.schema][index.def]
     }
 }

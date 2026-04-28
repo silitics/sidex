@@ -131,7 +131,7 @@ impl Config {
 
 /// A context for generating JSON Schema.
 pub struct JsonSchemaCtx<'cx> {
-    pub unit: &'cx ir::Unit,
+    pub unit: &'cx ir::Ir,
 
     pub id_prefix: Option<&'cx str>,
 
@@ -171,7 +171,7 @@ pub struct TypeSchema {
 }
 
 impl<'cx> JsonSchemaCtx<'cx> {
-    pub fn new(unit: &'cx ir::Unit, config: JsonSchemaConfig) -> Self {
+    pub fn new(unit: &'cx ir::Ir, config: JsonSchemaConfig) -> Self {
         Self {
             unit,
             id_prefix: None,
@@ -194,9 +194,9 @@ impl<'cx> JsonSchemaCtx<'cx> {
     }
 
     fn qualified_path(&self, typ: &ir::InstanceType) -> String {
-        let bundle = &self.unit[typ.bundle];
-        let schema = &bundle[typ.schema];
-        let def = &schema[typ.def];
+        let bundle = &self.unit[typ.def.bundle];
+        let schema = &self.unit[typ.def.schema];
+        let def = &self.unit[typ.def];
         format!(
             "::{}::{}::{}",
             bundle.metadata.name,
@@ -206,9 +206,9 @@ impl<'cx> JsonSchemaCtx<'cx> {
     }
 
     fn def_name(&self, typ: &ir::InstanceType) -> String {
-        let bundle = &self.unit[typ.bundle];
-        let schema = &bundle[typ.schema];
-        let def = &schema[typ.def];
+        let bundle = &self.unit[typ.def.bundle];
+        let schema = &self.unit[typ.def.schema];
+        let def = &self.unit[typ.def];
         let mut name = format!(
             "{}.{}.{}",
             bundle.metadata.name,
@@ -254,7 +254,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 // There exists no definition, let's create a schema for the type.
                 let typ_def = self.unit.type_def(typ).unwrap();
                 // Insert `None` such that recursive usage yields a reference.
-                if instance.bundle != STD_BUNDLE_IDX {
+                if instance.def.bundle != STD_BUNDLE_IDX {
                     self.defs.insert(
                         def_name.clone(),
                         TypeSchema {
@@ -279,7 +279,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
                     }
                 };
 
-                if instance.bundle == STD_BUNDLE_IDX {
+                if instance.def.bundle == STD_BUNDLE_IDX {
                     TypeSchema {
                         name: def_name,
                         use_schema: inline_schema.clone(),
@@ -480,21 +480,23 @@ impl Generator for JsonSchemaGenerator {
         // let config = Config::deserialize(job.config.clone().into_deserializer())?;
         let mut ctx = JsonSchemaCtx::new(&job.unit, Default::default());
         // ctx.set_def_prefix("");
-        for bundle in &job.unit.bundles {
-            for schema in &bundle.schemas {
-                for (idx, def) in schema.defs.iter().enumerate() {
+        for (bundle_idx, _) in job.unit.bundles.iter().enumerate() {
+            let bundle_idx = ir::BundleIdx::from(bundle_idx);
+            for (schema_idx, _) in job.unit.schemas_of(bundle_idx) {
+                for (def_idx, def) in job.unit.defs_of(schema_idx) {
                     let typ = ir::Type::new(ir::TypeKind::Instance(
-                        ir::InstanceType::new(bundle.idx, schema.idx, idx.into()).with_subst(
-                            def.vars
-                                .iter()
-                                .enumerate()
-                                .map(|(idx, _)| {
-                                    ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
-                                        idx.into(),
-                                    )))
-                                })
-                                .collect(),
-                        ),
+                        ir::InstanceType::new(ir::DefRef::new(bundle_idx, schema_idx, def_idx))
+                            .with_subst(
+                                def.vars
+                                    .iter()
+                                    .enumerate()
+                                    .map(|(idx, _)| {
+                                        ir::Type::new(ir::TypeKind::TypeVar(
+                                            TypeVarType::new(idx.into()),
+                                        ))
+                                    })
+                                    .collect(),
+                            ),
                     ));
                     ctx.resolve(&typ)?;
                 }
@@ -533,21 +535,23 @@ impl Generator for JsonSchemaGenerator {
         let mut ctx = JsonSchemaCtx::new(&job.unit, config);
         ctx.set_def_prefix("#/components/schemas/");
 
-        for bundle in &job.unit.bundles {
-            for schema in &bundle.schemas {
-                for (idx, def) in schema.defs.iter().enumerate() {
+        for (bundle_idx, _) in job.unit.bundles.iter().enumerate() {
+            let bundle_idx = ir::BundleIdx::from(bundle_idx);
+            for (schema_idx, _) in job.unit.schemas_of(bundle_idx) {
+                for (def_idx, def) in job.unit.defs_of(schema_idx) {
                     let typ = ir::Type::new(ir::TypeKind::Instance(
-                        ir::InstanceType::new(bundle.idx, schema.idx, idx.into()).with_subst(
-                            def.vars
-                                .iter()
-                                .enumerate()
-                                .map(|(idx, _)| {
-                                    ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
-                                        idx.into(),
-                                    )))
-                                })
-                                .collect(),
-                        ),
+                        ir::InstanceType::new(ir::DefRef::new(bundle_idx, schema_idx, def_idx))
+                            .with_subst(
+                                def.vars
+                                    .iter()
+                                    .enumerate()
+                                    .map(|(idx, _)| {
+                                        ir::Type::new(ir::TypeKind::TypeVar(
+                                            TypeVarType::new(idx.into()),
+                                        ))
+                                    })
+                                    .collect(),
+                            ),
                     ));
                     ctx.resolve(&typ)?;
                 }

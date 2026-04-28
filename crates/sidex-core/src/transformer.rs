@@ -4,10 +4,9 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 
-use rayon::prelude::*;
 use sidex_syntax::ast;
 use sidex_syntax::parse;
-use sidex_syntax::tokens::{self};
+use sidex_syntax::tokens;
 use thiserror::Error;
 
 use crate::builtins;
@@ -15,7 +14,6 @@ use crate::bundle::BundleSource;
 use crate::bundle::Manifest;
 use crate::bundle::iter_schemas;
 use crate::bundle::{self};
-use crate::ir::TokenKind;
 use crate::ir::{self};
 
 #[derive(Debug, Error)]
@@ -28,34 +26,40 @@ pub enum Error {
     Other(String),
 }
 
+/// A loaded bundle along with its parsed schemas. The transformer keeps these
+/// around so that name resolution and IR assembly can happen lazily.
 #[derive(Debug, Clone)]
 struct LoadedBundle {
+    /// The transformer-local bundle index. This is the index in
+    /// `Transformer::loaded` and matches the eventual `BundleIdx` in the
+    /// produced IR (the IR's bundles are inserted in load order).
     idx: ir::BundleIdx,
-
     source: BundleSource,
     schemas: Vec<ParsedSchema>,
-
-    schema_by_name: HashMap<String, ir::SchemaIdx>,
+    schema_by_name: HashMap<String, LocalSchemaIdx>,
 }
+
+/// Local schema index inside a bundle. We keep a separate type alias to
+/// avoid confusing it with the global `ir::SchemaIdx` produced at
+/// transformation time.
+type LocalSchemaIdx = usize;
+
+/// Local definition index inside a parsed schema, again distinct from the
+/// global `ir::DefIdx`.
+type LocalDefIdx = usize;
 
 #[derive(Debug, Clone)]
 pub struct ParsedSchema {
-    idx: ir::SchemaIdx,
-
+    /// Local index within the bundle (its position in `LoadedBundle::schemas`).
+    idx: LocalSchemaIdx,
     name: String,
     docs: String,
     defs: Vec<ast::Def>,
     imports: Vec<ast::Import>,
-
-    def_by_name: HashMap<String, ir::DefIdx>,
+    def_by_name: HashMap<String, LocalDefIdx>,
 }
 
 impl ParsedSchema {
-    /// The schema's index within its bundle.
-    pub fn idx(&self) -> ir::SchemaIdx {
-        self.idx
-    }
-
     /// The parsed `import` directives.
     pub fn imports(&self) -> &[ast::Import] {
         &self.imports
@@ -74,15 +78,18 @@ impl ParsedSchema {
 
 #[derive(Debug, Clone)]
 pub struct Transformer {
-    pub storage: ir::SourceStorage,
-
+    /// Source storage for all loaded schemas. The transformer accumulates
+    /// sources here during loading; `transform` clones the list into the
+    /// produced IR.
+    pub sources: Vec<ir::Source>,
     loaded: Vec<LoadedBundle>,
-
     bundle_by_name: HashMap<String, ir::BundleIdx>,
     bundle_by_path: HashMap<PathBuf, ir::BundleIdx>,
 }
 
-/// Splits a items of a schema into imports and definitions.
+const STD_BUNDLE: ir::BundleIdx = ir::STD_BUNDLE_IDX;
+
+/// Splits the items of a schema into imports and definitions.
 fn split_items(items: Vec<ast::Item>) -> (Vec<ast::Import>, Vec<ast::Def>) {
     let mut imports = Vec::new();
     let mut defs = Vec::new();
@@ -95,61 +102,64 @@ fn split_items(items: Vec<ast::Item>) -> (Vec<ast::Import>, Vec<ast::Def>) {
     (imports, defs)
 }
 
-const STD_BUNDLE: ir::BundleIdx = ir::STD_BUNDLE_IDX;
-
-/// Builds the definition table of a schema.
-fn build_def_table(defs: &[ast::Def]) -> HashMap<String, ir::DefIdx> {
+/// Builds the local definition table of a schema.
+fn build_def_table(defs: &[ast::Def]) -> HashMap<String, LocalDefIdx> {
     defs.iter()
         .enumerate()
-        .map(|(idx, def)| (def.name.as_str().to_owned(), ir::DefIdx::from(idx)))
+        .map(|(idx, def)| (def.name.as_str().to_owned(), idx))
         .collect()
 }
 
+/// Maps a (bundle, local-schema, local-def) triple to a global `ir::DefIdx`
+/// allocated during transformation.
+type DefIdxMap = HashMap<(ir::BundleIdx, LocalSchemaIdx, LocalDefIdx), ir::DefIdx>;
+
+/// Maps a (bundle, local-schema) pair to a global `ir::SchemaIdx`.
+type SchemaIdxMap = HashMap<(ir::BundleIdx, LocalSchemaIdx), ir::SchemaIdx>;
+
+/// What a name in a schema's import / def table resolves to.
 #[derive(Debug, Clone)]
 enum LookupEntry {
     Root,
     Bundle(ir::BundleIdx),
     Schema {
         bundle: ir::BundleIdx,
-        schema: ir::SchemaIdx,
+        schema: LocalSchemaIdx,
     },
     Def {
         bundle: ir::BundleIdx,
-        schema: ir::SchemaIdx,
-        def: ir::DefIdx,
+        schema: LocalSchemaIdx,
+        def: LocalDefIdx,
     },
 }
 
-pub struct Resolver<'t, 'd> {
+struct Resolver<'t, 'm> {
     transformer: &'t Transformer,
     bundle: ir::BundleIdx,
-    schema: ir::SchemaIdx,
-
-    dependencies: &'d HashMap<String, ir::BundleIdx>,
-
+    schema: LocalSchemaIdx,
+    dependencies: &'m HashMap<String, ir::BundleIdx>,
+    def_idx_map: &'m DefIdxMap,
+    schema_idx_map: &'m SchemaIdxMap,
     table: HashMap<String, LookupEntry>,
 }
 
-impl<'t, 'd> Resolver<'t, 'd> {
+impl<'t, 'm> Resolver<'t, 'm> {
     fn populate_defs(&mut self) {
-        let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema.idx()];
-        for (name, def_idx) in schema.def_by_name.iter() {
-            if self.table.contains_key(name) {
-                panic!("Duplicate name!");
-            }
+        let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema];
+        for (name, &local) in &schema.def_by_name {
             self.table.insert(
                 name.clone(),
                 LookupEntry::Def {
                     bundle: self.bundle,
                     schema: self.schema,
-                    def: *def_idx,
+                    def: local,
                 },
             );
         }
     }
 
     fn populate_imports(&mut self) {
-        let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema.idx()];
+        let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema];
         for import in &schema.imports {
             let mut stack = vec![(LookupEntry::Bundle(self.bundle), &import.tree)];
             while let Some((root, tree)) = stack.pop() {
@@ -170,33 +180,28 @@ impl<'t, 'd> Resolver<'t, 'd> {
                         match root {
                             LookupEntry::Bundle(bundle) => {
                                 for (name, idx) in
-                                    self.transformer.loaded[bundle.idx()].schema_by_name.iter()
+                                    &self.transformer.loaded[bundle.idx()].schema_by_name
                                 {
-                                    self.table.entry(name.to_owned()).or_insert_with(|| {
-                                        LookupEntry::Schema {
-                                            bundle,
-                                            schema: *idx,
-                                        }
+                                    self.table.entry(name.clone()).or_insert(LookupEntry::Schema {
+                                        bundle,
+                                        schema: *idx,
                                     });
                                 }
                             }
                             LookupEntry::Schema { bundle, schema } => {
-                                for (name, idx) in self.transformer.loaded[bundle.idx()].schemas
-                                    [schema.idx()]
-                                .def_by_name
-                                .iter()
+                                for (name, idx) in &self.transformer.loaded[bundle.idx()].schemas
+                                    [schema]
+                                    .def_by_name
                                 {
-                                    self.table.entry(name.to_owned()).or_insert_with(|| {
-                                        LookupEntry::Def {
-                                            bundle,
-                                            schema,
-                                            def: *idx,
-                                        }
+                                    self.table.entry(name.clone()).or_insert(LookupEntry::Def {
+                                        bundle,
+                                        schema,
+                                        def: *idx,
                                     });
                                 }
                             }
                             LookupEntry::Root | LookupEntry::Def { .. } => {
-                                panic!("Invalid import!")
+                                panic!("Invalid import target.")
                             }
                         }
                     }
@@ -217,18 +222,14 @@ impl<'t, 'd> Resolver<'t, 'd> {
             }
         }
 
+        // Implicitly bring builtins into scope.
         let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
-
-        let builtins_schema =
-            &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
-
-        for (name, def) in builtins_schema.def_by_name.iter() {
-            self.table.entry(name.to_owned()).or_insert_with(|| {
-                LookupEntry::Def {
-                    bundle: STD_BUNDLE,
-                    schema: builtins_schema.idx,
-                    def: *def,
-                }
+        let builtins_local = *std_bundle.schema_by_name.get("builtins").unwrap();
+        for (name, &def) in &std_bundle.schemas[builtins_local].def_by_name {
+            self.table.entry(name.clone()).or_insert(LookupEntry::Def {
+                bundle: STD_BUNDLE,
+                schema: builtins_local,
+                def,
             });
         }
     }
@@ -240,30 +241,28 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     LookupEntry::Bundle(*self.dependencies.get(first.as_str()).unwrap())
                 }
                 LookupEntry::Bundle(idx) => {
-                    let Some(schema) = self.transformer.loaded[idx.idx()]
+                    let schema = self.transformer.loaded[idx.idx()]
                         .schema_by_name
                         .get(first.as_str())
-                    else {
-                        panic!(
-                            "unable to find schema {} in bundle {}.",
-                            first.as_str(),
-                            self.transformer.loaded[idx.idx()]
-                                .source
-                                .manifest
-                                .metadata
-                                .name
-                        );
-                    };
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "Unable to find schema {} in bundle {}.",
+                                first.as_str(),
+                                self.transformer.loaded[idx.idx()].source.manifest.metadata.name
+                            )
+                        });
                     LookupEntry::Schema {
                         bundle: idx,
                         schema: *schema,
                     }
                 }
                 LookupEntry::Schema { bundle, schema } => {
-                    let def = self.transformer.loaded[bundle.idx()].schemas[schema.idx()]
+                    let def = self.transformer.loaded[bundle.idx()].schemas[schema]
                         .def_by_name
                         .get(first.as_str())
-                        .expect(&format!("Unable to find definition {}.", first.as_str()));
+                        .unwrap_or_else(|| {
+                            panic!("Unable to find definition {}.", first.as_str())
+                        });
                     LookupEntry::Def {
                         bundle,
                         schema,
@@ -271,10 +270,7 @@ impl<'t, 'd> Resolver<'t, 'd> {
                     }
                 }
                 LookupEntry::Def { .. } => {
-                    panic!(
-                        "Invalid lookup! {root:?} {segments:?} {}",
-                        self.transformer.loaded[self.bundle.idx()].schemas[self.schema.idx()].name
-                    )
+                    panic!("Invalid lookup chain ending at a definition.")
                 }
             };
             self.resolve_segments(child, rest)
@@ -297,12 +293,35 @@ impl<'t, 'd> Resolver<'t, 'd> {
         self.resolve_segments(root, tail)
     }
 
+    /// Translate a local (bundle, schema, def) triple into a fully-resolved
+    /// `ir::DefRef` using the global allocation maps.
+    fn def_ref(&self, bundle: ir::BundleIdx, schema: LocalSchemaIdx, def: LocalDefIdx) -> ir::DefRef {
+        let schema_global = *self
+            .schema_idx_map
+            .get(&(bundle, schema))
+            .expect("schema should have been allocated globally");
+        let def_global = *self
+            .def_idx_map
+            .get(&(bundle, schema, def))
+            .expect("def should have been allocated globally");
+        ir::DefRef::new(bundle, schema_global, def_global)
+    }
+
+    fn builtin_def_ref(&self, name: &str) -> ir::DefRef {
+        let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
+        let builtins_local = *std_bundle.schema_by_name.get("builtins").unwrap();
+        let local_def = *std_bundle.schemas[builtins_local]
+            .def_by_name
+            .get(name)
+            .unwrap_or_else(|| panic!("Builtin `{name}` not found."));
+        self.def_ref(STD_BUNDLE, builtins_local, local_def)
+    }
+
     fn resolve_type_expr(&self, enclosing: &ast::Def, expr: &ast::TypeExpr) -> ir::Type {
         match expr {
             ast::TypeExpr::Instance(instance) => {
                 if instance.path.segments.len() == 1 {
                     let name = instance.path.segments[0].as_str();
-                    // May be a type variable.
                     if let Some(var_idx) = enclosing
                         .vars
                         .iter()
@@ -320,169 +339,134 @@ impl<'t, 'd> Resolver<'t, 'd> {
                         schema,
                         def,
                     } => {
-                        let type_def = &self.transformer.loaded[bundle.idx()].schemas[schema.idx()]
-                            .defs[def.idx()];
-                        assert_eq!(type_def.vars.len(), instance.subst.len());
-
-                        return ir::Type::new(ir::TypeKind::Instance(
-                            ir::InstanceType::new(bundle, schema, def).with_subst(
+                        let def_ref = self.def_ref(bundle, schema, def);
+                        ir::Type::new(ir::TypeKind::Instance(
+                            ir::InstanceType::new(def_ref).with_subst(
                                 instance
                                     .subst
                                     .iter()
                                     .map(|subst| self.resolve_type_expr(enclosing, subst))
                                     .collect(),
                             ),
-                        ));
+                        ))
                     }
-                    _ => panic!("Invalid path."),
+                    _ => panic!("Path does not resolve to a definition."),
                 }
             }
             ast::TypeExpr::Sequence(sequence) => {
-                let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
-                let builtins_schema =
-                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
-                let sequence_def = builtins_schema.def_by_name.get("Sequence").unwrap();
-
+                let def_ref = self.builtin_def_ref("Sequence");
                 ir::Type::new(ir::TypeKind::Instance(
-                    ir::InstanceType::new(std_bundle.idx, builtins_schema.idx, *sequence_def)
+                    ir::InstanceType::new(def_ref)
                         .with_subst(vec![self.resolve_type_expr(enclosing, &sequence.element)]),
                 ))
             }
             ast::TypeExpr::Map(map) => {
-                let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
-                let builtins_schema =
-                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
-                let map_def = builtins_schema.def_by_name.get("Map").unwrap();
-
+                let def_ref = self.builtin_def_ref("Map");
                 ir::Type::new(ir::TypeKind::Instance(
-                    ir::InstanceType::new(std_bundle.idx, builtins_schema.idx, *map_def)
-                        .with_subst(vec![
-                            self.resolve_type_expr(enclosing, &map.key),
-                            self.resolve_type_expr(enclosing, &map.value),
-                        ]),
+                    ir::InstanceType::new(def_ref).with_subst(vec![
+                        self.resolve_type_expr(enclosing, &map.key),
+                        self.resolve_type_expr(enclosing, &map.value),
+                    ]),
                 ))
             }
             ast::TypeExpr::Unit => {
-                let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
-                let builtins_schema =
-                    &std_bundle.schemas[std_bundle.schema_by_name.get("builtins").unwrap().idx()];
-                let unit_def = builtins_schema.def_by_name.get("unit").unwrap();
-
-                ir::Type::new(ir::TypeKind::Instance(ir::InstanceType::new(
-                    std_bundle.idx,
-                    builtins_schema.idx,
-                    *unit_def,
-                )))
+                let def_ref = self.builtin_def_ref("unit");
+                ir::Type::new(ir::TypeKind::Instance(ir::InstanceType::new(def_ref)))
             }
         }
     }
 }
 
-fn transform_token_stream(stream: &ast::TokenStream) -> ir::TokenStream {
-    let mut composed = String::new();
-    let mut ir_tokens = Vec::new();
-    let mut start = None;
-    for token in stream.iter() {
-        if start.is_none() {
-            start = Some(token.start())
-        }
-        let kind = match &token.kind {
-            tokens::TokenKind::Delimiter(delimiter) => TokenKind::Delimiter(delimiter.to_string()),
-            tokens::TokenKind::Punctuation(punctuation) => {
-                composed.push_str(&punctuation.to_string());
-                if punctuation.is_composed {
-                    continue;
+/// Convert an AST attribute value (`Attr` on the rhs of an Assign) into a
+/// typed `ir::AttrValue`. Best-effort: anything that doesn't fit one of the
+/// four `AttrValue` cases is dropped.
+fn ast_attr_to_value(attr: &ast::Attr) -> Option<ir::AttrValue> {
+    match &attr.kind {
+        ast::AttrKind::Path(path) => Some(ir::AttrValue::Path(path.to_string())),
+        ast::AttrKind::Tokens(tokens) if tokens.len() == 1 => match &tokens[0].kind {
+            tokens::TokenKind::Literal(lit) => match lit {
+                tokens::Literal::String(s) => Some(ir::AttrValue::String(s.as_ref().clone())),
+                tokens::Literal::Numeric { .. } => {
+                    Some(ir::AttrValue::Number(tokens[0].to_string()))
                 }
-                TokenKind::Punctuation(composed.clone())
-            }
-            tokens::TokenKind::Literal(literal) => {
-                match literal {
-                    tokens::Literal::Numeric { .. } => {
-                        TokenKind::Literal(ir::Literal::Number(token.to_string()))
-                    }
-                    tokens::Literal::String(string) => {
-                        TokenKind::Literal(ir::Literal::String(string.as_ref().clone()))
-                    }
-                    tokens::Literal::Boolean(boolean) => {
-                        TokenKind::Literal(ir::Literal::Bool(*boolean))
-                    }
-                }
-            }
-            tokens::TokenKind::Identifier(_) => TokenKind::Identifier(token.to_string()),
-            tokens::TokenKind::Comment { .. }
-            | tokens::TokenKind::Doc { .. }
-            | tokens::TokenKind::Whitespace
-            | tokens::TokenKind::Error => {
-                // Strip from IR.
-                start = None;
-                continue;
-            }
-        };
-        composed.clear();
-        ir_tokens.push(ir::Token::new(kind).with_span(Some(ir::Span::new(
-            ir::SourceIdx::from(0),
-            start.unwrap(),
-            token.end(),
-        ))));
+                tokens::Literal::Boolean(b) => Some(ir::AttrValue::Bool(*b)),
+            },
+            tokens::TokenKind::Identifier(s) => Some(ir::AttrValue::Path(s.to_string())),
+            _ => None,
+        },
+        _ => None,
     }
-    ir_tokens.into()
 }
 
-fn transform_attr(attr: &ast::Attr) -> ir::Attr {
+fn transform_attr(attr: &ast::Attr) -> Option<ir::Attr> {
     let kind = match &attr.kind {
-        ast::AttrKind::Path(path) => ir::AttrKind::Path(ir::Path::from(path.to_string())),
-        ast::AttrKind::List(list) => {
-            ir::AttrKind::List(ir::AttrList {
-                path: ir::Path::from(list.path.to_string()),
-                args: list.elements.iter().map(transform_attr).collect(),
-            })
-        }
+        ast::AttrKind::Path(path) => ir::AttrKind::Path(path.to_string()),
+        ast::AttrKind::List(list) => ir::AttrKind::List(ir::AttrList {
+            path: list.path.to_string(),
+            args: list.elements.iter().filter_map(transform_attr).collect(),
+        }),
         ast::AttrKind::Assign(assign) => {
+            let value = ast_attr_to_value(&assign.value)?;
             ir::AttrKind::Assign(ir::AttrAssign {
-                path: ir::Path::from(assign.path.to_string()),
-                value: Box::new(transform_attr(&assign.value)),
+                path: assign.path.to_string(),
+                value,
             })
         }
-        ast::AttrKind::Tokens(tokens) => ir::AttrKind::Tokens(transform_token_stream(tokens)),
+        // Unstructured token streams are no longer representable in the IR.
+        ast::AttrKind::Tokens(_) => return None,
     };
-    ir::Attr::new(kind)
+    Some(ir::Attr::new(kind))
 }
 
 fn transform_attrs(attrs: &[ast::Attr]) -> Vec<ir::Attr> {
-    attrs.iter().map(transform_attr).collect()
+    attrs.iter().filter_map(transform_attr).collect()
+}
+
+fn docs_or_none(text: &str) -> Option<ir::Docs> {
+    if text.is_empty() {
+        None
+    } else {
+        Some(ir::Docs::new(text.to_owned()))
+    }
 }
 
 impl Transformer {
     pub fn new() -> Self {
         let mut transformer = Self {
-            storage: Default::default(),
-            loaded: Default::default(),
-            bundle_by_name: Default::default(),
-            bundle_by_path: Default::default(),
+            sources: Vec::new(),
+            loaded: Vec::new(),
+            bundle_by_name: HashMap::new(),
+            bundle_by_path: HashMap::new(),
         };
-        let std_bundle = builtins::std_bundle(&mut transformer.storage);
+        let std_bundle = builtins::std_bundle(&mut transformer);
         transformer.insert_bundle(std_bundle).unwrap();
         transformer
+    }
+
+    /// Append a source to the transformer's storage and return its index.
+    pub fn insert_source(&mut self, text: String, origin: Option<String>) -> ir::SourceIdx {
+        let idx = ir::SourceIdx::from(self.sources.len());
+        self.sources
+            .push(ir::Source::new().with_text(Some(text)).with_origin(origin));
+        idx
     }
 
     pub fn get_bundle_manifest(&self, idx: ir::BundleIdx) -> &Manifest {
         &self.loaded[idx.idx()].source.manifest
     }
 
-    /// Iterate the parsed schemas of `bundle`.
     pub fn iter_user_schemas(&self, bundle: ir::BundleIdx) -> impl Iterator<Item = &ParsedSchema> {
         self.loaded[bundle.idx()].schemas.iter()
     }
 
-    /// The source-storage index of `schema` in `bundle`.
-    pub fn schema_source_idx(
+    /// The source index of the schema with `name` in `bundle`.
+    pub fn schema_source_idx_by_name(
         &self,
         bundle: ir::BundleIdx,
-        schema: ir::SchemaIdx,
+        name: &str,
     ) -> Option<ir::SourceIdx> {
         let loaded = self.loaded.get(bundle.idx())?;
-        let schema = loaded.schemas.get(schema.idx())?;
-        loaded.source.schemas.get(&schema.name).copied()
+        loaded.source.schemas.get(name).copied()
     }
 
     fn get_bundle_by_path(&self, path: &Path) -> Option<&LoadedBundle> {
@@ -500,22 +484,21 @@ impl Transformer {
             self.bundle_by_path.insert(path.clone(), idx);
         }
 
-        // Parse the bundle.
         let mut schemas = Vec::new();
-        for (name, schema) in source.schemas.iter() {
-            let schema = parse(&self.storage[*schema])
+        for (name, schema_src) in &source.schemas {
+            let schema = parse(*schema_src, &self.sources[schema_src.idx()])
                 .ok_or_else(|| Error::Other(format!("Error parsing schema {name:?}.")))?;
             let docs = schema.docs.to_string();
             let (imports, defs) = split_items(schema.items);
             let def_by_name = build_def_table(&defs);
             schemas.push(ParsedSchema {
-                idx: ir::SchemaIdx::from(schemas.len()),
+                idx: schemas.len(),
                 name: name.clone(),
                 docs,
                 defs,
                 imports,
                 def_by_name,
-            })
+            });
         }
 
         self.loaded.push(LoadedBundle {
@@ -524,7 +507,7 @@ impl Transformer {
             schema_by_name: schemas
                 .iter()
                 .enumerate()
-                .map(|(idx, schema)| (schema.name.clone(), ir::SchemaIdx::from(idx)))
+                .map(|(idx, schema)| (schema.name.clone(), idx))
                 .collect(),
             schemas,
         });
@@ -573,7 +556,7 @@ impl Transformer {
                     .expect("Schema path should have a file stem.")
                     .to_string_lossy()
                     .into_owned();
-                let source_id = self.storage.insert(
+                let source_id = self.insert_source(
                     std::fs::read_to_string(&schema_path)?,
                     Some(schema_path.to_string_lossy().into_owned()),
                 );
@@ -587,161 +570,149 @@ impl Transformer {
         }
     }
 
-    pub fn transform(&self) -> ir::Unit {
-        ir::Unit::new().with_bundles(
-            self.loaded
-                .par_iter()
-                .map(|bundle| {
-                    let mut dependencies = Vec::new();
+    /// Build the IR from the loaded bundles, with `root` as the assembled-around bundle.
+    pub fn transform(&self, root: ir::BundleIdx) -> ir::Ir {
+        let mut ir = ir::Ir::new(root).with_sources(self.sources.clone());
 
-                    let mut dependency_table = HashMap::new();
+        // Phase 1: allocate bundles in load order so that BundleIdx values
+        // match the transformer's internal indices.
+        for loaded in &self.loaded {
+            let metadata = loaded.source.manifest.metadata.clone();
+            ir.bundles.push(ir::Bundle::new(metadata));
+        }
 
-                    for (name, dependency) in bundle.source.manifest.dependencies() {
-                        let dependency_path =
-                            bundle.source.path.as_ref().unwrap().join(&dependency.path);
-                        let dependency_bundle = self.get_bundle_by_path(&dependency_path).unwrap();
+        // Phase 2: allocate schemas globally and record the mapping.
+        let mut schema_idx_map: SchemaIdxMap = HashMap::new();
+        for loaded in &self.loaded {
+            for parsed in &loaded.schemas {
+                let global = ir::SchemaIdx::from(ir.schemas.len());
+                let source = loaded.source.schemas.get(&parsed.name).copied();
+                let schema = ir::Schema::new(loaded.idx, parsed.name.clone())
+                    .with_docs(docs_or_none(&parsed.docs))
+                    .with_source(source);
+                ir.schemas.push(schema);
+                ir.bundles[loaded.idx.idx()].schemas.push(global);
+                schema_idx_map.insert((loaded.idx, parsed.idx), global);
+            }
+        }
 
-                        dependencies
-                            .push(ir::Dependency::new(name.to_owned(), dependency_bundle.idx));
-                        dependency_table.insert(name.to_owned(), dependency_bundle.idx);
-                    }
+        // Phase 3: allocate def stubs (placeholder bodies). This lets the
+        // resolver translate any (bundle, schema, def-name) reference into
+        // a global DefIdx without worrying about declaration order.
+        let mut def_idx_map: DefIdxMap = HashMap::new();
+        for loaded in &self.loaded {
+            for parsed in &loaded.schemas {
+                let schema_idx = schema_idx_map[&(loaded.idx, parsed.idx)];
+                for (local_def_idx, ast_def) in parsed.defs.iter().enumerate() {
+                    let global = ir::DefIdx::from(ir.defs.len());
+                    let stub = ir::Def::new(
+                        schema_idx,
+                        ir::Ident::new(ast_def.name.as_str().to_owned()),
+                        // Placeholder kind; replaced in phase 4.
+                        ir::DefKind::OpaqueType(ir::OpaqueTypeDef::new()),
+                    );
+                    ir.defs.push(stub);
+                    ir.schemas[schema_idx.idx()].defs.push(global);
+                    def_idx_map.insert((loaded.idx, parsed.idx, local_def_idx), global);
+                }
+            }
+        }
 
-                    // Add implicit dependency on `std`.
-                    dependencies.push(ir::Dependency::new("std".to_owned(), STD_BUNDLE));
-                    dependency_table.insert("std".to_owned(), STD_BUNDLE);
+        // Phase 4: fill in def bodies with fully-resolved type references.
+        for loaded in &self.loaded {
+            // Build the dependency table for this bundle.
+            let mut dependencies: HashMap<String, ir::BundleIdx> = HashMap::new();
+            if let Some(path) = &loaded.source.path {
+                for (name, dep) in loaded.source.manifest.dependencies() {
+                    let dep_path = path.join(&dep.path);
+                    let dep_bundle = self
+                        .get_bundle_by_path(&dep_path)
+                        .expect("Dependency should be loaded.");
+                    dependencies.insert(name.to_string(), dep_bundle.idx);
+                }
+            }
+            dependencies.insert("std".to_owned(), STD_BUNDLE);
 
-                    ir::Bundle::new(bundle.idx, bundle.source.manifest.metadata.clone())
-                        .with_dependencies(dependencies)
-                        .with_schemas(
-                            bundle
-                                .schemas
-                                .par_iter()
-                                .map(|schema| {
-                                    // TODO: build lookup table for schema from imports
-                                    let mut resolver = Resolver {
-                                        transformer: &self,
-                                        bundle: bundle.idx,
-                                        schema: schema.idx,
-                                        dependencies: &dependency_table,
-                                        table: Default::default(),
-                                    };
-                                    // Local definitions take precedence.
-                                    resolver.populate_defs();
-                                    resolver.populate_imports();
+            for parsed in &loaded.schemas {
+                let mut resolver = Resolver {
+                    transformer: self,
+                    bundle: loaded.idx,
+                    schema: parsed.idx,
+                    dependencies: &dependencies,
+                    def_idx_map: &def_idx_map,
+                    schema_idx_map: &schema_idx_map,
+                    table: HashMap::new(),
+                };
+                resolver.populate_defs();
+                resolver.populate_imports();
 
-                                    ir::Schema::new(
-                                        schema.idx,
-                                        bundle.idx,
-                                        schema.name.clone(),
-                                    )
-                                    .with_imports(
-                                        resolver.table.iter().filter_map(|(name, item)| {
-                                            let import = match item {
-                                                LookupEntry::Root => {
-                                                    // Do nothing!
-                                                    return None;
-                                                },
-                                                LookupEntry::Bundle(idx) => {
-                                                    ir::ItemRef::Bundle(*idx)
-                                                },
-                                                LookupEntry::Schema { bundle, schema } => {
-                                                    ir::ItemRef::Schema(ir::SchemaRef { bundle: *bundle, schema: *schema })
-                                                },
-                                                LookupEntry::Def { bundle, schema, def } => {
-                                                    let schema = ir::SchemaRef { bundle: *bundle, schema: *schema };
-                                                    ir::ItemRef::Def(ir::DefRef { schema, def: *def })
-                                                },
-                                            };
-                                            Some((name.clone(), import))
-                                        }).collect()
-                                    )
-                                    .with_docs(Some(ir::Docs::new(schema.docs.clone()))) //.with_imported(todo!())
-                                    .with_defs(schema
-                                        .defs
-                                        .iter()
-                                        .map(|def| {
-                                            let kind = match &def.kind {
-                                                ast::DefKind::Alias(alias) => {
-                                                    ir::DefKind::TypeAlias(ir::TypeAliasDef::new(
-                                                         resolver.resolve_type_expr(
-                                                            &def,
-                                                            &alias.aliased,
-                                                        ),
-                                                    ))
-                                                }
-                                                ast::DefKind::OpaqueType(_) => {
-                                                    ir::DefKind::OpaqueType(ir::OpaqueTypeDef::new())
-                                                }
-                                                ast::DefKind::RecordType(record) => {
-                                                    ir::DefKind::RecordType(ir::RecordTypeDef::new().with_fields(
-                                                        record
-                                                            .fields
-                                                            .iter()
-                                                            .map(|field| {
-                                                                ir::Field::new(
-                                                                    ir::Identifier::new(field
-                                                                        .name
-                                                                        .as_str()
-                                                                        .to_owned()),
-                                                                    resolver
-                                                                    .resolve_type_expr(
-                                                                        def, &field.typ,
-                                                                    )
-                                                                    ).with_docs(Some(ir::Docs::new(field.docs.to_string()))).with_attrs(transform_attrs(
-                                                                        &field.attrs,
-                                                                    )).with_is_optional(field.is_optional)
-                                                                }
-                                                            )
-                                                            .collect(),
-                                                    ))
-                                                }
-                                                ast::DefKind::VariantType(variant) => {
-                                                    ir::DefKind::VariantType(ir::VariantTypeDef::new().with_variants(
-                                                         variant
-                                                            .variants
-                                                            .iter()
-                                                            .map(|variant| {
-                                                                ir::Variant::new( ir::Identifier::new(variant
-                                                                        .name
-                                                                        .as_str()
-                                                                        .to_owned()),
-                                                                    ).with_docs(Some(ir::Docs::new(variant.docs.to_string()))).with_attrs(transform_attrs(
-                                                                        &variant.attrs,
-                                                                    )).with_typ(variant.typ.as_ref().map(
-                                                                        |typ| {
-                                                                            resolver
-                                                                                .resolve_type_expr(
-                                                                                    def, typ,
-                                                                                )
-                                                                        },
-                                                                    ))
-                                                            })
-                                                            .collect(),
-                                                    ))
-                                                }
-                                                ast::DefKind::WrapperType(wrapped) => {
-                                                    ir::DefKind::WrapperType(ir::WrapperTypeDef::new(
-                                                         resolver.resolve_type_expr(
-                                                            &def,
-                                                            &wrapped.wrapped,
-                                                        ),
-                                                    ))
-                                                }
-                                            };
-                                            ir::Def::new( ir::Identifier::new(def.name.as_str().to_owned()), kind).with_docs(Some(ir::Docs::new(def.docs.to_string()))).with_vars(def
-                                                    .vars
-                                                    .iter()
-                                                    .map(|var| {
-                                                        ir::TypeVar::new(ir::Identifier::new(var.name.as_str().to_owned()))
-                                                    })
-                                                    .collect()).with_attrs(transform_attrs(&def.attrs))
-                                        })
-                                        .collect(),)
-                                })
-                                .collect(),
-                        )
-                })
-                .collect(),
-        )
+                for (local_def_idx, ast_def) in parsed.defs.iter().enumerate() {
+                    let global_def = def_idx_map[&(loaded.idx, parsed.idx, local_def_idx)];
+
+                    let kind = match &ast_def.kind {
+                        ast::DefKind::Alias(alias) => ir::DefKind::TypeAlias(
+                            ir::TypeAliasDef::new(resolver.resolve_type_expr(ast_def, &alias.aliased)),
+                        ),
+                        ast::DefKind::OpaqueType(_) => {
+                            ir::DefKind::OpaqueType(ir::OpaqueTypeDef::new())
+                        }
+                        ast::DefKind::RecordType(record) => {
+                            ir::DefKind::RecordType(ir::RecordTypeDef::new().with_fields(
+                                record
+                                    .fields
+                                    .iter()
+                                    .map(|field| {
+                                        ir::Field::new(
+                                            ir::Ident::new(field.name.as_str().to_owned()),
+                                            resolver.resolve_type_expr(ast_def, &field.typ),
+                                        )
+                                        .with_docs(docs_or_none(&field.docs.to_string()))
+                                        .with_attrs(transform_attrs(&field.attrs))
+                                        .with_is_optional(field.is_optional)
+                                    })
+                                    .collect(),
+                            ))
+                        }
+                        ast::DefKind::VariantType(variant) => {
+                            ir::DefKind::VariantType(ir::VariantTypeDef::new().with_variants(
+                                variant
+                                    .variants
+                                    .iter()
+                                    .map(|var| {
+                                        ir::Variant::new(ir::Ident::new(
+                                            var.name.as_str().to_owned(),
+                                        ))
+                                        .with_docs(docs_or_none(&var.docs.to_string()))
+                                        .with_attrs(transform_attrs(&var.attrs))
+                                        .with_typ(
+                                            var.typ
+                                                .as_ref()
+                                                .map(|t| resolver.resolve_type_expr(ast_def, t)),
+                                        )
+                                    })
+                                    .collect(),
+                            ))
+                        }
+                        ast::DefKind::WrapperType(wrap) => ir::DefKind::WrapperType(
+                            ir::WrapperTypeDef::new(
+                                resolver.resolve_type_expr(ast_def, &wrap.wrapped),
+                            ),
+                        ),
+                    };
+
+                    let def = &mut ir.defs[global_def.idx()];
+                    def.kind = kind;
+                    def.vars = ast_def
+                        .vars
+                        .iter()
+                        .map(|v| ir::TypeVar::new(ir::Ident::new(v.name.as_str().to_owned())))
+                        .collect();
+                    def.attrs = transform_attrs(&ast_def.attrs);
+                    def.docs = docs_or_none(&ast_def.docs.to_string());
+                }
+            }
+        }
+
+        ir
     }
 }

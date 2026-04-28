@@ -17,8 +17,16 @@ pub struct TypeAttr {
 
 impl TryFromAttr for TypeAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
+        let assign = attr.expect_assign_with("type")?;
+        let s = assign
+            .value
+            .as_string()
+            .ok_or_else(|| {
+                diagnostics::Diagnostic::error("Expected a string value.")
+                    .with_span(attr.span.clone())
+            })?;
         Ok(Self {
-            typ: attr.expect_assign_with("type")?.value.convert()?,
+            typ: s.parse()?,
         })
     }
 }
@@ -31,12 +39,13 @@ pub struct SchemaAttr {
 
 impl TryFromAttr for SchemaAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
+        let assign = attr.expect_assign_with("schema")?;
+        let s = assign.value.as_string().ok_or_else(|| {
+            diagnostics::Diagnostic::error("Expected a string value.")
+                .with_span(attr.span.clone())
+        })?;
         Ok(Self {
-            schema: attr
-                .expect_assign_with("schema")?
-                .value
-                .expect_string_literal()?
-                .to_owned(),
+            schema: s.to_owned(),
         })
     }
 }
@@ -55,11 +64,13 @@ impl From<RenameFunction> for RenameAllAttr {
 
 impl TryFromAttr for RenameAllAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
+        let assign = attr.expect_assign_with("rename_all")?;
+        let s = assign.value.as_string().ok_or_else(|| {
+            diagnostics::Diagnostic::error("Expected a string value.")
+                .with_span(attr.span.clone())
+        })?;
         Ok(Self {
-            function: attr
-                .expect_assign_with("rename_all")?
-                .value
-                .expect_from_string()?,
+            function: s.parse()?,
         })
     }
 }
@@ -72,11 +83,13 @@ pub struct RenameAttr {
 
 impl TryFromAttr for RenameAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
+        let assign = attr.expect_assign_with("rename")?;
+        let s = assign.value.as_string().ok_or_else(|| {
+            diagnostics::Diagnostic::error("Expected a string value.")
+                .with_span(attr.span.clone())
+        })?;
         Ok(Self {
-            function: attr
-                .expect_assign_with("rename")?
-                .value
-                .expect_from_string()?,
+            function: s.parse()?,
         })
     }
 }
@@ -108,12 +121,12 @@ pub enum JsonTaggedAttr {
 
 impl TryFromAttr for JsonTaggedAttr {
     fn try_from_attr(attr: &ir::Attr) -> sidex_gen::diagnostics::Result<Self> {
-        match attr
-            .expect_assign_with("tagged")?
-            .value
-            .expect_path()?
-            .as_str()
-        {
+        let assign = attr.expect_assign_with("tagged")?;
+        let path = assign.value.as_path().ok_or_else(|| {
+            diagnostics::Diagnostic::error("Expected a path value.")
+                .with_span(attr.span.clone())
+        })?;
+        match path {
             "adjacently" => accept!(Self::Adjacently),
             "externally" => accept!(Self::Externally),
             "internally" => accept!(Self::Internally),

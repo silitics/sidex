@@ -42,6 +42,7 @@ impl Generator for TsGenerator {
         let bundle_ctx = BundleCtx {
             cfg: &cfg,
             unit: job.unit,
+            bundle_idx: job.bundle,
             bundle: &job.unit[job.bundle],
         };
 
@@ -53,9 +54,10 @@ impl Generator for TsGenerator {
         let index = quote!("@(@index_parts)*").to_string();
         std::fs::write(job.output.join("index.ts"), index)?;
 
-        for schema in &bundle_ctx.bundle.schemas {
+        for (schema_idx, schema) in job.unit.schemas_of(job.bundle) {
             let schema_ctx = SchemaCtx {
                 bundle_ctx: bundle_ctx.clone(),
+                schema_idx,
                 schema,
             };
             let preambles: Vec<Code> = self
@@ -64,10 +66,10 @@ impl Generator for TsGenerator {
                 .map(|plugin| plugin.visit_schema(&schema_ctx))
                 .collect::<Result<Vec<_>, _>>()?;
 
-            let defs: Vec<Code> = schema
-                .defs
-                .iter()
-                .map(|def| {
+            let defs: Vec<Code> = job
+                .unit
+                .defs_of(schema_idx)
+                .map(|(_, def)| {
                     let parts = self
                         .plugins
                         .iter()

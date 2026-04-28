@@ -14,8 +14,8 @@
 //!
 //! ## Fallible Conversions
 //!
-//! This crate defines three traits for converting [`ir::Attr`] to native Rust
-//! structures.
+//! This crate defines traits for converting [`ir::Attr`] (whole attributes) and
+//! [`ir::AttrValue`] (the rhs of an `Assign`) to native Rust structures.
 
 use std::str::FromStr;
 
@@ -41,6 +41,12 @@ pub trait TryFromAttr: Sized {
 /// Tries to convert a sequence of attributes to `Self`.
 pub trait TryFromAttrs: Sized {
     fn try_from_attrs<'a, I: IntoIterator<Item = &'a ir::Attr>>(attrs: I) -> Result<Self>;
+}
+
+/// Tries to convert an attribute *value* (the rhs of an `Assign`) to `Self`.
+pub trait TryFromAttrValue: Sized {
+    /// `attr` is the enclosing attribute, used to attach a span to errors.
+    fn try_from_attr_value(value: &ir::AttrValue, attr: &ir::Attr) -> Result<Self>;
 }
 
 impl<T: Default + TryApplyAttr> TryFromAttr for T {
@@ -83,9 +89,23 @@ macro_rules! accept {
     };
 }
 
-impl TryFromAttr for String {
-    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
-        Ok(attr.expect_string_literal()?.to_owned())
+// --- Primitive AttrValue conversions ---
+
+impl TryFromAttrValue for String {
+    fn try_from_attr_value(value: &ir::AttrValue, attr: &ir::Attr) -> Result<Self> {
+        match value {
+            ir::AttrValue::String(s) => Ok(s.clone()),
+            _ => Err(Diagnostic::error("Expected a string value.").with_span(attr.span.clone())),
+        }
+    }
+}
+
+impl TryFromAttrValue for bool {
+    fn try_from_attr_value(value: &ir::AttrValue, attr: &ir::Attr) -> Result<Self> {
+        match value {
+            ir::AttrValue::Bool(b) => Ok(*b),
+            _ => Err(Diagnostic::error("Expected a boolean value.").with_span(attr.span.clone())),
+        }
     }
 }
 
@@ -101,7 +121,8 @@ pub trait AttrConvertExt: _sealed::Sealed {
 
     fn is_path<P: AsRef<str>>(&self, path: P) -> bool;
 
-    fn expect_path(&self) -> Result<&ir::Path>;
+    /// The path of a bare-path attribute (`pub`, `derive`, etc.).
+    fn expect_path(&self) -> Result<&str>;
 
     fn expect_list(&self) -> Result<&ir::AttrList>;
     fn expect_list_with<P: AsRef<str>>(&self, path: P) -> Result<&ir::AttrList>;
@@ -109,7 +130,7 @@ pub trait AttrConvertExt: _sealed::Sealed {
     fn expect_assign(&self) -> Result<&ir::AttrAssign>;
     fn expect_assign_with<P: AsRef<str>>(&self, path: P) -> Result<&ir::AttrAssign>;
 
-    fn expect_literal(&self) -> Result<&ir::Literal>;
+    /// Convenience: extract a string literal from an `Assign` attribute, regardless of path.
     fn expect_string_literal(&self) -> Result<&str>;
 
     fn expect_from_string<T: FromStr>(&self) -> Result<T>
@@ -118,94 +139,74 @@ pub trait AttrConvertExt: _sealed::Sealed {
 }
 
 impl AttrConvertExt for ir::Attr {
-    fn expect_path(&self) -> Result<&ir::Path> {
+    fn convert<T: TryFromAttr>(&self) -> Result<T> {
+        T::try_from_attr(self)
+    }
+
+    fn is_path<P: AsRef<str>>(&self, expected: P) -> bool {
         match &self.kind {
-            ir::AttrKind::Path(path) => accept!(path),
+            ir::AttrKind::Path(path) => path == expected.as_ref(),
+            _ => false,
+        }
+    }
+
+    fn expect_path(&self) -> Result<&str> {
+        match &self.kind {
+            ir::AttrKind::Path(path) => Ok(path),
             _ => reject!(self, "Expected a path."),
+        }
+    }
+
+    fn expect_list(&self) -> Result<&ir::AttrList> {
+        match &self.kind {
+            ir::AttrKind::List(list) => Ok(list),
+            _ => reject!(self, "Expected a list attribute."),
         }
     }
 
     fn expect_list_with<P: AsRef<str>>(&self, path: P) -> Result<&ir::AttrList> {
         let path = path.as_ref();
         self.expect_list().and_then(|list| {
-            if list.path.as_str() == path {
-                accept!(list)
+            if list.path == path {
+                Ok(list)
             } else {
-                reject!(self, "Expected an list attribute with path `{path}`.")
+                reject!(self, "Expected a list attribute with path `{path}`.")
             }
         })
+    }
+
+    fn expect_assign(&self) -> Result<&ir::AttrAssign> {
+        match &self.kind {
+            ir::AttrKind::Assign(assign) => Ok(assign),
+            _ => reject!(self, "Expected an assign attribute."),
+        }
     }
 
     fn expect_assign_with<P: AsRef<str>>(&self, path: P) -> Result<&ir::AttrAssign> {
         let path = path.as_ref();
         self.expect_assign().and_then(|assign| {
-            if assign.path.as_str() == path {
-                accept!(assign)
+            if assign.path == path {
+                Ok(assign)
             } else {
                 reject!(self, "Expected an assign attribute with path `{path}`.")
             }
         })
     }
 
-    fn expect_list(&self) -> Result<&ir::AttrList> {
-        match &self.kind {
-            ir::AttrKind::List(list) => accept!(list),
-            _ => reject!(self, "Expected a list attribute."),
-        }
-    }
-
-    fn convert<T: TryFromAttr>(&self) -> Result<T> {
-        T::try_from_attr(self)
-    }
-
-    fn expect_assign(&self) -> Result<&ir::AttrAssign> {
-        match &self.kind {
-            ir::AttrKind::Assign(assign) => accept!(assign),
-            _ => reject!(self, "Expected an assign attribute."),
-        }
-    }
-
-    fn expect_literal(&self) -> Result<&ir::Literal> {
-        match &self.kind {
-            ir::AttrKind::Tokens(tokens) => {
-                if tokens.len() == 1 {
-                    match &tokens[0].kind {
-                        ir::TokenKind::Literal(literal) => accept!(literal),
-                        _ => {}
-                    }
-                }
-            }
-            _ => {}
-        }
-        reject!(self, "Expected a literal.")
-    }
-
     fn expect_string_literal(&self) -> Result<&str> {
-        self.expect_literal().and_then(|literal| {
-            match literal {
-                ir::Literal::String(string) => accept!(string.as_str()),
-                _ => reject!(self, "Expected a string literal."),
-            }
-        })
+        let assign = self.expect_assign()?;
+        match &assign.value {
+            ir::AttrValue::String(s) => Ok(s.as_str()),
+            _ => reject!(self, "Expected a string literal."),
+        }
     }
 
     fn expect_from_string<T: FromStr>(&self) -> Result<T>
     where
         <T as FromStr>::Err: Into<Diagnostic>,
     {
-        self.expect_string_literal().and_then(|string| {
-            match T::from_str(string) {
-                Ok(value) => accept!(value),
-                Err(err) => Err(err.into()),
-            }
-        })
-    }
-
-    fn is_path<P: AsRef<str>>(&self, expected: P) -> bool {
-        match &self.kind {
-            ir::AttrKind::Path(path) => path.as_str() == expected.as_ref(),
-            _ => false,
-        }
+        self.expect_string_literal()
+            .and_then(|s| T::from_str(s).map_err(Into::into))
     }
 }
 
@@ -227,11 +228,9 @@ macro_rules! new_assign_attr {
 
         impl $crate::TryFromAttr for $ident {
             fn try_from_attr(attr: &$crate::ir::Attr) -> $crate::diagnostics::Result<Self> {
+                let assign = $crate::AttrConvertExt::expect_assign_with(attr, $name)?;
                 Ok(Self(
-                    attr
-                        .expect_assign_with($name)?
-                        .value
-                        .convert()?
+                    <$typ as $crate::TryFromAttrValue>::try_from_attr_value(&assign.value, attr)?
                 ))
             }
         }

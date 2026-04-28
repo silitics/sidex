@@ -87,21 +87,24 @@ impl ToCode for TypeExpr {
 #[derive(Clone)]
 pub struct BundleCtx<'cx> {
     pub cfg: &'cx Config,
-    pub unit: &'cx ir::Unit,
+    pub unit: &'cx ir::Ir,
+    pub bundle_idx: ir::BundleIdx,
     pub bundle: &'cx ir::Bundle,
 }
 
 #[derive(Clone)]
 pub struct SchemaCtx<'cx> {
     pub bundle_ctx: BundleCtx<'cx>,
+    pub schema_idx: ir::SchemaIdx,
     pub schema: &'cx ir::Schema,
 }
 
 impl<'cx> SchemaCtx<'cx> {
     pub fn fully_qualified_type_name(&self, instance: &ir::InstanceType) -> String {
-        let bundle = &self.bundle_ctx.unit[instance.bundle];
-        let schema = &bundle[instance.schema];
-        let def = &schema[instance.def];
+        let unit = self.bundle_ctx.unit;
+        let bundle = &unit[instance.def.bundle];
+        let schema = &unit[instance.def.schema];
+        let def = &unit[instance.def];
 
         format!(
             "::{}::{}::{}",
@@ -118,9 +121,10 @@ impl<'cx> SchemaCtx<'cx> {
                 TypeExpr(Code::from(name))
             }
             ir::TypeKind::Instance(instance) => {
-                let bundle = &self.bundle_ctx.unit[instance.bundle];
-                let schema = &bundle[instance.schema];
-                let instance_def = &schema[instance.def];
+                let unit = self.bundle_ctx.unit;
+                let bundle = &unit[instance.def.bundle];
+                let schema = &unit[instance.def.schema];
+                let instance_def = &unit[instance.def];
 
                 let qualified_path = format!(
                     "::{}::{}::{}",
@@ -132,8 +136,8 @@ impl<'cx> SchemaCtx<'cx> {
                 let base = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path)
                 {
                     Code::from(path.as_str())
-                } else if instance.bundle == self.bundle_ctx.bundle.idx {
-                    if instance.schema == self.schema.idx {
+                } else if instance.def.bundle == self.bundle_ctx.bundle_idx {
+                    if instance.def.schema == self.schema_idx {
                         Code::from(instance_def.name.as_str())
                     } else {
                         Code::from(format!(

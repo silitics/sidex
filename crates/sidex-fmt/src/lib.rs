@@ -69,10 +69,10 @@ pub fn format(source: &str) -> Result<String, FormatError> {
 
 /// Formats `source` with the given options.
 pub fn format_with(source: &str, opts: &FormatOptions) -> Result<String, FormatError> {
-    let mut storage = ir::SourceStorage::new();
-    let id = storage.insert(source.to_owned(), None);
+    let mut ir = ir::Ir::new(ir::BundleIdx::from(0));
+    let id = ir.insert_source(Some(source.to_owned()), None);
     let ctx = DiagnosticCtx::new();
-    let parsed = ctx.exec(|| sidex_syntax::parse_full(&storage[id]));
+    let parsed = ctx.exec(|| sidex_syntax::parse_full(id, &ir.sources[id.idx()]));
     let report = ctx.report();
     if report.has_error() {
         return Err(FormatError::Parse);

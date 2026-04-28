@@ -187,7 +187,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     }
                     let json_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
                     Ok(RsField {
-                        name: field.name.identifier.clone(),
+                        name: field.name.name.clone(),
                         ident: name,
                         docs,
                         visibility: attrs.visibility.clone(),
@@ -224,7 +224,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     };
                     let json_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
                     Ok(RsVariant {
-                        name: variant.name.identifier.clone(),
+                        name: variant.name.name.clone(),
                         docs,
                         ident: name,
                         json_name: ty_json_attrs.variant_name(variant, &json_attrs),
@@ -251,7 +251,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
         }
     };
     Ok(Some(RsType {
-        name: def.name.identifier.clone(),
+        name: def.name.name.clone(),
         ident: format_ident!("{}", def.name.as_str()),
         visibility: Visibility::Pub,
         vars,
