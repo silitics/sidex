@@ -7,14 +7,11 @@ use indexmap::IndexMap;
 use indexmap::indexmap;
 use serde::Deserialize;
 use serde::Serialize;
-use sidex_attrs_json::JsonFieldAttrs;
-use sidex_attrs_json::JsonOpaqueTypeAttrs;
-use sidex_attrs_json::JsonRecordTypeAttrs;
-use sidex_attrs_json::JsonVariantAttrs;
-use sidex_attrs_json::JsonVariantTypeAttrs;
 use sidex_attrs_json::types::JsonType;
+use sidex_attrs_json::{
+    field_attrs, opaque_type_attrs, record_type_attrs, variant_attrs, variant_type_attrs,
+};
 use sidex_gen::Generator;
-use sidex_gen::attrs::TryFromAttrs;
 use sidex_gen::diagnostics;
 use sidex_gen::ir::STD_BUNDLE_IDX;
 use sidex_gen::ir::TypeVarType;
@@ -322,9 +319,9 @@ impl<'cx> JsonSchemaCtx<'cx> {
         _: &ir::OpaqueTypeDef,
     ) -> diagnostics::Result<SchemaObject> {
         let mut json_schema = SchemaObject::new();
-        let json_type_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+        let json_type_attrs = opaque_type_attrs(def)?;
         if let Some(typ) = json_type_attrs.typ {
-            let types = typ.typ.types;
+            let types = typ.types;
             let mut includes_any = false;
             json_schema.set_allowed_types(Some(MaybeArray::Array(
                 types
@@ -419,12 +416,12 @@ impl<'cx> JsonSchemaCtx<'cx> {
         def: &ir::Def,
         record_type: &ir::RecordTypeDef,
     ) -> diagnostics::Result<(SchemaObject, SchemaObject)> {
-        let json_type_attrs = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
+        let json_type_attrs = record_type_attrs(def)?;
         let mut builder = RecordTypeSchemaBuilder::new();
         // builder.deny_other_fields();
         // let mut idl_fields = Vec::new();
         for field in &record_type.fields {
-            let json_field_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
+            let json_field_attrs = field_attrs(field)?;
             let field_name = json_type_attrs.field_name(field, &json_field_attrs);
             let type_schema = self.resolve(&field.typ)?;
             // let mut idl_field = IdlField::new(field_name.clone(), type_schema.name.clone());
@@ -451,12 +448,12 @@ impl<'cx> JsonSchemaCtx<'cx> {
         def: &ir::Def,
         variant_type: &ir::VariantTypeDef,
     ) -> diagnostics::Result<(SchemaObject, SchemaObject)> {
-        let json_type_attrs = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
+        let json_type_attrs = variant_type_attrs(def)?;
         let tag_field = json_type_attrs.tag_field_name();
         let mut builder = VariantTypeSchemaBuilder::new(tag_field, json_type_attrs.tagged);
         // let mut idl_variants = Vec::new();
         for variant in &variant_type.variants {
-            let json_variant_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
+            let json_variant_attrs = variant_attrs(variant)?;
             let variant_name = json_type_attrs.variant_name(variant, &json_variant_attrs);
             // let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
             if let Some(typ) = &variant.typ {

@@ -2,7 +2,7 @@
 
 use indexmap::IndexMap;
 use indexmap::indexmap;
-use sidex_attrs_json::atoms::JsonTaggedAttr;
+use sidex_attrs_json::JsonTaggedAttr;
 
 use crate::Any;
 use crate::Metadata;

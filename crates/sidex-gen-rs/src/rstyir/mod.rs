@@ -10,6 +10,10 @@ use sidex_attrs_json::JsonFieldAttrs;
 use sidex_attrs_json::JsonRecordTypeAttrs;
 use sidex_attrs_json::JsonVariantAttrs;
 use sidex_attrs_json::JsonVariantTypeAttrs;
+use sidex_attrs_json::field_attrs as json_field_attrs;
+use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
+use sidex_attrs_json::variant_attrs as json_variant_attrs;
+use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_attrs_rust::FieldAttrs;
 use sidex_attrs_rust::TypeAttrs;
 use sidex_attrs_rust::Visibility;
@@ -160,7 +164,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
             }
         }
         DefKind::RecordType(typ) => {
-            let ty_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
+            let ty_json_attrs = json_record_type_attrs(def)?;
             let fields = typ
                 .fields
                 .iter()
@@ -185,7 +189,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     if field.is_optional {
                         typ = quote! { ::std::option::Option< #typ > };
                     }
-                    let json_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
+                    let json_attrs = json_field_attrs(field)?;
                     Ok(RsField {
                         name: field.name.name.clone(),
                         ident: name,
@@ -205,7 +209,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
             })
         }
         DefKind::VariantType(typ) => {
-            let ty_json_attrs = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
+            let ty_json_attrs = json_variant_type_attrs(def)?;
             let variants = typ
                 .variants
                 .iter()
@@ -222,7 +226,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     } else {
                         None
                     };
-                    let json_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
+                    let json_attrs = json_variant_attrs(variant)?;
                     Ok(RsVariant {
                         name: variant.name.name.clone(),
                         docs,

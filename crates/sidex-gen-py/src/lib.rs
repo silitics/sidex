@@ -7,15 +7,19 @@ use serde::Serialize;
 use sidex_attrs_json::JsonFieldAttrs;
 use sidex_attrs_json::JsonOpaqueTypeAttrs;
 use sidex_attrs_json::JsonRecordTypeAttrs;
+use sidex_attrs_json::JsonTaggedAttr;
 use sidex_attrs_json::JsonVariantAttrs;
 use sidex_attrs_json::JsonVariantTypeAttrs;
-use sidex_attrs_json::atoms::JsonTaggedAttr;
+use sidex_attrs_json::field_attrs as json_field_attrs;
+use sidex_attrs_json::opaque_type_attrs as json_opaque_type_attrs;
+use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
 use sidex_attrs_json::types::JsonType;
+use sidex_attrs_json::variant_attrs as json_variant_attrs;
+use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_codegen::Code;
 use sidex_codegen::quote;
 use sidex_gen::Generator;
 use sidex_gen::Job;
-use sidex_gen::attrs::TryFromAttrs;
 use sidex_gen::diagnostics::Result;
 use sidex_gen::diagnostics::{self};
 use sidex_gen::ir;
@@ -453,7 +457,7 @@ fn generate_opaque(def: &ir::Def, resolved: &OpaqueResolvedType) -> Code {
 fn generate_record(ctx: &SchemaCtx, def: &ir::Def, rec: &ir::RecordTypeDef) -> Result<Code> {
     let name = def.name.as_str();
     let generics = generic_bases(def);
-    let ty_json = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
+    let ty_json = json_record_type_attrs(def)?;
 
     let docstring_block = optional_block(docstring(def));
     let fields: Vec<Code> = rec
@@ -484,7 +488,7 @@ fn generate_record_field(
     field: &ir::Field,
     ty_json: &JsonRecordTypeAttrs,
 ) -> Result<Code> {
-    let json_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
+    let json_attrs = json_field_attrs(field)?;
     let py_name = sanitize_py_name(&to_snake_case(field.name.as_str()));
     let json_name = ty_json.field_name(field, &json_attrs);
     let field_type = ctx.resolve_type(def, &field.typ);
@@ -526,7 +530,7 @@ fn generate_record_field(
 }
 
 fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef) -> Result<Code> {
-    let ty_json = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
+    let ty_json = json_variant_type_attrs(def)?;
     let name = def.name.as_str();
     let params = generic_params(def);
     let tag_json = ty_json.tag_field_name();
@@ -537,7 +541,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
     let mut union_members: Vec<String> = Vec::new();
 
     for variant in &var_def.variants {
-        let json_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
+        let json_attrs = json_variant_attrs(variant)?;
         let json_name = ty_json.variant_name(variant, &json_attrs);
         let variant_ident = variant.name.as_str();
         let class_name = format!("{name}_{variant_ident}");
@@ -980,9 +984,9 @@ fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
         return Ok(Some(OpaqueResolvedType::Wrapper(typ)));
     }
 
-    let json_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+    let json_attrs = json_opaque_type_attrs(def)?;
     if let Some(typ_attr) = json_attrs.typ {
-        let types: Vec<_> = typ_attr.typ.types.iter().collect();
+        let types: Vec<_> = typ_attr.types.iter().collect();
         if types.len() == 1 {
             return Ok(Some(json_type_to_py(types[0])));
         }

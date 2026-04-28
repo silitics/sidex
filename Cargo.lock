@@ -764,7 +764,12 @@ dependencies = [
 name = "sidex-attrs-json"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
+ "sidex-diagnostics",
  "sidex-gen",
+ "sidex-ir",
+ "sidex-serde",
 ]
 
 [[package]]

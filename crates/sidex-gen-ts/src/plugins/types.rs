@@ -1,12 +1,11 @@
-use sidex_attrs_json::JsonFieldAttrs;
-use sidex_attrs_json::JsonOpaqueTypeAttrs;
-use sidex_attrs_json::JsonRecordTypeAttrs;
-use sidex_attrs_json::JsonVariantAttrs;
-use sidex_attrs_json::JsonVariantTypeAttrs;
-use sidex_attrs_json::atoms::JsonTaggedAttr;
+use sidex_attrs_json::JsonTaggedAttr;
+use sidex_attrs_json::field_attrs as json_field_attrs;
+use sidex_attrs_json::opaque_type_attrs as json_opaque_type_attrs;
+use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
+use sidex_attrs_json::variant_attrs as json_variant_attrs;
+use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_codegen::Code;
 use sidex_codegen::quote;
-use sidex_gen::attrs::TryFromAttrs;
 use sidex_gen::diagnostics;
 use sidex_gen::ir;
 
@@ -33,14 +32,14 @@ impl Plugin for Types {
                 ctx.resolve_type(def, &typ.aliased)
             }
             ir::DefKind::OpaqueType(_) => {
-                let ty_json_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+                let ty_json_attrs = json_opaque_type_attrs(def)?;
                 ty_json_attrs.typ.map_or_else(TypeExpr::any, |typ_attr| {
-                    TypeExpr::union(typ_attr.typ.types.iter().map(TypeExpr::from))
+                    TypeExpr::union(typ_attr.types.iter().map(TypeExpr::from))
                 })
             }
             ir::DefKind::RecordType(typ) => {
                 is_nominal = false;
-                let ty_json_attrs = JsonRecordTypeAttrs::try_from_attrs(&def.attrs)?;
+                let ty_json_attrs = json_record_type_attrs(def)?;
                 if typ.fields.is_empty() {
                     TypeExpr(Code::from("Record<string, never>"))
                 } else {
@@ -48,7 +47,7 @@ impl Plugin for Types {
                     let mut field_opts: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     let mut field_types: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     for field in &typ.fields {
-                        let json_attrs = JsonFieldAttrs::try_from_attrs(&field.attrs)?;
+                        let json_attrs = json_field_attrs(field)?;
                         let field_name = ty_json_attrs.field_name(field, &json_attrs);
                         field_names.push(Code::from(ts_string_literal(&field_name)));
                         field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
@@ -59,11 +58,11 @@ impl Plugin for Types {
             }
             ir::DefKind::VariantType(typ) => {
                 is_nominal = false;
-                let ty_json_attrs = JsonVariantTypeAttrs::try_from_attrs(&def.attrs)?;
+                let ty_json_attrs = json_variant_type_attrs(def)?;
                 let tag_field = ts_string_literal(&ty_json_attrs.tag_field_name());
                 let mut variant_ts_types: Vec<TypeExpr> = Vec::new();
                 for variant in &typ.variants {
-                    let json_attrs = JsonVariantAttrs::try_from_attrs(&variant.attrs)?;
+                    let json_attrs = json_variant_attrs(variant)?;
                     let variant_name =
                         ts_string_literal(&ty_json_attrs.variant_name(variant, &json_attrs));
 

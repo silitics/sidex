@@ -328,7 +328,7 @@ fn parse_record(
                 return Err(Diagnostic::error("Attribute argument must have a name.")
                     .with_span(arg.span.clone()));
             };
-            let Some(field) = record.fields.iter().find(|f| f.name.as_str() == name) else {
+            let Some(field) = record.fields.iter().find(|f| field_source_name(f) == name) else {
                 Diagnostic::warning(format!(
                     "Unknown attribute field `{}` for schema `{}`.",
                     name,
@@ -339,7 +339,7 @@ fn parse_record(
                 continue;
             };
             let value = parse_field_value(arg, field, ir, enclosing_schema, type_ref_def)?;
-            object.insert(name.to_owned(), value);
+            object.insert(field.name.as_str().to_owned(), value);
         }
     }
 
@@ -543,6 +543,34 @@ fn field_variant_schema<'a>(
     } else {
         None
     }
+}
+
+/// Source-side name for a schema field. Defaults to the field's Sidex
+/// identifier; a `#[attr(name = "<source>")]` annotation on the field
+/// overrides it. This lets schemas use a Sidex-friendly identifier (e.g.
+/// `typ`) while accepting source attributes that use a different name
+/// (e.g. `#[json(type = "...")]`).
+fn field_source_name(field: &ir::Field) -> &str {
+    for attr in &field.attrs {
+        let ir::AttrKind::List(list) = &attr.kind else {
+            continue;
+        };
+        if list.path != "attr" {
+            continue;
+        }
+        for arg in &list.args {
+            let ir::AttrKind::Assign(assign) = &arg.kind else {
+                continue;
+            };
+            if assign.path != "name" {
+                continue;
+            }
+            if let ir::AttrValue::String(s) = &assign.value {
+                return s;
+            }
+        }
+    }
+    field.name.as_str()
 }
 
 fn attr_value_to_json(value: &ir::AttrValue) -> Value {

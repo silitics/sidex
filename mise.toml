@@ -49,6 +49,13 @@ run = [
     "cargo +nightly fmt",
 ]
 
+[tasks.regenerate-json-attrs]
+description = "Regenerate the JSON plugin attribute Rust types."
+run = [
+    "cd lib/json && cargo run --bin sidex -- generate rust ../../crates/sidex-attrs-json/src/generated",
+    "cargo +nightly fmt",
+]
+
 [tasks.reset-ir]
 description = "Discard local changes to the generated IR Rust code."
 run = "git checkout crates/sidex-ir/src/generated/mod.rs"

@@ -1,12 +1,12 @@
 [bundle]
-name = "rpc"
+name = "json"
 version = "1"
-description = "Sidex RPC library."
+description = "Sidex attribute schemas for the JSON codegen target."
 authors = ["Silitics GmbH <info@silitics.com>"]
 
 [backend.rust]
-derive = ["Clone", "Debug"] #, "::serde::Serialize", "::serde::Deserialize"]
-plugins = ["builder", "serde"]
+derive = ["Clone", "Debug"]
+plugins = ["serde"]
 
 [backend.rust.plugin.serde]
 sidex_serde_path = "::sidex_serde"

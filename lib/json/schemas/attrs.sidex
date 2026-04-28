@@ -1,0 +1,86 @@
+//! Typed attributes for the JSON codegen target.
+//!
+//! Plugins use these schemas to drive code generation; the compiler parses
+//! source `#[json(...)]` attributes against them and stores the result in
+//! the IR's `typed_attrs["json"]` map. Downstream codegens deserialize
+//! that value directly into the generated Rust types via
+//! `serde_json::from_value`.
+//!
+//! Each record is annotated `#[json(rename_all = "snake_case")]` so that
+//! the generated deserializers expect JSON keys matching the parser's
+//! emit shape (the parser writes Sidex field names verbatim, which are
+//! already in `snake_case`).
+
+import ::core::attrs::*
+
+/// JSON-specific attributes that may be applied to an `opaque` definition.
+///
+/// Source form: `#[json(type = "string|null", schema = "/path")]`.
+#[attrs(plugin = "json", target = opaque)]
+#[json(rename_all = "snake_case")]
+record OpaqueTypeAttrs {
+    /// JSON union type expression (e.g. `"string|null"`).
+    #[attr(name = "type")]
+    typ?: string,
+    /// JSON Schema path emitted as `$ref` for the opaque type.
+    schema?: string,
+}
+
+/// JSON-specific attributes that may be applied to a `record` definition.
+///
+/// Source form: `#[json(rename_all = "PascalCase")]`.
+#[attrs(plugin = "json", target = record)]
+#[json(rename_all = "snake_case")]
+record RecordTypeAttrs {
+    /// Default rename function applied to every field name.
+    rename_all?: string,
+}
+
+/// JSON-specific attributes that may be applied to a record `field`.
+///
+/// Source form: `#[json(name = "explicit", rename = "camelCase", inline)]`.
+#[attrs(plugin = "json", target = field)]
+#[json(rename_all = "snake_case")]
+record FieldAttrs {
+    /// Override the JSON key with an explicit string.
+    name?: string,
+    /// Apply a rename function to the field name.
+    rename?: string,
+    /// Whether to inline the field's contents into the enclosing object.
+    inline?: bool,
+}
+
+/// JSON-specific attributes that may be applied to a `variant` definition.
+///
+/// Source form:
+/// `#[json(rename_all = "snake_case", tagged = internally, tag = "kind")]`.
+#[attrs(plugin = "json", target = variant)]
+#[json(rename_all = "snake_case")]
+record VariantTypeAttrs {
+    /// Default rename function applied to every variant case name.
+    rename_all?: string,
+    /// Tagging strategy: `adjacently`, `externally`, `internally`,
+    /// or `implicitly`.
+    tagged?: string,
+    /// Field name carrying the tag value (for `adjacently` /
+    /// `internally` tagging modes). Defaults to `"tag"`.
+    tag?: string,
+    /// Field name carrying the variant's payload (for `adjacently`
+    /// tagging mode). Defaults to `"content"`.
+    content?: string,
+}
+
+/// JSON-specific attributes that may be applied to a single variant case.
+///
+/// Source form: `#[json(name = "explicit", rename = "kebab-case")]`.
+#[attrs(plugin = "json", target = variant_case)]
+#[json(rename_all = "snake_case")]
+record VariantAttrs {
+    /// Override the JSON tag value with an explicit string.
+    name?: string,
+    /// Apply a rename function to the case name.
+    rename?: string,
+    /// Override the per-case content field name (only meaningful with
+    /// `adjacently` tagging).
+    content?: string,
+}

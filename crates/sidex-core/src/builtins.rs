@@ -54,11 +54,21 @@ pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> 
     let py_manifest = bundle::try_parse_manifest(read_lib_file!("py", "sidex.toml"))
         .expect("Manifest of py-attrs bundle should be valid.");
     let py_schemas = lib_bundle_schemas!(transformer, "py", ["attrs"]);
-    vec![BundleSource {
-        manifest: py_manifest,
-        schemas: py_schemas,
-        path: None,
-    }]
+    let json_manifest = bundle::try_parse_manifest(read_lib_file!("json", "sidex.toml"))
+        .expect("Manifest of json-attrs bundle should be valid.");
+    let json_schemas = lib_bundle_schemas!(transformer, "json", ["attrs"]);
+    vec![
+        BundleSource {
+            manifest: py_manifest,
+            schemas: py_schemas,
+            path: None,
+        },
+        BundleSource {
+            manifest: json_manifest,
+            schemas: json_schemas,
+            path: None,
+        },
+    ]
 }
 
 #[cfg(test)]

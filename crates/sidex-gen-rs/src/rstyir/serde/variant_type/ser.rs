@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use sidex_attrs_json::atoms::JsonTaggedAttr;
+use sidex_attrs_json::JsonTaggedAttr;
 
 use crate::rstyir::RsType;
 use crate::rstyir::RsTypeVariant;
