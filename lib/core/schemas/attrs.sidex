@@ -55,11 +55,6 @@ record AttrFlag {}
 /// looks like `key = some_path` rather than `key = "string"`.
 record AttrPath {}
 
-/// Marks an opaque-typed field whose value is parsed by `FromStr` after
-/// extracting the source as a string. Useful for opaques like
-/// `RenameFunction` that have a canonical textual form.
-record AttrFromString {}
-
 /// Overrides the field-to-attribute name mapping. By default the field name
 /// is the attribute name; use `#[attr(name = "...")]` to differ.
 record AttrName {
