@@ -2,7 +2,7 @@
 //!
 //! The lexer is hand-written and lives in [`crate::lexer`]. This module
 //! defines the data types that consumers see, plus the convenience function
-//! used by the language server and other tools that only need a token stream.
+//! for tools that only need a token stream.
 
 use std::{
     fmt::{self, Display, Write},

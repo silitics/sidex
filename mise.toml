@@ -1,0 +1,60 @@
+[tools]
+node = "latest"
+uv = "latest"
+
+[tasks.run]
+description = "Run the Sidex command line tool."
+run = 'cargo run --bin sidex -- "$@"'
+
+[tasks.fmt]
+description = "Format all files using Rustfmt nightly."
+run = "cargo +nightly fmt"
+
+[tasks.doc]
+description = "Generate the API documentation using Rustdoc."
+env = { RUSTDOCFLAGS = "--cfg docsrs" }
+run = "cargo +nightly doc --lib --document-private-items --all-features"
+
+[tasks.test]
+description = "Run all tests."
+depends = ["test-rust", "test-py"]
+
+[tasks.test-rust]
+description = "Run Rust tests."
+run = "cargo test"
+
+[tasks.test-py]
+description = "Run Python integration tests for the Python backend."
+dir = "tests/py"
+run = "uv run pytest -v"
+
+[tasks.regenerate-ir]
+description = "Regenerate the IR Rust code from the meta schema."
+run = [
+    "cd lib/meta && cargo run --bin sidex -- generate rust ../../crates/sidex-ir/src/generated",
+    "cargo +nightly fmt",
+]
+
+[tasks.regenerate-json-schema]
+description = "Regenerate the JSON Schema Rust types from the schema."
+run = [
+    "cd lib/json-schema && cargo run --bin sidex -- generate rust ../../crates/sidex-types-json-schema/src/generated",
+    "cargo +nightly fmt",
+]
+
+[tasks.reset-ir]
+description = "Discard local changes to the generated IR Rust code."
+run = "git checkout crates/sidex-ir/src/generated/mod.rs"
+
+[tasks.install-dev]
+description = "Install the Sidex CLI from source into the user's Cargo bin directory."
+dir = "crates/sidex-cli"
+run = "cargo install --path ."
+
+[tasks.build-vscode-extension]
+description = "Package the Sidex VS Code extension into a .vsix."
+dir = "editors/vscode"
+run = [
+    "npm ci",
+    "npm run vsce:package",
+]

@@ -33,7 +33,6 @@ To learn more, [checkout Sidex's website](https://oss.silitics.com/sidex/). 🚀
 - Modern **algebraic data types** and **non-null** by default.
 - **Extensible** with user-defined opaque types.
 - Support for **generics**, **recursive types**, and **custom attributes**.
-- Language server and [VS Code extension](https://marketplace.visualstudio.com/items?itemName=silitics.sidex) for increased productivity.
 - Out-of-the-box support for [Rust](https://rust-lang.org), [TypeScript](https://www.typescriptlang.org), [Python](https://www.python.org), and [JSON Schema](https://json-schema.org).
 
 ## ⚖️ Licensing
