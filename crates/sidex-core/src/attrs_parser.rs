@@ -11,9 +11,8 @@
 //!   are dropped from the typed value.
 //!
 //! Out of scope (future passes):
-//! - Variant schemas, sequence fields, nested record fields.
-//! - `#[attr(name = "...")]` / `#[attr(flag)]` / `#[attr(path)]` / `#[attr(from_string)]`
-//!   per-field knobs.
+//! - Variant-typed fields, sequence-typed fields.
+//! - `#[attr(name = "...")]` / `#[attr(path)]` per-field knobs.
 
 use std::collections::HashMap;
 
@@ -357,9 +356,12 @@ fn arg_name(arg: &ir::Attr) -> Option<&str> {
 }
 
 /// Parse a single attribute argument's value into JSON, given the schema
-/// field it's targeting. The current implementation handles primitive
-/// `AttrValue` leaves, bare-path "flag" args for `bool` fields, and
-/// `core::attrs::TypeRef` resolution for path-valued type references.
+/// field it's targeting. Handles:
+///   * Primitive AttrValue leaves (Bool / Number / String / Path).
+///   * `#[attr(flag)]`-marked bool fields: bare-path arg → true.
+///   * Nested record-typed fields: bare path → all-default record;
+///     list `name(args)` → recurse into the record's fields.
+///   * `core::attrs::TypeRef` fields: path resolves to a `DefRef`.
 fn parse_field_value(
     arg: &ir::Attr,
     field: &ir::Field,
@@ -367,40 +369,102 @@ fn parse_field_value(
     enclosing_schema: ir::SchemaIdx,
     type_ref_def: Option<ir::DefRef>,
 ) -> Result<Value, Diagnostic> {
-    let is_type_ref = field_is_type_ref(field, ir, type_ref_def);
+    if field_is_type_ref(field, ir, type_ref_def) {
+        return parse_type_ref_field(arg, field, ir, enclosing_schema);
+    }
+    if let Some((nested_def, nested_record)) = field_record_schema(field, ir) {
+        return parse_nested_record_field(
+            arg,
+            nested_def,
+            nested_record,
+            ir,
+            enclosing_schema,
+            type_ref_def,
+        );
+    }
     match &arg.kind {
-        ir::AttrKind::Assign(assign) => {
-            if is_type_ref {
-                let ir::AttrValue::Path(path) = &assign.value else {
-                    return Err(Diagnostic::error(format!(
-                        "Field `{}` expects a type reference (e.g., `{} = MyType`).",
-                        field.name.as_str(),
-                        field.name.as_str(),
-                    ))
-                    .with_span(arg.span.clone()));
-                };
-                let Some(def_ref) = resolve_type_ref_path(path, enclosing_schema, ir) else {
-                    return Err(Diagnostic::error(format!(
-                        "Cannot resolve type reference `{}`.",
-                        path
-                    ))
-                    .with_span(arg.span.clone()));
-                };
-                Ok(def_ref_to_json(def_ref))
-            } else {
-                Ok(attr_value_to_json(&assign.value))
-            }
-        }
-        ir::AttrKind::Path(_) => {
-            // Bare-path argument — treat as a `bool` flag set to true.
-            Ok(Value::Bool(true))
-        }
-        ir::AttrKind::List(_) => {
-            Err(
-                Diagnostic::error("Nested list attributes are not yet supported as field values.")
-                    .with_span(arg.span.clone()),
-            )
-        }
+        ir::AttrKind::Assign(assign) => Ok(attr_value_to_json(&assign.value)),
+        ir::AttrKind::Path(_) => Ok(Value::Bool(true)),
+        ir::AttrKind::List(_) => Err(Diagnostic::error(format!(
+            "Field `{}` is a primitive but the source attribute is a list.",
+            field.name.as_str(),
+        ))
+        .with_span(arg.span.clone())),
+    }
+}
+
+fn parse_type_ref_field(
+    arg: &ir::Attr,
+    field: &ir::Field,
+    ir: &ir::Ir,
+    enclosing_schema: ir::SchemaIdx,
+) -> Result<Value, Diagnostic> {
+    let ir::AttrKind::Assign(assign) = &arg.kind else {
+        return Err(Diagnostic::error(format!(
+            "Field `{}` expects a type reference (e.g., `{} = MyType`).",
+            field.name.as_str(),
+            field.name.as_str(),
+        ))
+        .with_span(arg.span.clone()));
+    };
+    let ir::AttrValue::Path(path) = &assign.value else {
+        return Err(Diagnostic::error(format!(
+            "Field `{}` expects a type reference (e.g., `{} = MyType`).",
+            field.name.as_str(),
+            field.name.as_str(),
+        ))
+        .with_span(arg.span.clone()));
+    };
+    let Some(def_ref) = resolve_type_ref_path(path, enclosing_schema, ir) else {
+        return Err(Diagnostic::error(format!(
+            "Cannot resolve type reference `{}`.",
+            path
+        ))
+        .with_span(arg.span.clone()));
+    };
+    Ok(def_ref_to_json(def_ref))
+}
+
+fn parse_nested_record_field<'a>(
+    arg: &ir::Attr,
+    def: &'a ir::Def,
+    record: &'a ir::RecordTypeDef,
+    ir: &ir::Ir,
+    enclosing_schema: ir::SchemaIdx,
+    type_ref_def: Option<ir::DefRef>,
+) -> Result<Value, Diagnostic> {
+    match &arg.kind {
+        // Bare-path: parse against an empty arg list; valid only if every
+        // field in the nested record is optional.
+        ir::AttrKind::Path(_) => parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def),
+        // List form: recurse into the record's fields.
+        ir::AttrKind::List(_) => parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def),
+        ir::AttrKind::Assign(_) => Err(Diagnostic::error(format!(
+            "Field `{}` is a record — use `{}(...)` form, not `{} = ...`.",
+            field_name_for_diag(arg),
+            field_name_for_diag(arg),
+            field_name_for_diag(arg),
+        ))
+        .with_span(arg.span.clone())),
+    }
+}
+
+fn field_name_for_diag(arg: &ir::Attr) -> &str {
+    arg_name(arg).unwrap_or("?")
+}
+
+/// Returns the resolved record def for `field`, or `None` if `field`'s type
+/// is not a record (or aliases through to one).
+fn field_record_schema<'a>(
+    field: &ir::Field,
+    ir: &'a ir::Ir,
+) -> Option<(&'a ir::Def, &'a ir::RecordTypeDef)> {
+    let def_ref = ir.type_def_ref(&field.typ)?;
+    let def = &ir[def_ref];
+    if let ir::DefKind::RecordType(record) = &def.kind {
+        Some((def, record))
+    } else {
+        None
     }
 }
 
@@ -577,6 +641,67 @@ mod tests {
                 enabled: Some(true),
             }
         );
+    }
+
+    /// The `pub(crate)` / `pub(super)` Rust-attribute pattern, expressed as
+    /// a nested-record field. `#[rust(pub)]` populates the field with a
+    /// default record; `#[rust(pub(crate))]` recursively parses `crate` as
+    /// a bare-path bool flag inside the record.
+    #[test]
+    fn nested_record_field_models_pub_crate() {
+        let src = r#"
+            import ::core::attrs::*
+
+            record PubVis {
+                isCrate?: bool,
+                isSuper?: bool,
+            }
+
+            #[attrs(plugin = "rust", target = field)]
+            record FieldAttrs {
+                pub?: PubVis,
+            }
+
+            record Target {
+                #[rust(pub)]
+                bare_pub: string,
+
+                #[rust(pub(isCrate))]
+                pub_crate: string,
+
+                #[rust(pub(isSuper))]
+                pub_super: string,
+            }
+        "#;
+        let ir = build_ir(src);
+        let target_def = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Target")
+            .expect("Target def not found");
+        let ir::DefKind::RecordType(record) = &target_def.kind else {
+            panic!("Target is not a record");
+        };
+        let pub_of = |field_name: &str| -> serde_json::Value {
+            let field = record
+                .fields
+                .iter()
+                .find(|f| f.name.as_str() == field_name)
+                .expect("field not found");
+            field
+                .typed_attrs
+                .get("rust")
+                .expect("rust typed_attrs populated")
+                .get("pub")
+                .expect("pub field present")
+                .clone()
+        };
+        // bare `#[rust(pub)]` → empty record.
+        assert_eq!(pub_of("bare_pub"), serde_json::json!({}));
+        // `#[rust(pub(isCrate))]` → record with `isCrate: true`.
+        assert_eq!(pub_of("pub_crate"), serde_json::json!({"isCrate": true}));
+        // `#[rust(pub(isSuper))]` → record with `isSuper: true`.
+        assert_eq!(pub_of("pub_super"), serde_json::json!({"isSuper": true}));
     }
 
     #[test]
