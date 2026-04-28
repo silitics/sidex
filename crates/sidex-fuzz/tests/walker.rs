@@ -186,24 +186,44 @@ fn implicitly_tagged_emits_just_payload() {
 }
 
 #[test]
-fn i64_table_includes_safe_integer_boundary() {
-    // Every value drawn must be one of the I64_TABLE entries, and the boundary
-    // ±2^53 has to appear within a few hundred draws.
+fn i64_default_mode_stays_in_safe_range() {
+    // Without `integers_as_strings`, the table is restricted to JS-safe
+    // values so all targets (including JS) round-trip without precision loss.
+    // `±2^53` is the boundary and must appear; `i64::MAX` must NOT.
     let ir = load_fixture();
     let mut saw_boundary = false;
-    let mut saw_max = false;
     for seed in 0..300 {
         let value = sample(&ir, "fuzz_fixture::data::BigInts", seed);
         let s = value.get("s").and_then(Value::as_i64).unwrap();
+        assert!(
+            s.abs() <= 1i64 << 53,
+            "default-mode i64 must stay in JS-safe range, got {s}"
+        );
         if s == 1i64 << 53 || s == -(1i64 << 53) {
             saw_boundary = true;
         }
-        if s == i64::MAX {
+    }
+    assert!(saw_boundary, "expected ±2^53 to appear in i64 draws");
+}
+
+#[test]
+fn i64_strings_mode_includes_full_range() {
+    // With `integers_as_strings`, `i64::MAX` and friends DO appear, encoded
+    // as JSON strings rather than numbers.
+    let ir = load_fixture();
+    let typ = sidex_fuzz::lookup_type(&ir, "fuzz_fixture::data::BigInts").unwrap();
+    let mut config = sidex_fuzz::Config::default();
+    config.integers_as_strings = true;
+    let mut saw_max = false;
+    for seed in 0..300 {
+        let mut source = sidex_fuzz::Source::from_seed(seed);
+        let v = sidex_fuzz::generate(&ir, &typ, &mut source, &config).unwrap();
+        let s_str = v.get("s").and_then(Value::as_str).unwrap();
+        if s_str == i64::MAX.to_string() {
             saw_max = true;
         }
     }
-    assert!(saw_boundary, "expected ±2^53 to appear in i64 draws");
-    assert!(saw_max, "expected i64::MAX to appear");
+    assert!(saw_max, "expected i64::MAX as a string in strings mode");
 }
 
 #[test]

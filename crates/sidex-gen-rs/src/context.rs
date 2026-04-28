@@ -288,10 +288,26 @@ impl<'cx> SchemaCtx<'cx> {
                     }
                 };
 
+                // In plain-JSON lowering, the key type of `Map<K, V>` is
+                // forced to `String` since JSON object keys are always strings —
+                // the original key type may lower to something that doesn't
+                // implement `Eq + Hash` (e.g. `serde_json::Value`).
+                let force_string_keyed_map = matches!(
+                    self.bundle_ctx.cfg.opaque_lowering,
+                    crate::config::OpaqueLowering::Json,
+                ) && qualified_path == "::core::builtins::Map";
+
                 let subst = instance
                     .subst
                     .iter()
-                    .map(|typ| self.resolve_type_old(def, typ, extra_super))
+                    .enumerate()
+                    .map(|(idx, t)| {
+                        if force_string_keyed_map && idx == 0 {
+                            quote! { ::std::string::String }
+                        } else {
+                            self.resolve_type_old(def, t, extra_super)
+                        }
+                    })
                     .collect::<Vec<_>>();
 
                 quote! { #typ < #(#subst , )* > }

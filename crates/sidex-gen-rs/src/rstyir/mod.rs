@@ -141,13 +141,23 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
         .iter()
         .map(|path| TokenStream::from_str(path).unwrap())
         .collect::<Vec<_>>();
-    for derive_trait in &attrs.derive.positive {
-        derive.push(derive_trait.clone());
+    // In plain-JSON lowering, per-type `#[rust(derive(...))]` attributes are
+    // skipped: they're tuned to whatever native opaque types the user picked,
+    // e.g. `Copy` works on `uuid::Uuid` but not on the `serde_json::Value`
+    // alias the JSON lowering substitutes.
+    let strip_type_derives = matches!(
+        ctx.bundle_ctx.cfg.opaque_lowering,
+        crate::config::OpaqueLowering::Json,
+    );
+    if !strip_type_derives {
+        for derive_trait in &attrs.derive.positive {
+            derive.push(derive_trait.clone());
+        }
     }
-    let attr = &attrs.attrs;
+    let attr_iter: &[TokenStream] = if strip_type_derives { &[] } else { &attrs.attrs };
     let meta = quote! {
         #(#[derive(#derive)])*
-        #(#[#attr])*
+        #(#[#attr_iter])*
     };
     let kind = match &def.kind {
         DefKind::WrapperType(wrapper_type_def) => {

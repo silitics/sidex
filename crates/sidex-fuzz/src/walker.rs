@@ -121,8 +121,15 @@ impl<'a> Walker<'a> {
 
     /// Draw an `i64` from the curated table, encoding as a JSON string when
     /// `integers_as_strings` is set since values past 2^53 lose precision in JS.
+    /// Without that flag, the table is restricted to JS-safe-integer range so
+    /// JSON consumers across all targets round-trip the value cleanly.
     fn draw_i64(&self, source: &mut Source) -> Value {
-        let v = I64_TABLE[source.draw_choice(I64_TABLE.len())];
+        let table: &[i64] = if self.config.integers_as_strings {
+            I64_TABLE
+        } else {
+            I64_SAFE_TABLE
+        };
+        let v = table[source.draw_choice(table.len())];
         if self.config.integers_as_strings {
             Value::String(v.to_string())
         } else {
@@ -131,7 +138,12 @@ impl<'a> Walker<'a> {
     }
 
     fn draw_u64(&self, source: &mut Source) -> Value {
-        let v = U64_TABLE[source.draw_choice(U64_TABLE.len())];
+        let table: &[u64] = if self.config.integers_as_strings {
+            U64_TABLE
+        } else {
+            U64_SAFE_TABLE
+        };
+        let v = table[source.draw_choice(table.len())];
         if self.config.integers_as_strings {
             Value::String(v.to_string())
         } else {
@@ -283,6 +295,13 @@ impl<'a> Walker<'a> {
             }
             let name = attrs.field_name(field, &field_attrs);
             let value = self.gen_value(&field_typ, source)?;
+            // For optional fields under the `Undefined` repr, an absent field
+            // is the canonical encoding of "no value". A `null` here would
+            // round-trip ambiguously (some targets drop it, others keep it),
+            // so skip insertion and treat null as "absent".
+            if field.is_optional && value.is_null() {
+                continue;
+            }
             out.insert(name, value);
         }
         self.depth -= 1;
@@ -475,6 +494,22 @@ const I64_TABLE: &[i64] = &[
     (1 << 53) + 1,
 ];
 
+/// JS-safe subset of `I64_TABLE`. Used when `integers_as_strings` is off so
+/// every target — including JS, which can't represent past 2^53 — round-trips
+/// values without losing precision. `±2^53` itself is still exactly
+/// representable in `f64`; the cliff begins at `2^53 + 1`.
+const I64_SAFE_TABLE: &[i64] = &[
+    0,
+    1,
+    -1,
+    1 << 53,
+    -(1 << 53),
+    (1 << 53) - 1,
+    -((1 << 53) - 1),
+    1 << 32,
+    -(1 << 32),
+];
+
 const U8_TABLE: &[u8] = &[0, 1, u8::MAX, u8::MAX - 1, 2, 127, 128];
 const U16_TABLE: &[u16] = &[0, 1, u16::MAX, u16::MAX - 1, 255, 256];
 const U32_TABLE: &[u32] = &[0, 1, u32::MAX, u32::MAX - 1, u16::MAX as u32, 1 << 16];
@@ -490,6 +525,9 @@ const U64_TABLE: &[u64] = &[
     u32::MAX as u64,
     (u32::MAX as u64) + 1,
 ];
+
+/// JS-safe subset of `U64_TABLE`.
+const U64_SAFE_TABLE: &[u64] = &[0, 1, (1 << 53) - 1, u32::MAX as u64, (u32::MAX as u64) + 1];
 
 const FLOAT_FINITE_TABLE: &[f64] = &[
     0.0,
