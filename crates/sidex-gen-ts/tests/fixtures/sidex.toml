@@ -1,0 +1,5 @@
+[bundle]
+name = "ts_lowering_fixture"
+version = "0.0.0"
+description = "Fixture types for testing typescript opaque lowering modes."
+authors = ["Silitics GmbH <info@silitics.com>"]

@@ -67,3 +67,57 @@ impl FromStr for JsonUnionType {
         })
     }
 }
+
+/// A coarse-grained shape classification for a [`JsonUnionType`], suitable
+/// for codegen decisions.
+///
+/// Codegens lowering an opaque type to its JSON-primitive native equivalent
+/// only need to distinguish three cases: a single JSON type, a nullable
+/// single type (`T | null`), and "anything else" — a multi-type union or
+/// `any` that must fall back to the language's catch-all JSON value type.
+/// The exact mapping of [`JsonType`] to a native type is left to each codegen.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum JsonShape {
+    /// Exactly one constituent JSON type.
+    Single(JsonType),
+    /// Exactly two constituent types, one of which is [`JsonType::Null`].
+    NullableSingle(JsonType),
+    /// Empty, three-or-more types, or contains [`JsonType::Any`] — best
+    /// represented by the language's untyped JSON value.
+    Other,
+}
+
+impl JsonUnionType {
+    /// Constituent types in a deterministic order: `null`, `boolean`, `number`,
+    /// `string`, `array`, `object`, `any`. Useful for codegens that emit a
+    /// language-level union and need stable output across runs.
+    pub fn types_sorted(&self) -> Vec<JsonType> {
+        const ORDER: &[JsonType] = &[
+            JsonType::Null,
+            JsonType::Boolean,
+            JsonType::Number,
+            JsonType::String,
+            JsonType::Array,
+            JsonType::Object,
+            JsonType::Any,
+        ];
+        ORDER
+            .iter()
+            .copied()
+            .filter(|t| self.types.contains(t))
+            .collect()
+    }
+
+    /// Classify this union into a [`JsonShape`] for codegen lowering decisions.
+    pub fn classify(&self) -> JsonShape {
+        if self.types.contains(&JsonType::Any) {
+            return JsonShape::Other;
+        }
+        let sorted = self.types_sorted();
+        match sorted.as_slice() {
+            [t] => JsonShape::Single(*t),
+            [JsonType::Null, t] | [t, JsonType::Null] => JsonShape::NullableSingle(*t),
+            _ => JsonShape::Other,
+        }
+    }
+}

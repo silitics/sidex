@@ -34,7 +34,7 @@ impl Plugin for Types {
             ir::DefKind::OpaqueType(_) => {
                 let ty_json_attrs = json_opaque_type_attrs(def)?;
                 ty_json_attrs.typ.map_or_else(TypeExpr::any, |typ_attr| {
-                    TypeExpr::union(typ_attr.types.iter().map(TypeExpr::from))
+                    TypeExpr::union(typ_attr.types_sorted().iter().map(TypeExpr::from))
                 })
             }
             ir::DefKind::RecordType(typ) => {

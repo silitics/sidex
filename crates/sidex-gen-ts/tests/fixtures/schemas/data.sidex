@@ -1,0 +1,10 @@
+opaque Uuid
+
+#[json(type = "string")]
+opaque Email
+
+#[json(type = "string|null")]
+opaque NullableTimestamp
+
+#[json(type = "any")]
+opaque Anything

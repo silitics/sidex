@@ -13,6 +13,24 @@ pub struct Config {
     pub plugin: HashMap<String, serde_json::Value>,
     #[serde(default)]
     pub external: HashMap<String, String>,
+    /// How opaque types are lowered into TypeScript types.
+    #[serde(default)]
+    pub opaque_lowering: OpaqueLowering,
+}
+
+/// Strategy for lowering opaque definitions in the generated TypeScript code.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum OpaqueLowering {
+    /// Use the opaque's `#[json(type = ...)]` attribute as-is, the historical
+    /// behaviour. Without a JSON attribute the opaque resolves to `unknown`.
+    #[default]
+    Native,
+    /// Same as [`Self::Native`] in TypeScript today, since TS opaques don't
+    /// have a per-target type override — kept as a distinct variant so the
+    /// flag is present on every codegen and conformance test drivers can be
+    /// configured uniformly.
+    Json,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

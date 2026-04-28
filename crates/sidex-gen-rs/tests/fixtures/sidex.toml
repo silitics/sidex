@@ -1,0 +1,5 @@
+[bundle]
+name = "rs_lowering_fixture"
+version = "0.0.0"
+description = "Fixture types for testing rust opaque lowering modes."
+authors = ["Silitics GmbH <info@silitics.com>"]

@@ -32,6 +32,27 @@ pub struct Config {
     pub types: TypesConfig,
     #[serde(default)]
     pub external: HashMap<String, String>,
+    /// How opaque types are lowered into Python types.
+    #[serde(default)]
+    pub opaque_lowering: OpaqueLowering,
+}
+
+/// Strategy for lowering opaque definitions in the generated Python code.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum OpaqueLowering {
+    /// Use the per-target `#[py(typ = "...")]` attribute when present, falling
+    /// back to the JSON-shape lowering otherwise. This is the default and
+    /// matches existing production behaviour.
+    #[default]
+    Native,
+    /// Ignore `#[py(typ = ...)]` and lower the opaque to the JSON-primitive
+    /// type implied by its `#[json(type = ...)]` attribute, defaulting to
+    /// `pydantic.JsonValue` (`any`) when no JSON attribute is set.
+    ///
+    /// Use this for conformance test drivers, where every opaque should
+    /// round-trip through its raw JSON shape.
+    Json,
 }
 
 /// Type mapping configuration.
@@ -399,7 +420,7 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
             )
         }
         ir::DefKind::OpaqueType(_) => {
-            match resolve_opaque_type(def)? {
+            match resolve_opaque_type(ctx.bundle_ctx.cfg, def)? {
                 Some(resolved) => generate_opaque(def, &resolved),
                 None => Code::new(),
             }
@@ -974,21 +995,24 @@ fn json_type_to_py(ty: &JsonType) -> OpaqueResolvedType {
     }
 }
 
-fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
-    let py_attrs = sidex_attrs_py::opaque_type_attrs(def)
-        .map_err(|e| {
-            sidex_gen::diagnostics::Diagnostic::error(format!("Invalid `py` attributes: {e}"))
-        })?
-        .unwrap_or_else(|| sidex_attrs_py::OpaqueTypeAttrs { typ: None });
-    if let Some(typ) = py_attrs.typ {
-        return Ok(Some(OpaqueResolvedType::Wrapper(typ)));
+fn resolve_opaque_type(cfg: &Config, def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
+    let use_json = matches!(cfg.opaque_lowering, OpaqueLowering::Json);
+    if !use_json {
+        let py_attrs = sidex_attrs_py::opaque_type_attrs(def)
+            .map_err(|e| {
+                sidex_gen::diagnostics::Diagnostic::error(format!("Invalid `py` attributes: {e}"))
+            })?
+            .unwrap_or_else(|| sidex_attrs_py::OpaqueTypeAttrs { typ: None });
+        if let Some(typ) = py_attrs.typ {
+            return Ok(Some(OpaqueResolvedType::Wrapper(typ)));
+        }
     }
 
     let json_attrs = json_opaque_type_attrs(def)?;
     if let Some(typ_attr) = json_attrs.typ {
-        let types: Vec<_> = typ_attr.types.iter().collect();
+        let types = typ_attr.types_sorted();
         if types.len() == 1 {
-            return Ok(Some(json_type_to_py(types[0])));
+            return Ok(Some(json_type_to_py(&types[0])));
         }
         let parts: Vec<_> = types
             .iter()
@@ -999,6 +1023,11 @@ fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
             })
             .collect();
         return Ok(Some(OpaqueResolvedType::Alias(parts.join(" | "))));
+    }
+
+    if use_json {
+        // Plain-JSON mode treats absent `#[json(type = ...)]` as `any`.
+        return Ok(Some(OpaqueResolvedType::Alias("pydantic.JsonValue".into())));
     }
 
     Ok(None)

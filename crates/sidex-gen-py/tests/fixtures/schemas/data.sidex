@@ -1,0 +1,24 @@
+/// Has a native Python type via `#[py(typ = "...")]`, no JSON shape.
+/// Native: subclasses `uuid.UUID`. Plain-JSON: falls back to `pydantic.JsonValue`.
+#[py(typ = "uuid.UUID")]
+opaque Uuid
+
+/// JSON-typed string opaque. Plain-JSON: subclasses `str`.
+#[py(typ = "datetime.datetime")]
+#[json(type = "string")]
+opaque Email
+
+/// `string|null` JSON shape. Plain-JSON: `str | None`.
+#[py(typ = "datetime.datetime")]
+#[json(type = "string|null")]
+opaque NullableTimestamp
+
+/// JSON `any` — Plain-JSON: `pydantic.JsonValue`.
+#[py(typ = "datetime.datetime")]
+#[json(type = "any")]
+opaque Anything
+
+/// Multi-type union — Plain-JSON: `str | float`.
+#[py(typ = "datetime.datetime")]
+#[json(type = "string|number")]
+opaque StringOrNumber

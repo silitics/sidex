@@ -11,7 +11,10 @@ use sidex_attrs_json::JsonRecordTypeAttrs;
 use sidex_attrs_json::JsonVariantAttrs;
 use sidex_attrs_json::JsonVariantTypeAttrs;
 use sidex_attrs_json::field_attrs as json_field_attrs;
+use sidex_attrs_json::opaque_type_attrs as json_opaque_type_attrs;
 use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
+use sidex_attrs_json::types::JsonShape;
+use sidex_attrs_json::types::JsonType;
 use sidex_attrs_json::variant_attrs as json_variant_attrs;
 use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_attrs_rust::FieldAttrs;
@@ -156,13 +159,23 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
             RsTypeKind::Alias(RsTypeAlias { aliased })
         }
         DefKind::OpaqueType(_) => {
-            match &attrs.typ {
-                Some(typ) => {
-                    let aliased = TokenStream::from_str(&typ.path).unwrap();
-                    RsTypeKind::Alias(RsTypeAlias { aliased })
+            // In `json` lowering mode the per-target `#[rust(typ = ...)]` is
+            // ignored — opaques become a transparent alias to the JSON-shape
+            // primitive. This is what test drivers use to round-trip values
+            // by their canonical JSON shape rather than a strict native type.
+            let use_json = matches!(
+                ctx.bundle_ctx.cfg.opaque_lowering,
+                crate::config::OpaqueLowering::Json,
+            );
+            let aliased = if use_json {
+                opaque_json_lowering(def)?
+            } else {
+                match &attrs.typ {
+                    Some(typ) => TokenStream::from_str(&typ.path).unwrap(),
+                    None => todo!(),
                 }
-                None => todo!(),
-            }
+            };
+            RsTypeKind::Alias(RsTypeAlias { aliased })
         }
         DefKind::RecordType(typ) => {
             let ty_json_attrs = json_record_type_attrs(def)?;
@@ -264,6 +277,38 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
         meta,
         kind,
     }))
+}
+
+/// Lower an opaque definition to a Rust type token stream that mirrors its
+/// `#[json(type = ...)]`-declared JSON shape, defaulting to
+/// `serde_json::Value` when no JSON attribute is set.
+fn opaque_json_lowering(def: &Def) -> Result<TokenStream> {
+    let union = match json_opaque_type_attrs(def)?.typ {
+        Some(union) => union,
+        None => return Ok(quote! { ::serde_json::Value }),
+    };
+    Ok(match union.classify() {
+        JsonShape::Single(t) => json_type_to_rs(t),
+        JsonShape::NullableSingle(t) => {
+            let inner = json_type_to_rs(t);
+            quote! { ::std::option::Option<#inner> }
+        }
+        JsonShape::Other => quote! { ::serde_json::Value },
+    })
+}
+
+fn json_type_to_rs(ty: JsonType) -> TokenStream {
+    match ty {
+        JsonType::String => quote! { ::std::string::String },
+        JsonType::Number => quote! { f64 },
+        JsonType::Boolean => quote! { bool },
+        JsonType::Null => quote! { () },
+        JsonType::Array => quote! { ::std::vec::Vec<::serde_json::Value> },
+        JsonType::Object => {
+            quote! { ::serde_json::Map<::std::string::String, ::serde_json::Value> }
+        }
+        JsonType::Any => quote! { ::serde_json::Value },
+    }
 }
 
 pub type RsTypePath = TokenStream;

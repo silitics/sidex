@@ -15,6 +15,27 @@ pub struct Config {
     pub plugin: HashMap<String, serde_json::Value>,
     #[serde(default)]
     pub external: HashMap<String, String>,
+    /// How opaque types are lowered into Rust types.
+    #[serde(default)]
+    pub opaque_lowering: OpaqueLowering,
+}
+
+/// Strategy for lowering opaque definitions in the generated Rust code.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum OpaqueLowering {
+    /// Use the per-target `#[rust(typ = "...")]` attribute (or fail if absent).
+    /// This is the default and matches existing production behaviour.
+    #[default]
+    Native,
+    /// Ignore `#[rust(typ = ...)]` and lower the opaque to the JSON-primitive
+    /// native type implied by its `#[json(type = ...)]` attribute, defaulting
+    /// to `serde_json::Value` when no JSON attribute is set.
+    ///
+    /// Use this for conformance test drivers, where every opaque should
+    /// round-trip through its raw JSON shape rather than a strict native
+    /// wrapper.
+    Json,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]

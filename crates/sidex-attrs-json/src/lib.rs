@@ -33,9 +33,11 @@ where
     T: serde::de::DeserializeOwned,
 {
     match typed_attrs.get(PLUGIN) {
-        Some(value) => serde_json::from_value(value.clone())
-            .map(Some)
-            .map_err(|err| Diagnostic::error(format!("Invalid `json` attributes: {err}"))),
+        Some(value) => {
+            serde_json::from_value(value.clone())
+                .map(Some)
+                .map_err(|err| Diagnostic::error(format!("Invalid `json` attributes: {err}")))
+        }
         None => Ok(None),
     }
 }
@@ -223,7 +225,9 @@ pub enum JsonTaggedAttr {
 }
 
 fn parse_rename(value: Option<String>) -> Result<Option<RenameFunction>> {
-    value.map(|s| s.parse::<RenameFunction>().map_err(Into::into)).transpose()
+    value
+        .map(|s| s.parse::<RenameFunction>().map_err(Into::into))
+        .transpose()
 }
 
 fn parse_tagged(value: Option<String>) -> Result<Option<JsonTaggedAttr>> {

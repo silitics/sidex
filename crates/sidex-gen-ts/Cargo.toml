@@ -8,6 +8,11 @@ license.workspace = true
 repository.workspace = true
 homepage.workspace = true
 
+[dev-dependencies]
+sidex-core.workspace = true
+sidex-diagnostics.workspace = true
+tempfile = "3"
+
 [dependencies]
 # Required for code generation.
 sidex-gen.workspace = true # PUBLIC

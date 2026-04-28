@@ -1,0 +1,26 @@
+/// Has a native Rust type via `#[rust(type = "...")]`, no JSON shape.
+/// In native mode lowers to `uuid::Uuid`; in plain-JSON mode falls through
+/// to `serde_json::Value` since no `#[json(type)]` is set.
+#[rust(type = "uuid::Uuid")]
+opaque Uuid
+
+/// JSON-typed string opaque. In plain-JSON mode lowers to `String`.
+#[rust(type = "::email::Email")]
+#[json(type = "string")]
+opaque Email
+
+/// `string|null` JSON shape. Lowers to `Option<String>` in plain-JSON mode.
+#[rust(type = "::time::Timestamp")]
+#[json(type = "string|null")]
+opaque NullableTimestamp
+
+/// JSON `any` shape — lowers to `serde_json::Value` in plain-JSON mode.
+#[rust(type = "::serde_json::Value")]
+#[json(type = "any")]
+opaque Anything
+
+/// Multi-type union that doesn't reduce to nullable-single. Falls back to
+/// `serde_json::Value` in plain-JSON mode.
+#[rust(type = "::serde_json::Value")]
+#[json(type = "string|number")]
+opaque StringOrNumber
