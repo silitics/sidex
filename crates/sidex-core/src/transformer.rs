@@ -234,6 +234,18 @@ impl<'t, 'm> Resolver<'t, 'm> {
                 def,
             });
         }
+        // Implicitly bring the typed-attrs meta-vocabulary into scope so user
+        // schemas can write `#[attrs(...)]`, `TypeRef`, etc. without an
+        // explicit import.
+        if let Some(&attrs_local) = std_bundle.schema_by_name.get("attrs") {
+            for (name, &def) in &std_bundle.schemas[attrs_local].def_by_name {
+                self.table.entry(name.clone()).or_insert(LookupEntry::Def {
+                    bundle: STD_BUNDLE,
+                    schema: attrs_local,
+                    def,
+                });
+            }
+        }
     }
 
     fn resolve_segments(&self, root: LookupEntry, segments: &[ast::Identifier]) -> LookupEntry {
@@ -648,6 +660,17 @@ impl Transformer {
                     dependencies.insert(name.to_string(), dep_bundle.idx);
                 }
             }
+            // Make the standard library implicitly available under its
+            // declared bundle name (currently "core") so user schemas can
+            // write `import core::attrs::*` etc. We also keep the legacy
+            // "std" alias for backwards compatibility with existing schemas.
+            let std_bundle_name = self.loaded[STD_BUNDLE.idx()]
+                .source
+                .manifest
+                .metadata
+                .name
+                .clone();
+            dependencies.insert(std_bundle_name, STD_BUNDLE);
             dependencies.insert("std".to_owned(), STD_BUNDLE);
 
             for parsed in &loaded.schemas {

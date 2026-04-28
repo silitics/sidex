@@ -14,7 +14,6 @@
 //! - Variant schemas, sequence fields, nested record fields.
 //! - `#[attr(name = "...")]` / `#[attr(flag)]` / `#[attr(path)]` /
 //!   `#[attr(from_string)]` per-field knobs.
-//! - `core::attrs::TypeRef` resolution.
 
 use std::collections::HashMap;
 
@@ -32,15 +31,23 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
     if registry.is_empty() {
         return;
     }
+    // The DefRef of `core::attrs::TypeRef` (if loaded). Used to detect
+    // fields whose type is the compiler-special `TypeRef` opaque so the
+    // parser can resolve their source path into a typed reference.
+    let type_ref_def = find_type_ref_def(ir);
+
     // Schema-level attrs.
     for schema_idx in 0..ir.schemas.len() {
         let attrs = ir.schemas[schema_idx].attrs.clone();
-        let typed = parse_node_attrs(&attrs, AttrTarget::Schema, registry, ir);
+        let enclosing = ir::SchemaIdx::from(schema_idx);
+        let typed =
+            parse_node_attrs(&attrs, AttrTarget::Schema, registry, ir, enclosing, type_ref_def);
         ir.schemas[schema_idx].typed_attrs = typed;
     }
     // Def / Field / Variant attrs.
     for def_idx in 0..ir.defs.len() {
         let def_attrs = ir.defs[def_idx].attrs.clone();
+        let enclosing = ir.defs[def_idx].schema;
         let def_target = match &ir.defs[def_idx].kind {
             ir::DefKind::TypeAlias(_) => AttrTarget::Alias,
             ir::DefKind::OpaqueType(_) => AttrTarget::Opaque,
@@ -50,8 +57,9 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
         };
         // Both the kind-specific target and the generic Def target apply.
         let mut def_typed =
-            parse_node_attrs(&def_attrs, def_target, registry, ir);
-        let generic = parse_node_attrs(&def_attrs, AttrTarget::Def, registry, ir);
+            parse_node_attrs(&def_attrs, def_target, registry, ir, enclosing, type_ref_def);
+        let generic =
+            parse_node_attrs(&def_attrs, AttrTarget::Def, registry, ir, enclosing, type_ref_def);
         for (plugin, value) in generic {
             def_typed.entry(plugin).or_insert(value);
         }
@@ -61,7 +69,14 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
         if let ir::DefKind::RecordType(record) = ir.defs[def_idx].kind.clone() {
             let mut new_fields = record.fields.clone();
             for (field_idx, field) in record.fields.iter().enumerate() {
-                let typed = parse_node_attrs(&field.attrs, AttrTarget::Field, registry, ir);
+                let typed = parse_node_attrs(
+                    &field.attrs,
+                    AttrTarget::Field,
+                    registry,
+                    ir,
+                    enclosing,
+                    type_ref_def,
+                );
                 new_fields[field_idx].typed_attrs = typed;
             }
             ir.defs[def_idx].kind = ir::DefKind::RecordType(
@@ -71,8 +86,14 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
         if let ir::DefKind::VariantType(variant) = ir.defs[def_idx].kind.clone() {
             let mut new_variants = variant.variants.clone();
             for (var_idx, var) in variant.variants.iter().enumerate() {
-                let typed =
-                    parse_node_attrs(&var.attrs, AttrTarget::VariantCase, registry, ir);
+                let typed = parse_node_attrs(
+                    &var.attrs,
+                    AttrTarget::VariantCase,
+                    registry,
+                    ir,
+                    enclosing,
+                    type_ref_def,
+                );
                 new_variants[var_idx].typed_attrs = typed;
             }
             ir.defs[def_idx].kind = ir::DefKind::VariantType(
@@ -82,6 +103,88 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
     }
 }
 
+/// Locate the `core::attrs::TypeRef` def in the loaded bundles, or return
+/// `None` if the attrs schema is not loaded (which we treat as "no TypeRef
+/// resolution available").
+fn find_type_ref_def(ir: &ir::Ir) -> Option<ir::DefRef> {
+    for (bundle_idx, bundle) in ir.bundles.iter().enumerate() {
+        if bundle.metadata.name != "core" {
+            continue;
+        }
+        let bundle_idx = ir::BundleIdx::from(bundle_idx);
+        for (schema_idx, schema) in ir.schemas_of(bundle_idx) {
+            if schema.name != "attrs" {
+                continue;
+            }
+            for (def_idx, def) in ir.defs_of(schema_idx) {
+                if def.name.as_str() == "TypeRef" {
+                    return Some(ir::DefRef::new(bundle_idx, schema_idx, def_idx));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Look up a single-segment path in the IR, searching the enclosing schema
+/// first, then `core::builtins`. Returns `None` if no match is found.
+fn resolve_type_ref_path(
+    path: &str,
+    enclosing_schema: ir::SchemaIdx,
+    ir: &ir::Ir,
+) -> Option<ir::DefRef> {
+    // Same-schema defs.
+    for (def_idx, def) in ir.defs_of(enclosing_schema) {
+        if def.name.as_str() == path {
+            let bundle = ir.schemas[enclosing_schema.idx()].bundle;
+            return Some(ir::DefRef::new(bundle, enclosing_schema, def_idx));
+        }
+    }
+    // core::builtins fallback (covers references like `string`, `i32`, etc.).
+    for (bundle_idx, bundle) in ir.bundles.iter().enumerate() {
+        if bundle.metadata.name != "core" {
+            continue;
+        }
+        let bundle_idx = ir::BundleIdx::from(bundle_idx);
+        for (schema_idx, schema) in ir.schemas_of(bundle_idx) {
+            if schema.name != "builtins" {
+                continue;
+            }
+            for (def_idx, def) in ir.defs_of(schema_idx) {
+                if def.name.as_str() == path {
+                    return Some(ir::DefRef::new(bundle_idx, schema_idx, def_idx));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Encode a `DefRef` as a JSON object with the same shape that
+/// `serde_json::to_value` would produce — three integer indices.
+fn def_ref_to_json(def_ref: ir::DefRef) -> Value {
+    serde_json::json!({
+        "bundle": def_ref.bundle.idx(),
+        "schema": def_ref.schema.idx(),
+        "def": def_ref.def.idx(),
+    })
+}
+
+/// Returns `true` if `field`'s type resolves to `core::attrs::TypeRef`.
+fn field_is_type_ref(
+    field: &ir::Field,
+    ir: &ir::Ir,
+    type_ref_def: Option<ir::DefRef>,
+) -> bool {
+    let Some(type_ref) = type_ref_def else {
+        return false;
+    };
+    matches!(
+        ir.type_def_ref(&field.typ),
+        Some(def) if def == type_ref
+    )
+}
+
 /// Parse the typed attributes for one node (a slice of source attrs at a
 /// given target position) into a per-plugin map.
 fn parse_node_attrs(
@@ -89,6 +192,8 @@ fn parse_node_attrs(
     target: AttrTarget,
     registry: &PluginRegistry,
     ir: &ir::Ir,
+    enclosing_schema: ir::SchemaIdx,
+    type_ref_def: Option<ir::DefRef>,
 ) -> HashMap<String, Value> {
     if attrs.is_empty() {
         return HashMap::new();
@@ -117,7 +222,13 @@ fn parse_node_attrs(
             continue;
         };
         let schema_def = &ir[schema_ref];
-        match parse_against_schema(&plugin_attrs, schema_def, ir) {
+        match parse_against_schema(
+            &plugin_attrs,
+            schema_def,
+            ir,
+            enclosing_schema,
+            type_ref_def,
+        ) {
             Ok(value) => {
                 typed.insert(plugin.to_owned(), value);
             }
@@ -144,9 +255,13 @@ fn parse_against_schema(
     attrs: &[&ir::Attr],
     def: &ir::Def,
     ir: &ir::Ir,
+    enclosing_schema: ir::SchemaIdx,
+    type_ref_def: Option<ir::DefRef>,
 ) -> Result<Value, Diagnostic> {
     match &def.kind {
-        ir::DefKind::RecordType(record) => parse_record(attrs, def, record, ir),
+        ir::DefKind::RecordType(record) => {
+            parse_record(attrs, def, record, ir, enclosing_schema, type_ref_def)
+        }
         // TODO(typed-attrs): variant / opaque / alias / wrapper schemas.
         _ => Err(Diagnostic::error(format!(
             "Plugin attribute schema `{}` must be a record. Variants and other shapes are not supported yet.",
@@ -161,6 +276,8 @@ fn parse_record(
     def: &ir::Def,
     record: &ir::RecordTypeDef,
     ir: &ir::Ir,
+    enclosing_schema: ir::SchemaIdx,
+    type_ref_def: Option<ir::DefRef>,
 ) -> Result<Value, Diagnostic> {
     let mut object = serde_json::Map::new();
     let all_optional = record.fields.iter().all(|f| f.is_optional);
@@ -212,7 +329,7 @@ fn parse_record(
                 .emit();
                 continue;
             };
-            let value = parse_field_value(arg, field, ir)?;
+            let value = parse_field_value(arg, field, ir, enclosing_schema, type_ref_def)?;
             object.insert(name.to_owned(), value);
         }
     }
@@ -231,14 +348,39 @@ fn arg_name(arg: &ir::Attr) -> Option<&str> {
 
 /// Parse a single attribute argument's value into JSON, given the schema
 /// field it's targeting. The current implementation handles primitive
-/// `AttrValue` leaves and bare-path "flag" args for `bool` fields.
+/// `AttrValue` leaves, bare-path "flag" args for `bool` fields, and
+/// `core::attrs::TypeRef` resolution for path-valued type references.
 fn parse_field_value(
     arg: &ir::Attr,
-    _field: &ir::Field,
-    _ir: &ir::Ir,
+    field: &ir::Field,
+    ir: &ir::Ir,
+    enclosing_schema: ir::SchemaIdx,
+    type_ref_def: Option<ir::DefRef>,
 ) -> Result<Value, Diagnostic> {
+    let is_type_ref = field_is_type_ref(field, ir, type_ref_def);
     match &arg.kind {
-        ir::AttrKind::Assign(assign) => Ok(attr_value_to_json(&assign.value)),
+        ir::AttrKind::Assign(assign) => {
+            if is_type_ref {
+                let ir::AttrValue::Path(path) = &assign.value else {
+                    return Err(Diagnostic::error(format!(
+                        "Field `{}` expects a type reference (e.g., `{} = MyType`).",
+                        field.name.as_str(),
+                        field.name.as_str(),
+                    ))
+                    .with_span(arg.span.clone()));
+                };
+                let Some(def_ref) = resolve_type_ref_path(path, enclosing_schema, ir) else {
+                    return Err(Diagnostic::error(format!(
+                        "Cannot resolve type reference `{}`.",
+                        path
+                    ))
+                    .with_span(arg.span.clone()));
+                };
+                Ok(def_ref_to_json(def_ref))
+            } else {
+                Ok(attr_value_to_json(&assign.value))
+            }
+        }
         ir::AttrKind::Path(_) => {
             // Bare-path argument — treat as a `bool` flag set to true.
             Ok(Value::Bool(true))
@@ -338,6 +480,41 @@ mod tests {
             !target_def.attrs.is_empty(),
             "raw attrs must still be retained"
         );
+    }
+
+    #[test]
+    fn type_ref_field_resolves_to_def_ref() {
+        // No explicit `import core::attrs::*` needed — meta-vocabulary is
+        // implicitly in scope alongside builtins.
+        let src = r#"
+            #[attrs(plugin = "request", target = record)]
+            record RequestAttrs {
+                response?: TypeRef,
+            }
+
+            record ResponseType {}
+
+            #[request(response = ResponseType)]
+            record Endpoint {}
+        "#;
+        let ir = build_ir(src);
+        let endpoint = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Endpoint")
+            .expect("Endpoint def not found");
+        let request = endpoint
+            .typed_attrs
+            .get("request")
+            .expect("typed_attrs[request] should be populated");
+        let response = &request["response"];
+        // The DefRef should resolve to the ResponseType def in the same schema.
+        let response_def = ir
+            .defs
+            .iter()
+            .position(|d| d.name.as_str() == "ResponseType")
+            .expect("ResponseType def not found");
+        assert_eq!(response["def"], serde_json::json!(response_def));
     }
 
     #[test]
