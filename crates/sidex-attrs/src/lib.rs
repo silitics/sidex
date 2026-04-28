@@ -130,7 +130,8 @@ pub trait AttrConvertExt: _sealed::Sealed {
     fn expect_assign(&self) -> Result<&ir::AttrAssign>;
     fn expect_assign_with<P: AsRef<str>>(&self, path: P) -> Result<&ir::AttrAssign>;
 
-    /// Convenience: extract a string literal from an `Assign` attribute, regardless of path.
+    /// Convenience: extract a string literal from an `Assign` attribute, regardless of
+    /// path.
     fn expect_string_literal(&self) -> Result<&str>;
 
     fn expect_from_string<T: FromStr>(&self) -> Result<T>

@@ -106,11 +106,13 @@ impl Wrapper {
 impl TryFromAttr for Wrapper {
     fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
         attr.expect_path()
-            .and_then(|path| match path {
-                "box" => accept!(Self::new("::std::boxed::Box")),
-                "arc" => accept!(Self::new("::std::sync::Arc")),
-                "rc" => accept!(Self::new("::std::rc::Rc")),
-                _ => reject!(attr, ""),
+            .and_then(|path| {
+                match path {
+                    "box" => accept!(Self::new("::std::boxed::Box")),
+                    "arc" => accept!(Self::new("::std::sync::Arc")),
+                    "rc" => accept!(Self::new("::std::rc::Rc")),
+                    _ => reject!(attr, ""),
+                }
             })
             .or_else(|_| -> Result<Self> {
                 let assign = attr.expect_assign_with("wrap")?;

@@ -53,6 +53,7 @@ impl TypesConfig {
             "::core::builtins::unit" => ::std::unit,
             "::core::builtins::Sequence" => ::std::vec::Vec,
             "::core::builtins::Map" => ::std::collections::HashMap,
+            "::meta::ir::Value" => ::serde_json::Value,
         };
     }
 }

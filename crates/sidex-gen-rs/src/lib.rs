@@ -78,8 +78,7 @@ impl RustGenerator {
             .iter()
             .map(|plugin| plugin.visit_bundle(&bundle_ctx))
             .collect::<Result<Vec<_>>>()?;
-        let mut schemas: Vec<(ir::SchemaIdx, &ir::Schema)> =
-            unit.schemas_of(bundle_idx).collect();
+        let mut schemas: Vec<(ir::SchemaIdx, &ir::Schema)> = unit.schemas_of(bundle_idx).collect();
         schemas.sort_by(|(_, a), (_, b)| a.name.cmp(&b.name));
         let schemas = schemas
             .iter()

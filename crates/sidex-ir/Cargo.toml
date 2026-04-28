@@ -10,4 +10,6 @@ homepage.workspace = true
 [dependencies]
 # Required for serializing and deserializing Sidex IR.
 serde.workspace = true # PUBLIC
+# Used as the Rust mapping of the IR's opaque `Value` (typed-attrs payload).
+serde_json.workspace = true # PUBLIC
 sidex-serde.workspace = true

@@ -1,0 +1,83 @@
+//! Meta-attributes for declaring typed attribute schemas.
+//!
+//! A plugin defines its accepted attributes as ordinary Sidex defs annotated
+//! with `#[attrs(plugin = "<id>", target = "<position>")]`. The compiler
+//! discovers these defs at IR build time, validates the source attributes
+//! against them, and stores the parsed result on the corresponding IR node's
+//! `typed_attrs` field. Plugin codegens then deserialize that value into a
+//! generated, typed Rust struct without re-running attribute parsing.
+
+
+/// Marks a record or variant as the typed schema for a plugin's attributes
+/// at a specific IR position.
+///
+/// # Example
+///
+/// ```sidex
+/// #[attrs(plugin = "json", target = "record")]
+/// record JsonRecordAttrs {
+///     rename_all?: RenameFunction,
+///     deny_unknown_fields?: bool,
+/// }
+/// ```
+record Attrs {
+    /// Plugin identifier — matches the outer path of the source attribute
+    /// (e.g., `"json"` matches `#[json(...)]`).
+    plugin: string,
+    /// IR position this schema applies to. The compiler routes source
+    /// attributes to schemas by `(plugin, target)`.
+    target: AttrTarget,
+}
+
+/// IR positions that can carry attributes.
+variant AttrTarget {
+    /// Schema-level: `#[plugin(...)]` at the top of a `.sidex` file.
+    Schema,
+    /// Any top-level definition, regardless of kind.
+    Def,
+    Alias,
+    Opaque,
+    Record,
+    Variant,
+    Wrapper,
+    /// A field of a record type.
+    Field,
+    /// A case of a variant type.
+    VariantCase,
+}
+
+/// Marks a `bool`-typed field that may be set by bare-path presence
+/// (e.g., `#[plugin(deny_unknown_fields)]` ↔ `deny_unknown_fields = true`).
+record AttrFlag {}
+
+/// Marks a `string`-typed field whose source value comes from an
+/// `AttrValue::Path`, not an `AttrValue::String`. Use this when the attribute
+/// looks like `key = some_path` rather than `key = "string"`.
+record AttrPath {}
+
+/// Marks an opaque-typed field whose value is parsed by `FromStr` after
+/// extracting the source as a string. Useful for opaques like
+/// `RenameFunction` that have a canonical textual form.
+record AttrFromString {}
+
+/// Overrides the field-to-attribute name mapping. By default the field name
+/// is the attribute name; use `#[attr(name = "...")]` to differ.
+record AttrName {
+    name: string,
+}
+
+/// A resolved reference to a Sidex definition, carried as the value of an
+/// attribute field.
+///
+/// When a plugin's attribute schema declares a field of type `TypeRef`, the
+/// compiler resolves the source path through the same name-resolution
+/// machinery as type expressions and stores the resulting `DefRef` on the
+/// IR node's `typed_attrs`. This enables patterns like:
+///
+/// ```ignore
+/// #[request(response = ResponseType)]
+/// ```
+///
+/// where the codegen consuming the IR sees `response` as a fully-qualified
+/// reference into the IR's `defs` arena.
+opaque TypeRef

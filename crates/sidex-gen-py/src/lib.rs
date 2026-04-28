@@ -68,6 +68,7 @@ impl TypesConfig {
             ("::core::builtins::unit", "None"),
             ("::core::builtins::Sequence", "list"),
             ("::core::builtins::Map", "dict"),
+            ("::meta::ir::Value", "typing.Any"),
         ] {
             self.table
                 .entry(path.to_owned())
@@ -199,8 +200,11 @@ impl Generator for PyGenerator {
 }
 
 fn generate_init(ctx: &BundleCtx) -> Code {
-    let mut schemas: Vec<&ir::Schema> =
-        ctx.unit.schemas_of(ctx.bundle_idx).map(|(_, s)| s).collect();
+    let mut schemas: Vec<&ir::Schema> = ctx
+        .unit
+        .schemas_of(ctx.bundle_idx)
+        .map(|(_, s)| s)
+        .collect();
     schemas.sort_by_key(|s| &s.name);
 
     let imports: Vec<Code> = schemas
@@ -273,8 +277,7 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
     // that consecutive non-empty blocks are spaced by a blank line.
     let mut preamble_blocks: Vec<Code> = Vec::new();
 
-    let needed_schemas =
-        referenced_schemas(unit, ctx.schema_idx, ctx.bundle_ctx.bundle_idx);
+    let needed_schemas = referenced_schemas(unit, ctx.schema_idx, ctx.bundle_ctx.bundle_idx);
     let mut others: Vec<(ir::SchemaIdx, &ir::Schema)> = unit
         .schemas_of(ctx.bundle_ctx.bundle_idx)
         .filter(|(idx, _)| needed_schemas.contains(idx))

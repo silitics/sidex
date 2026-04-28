@@ -61,6 +61,7 @@ impl TypesConfig {
             "::core::builtins::unit" => (__sidex_types.builtins.Unit),
             "::core::builtins::Sequence" => (__sidex_types.builtins.Sequence),
             "::core::builtins::Map" => (__sidex_types.builtins.ObjectMap),
+            "::meta::ir::Value" => (unknown),
         };
     }
 }

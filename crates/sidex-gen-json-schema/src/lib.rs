@@ -373,6 +373,10 @@ impl<'cx> JsonSchemaCtx<'cx> {
             "::core::builtins::unit" => {
                 json_schema.set_allowed_types(Some(Type::Null.into()));
             }
+            "::meta::ir::Value" => {
+                // Anything goes — clear the inherited any-type constraints.
+                json_schema.set_allowed_types(None);
+            }
             "::core::builtins::string" => {
                 json_schema.set_allowed_types(Some(Type::String.into()));
             }
@@ -491,9 +495,9 @@ impl Generator for JsonSchemaGenerator {
                                     .iter()
                                     .enumerate()
                                     .map(|(idx, _)| {
-                                        ir::Type::new(ir::TypeKind::TypeVar(
-                                            TypeVarType::new(idx.into()),
-                                        ))
+                                        ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
+                                            idx.into(),
+                                        )))
                                     })
                                     .collect(),
                             ),
@@ -546,9 +550,9 @@ impl Generator for JsonSchemaGenerator {
                                     .iter()
                                     .enumerate()
                                     .map(|(idx, _)| {
-                                        ir::Type::new(ir::TypeKind::TypeVar(
-                                            TypeVarType::new(idx.into()),
-                                        ))
+                                        ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
+                                            idx.into(),
+                                        )))
                                     })
                                     .collect(),
                             ),

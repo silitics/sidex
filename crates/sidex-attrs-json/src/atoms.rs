@@ -18,16 +18,10 @@ pub struct TypeAttr {
 impl TryFromAttr for TypeAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
         let assign = attr.expect_assign_with("type")?;
-        let s = assign
-            .value
-            .as_string()
-            .ok_or_else(|| {
-                diagnostics::Diagnostic::error("Expected a string value.")
-                    .with_span(attr.span.clone())
-            })?;
-        Ok(Self {
-            typ: s.parse()?,
-        })
+        let s = assign.value.as_string().ok_or_else(|| {
+            diagnostics::Diagnostic::error("Expected a string value.").with_span(attr.span.clone())
+        })?;
+        Ok(Self { typ: s.parse()? })
     }
 }
 
@@ -41,8 +35,7 @@ impl TryFromAttr for SchemaAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
         let assign = attr.expect_assign_with("schema")?;
         let s = assign.value.as_string().ok_or_else(|| {
-            diagnostics::Diagnostic::error("Expected a string value.")
-                .with_span(attr.span.clone())
+            diagnostics::Diagnostic::error("Expected a string value.").with_span(attr.span.clone())
         })?;
         Ok(Self {
             schema: s.to_owned(),
@@ -66,8 +59,7 @@ impl TryFromAttr for RenameAllAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
         let assign = attr.expect_assign_with("rename_all")?;
         let s = assign.value.as_string().ok_or_else(|| {
-            diagnostics::Diagnostic::error("Expected a string value.")
-                .with_span(attr.span.clone())
+            diagnostics::Diagnostic::error("Expected a string value.").with_span(attr.span.clone())
         })?;
         Ok(Self {
             function: s.parse()?,
@@ -85,8 +77,7 @@ impl TryFromAttr for RenameAttr {
     fn try_from_attr(attr: &ir::Attr) -> diagnostics::Result<Self> {
         let assign = attr.expect_assign_with("rename")?;
         let s = assign.value.as_string().ok_or_else(|| {
-            diagnostics::Diagnostic::error("Expected a string value.")
-                .with_span(attr.span.clone())
+            diagnostics::Diagnostic::error("Expected a string value.").with_span(attr.span.clone())
         })?;
         Ok(Self {
             function: s.parse()?,
@@ -123,8 +114,7 @@ impl TryFromAttr for JsonTaggedAttr {
     fn try_from_attr(attr: &ir::Attr) -> sidex_gen::diagnostics::Result<Self> {
         let assign = attr.expect_assign_with("tagged")?;
         let path = assign.value.as_path().ok_or_else(|| {
-            diagnostics::Diagnostic::error("Expected a path value.")
-                .with_span(attr.span.clone())
+            diagnostics::Diagnostic::error("Expected a path value.").with_span(attr.span.clone())
         })?;
         match path {
             "adjacently" => accept!(Self::Adjacently),

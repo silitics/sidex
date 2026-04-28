@@ -182,10 +182,12 @@ impl<'t, 'm> Resolver<'t, 'm> {
                                 for (name, idx) in
                                     &self.transformer.loaded[bundle.idx()].schema_by_name
                                 {
-                                    self.table.entry(name.clone()).or_insert(LookupEntry::Schema {
-                                        bundle,
-                                        schema: *idx,
-                                    });
+                                    self.table
+                                        .entry(name.clone())
+                                        .or_insert(LookupEntry::Schema {
+                                            bundle,
+                                            schema: *idx,
+                                        });
                                 }
                             }
                             LookupEntry::Schema { bundle, schema } => {
@@ -248,7 +250,11 @@ impl<'t, 'm> Resolver<'t, 'm> {
                             panic!(
                                 "Unable to find schema {} in bundle {}.",
                                 first.as_str(),
-                                self.transformer.loaded[idx.idx()].source.manifest.metadata.name
+                                self.transformer.loaded[idx.idx()]
+                                    .source
+                                    .manifest
+                                    .metadata
+                                    .name
                             )
                         });
                     LookupEntry::Schema {
@@ -260,9 +266,7 @@ impl<'t, 'm> Resolver<'t, 'm> {
                     let def = self.transformer.loaded[bundle.idx()].schemas[schema]
                         .def_by_name
                         .get(first.as_str())
-                        .unwrap_or_else(|| {
-                            panic!("Unable to find definition {}.", first.as_str())
-                        });
+                        .unwrap_or_else(|| panic!("Unable to find definition {}.", first.as_str()));
                     LookupEntry::Def {
                         bundle,
                         schema,
@@ -295,7 +299,12 @@ impl<'t, 'm> Resolver<'t, 'm> {
 
     /// Translate a local (bundle, schema, def) triple into a fully-resolved
     /// `ir::DefRef` using the global allocation maps.
-    fn def_ref(&self, bundle: ir::BundleIdx, schema: LocalSchemaIdx, def: LocalDefIdx) -> ir::DefRef {
+    fn def_ref(
+        &self,
+        bundle: ir::BundleIdx,
+        schema: LocalSchemaIdx,
+        def: LocalDefIdx,
+    ) -> ir::DefRef {
         let schema_global = *self
             .schema_idx_map
             .get(&(bundle, schema))
@@ -383,17 +392,23 @@ impl<'t, 'm> Resolver<'t, 'm> {
 fn ast_attr_to_value(attr: &ast::Attr) -> Option<ir::AttrValue> {
     match &attr.kind {
         ast::AttrKind::Path(path) => Some(ir::AttrValue::Path(path.to_string())),
-        ast::AttrKind::Tokens(tokens) if tokens.len() == 1 => match &tokens[0].kind {
-            tokens::TokenKind::Literal(lit) => match lit {
-                tokens::Literal::String(s) => Some(ir::AttrValue::String(s.as_ref().clone())),
-                tokens::Literal::Numeric { .. } => {
-                    Some(ir::AttrValue::Number(tokens[0].to_string()))
+        ast::AttrKind::Tokens(tokens) if tokens.len() == 1 => {
+            match &tokens[0].kind {
+                tokens::TokenKind::Literal(lit) => {
+                    match lit {
+                        tokens::Literal::String(s) => {
+                            Some(ir::AttrValue::String(s.as_ref().clone()))
+                        }
+                        tokens::Literal::Numeric { .. } => {
+                            Some(ir::AttrValue::Number(tokens[0].to_string()))
+                        }
+                        tokens::Literal::Boolean(b) => Some(ir::AttrValue::Bool(*b)),
+                    }
                 }
-                tokens::Literal::Boolean(b) => Some(ir::AttrValue::Bool(*b)),
-            },
-            tokens::TokenKind::Identifier(s) => Some(ir::AttrValue::Path(s.to_string())),
-            _ => None,
-        },
+                tokens::TokenKind::Identifier(s) => Some(ir::AttrValue::Path(s.to_string())),
+                _ => None,
+            }
+        }
         _ => None,
     }
 }
@@ -401,10 +416,12 @@ fn ast_attr_to_value(attr: &ast::Attr) -> Option<ir::AttrValue> {
 fn transform_attr(attr: &ast::Attr) -> Option<ir::Attr> {
     let kind = match &attr.kind {
         ast::AttrKind::Path(path) => ir::AttrKind::Path(path.to_string()),
-        ast::AttrKind::List(list) => ir::AttrKind::List(ir::AttrList {
-            path: list.path.to_string(),
-            args: list.elements.iter().filter_map(transform_attr).collect(),
-        }),
+        ast::AttrKind::List(list) => {
+            ir::AttrKind::List(ir::AttrList {
+                path: list.path.to_string(),
+                args: list.elements.iter().filter_map(transform_attr).collect(),
+            })
+        }
         ast::AttrKind::Assign(assign) => {
             let value = ast_attr_to_value(&assign.value)?;
             ir::AttrKind::Assign(ir::AttrAssign {
@@ -649,56 +666,61 @@ impl Transformer {
                 for (local_def_idx, ast_def) in parsed.defs.iter().enumerate() {
                     let global_def = def_idx_map[&(loaded.idx, parsed.idx, local_def_idx)];
 
-                    let kind = match &ast_def.kind {
-                        ast::DefKind::Alias(alias) => ir::DefKind::TypeAlias(
-                            ir::TypeAliasDef::new(resolver.resolve_type_expr(ast_def, &alias.aliased)),
-                        ),
-                        ast::DefKind::OpaqueType(_) => {
-                            ir::DefKind::OpaqueType(ir::OpaqueTypeDef::new())
-                        }
-                        ast::DefKind::RecordType(record) => {
-                            ir::DefKind::RecordType(ir::RecordTypeDef::new().with_fields(
-                                record
-                                    .fields
-                                    .iter()
-                                    .map(|field| {
-                                        ir::Field::new(
-                                            ir::Ident::new(field.name.as_str().to_owned()),
-                                            resolver.resolve_type_expr(ast_def, &field.typ),
-                                        )
-                                        .with_docs(docs_or_none(&field.docs.to_string()))
-                                        .with_attrs(transform_attrs(&field.attrs))
-                                        .with_is_optional(field.is_optional)
-                                    })
-                                    .collect(),
-                            ))
-                        }
-                        ast::DefKind::VariantType(variant) => {
-                            ir::DefKind::VariantType(ir::VariantTypeDef::new().with_variants(
-                                variant
-                                    .variants
-                                    .iter()
-                                    .map(|var| {
-                                        ir::Variant::new(ir::Ident::new(
-                                            var.name.as_str().to_owned(),
-                                        ))
-                                        .with_docs(docs_or_none(&var.docs.to_string()))
-                                        .with_attrs(transform_attrs(&var.attrs))
-                                        .with_typ(
-                                            var.typ
-                                                .as_ref()
-                                                .map(|t| resolver.resolve_type_expr(ast_def, t)),
-                                        )
-                                    })
-                                    .collect(),
-                            ))
-                        }
-                        ast::DefKind::WrapperType(wrap) => ir::DefKind::WrapperType(
-                            ir::WrapperTypeDef::new(
-                                resolver.resolve_type_expr(ast_def, &wrap.wrapped),
-                            ),
-                        ),
-                    };
+                    let kind =
+                        match &ast_def.kind {
+                            ast::DefKind::Alias(alias) => {
+                                ir::DefKind::TypeAlias(ir::TypeAliasDef::new(
+                                    resolver.resolve_type_expr(ast_def, &alias.aliased),
+                                ))
+                            }
+                            ast::DefKind::OpaqueType(_) => {
+                                ir::DefKind::OpaqueType(ir::OpaqueTypeDef::new())
+                            }
+                            ast::DefKind::RecordType(record) => {
+                                ir::DefKind::RecordType(
+                                    ir::RecordTypeDef::new().with_fields(
+                                        record
+                                            .fields
+                                            .iter()
+                                            .map(|field| {
+                                                ir::Field::new(
+                                                    ir::Ident::new(field.name.as_str().to_owned()),
+                                                    resolver.resolve_type_expr(ast_def, &field.typ),
+                                                )
+                                                .with_docs(docs_or_none(&field.docs.to_string()))
+                                                .with_attrs(transform_attrs(&field.attrs))
+                                                .with_is_optional(field.is_optional)
+                                            })
+                                            .collect(),
+                                    ),
+                                )
+                            }
+                            ast::DefKind::VariantType(variant) => {
+                                ir::DefKind::VariantType(
+                                    ir::VariantTypeDef::new().with_variants(
+                                        variant
+                                            .variants
+                                            .iter()
+                                            .map(|var| {
+                                                ir::Variant::new(ir::Ident::new(
+                                                    var.name.as_str().to_owned(),
+                                                ))
+                                                .with_docs(docs_or_none(&var.docs.to_string()))
+                                                .with_attrs(transform_attrs(&var.attrs))
+                                                .with_typ(var.typ.as_ref().map(|t| {
+                                                    resolver.resolve_type_expr(ast_def, t)
+                                                }))
+                                            })
+                                            .collect(),
+                                    ),
+                                )
+                            }
+                            ast::DefKind::WrapperType(wrap) => {
+                                ir::DefKind::WrapperType(ir::WrapperTypeDef::new(
+                                    resolver.resolve_type_expr(ast_def, &wrap.wrapped),
+                                ))
+                            }
+                        };
 
                     let def = &mut ir.defs[global_def.idx()];
                     def.kind = kind;

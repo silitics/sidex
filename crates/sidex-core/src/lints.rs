@@ -58,9 +58,7 @@ pub fn lint_unused_imports(transformer: &Transformer, bundle: ir::BundleIdx) {
 /// the values are the rendered import paths of every unused import in that
 /// schema — exactly what [`sidex_fmt::FormatOptions::excluded_imports`]
 /// consumes.
-pub fn unused_imports_by_schema(
-    findings: &[UnusedImport],
-) -> HashMap<String, HashSet<String>> {
+pub fn unused_imports_by_schema(findings: &[UnusedImport]) -> HashMap<String, HashSet<String>> {
     let mut out: HashMap<String, HashSet<String>> = HashMap::new();
     for f in findings {
         out.entry(f.schema.clone())

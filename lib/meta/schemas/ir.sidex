@@ -1,3 +1,13 @@
+/// An arbitrary, schema-validated Sidex value.
+///
+/// Used by [`typed_attrs`] to carry the parsed result of a plugin's typed
+/// attribute schema. Each codegen target maps `Value` to its language's
+/// "any" type (e.g., `serde_json::Value` in Rust, `unknown` in TypeScript,
+/// `typing.Any` in Python). Producers and consumers communicate through
+/// JSON shape, validated at IR build time against the plugin's Sidex schema.
+#[rust(type = "::serde_json::Value")]
+opaque Value
+
 /// Uniquely identifies a source in an IR.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]
 wrapper SourceIdx: idx
@@ -115,6 +125,11 @@ record Schema {
     /// The attributes of the schema.
     #[default]
     attrs: [Attr],
+    /// The parsed, schema-validated attributes, keyed by plugin id.
+    /// Populated by the compiler for plugins whose attribute schemas are
+    /// loaded; raw [`attrs`] remains the round-trip form for unknown plugins.
+    #[default]
+    typed_attrs: [string: Value],
     /// The definitions of the schema.
     #[default]
     defs: [DefIdx],
@@ -139,6 +154,9 @@ record Def {
     /// The attributes of the definition.
     #[default]
     attrs: [Attr],
+    /// The parsed, schema-validated attributes, keyed by plugin id.
+    #[default]
+    typed_attrs: [string: Value],
     /// The kind of the definition.
     kind: DefKind,
     /// The optional span of the definition.
@@ -196,6 +214,9 @@ record Field {
     /// The attributes of the field.
     #[default]
     attrs: [Attr],
+    /// The parsed, schema-validated attributes, keyed by plugin id.
+    #[default]
+    typed_attrs: [string: Value],
     /// The type of the field.
     typ: Type,
     /// Indicates whether the field is optional.
@@ -223,6 +244,9 @@ record Variant {
     /// The attributes of the variant.
     #[default]
     attrs: [Attr],
+    /// The parsed, schema-validated attributes, keyed by plugin id.
+    #[default]
+    typed_attrs: [string: Value],
     /// The optional payload type of the variant.
     typ?: Type,
     /// The optional span of the variant.

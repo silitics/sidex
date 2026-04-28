@@ -6,6 +6,8 @@ pub mod ir {
     use :: serde as __serde;
     #[allow(unused)]
     use :: sidex_serde as __sidex_serde;
+    #[doc = "An arbitrary, schema-validated Sidex value.\n\nUsed by [`typed_attrs`] to carry the parsed result of a plugin's typed\nattribute schema. Each codegen target maps `Value` to its language's\n\"any\" type (e.g., `serde_json::Value` in Rust, `unknown` in TypeScript,\n`typing.Any` in Python). Producers and consumers communicate through\nJSON shape, validated at IR build time against the plugin's Sidex schema.\n"]
+    pub type Value = ::serde_json::Value;
     #[doc = "Uniquely identifies a source in an IR.\n"]
     #[derive(Clone, Debug, Copy, PartialEq, Eq, Hash)]
     pub struct SourceIdx(pub(crate) usize);
@@ -2297,6 +2299,8 @@ pub mod ir {
         pub docs: ::std::option::Option<Docs>,
         #[doc = "The attributes of the schema.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
+        #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\nPopulated by the compiler for plugins whose attribute schemas are\nloaded; raw [`attrs`] remains the round-trip form for unknown plugins.\n"]
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
         #[doc = "The definitions of the schema.\n"]
         pub defs: ::std::vec::Vec<DefIdx>,
         #[doc = "The source of the schema.\n"]
@@ -2312,6 +2316,7 @@ pub mod ir {
                 name,
                 docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
+                typed_attrs: ::std::default::Default::default(),
                 defs: ::std::default::Default::default(),
                 source: ::std::default::Default::default(),
                 span: ::std::default::Default::default(),
@@ -2357,6 +2362,22 @@ pub mod ir {
             self.attrs = attrs;
             self
         }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn set_typed_attrs(
+            &mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> &mut Self {
+            self.typed_attrs = typed_attrs;
+            self
+        }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn with_typed_attrs(
+            mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> Self {
+            self.typed_attrs = typed_attrs;
+            self
+        }
         #[doc = "Sets the value of `defs`."]
         pub fn set_defs(&mut self, defs: ::std::vec::Vec<DefIdx>) -> &mut Self {
             self.defs = defs;
@@ -2395,12 +2416,13 @@ pub mod ir {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "Schema", 7usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Schema", 8usize)?;
             __record.serialize_field("bundle", &self.bundle)?;
             __record.serialize_field("name", &self.name)?;
             __record
                 .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
             __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("typedAttrs", &self.typed_attrs)?;
             __record.serialize_field("defs", &self.defs)?;
             __record
                 .serialize_optional_field("source", ::core::option::Option::as_ref(&self.source))?;
@@ -2441,7 +2463,7 @@ pub mod ir {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
                                         0usize,
-                                        &"record with 7 fields",
+                                        &"record with 8 fields",
                                     ),
                                 );
                             }
@@ -2453,7 +2475,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 8 fields"),
                             );
                         }
                     };
@@ -2464,7 +2486,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 8 fields"),
                             );
                         }
                     };
@@ -2475,40 +2497,51 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 8 fields"),
                             );
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(4usize, &"record with 8 fields"),
+                            );
+                        }
+                    };
+                    let __field5 = match __serde::de::SeqAccess::next_element::<
                         ::std::vec::Vec<DefIdx>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(4usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(5usize, &"record with 8 fields"),
                             );
                         }
                     };
-                    let __field5 = match __serde::de::SeqAccess::next_element::<
+                    let __field6 = match __serde::de::SeqAccess::next_element::<
                         ::std::option::Option<SourceIdx>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(5usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(6usize, &"record with 8 fields"),
                             );
                         }
                     };
-                    let __field6 = match __serde::de::SeqAccess::next_element::<
+                    let __field7 = match __serde::de::SeqAccess::next_element::<
                         ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(6usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(7usize, &"record with 8 fields"),
                             );
                         }
                     };
@@ -2517,9 +2550,10 @@ pub mod ir {
                         name: __field1,
                         docs: __field2,
                         attrs: __field3,
-                        defs: __field4,
-                        source: __field5,
-                        span: __field6,
+                        typed_attrs: __field4,
+                        defs: __field5,
+                        source: __field6,
+                        span: __field7,
                     })
                 }
                 #[inline]
@@ -2531,10 +2565,18 @@ pub mod ir {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] =
-                        &["bundle", "name", "docs", "attrs", "defs", "source", "span"];
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "bundle",
+                        "name",
+                        "docs",
+                        "attrs",
+                        "typedAttrs",
+                        "defs",
+                        "source",
+                        "span",
+                    ];
                     #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"bundle\", \"name\", \"docs\", \"attrs\", \"defs\", \"source\", \"span\"]";
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"bundle\", \"name\", \"docs\", \"attrs\", \"typedAttrs\", \"defs\", \"source\", \"span\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {
@@ -2545,6 +2587,7 @@ pub mod ir {
                         __Identifier4,
                         __Identifier5,
                         __Identifier6,
+                        __Identifier7,
                         __Unknown,
                     }
                     #[doc(hidden)]
@@ -2572,6 +2615,7 @@ pub mod ir {
                                 4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
                                 5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                                 6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -2587,9 +2631,12 @@ pub mod ir {
                                 "name" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                                 "docs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                                 "attrs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                                "defs" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                                "source" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                "typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                }
+                                "defs" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                "source" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier7),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -2607,11 +2654,14 @@ pub mod ir {
                                 b"name" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                                 b"docs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                                 b"attrs" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                                b"defs" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                                b"source" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                b"typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
                                 }
-                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                b"defs" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                b"source" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier7),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -2638,11 +2688,14 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::std::vec::Vec<DefIdx>> =
+                    let mut __field4: ::core::option::Option<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    > = ::core::option::Option::None;
+                    let mut __field5: ::core::option::Option<::std::vec::Vec<DefIdx>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::std::option::Option<SourceIdx>> =
+                    let mut __field6: ::core::option::Option<::std::option::Option<SourceIdx>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::std::option::Option<Span>> =
+                    let mut __field7: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -2701,36 +2754,50 @@ pub mod ir {
                             __Identifier::__Identifier4 => {
                                 if ::core::option::Option::is_some(&__field4) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("defs"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "typedAttrs",
+                                        ),
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        ::std::collections::HashMap<::std::string::String, Value>,
+                                    >(&mut __map)?,
+                                );
+                            }
+                            __Identifier::__Identifier5 => {
+                                if ::core::option::Option::is_some(&__field5) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("defs"),
+                                    );
+                                }
+                                __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<::std::vec::Vec<DefIdx>>(
                                         &mut __map,
                                     )?,
                                 );
                             }
-                            __Identifier::__Identifier5 => {
-                                if ::core::option::Option::is_some(&__field5) {
+                            __Identifier::__Identifier6 => {
+                                if ::core::option::Option::is_some(&__field6) {
                                     return ::core::result::Result::Err(
                                         <__A::Error as __serde::de::Error>::duplicate_field(
                                             "source",
                                         ),
                                     );
                                 }
-                                __field5 = ::core::option::Option::Some(
+                                __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
                                         ::std::option::Option<SourceIdx>,
                                     >(&mut __map)?,
                                 );
                             }
-                            __Identifier::__Identifier6 => {
-                                if ::core::option::Option::is_some(&__field6) {
+                            __Identifier::__Identifier7 => {
+                                if ::core::option::Option::is_some(&__field7) {
                                     return ::core::result::Result::Err(
                                         <__A::Error as __serde::de::Error>::duplicate_field("span"),
                                     );
                                 }
-                                __field6 = ::core::option::Option::Some(
+                                __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
                                         ::std::option::Option<Span>,
                                     >(&mut __map)?,
@@ -2775,15 +2842,23 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("defs"),
+                                <__A::Error as __serde::de::Error>::missing_field("typedAttrs"),
                             );
                         }
                     };
                     let __field5 = match __field5 {
                         ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("defs"),
+                            );
+                        }
                     };
                     let __field6 = match __field6 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
+                    let __field7 = match __field7 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => ::core::option::Option::None,
                     };
@@ -2792,15 +2867,24 @@ pub mod ir {
                         name: __field1,
                         docs: __field2,
                         attrs: __field3,
-                        defs: __field4,
-                        source: __field5,
-                        span: __field6,
+                        typed_attrs: __field4,
+                        defs: __field5,
+                        source: __field6,
+                        span: __field7,
                     })
                 }
             }
             #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] =
-                &["bundle", "name", "docs", "attrs", "defs", "source", "span"];
+            const __FIELDS: &'static [&'static str] = &[
+                "bundle",
+                "name",
+                "docs",
+                "attrs",
+                "typedAttrs",
+                "defs",
+                "source",
+                "span",
+            ];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Schema",
@@ -2825,6 +2909,8 @@ pub mod ir {
         pub vars: ::std::vec::Vec<TypeVar>,
         #[doc = "The attributes of the definition.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
+        #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\n"]
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
         #[doc = "The kind of the definition.\n"]
         pub kind: DefKind,
         #[doc = "The optional span of the definition.\n"]
@@ -2840,6 +2926,7 @@ pub mod ir {
                 docs: ::std::default::Default::default(),
                 vars: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
+                typed_attrs: ::std::default::Default::default(),
                 span: ::std::default::Default::default(),
             }
         }
@@ -2893,6 +2980,22 @@ pub mod ir {
             self.attrs = attrs;
             self
         }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn set_typed_attrs(
+            &mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> &mut Self {
+            self.typed_attrs = typed_attrs;
+            self
+        }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn with_typed_attrs(
+            mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> Self {
+            self.typed_attrs = typed_attrs;
+            self
+        }
         #[doc = "Sets the value of `kind`."]
         pub fn set_kind(&mut self, kind: DefKind) -> &mut Self {
             self.kind = kind;
@@ -2921,13 +3024,14 @@ pub mod ir {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "Def", 7usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Def", 8usize)?;
             __record.serialize_field("schema", &self.schema)?;
             __record.serialize_field("name", &self.name)?;
             __record
                 .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
             __record.serialize_field("vars", &self.vars)?;
             __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("typedAttrs", &self.typed_attrs)?;
             __record.serialize_field("kind", &self.kind)?;
             __record
                 .serialize_optional_field("span", ::core::option::Option::as_ref(&self.span))?;
@@ -2966,7 +3070,7 @@ pub mod ir {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
                                         0usize,
-                                        &"record with 7 fields",
+                                        &"record with 8 fields",
                                     ),
                                 );
                             }
@@ -2976,7 +3080,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 8 fields"),
                             );
                         }
                     };
@@ -2987,7 +3091,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 8 fields"),
                             );
                         }
                     };
@@ -2998,7 +3102,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 8 fields"),
                             );
                         }
                     };
@@ -3009,30 +3113,41 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(4usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(4usize, &"record with 8 fields"),
                             );
                         }
                     };
-                    let __field5 =
+                    let __field5 = match __serde::de::SeqAccess::next_element::<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(5usize, &"record with 8 fields"),
+                            );
+                        }
+                    };
+                    let __field6 =
                         match __serde::de::SeqAccess::next_element::<DefKind>(&mut __seq)? {
                             ::core::option::Option::Some(__value) => __value,
                             ::core::option::Option::None => {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
-                                        5usize,
-                                        &"record with 7 fields",
+                                        6usize,
+                                        &"record with 8 fields",
                                     ),
                                 );
                             }
                         };
-                    let __field6 = match __serde::de::SeqAccess::next_element::<
+                    let __field7 = match __serde::de::SeqAccess::next_element::<
                         ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(6usize, &"record with 7 fields"),
+                                __serde::de::Error::invalid_length(7usize, &"record with 8 fields"),
                             );
                         }
                     };
@@ -3042,8 +3157,9 @@ pub mod ir {
                         docs: __field2,
                         vars: __field3,
                         attrs: __field4,
-                        kind: __field5,
-                        span: __field6,
+                        typed_attrs: __field5,
+                        kind: __field6,
+                        span: __field7,
                     })
                 }
                 #[inline]
@@ -3055,10 +3171,18 @@ pub mod ir {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] =
-                        &["schema", "name", "docs", "vars", "attrs", "kind", "span"];
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "schema",
+                        "name",
+                        "docs",
+                        "vars",
+                        "attrs",
+                        "typedAttrs",
+                        "kind",
+                        "span",
+                    ];
                     #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"schema\", \"name\", \"docs\", \"vars\", \"attrs\", \"kind\", \"span\"]";
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"schema\", \"name\", \"docs\", \"vars\", \"attrs\", \"typedAttrs\", \"kind\", \"span\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {
@@ -3069,6 +3193,7 @@ pub mod ir {
                         __Identifier4,
                         __Identifier5,
                         __Identifier6,
+                        __Identifier7,
                         __Unknown,
                     }
                     #[doc(hidden)]
@@ -3096,6 +3221,7 @@ pub mod ir {
                                 4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
                                 5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                                 6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -3112,8 +3238,11 @@ pub mod ir {
                                 "docs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                                 "vars" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                                 "attrs" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                                "kind" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                "typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "kind" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier7),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -3132,8 +3261,11 @@ pub mod ir {
                                 b"docs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                                 b"vars" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                                 b"attrs" => ::core::result::Result::Ok(__Identifier::__Identifier4),
-                                b"kind" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                b"typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"kind" => ::core::result::Result::Ok(__Identifier::__Identifier6),
+                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier7),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -3161,9 +3293,12 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<DefKind> =
+                    let mut __field5: ::core::option::Option<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    > = ::core::option::Option::None;
+                    let mut __field6: ::core::option::Option<DefKind> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::std::option::Option<Span>> =
+                    let mut __field7: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -3232,20 +3367,34 @@ pub mod ir {
                             __Identifier::__Identifier5 => {
                                 if ::core::option::Option::is_some(&__field5) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("kind"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "typedAttrs",
+                                        ),
                                     );
                                 }
                                 __field5 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<DefKind>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::std::collections::HashMap<::std::string::String, Value>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier6 => {
                                 if ::core::option::Option::is_some(&__field6) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("kind"),
                                     );
                                 }
                                 __field6 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<DefKind>(&mut __map)?,
+                                );
+                            }
+                            __Identifier::__Identifier7 => {
+                                if ::core::option::Option::is_some(&__field7) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
+                                    );
+                                }
+                                __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
                                         ::std::option::Option<Span>,
                                     >(&mut __map)?,
@@ -3298,11 +3447,19 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("kind"),
+                                <__A::Error as __serde::de::Error>::missing_field("typedAttrs"),
                             );
                         }
                     };
                     let __field6 = match __field6 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("kind"),
+                            );
+                        }
+                    };
+                    let __field7 = match __field7 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => ::core::option::Option::None,
                     };
@@ -3312,14 +3469,23 @@ pub mod ir {
                         docs: __field2,
                         vars: __field3,
                         attrs: __field4,
-                        kind: __field5,
-                        span: __field6,
+                        typed_attrs: __field5,
+                        kind: __field6,
+                        span: __field7,
                     })
                 }
             }
             #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] =
-                &["schema", "name", "docs", "vars", "attrs", "kind", "span"];
+            const __FIELDS: &'static [&'static str] = &[
+                "schema",
+                "name",
+                "docs",
+                "vars",
+                "attrs",
+                "typedAttrs",
+                "kind",
+                "span",
+            ];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Def",
@@ -4373,6 +4539,8 @@ pub mod ir {
         pub docs: ::std::option::Option<Docs>,
         #[doc = "The attributes of the field.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
+        #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\n"]
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
         #[doc = "The type of the field.\n"]
         pub typ: Type,
         #[doc = "Indicates whether the field is optional.\n"]
@@ -4388,6 +4556,7 @@ pub mod ir {
                 typ,
                 docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
+                typed_attrs: ::std::default::Default::default(),
                 is_optional: ::std::default::Default::default(),
                 span: ::std::default::Default::default(),
             }
@@ -4420,6 +4589,22 @@ pub mod ir {
         #[doc = "Sets the value of `attrs`."]
         pub fn with_attrs(mut self, attrs: ::std::vec::Vec<Attr>) -> Self {
             self.attrs = attrs;
+            self
+        }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn set_typed_attrs(
+            &mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> &mut Self {
+            self.typed_attrs = typed_attrs;
+            self
+        }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn with_typed_attrs(
+            mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> Self {
+            self.typed_attrs = typed_attrs;
             self
         }
         #[doc = "Sets the value of `typ`."]
@@ -4460,11 +4645,12 @@ pub mod ir {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "Field", 6usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Field", 7usize)?;
             __record.serialize_field("name", &self.name)?;
             __record
                 .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
             __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("typedAttrs", &self.typed_attrs)?;
             __record.serialize_field("typ", &self.typ)?;
             __record.serialize_field("isOptional", &self.is_optional)?;
             __record
@@ -4502,7 +4688,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 7 fields"),
                             );
                         }
                     };
@@ -4513,7 +4699,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 7 fields"),
                             );
                         }
                     };
@@ -4524,34 +4710,45 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 7 fields"),
                             );
                         }
                     };
-                    let __field3 = match __serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
+                    let __field3 = match __serde::de::SeqAccess::next_element::<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    >(&mut __seq)?
+                    {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 7 fields"),
                             );
                         }
                     };
-                    let __field4 = match __serde::de::SeqAccess::next_element::<bool>(&mut __seq)? {
+                    let __field4 = match __serde::de::SeqAccess::next_element::<Type>(&mut __seq)? {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(4usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(4usize, &"record with 7 fields"),
                             );
                         }
                     };
-                    let __field5 = match __serde::de::SeqAccess::next_element::<
+                    let __field5 = match __serde::de::SeqAccess::next_element::<bool>(&mut __seq)? {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(5usize, &"record with 7 fields"),
+                            );
+                        }
+                    };
+                    let __field6 = match __serde::de::SeqAccess::next_element::<
                         ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(5usize, &"record with 6 fields"),
+                                __serde::de::Error::invalid_length(6usize, &"record with 7 fields"),
                             );
                         }
                     };
@@ -4559,9 +4756,10 @@ pub mod ir {
                         name: __field0,
                         docs: __field1,
                         attrs: __field2,
-                        typ: __field3,
-                        is_optional: __field4,
-                        span: __field5,
+                        typed_attrs: __field3,
+                        typ: __field4,
+                        is_optional: __field5,
+                        span: __field6,
                     })
                 }
                 #[inline]
@@ -4573,10 +4771,17 @@ pub mod ir {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] =
-                        &["name", "docs", "attrs", "typ", "isOptional", "span"];
+                    const __IDENTIFIERS: &'static [&'static str] = &[
+                        "name",
+                        "docs",
+                        "attrs",
+                        "typedAttrs",
+                        "typ",
+                        "isOptional",
+                        "span",
+                    ];
                     #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"docs\", \"attrs\", \"typ\", \"isOptional\", \"span\"]";
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"docs\", \"attrs\", \"typedAttrs\", \"typ\", \"isOptional\", \"span\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {
@@ -4586,6 +4791,7 @@ pub mod ir {
                         __Identifier3,
                         __Identifier4,
                         __Identifier5,
+                        __Identifier6,
                         __Unknown,
                     }
                     #[doc(hidden)]
@@ -4612,6 +4818,7 @@ pub mod ir {
                                 3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                                 4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
                                 5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -4626,11 +4833,14 @@ pub mod ir {
                                 "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                                 "docs" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                                 "attrs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                "typ" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                                "isOptional" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                "typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
                                 }
-                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                "typ" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                "isOptional" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier6),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -4645,11 +4855,14 @@ pub mod ir {
                                 b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                                 b"docs" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                                 b"attrs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                b"typ" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                                b"isOptional" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier4)
+                                b"typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
                                 }
-                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier5),
+                                b"typ" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                b"isOptional" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier5)
+                                }
+                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier6),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -4673,9 +4886,12 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<Type> = ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<bool> = ::core::option::Option::None;
-                    let mut __field5: ::core::option::Option<::std::option::Option<Span>> =
+                    let mut __field3: ::core::option::Option<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    > = ::core::option::Option::None;
+                    let mut __field4: ::core::option::Option<Type> = ::core::option::Option::None;
+                    let mut __field5: ::core::option::Option<bool> = ::core::option::Option::None;
+                    let mut __field6: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -4720,32 +4936,46 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "typedAttrs",
+                                        ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                    __serde::de::MapAccess::next_value::<
+                                        ::std::collections::HashMap<::std::string::String, Value>,
+                                    >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier4 => {
                                 if ::core::option::Option::is_some(&__field4) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
+                                    );
+                                }
+                                __field4 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<Type>(&mut __map)?,
+                                );
+                            }
+                            __Identifier::__Identifier5 => {
+                                if ::core::option::Option::is_some(&__field5) {
                                     return ::core::result::Result::Err(
                                         <__A::Error as __serde::de::Error>::duplicate_field(
                                             "isOptional",
                                         ),
                                     );
                                 }
-                                __field4 = ::core::option::Option::Some(
+                                __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<bool>(&mut __map)?,
                                 );
                             }
-                            __Identifier::__Identifier5 => {
-                                if ::core::option::Option::is_some(&__field5) {
+                            __Identifier::__Identifier6 => {
+                                if ::core::option::Option::is_some(&__field6) {
                                     return ::core::result::Result::Err(
                                         <__A::Error as __serde::de::Error>::duplicate_field("span"),
                                     );
                                 }
-                                __field5 = ::core::option::Option::Some(
+                                __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
                                         ::std::option::Option<Span>,
                                     >(&mut __map)?,
@@ -4782,7 +5012,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("typ"),
+                                <__A::Error as __serde::de::Error>::missing_field("typedAttrs"),
                             );
                         }
                     };
@@ -4790,11 +5020,19 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                <__A::Error as __serde::de::Error>::missing_field("isOptional"),
+                                <__A::Error as __serde::de::Error>::missing_field("typ"),
                             );
                         }
                     };
                     let __field5 = match __field5 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("isOptional"),
+                            );
+                        }
+                    };
+                    let __field6 = match __field6 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => ::core::option::Option::None,
                     };
@@ -4802,15 +5040,23 @@ pub mod ir {
                         name: __field0,
                         docs: __field1,
                         attrs: __field2,
-                        typ: __field3,
-                        is_optional: __field4,
-                        span: __field5,
+                        typed_attrs: __field3,
+                        typ: __field4,
+                        is_optional: __field5,
+                        span: __field6,
                     })
                 }
             }
             #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] =
-                &["name", "docs", "attrs", "typ", "isOptional", "span"];
+            const __FIELDS: &'static [&'static str] = &[
+                "name",
+                "docs",
+                "attrs",
+                "typedAttrs",
+                "typ",
+                "isOptional",
+                "span",
+            ];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Field",
@@ -5044,6 +5290,8 @@ pub mod ir {
         pub docs: ::std::option::Option<Docs>,
         #[doc = "The attributes of the variant.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
+        #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\n"]
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
         #[doc = "The optional payload type of the variant.\n"]
         pub typ: ::std::option::Option<Type>,
         #[doc = "The optional span of the variant.\n"]
@@ -5056,6 +5304,7 @@ pub mod ir {
                 name,
                 docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
+                typed_attrs: ::std::default::Default::default(),
                 typ: ::std::default::Default::default(),
                 span: ::std::default::Default::default(),
             }
@@ -5090,6 +5339,22 @@ pub mod ir {
             self.attrs = attrs;
             self
         }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn set_typed_attrs(
+            &mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> &mut Self {
+            self.typed_attrs = typed_attrs;
+            self
+        }
+        #[doc = "Sets the value of `typed_attrs`."]
+        pub fn with_typed_attrs(
+            mut self,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        ) -> Self {
+            self.typed_attrs = typed_attrs;
+            self
+        }
         #[doc = "Sets the value of `typ`."]
         pub fn set_typ(&mut self, typ: ::std::option::Option<Type>) -> &mut Self {
             self.typ = typ;
@@ -5118,11 +5383,12 @@ pub mod ir {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "Variant", 5usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Variant", 6usize)?;
             __record.serialize_field("name", &self.name)?;
             __record
                 .serialize_optional_field("docs", ::core::option::Option::as_ref(&self.docs))?;
             __record.serialize_field("attrs", &self.attrs)?;
+            __record.serialize_field("typedAttrs", &self.typed_attrs)?;
             __record.serialize_optional_field("typ", ::core::option::Option::as_ref(&self.typ))?;
             __record
                 .serialize_optional_field("span", ::core::option::Option::as_ref(&self.span))?;
@@ -5159,7 +5425,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 6 fields"),
                             );
                         }
                     };
@@ -5170,7 +5436,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 6 fields"),
                             );
                         }
                     };
@@ -5181,29 +5447,40 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 6 fields"),
                             );
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(3usize, &"record with 6 fields"),
+                            );
+                        }
+                    };
+                    let __field4 = match __serde::de::SeqAccess::next_element::<
                         ::std::option::Option<Type>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(4usize, &"record with 6 fields"),
                             );
                         }
                     };
-                    let __field4 = match __serde::de::SeqAccess::next_element::<
+                    let __field5 = match __serde::de::SeqAccess::next_element::<
                         ::std::option::Option<Span>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(4usize, &"record with 5 fields"),
+                                __serde::de::Error::invalid_length(5usize, &"record with 6 fields"),
                             );
                         }
                     };
@@ -5211,8 +5488,9 @@ pub mod ir {
                         name: __field0,
                         docs: __field1,
                         attrs: __field2,
-                        typ: __field3,
-                        span: __field4,
+                        typed_attrs: __field3,
+                        typ: __field4,
+                        span: __field5,
                     })
                 }
                 #[inline]
@@ -5225,10 +5503,9 @@ pub mod ir {
                 {
                     #[doc(hidden)]
                     const __IDENTIFIERS: &'static [&'static str] =
-                        &["name", "docs", "attrs", "typ", "span"];
+                        &["name", "docs", "attrs", "typedAttrs", "typ", "span"];
                     #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"name\", \"docs\", \"attrs\", \"typ\", \"span\"]";
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"docs\", \"attrs\", \"typedAttrs\", \"typ\", \"span\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {
@@ -5237,6 +5514,7 @@ pub mod ir {
                         __Identifier2,
                         __Identifier3,
                         __Identifier4,
+                        __Identifier5,
                         __Unknown,
                     }
                     #[doc(hidden)]
@@ -5262,6 +5540,7 @@ pub mod ir {
                                 2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
                                 3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                                 4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -5276,8 +5555,11 @@ pub mod ir {
                                 "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                                 "docs" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                                 "attrs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                "typ" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                "typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                "typ" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -5292,8 +5574,11 @@ pub mod ir {
                                 b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                                 b"docs" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                                 b"attrs" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                b"typ" => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                b"typedAttrs" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
+                                }
+                                b"typ" => ::core::result::Result::Ok(__Identifier::__Identifier4),
+                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier5),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -5317,9 +5602,12 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<::std::option::Option<Type>> =
+                    let mut __field3: ::core::option::Option<
+                        ::std::collections::HashMap<::std::string::String, Value>,
+                    > = ::core::option::Option::None;
+                    let mut __field4: ::core::option::Option<::std::option::Option<Type>> =
                         ::core::option::Option::None;
-                    let mut __field4: ::core::option::Option<::std::option::Option<Span>> =
+                    let mut __field5: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -5364,22 +5652,36 @@ pub mod ir {
                             __Identifier::__Identifier3 => {
                                 if ::core::option::Option::is_some(&__field3) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "typedAttrs",
+                                        ),
                                     );
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<Type>,
+                                        ::std::collections::HashMap<::std::string::String, Value>,
                                     >(&mut __map)?,
                                 );
                             }
                             __Identifier::__Identifier4 => {
                                 if ::core::option::Option::is_some(&__field4) {
                                     return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
+                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
                                     );
                                 }
                                 __field4 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        ::std::option::Option<Type>,
+                                    >(&mut __map)?,
+                                );
+                            }
+                            __Identifier::__Identifier5 => {
+                                if ::core::option::Option::is_some(&__field5) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
+                                    );
+                                }
+                                __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
                                         ::std::option::Option<Span>,
                                     >(&mut __map)?,
@@ -5414,9 +5716,17 @@ pub mod ir {
                     };
                     let __field3 = match __field3 {
                         ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("typedAttrs"),
+                            );
+                        }
                     };
                     let __field4 = match __field4 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
+                    let __field5 = match __field5 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => ::core::option::Option::None,
                     };
@@ -5424,13 +5734,15 @@ pub mod ir {
                         name: __field0,
                         docs: __field1,
                         attrs: __field2,
-                        typ: __field3,
-                        span: __field4,
+                        typed_attrs: __field3,
+                        typ: __field4,
+                        span: __field5,
                     })
                 }
             }
             #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["name", "docs", "attrs", "typ", "span"];
+            const __FIELDS: &'static [&'static str] =
+                &["name", "docs", "attrs", "typedAttrs", "typ", "span"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Variant",

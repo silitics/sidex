@@ -39,47 +39,69 @@ idx_conversions!(SourceIdx, BundleIdx, SchemaIdx, DefIdx, TypeVarIdx);
 
 impl Index<BundleIdx> for Ir {
     type Output = Bundle;
-    fn index(&self, idx: BundleIdx) -> &Bundle { &self.bundles[idx.0] }
+    fn index(&self, idx: BundleIdx) -> &Bundle {
+        &self.bundles[idx.0]
+    }
 }
 impl IndexMut<BundleIdx> for Ir {
-    fn index_mut(&mut self, idx: BundleIdx) -> &mut Bundle { &mut self.bundles[idx.0] }
+    fn index_mut(&mut self, idx: BundleIdx) -> &mut Bundle {
+        &mut self.bundles[idx.0]
+    }
 }
 
 impl Index<SchemaIdx> for Ir {
     type Output = Schema;
-    fn index(&self, idx: SchemaIdx) -> &Schema { &self.schemas[idx.0] }
+    fn index(&self, idx: SchemaIdx) -> &Schema {
+        &self.schemas[idx.0]
+    }
 }
 impl IndexMut<SchemaIdx> for Ir {
-    fn index_mut(&mut self, idx: SchemaIdx) -> &mut Schema { &mut self.schemas[idx.0] }
+    fn index_mut(&mut self, idx: SchemaIdx) -> &mut Schema {
+        &mut self.schemas[idx.0]
+    }
 }
 
 impl Index<DefIdx> for Ir {
     type Output = Def;
-    fn index(&self, idx: DefIdx) -> &Def { &self.defs[idx.0] }
+    fn index(&self, idx: DefIdx) -> &Def {
+        &self.defs[idx.0]
+    }
 }
 impl IndexMut<DefIdx> for Ir {
-    fn index_mut(&mut self, idx: DefIdx) -> &mut Def { &mut self.defs[idx.0] }
+    fn index_mut(&mut self, idx: DefIdx) -> &mut Def {
+        &mut self.defs[idx.0]
+    }
 }
 
 impl Index<DefRef> for Ir {
     type Output = Def;
-    fn index(&self, def_ref: DefRef) -> &Def { &self.defs[def_ref.def.0] }
+    fn index(&self, def_ref: DefRef) -> &Def {
+        &self.defs[def_ref.def.0]
+    }
 }
 impl IndexMut<DefRef> for Ir {
-    fn index_mut(&mut self, def_ref: DefRef) -> &mut Def { &mut self.defs[def_ref.def.0] }
+    fn index_mut(&mut self, def_ref: DefRef) -> &mut Def {
+        &mut self.defs[def_ref.def.0]
+    }
 }
 
 impl Index<SourceIdx> for Ir {
     type Output = Source;
-    fn index(&self, idx: SourceIdx) -> &Source { &self.sources[idx.0] }
+    fn index(&self, idx: SourceIdx) -> &Source {
+        &self.sources[idx.0]
+    }
 }
 
 impl Index<TypeVarIdx> for Def {
     type Output = TypeVar;
-    fn index(&self, idx: TypeVarIdx) -> &TypeVar { &self.vars[idx.0] }
+    fn index(&self, idx: TypeVarIdx) -> &TypeVar {
+        &self.vars[idx.0]
+    }
 }
 impl IndexMut<TypeVarIdx> for Def {
-    fn index_mut(&mut self, idx: TypeVarIdx) -> &mut TypeVar { &mut self.vars[idx.0] }
+    fn index_mut(&mut self, idx: TypeVarIdx) -> &mut TypeVar {
+        &mut self.vars[idx.0]
+    }
 }
 
 // --- IR construction helpers ---------------------------------------------
@@ -179,17 +201,19 @@ impl Ir {
                         let aliased = self.apply_subst(&alias.aliased, &instance.subst);
                         self.resolve_aliases(&aliased)
                     }
-                    _ => Type {
-                        kind: TypeKind::Instance(InstanceType {
-                            subst: instance
-                                .subst
-                                .iter()
-                                .map(|t| self.resolve_aliases(t))
-                                .collect(),
-                            ..instance.clone()
-                        }),
-                        ..typ.clone()
-                    },
+                    _ => {
+                        Type {
+                            kind: TypeKind::Instance(InstanceType {
+                                subst: instance
+                                    .subst
+                                    .iter()
+                                    .map(|t| self.resolve_aliases(t))
+                                    .collect(),
+                                ..instance.clone()
+                            }),
+                            ..typ.clone()
+                        }
+                    }
                 }
             }
         }
@@ -208,10 +232,12 @@ impl Ir {
     }
 
     pub fn record_type(&self, typ: &Type) -> Option<&RecordTypeDef> {
-        self.type_def(typ).and_then(|def| match &def.kind {
-            DefKind::TypeAlias(alias) => self.record_type(&alias.aliased),
-            DefKind::RecordType(record) => Some(record),
-            _ => None,
+        self.type_def(typ).and_then(|def| {
+            match &def.kind {
+                DefKind::TypeAlias(alias) => self.record_type(&alias.aliased),
+                DefKind::RecordType(record) => Some(record),
+                _ => None,
+            }
         })
     }
 }
@@ -220,17 +246,19 @@ impl Type {
     pub fn substitute(&self, substitutions: &HashMap<TypeVarIdx, Type>) -> Type {
         match &self.kind {
             TypeKind::TypeVar(var) => substitutions.get(&var.idx).unwrap_or(self).clone(),
-            TypeKind::Instance(instance) => Type {
-                kind: TypeKind::Instance(InstanceType {
-                    subst: instance
-                        .subst
-                        .iter()
-                        .map(|t| t.substitute(substitutions))
-                        .collect(),
-                    ..instance.clone()
-                }),
-                ..self.clone()
-            },
+            TypeKind::Instance(instance) => {
+                Type {
+                    kind: TypeKind::Instance(InstanceType {
+                        subst: instance
+                            .subst
+                            .iter()
+                            .map(|t| t.substitute(substitutions))
+                            .collect(),
+                        ..instance.clone()
+                    }),
+                    ..self.clone()
+                }
+            }
         }
     }
 }
