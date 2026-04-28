@@ -4,6 +4,7 @@ pub use sidex_diagnostics as diagnostics;
 pub use sidex_ir as ir;
 
 pub mod attrs_meta;
+pub mod attrs_parser;
 pub mod builtins;
 pub mod bundle;
 pub mod lints;

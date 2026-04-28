@@ -735,6 +735,10 @@ impl Transformer {
             }
         }
 
+        // Phase 5: discover plugin attribute schemas and parse typed attrs.
+        let registry = crate::attrs_meta::PluginRegistry::build(&ir);
+        crate::attrs_parser::populate_typed_attrs(&mut ir, &registry);
+
         ir
     }
 }
