@@ -519,6 +519,54 @@ mod tests {
         assert_eq!(response["def"], serde_json::json!(response_def));
     }
 
+    /// End-to-end: a downstream consumer of the IR who has a typed Rust
+    /// struct (here hand-coded; in practice generated from the same Sidex
+    /// schema with serde derives) can deserialize a node's typed_attrs
+    /// directly via serde_json::from_value. No re-parsing of raw `attrs`
+    /// needed.
+    #[test]
+    fn round_trips_through_serde_into_typed_struct() {
+        #[derive(serde::Deserialize, Debug, PartialEq, Eq, Default)]
+        struct DemoAttrs {
+            #[serde(default)]
+            greeting: Option<String>,
+            #[serde(default)]
+            enabled: Option<bool>,
+        }
+
+        let src = r#"
+            import ::core::attrs::*
+
+            #[attrs(plugin = "demo", target = record)]
+            record DemoAttrs {
+                greeting?: string,
+                enabled?: bool,
+            }
+
+            #[demo(greeting = "hello", enabled = true)]
+            record Target {}
+        "#;
+        let ir = build_ir(src);
+        let target_def = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Target")
+            .expect("Target def not found");
+        let value = target_def
+            .typed_attrs
+            .get("demo")
+            .expect("typed_attrs[demo] populated");
+        let typed: DemoAttrs =
+            serde_json::from_value(value.clone()).expect("deserializes into typed struct");
+        assert_eq!(
+            typed,
+            DemoAttrs {
+                greeting: Some("hello".to_owned()),
+                enabled: Some(true),
+            }
+        );
+    }
+
     #[test]
     fn merges_repeated_plugin_attrs() {
         let src = r#"
