@@ -8,9 +8,9 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-serde = "1"
+serde.workspace = true
 # Required for serializing and deserializing Base64 encoded bytes.
-base64 = "0.20"  # PRIVATE
+base64.workspace = true # PRIVATE
 
 [features]
 serde-private-content = []

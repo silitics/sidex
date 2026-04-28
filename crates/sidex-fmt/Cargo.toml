@@ -8,9 +8,9 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex-syntax = { path = "../sidex-syntax" }
-sidex-ir = { path = "../sidex-ir" }
-sidex-diagnostics = { path = "../sidex-diagnostics" }
+sidex-syntax.workspace = true
+sidex-ir.workspace = true
+sidex-diagnostics.workspace = true
 
 [dev-dependencies]
-insta = { version = "1.21.0", features = ["glob"] }
+insta.workspace = true

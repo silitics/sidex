@@ -10,9 +10,9 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-serde = "1"
-serde_json = "1"
-sidex = { path = "../sidex" }
+serde.workspace = true
+serde_json.workspace = true
+sidex.workspace = true
 
 [build-dependencies]
-sidex-build-rs = { path = "../sidex-build-rs" }
+sidex-build-rs.workspace = true

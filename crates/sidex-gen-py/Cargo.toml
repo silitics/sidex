@@ -9,9 +9,9 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex-gen = { path = "../sidex-gen" }
-sidex-codegen = { path = "../sidex-codegen" }
-sidex-attrs-json = { path = "../sidex-attrs-json" }
-sidex-attrs-py = { path = "../sidex-attrs-py" }
-serde = "1"
-serde_json = "1"
+sidex-gen.workspace = true
+sidex-codegen.workspace = true
+sidex-attrs-json.workspace = true
+sidex-attrs-py.workspace = true
+serde.workspace = true
+serde_json.workspace = true

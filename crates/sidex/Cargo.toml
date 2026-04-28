@@ -9,11 +9,11 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-thiserror = "1"
-sidex-serde = { path = "../sidex-serde" }
-futures = { version = "*", optional = true }
-serde_json = { version = "1" }
-serde = { version = "1" }
+thiserror.workspace = true
+sidex-serde.workspace = true
+futures = { workspace = true, optional = true }
+serde_json.workspace = true
+serde.workspace = true
 
 [features]
 serde = []

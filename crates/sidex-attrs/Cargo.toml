@@ -8,5 +8,5 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex-ir = { path = "../sidex-ir" }
-sidex-diagnostics = { path = "../sidex-diagnostics"}
+sidex-ir.workspace = true
+sidex-diagnostics.workspace = true

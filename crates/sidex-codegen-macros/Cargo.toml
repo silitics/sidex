@@ -12,7 +12,7 @@ homepage.workspace = true
 proc-macro = true
 
 [dependencies]
-sidex-codegen-syntax = { path = "../sidex-codegen-syntax" }
-proc-macro2 = "1"
-quote = "1"
-syn = "2"
+sidex-codegen-syntax.workspace = true
+proc-macro2.workspace = true
+quote.workspace = true
+syn.workspace = true

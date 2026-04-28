@@ -8,9 +8,9 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex-ir = { path = "../sidex-ir" }
-sidex-diagnostics = { path = "../sidex-diagnostics" }
+sidex-ir.workspace = true
+sidex-diagnostics.workspace = true
 
 [dev-dependencies]
 # Required for snapshot testing.
-insta = { version = "1.21.0", features = ["glob"] }
+insta.workspace = true

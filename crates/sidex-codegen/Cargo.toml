@@ -9,4 +9,4 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex-codegen-macros = { path = "../sidex-codegen-macros" }
+sidex-codegen-macros.workspace = true

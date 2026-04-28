@@ -10,12 +10,12 @@ homepage.workspace = true
 
 [dependencies]
 # Required for code generation.
-sidex-gen = { path = "../sidex-gen" }  # PUBLIC
-sidex-codegen = { path = "../sidex-codegen" }  # PUBLIC
+sidex-gen.workspace = true # PUBLIC
+sidex-codegen.workspace = true # PUBLIC
 # Required for parsing `rust` attributes.
-sidex-attrs-rust = { path = "../sidex-attrs-rust" }  # PUBLIC
+sidex-attrs-rust.workspace = true # PUBLIC
 # Required for parsing `json` attributes.
-sidex-attrs-json = { path = "../sidex-attrs-json" }  # PUBLIC
+sidex-attrs-json.workspace = true # PUBLIC
 # Required for deserializing the backend configuration.
-serde = "1"  # PUBLIC
-serde_json = "1"
+serde.workspace = true # PUBLIC
+serde_json.workspace = true

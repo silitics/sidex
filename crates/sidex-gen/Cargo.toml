@@ -9,8 +9,8 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-thiserror = "1"
-serde_json = "1"
-sidex-ir = { path = "../sidex-ir", version = "^0.2" }
-sidex-diagnostics = { path = "../sidex-diagnostics" }
-sidex-attrs = { path = "../sidex-attrs" }
+thiserror.workspace = true
+serde_json.workspace = true
+sidex-ir.workspace = true
+sidex-diagnostics.workspace = true
+sidex-attrs.workspace = true

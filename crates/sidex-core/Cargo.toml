@@ -10,27 +10,24 @@ homepage.workspace = true
 
 [dependencies]
 # Required for serialization and deserialization of metadata.
-serde = { version = "^1.0", features = ["derive"] }
-serde_json = "1"
-toml = "^0.5"
-thiserror = "1"
+serde.workspace = true
+serde_json.workspace = true
+toml.workspace = true
+thiserror.workspace = true
 # Required for nice and colorful error reporting.
-eyre = "^0.6" # PRIVATE
+eyre.workspace = true # PRIVATE
 # Required for caching.
-once_cell = "^1.13"  # PRIVATE
-lazy_static = "^1.4" # PRIVATE
+once_cell.workspace = true # PRIVATE
+lazy_static.workspace = true # PRIVATE
 # Required for internal maps.
-hashbrown = "^0.13" # PRIVATE
+hashbrown.workspace = true # PRIVATE
 # Lexer, parser, and ASTs for Sidex schemas.
-sidex-syntax = { version = "0.2", path = "../sidex-syntax" } # PRIVATE
-sidex-ir = { path = "../sidex-ir" } # PUBLIC
-sidex-diagnostics = { path = "../sidex-diagnostics" } # PUBLIC
+sidex-syntax.workspace = true # PRIVATE
+sidex-ir.workspace = true # PUBLIC
+sidex-diagnostics.workspace = true # PUBLIC
 # Parallel processing of schemas.
-rayon = "1.5"  # PRIVATE
-
-
-
+rayon.workspace = true # PRIVATE
 
 [dev-dependencies]
 # Required for snapshot testing.
-insta = "1.15.0"
+insta.workspace = true

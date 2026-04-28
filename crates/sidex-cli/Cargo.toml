@@ -14,22 +14,21 @@ path = "src/main.rs"
 
 [dependencies]
 # Rust framework for Sidex.
-sidex-core = { path = "../sidex-core", version = "^0.1" }
-sidex-gen = { path = "../sidex-gen", version = "0.1" }
-sidex-gen-ir = { path = "../sidex-gen-ir", version = "^0.1" }
-sidex-gen-rs = { path = "../sidex-gen-rs", version = "^0.1" }
-sidex-gen-ts = { path = "../sidex-gen-ts", version = "^0.1" }
-sidex-gen-json-schema = { path = "../sidex-gen-json-schema", version = "^0.1" }
-sidex-gen-py = { path = "../sidex-gen-py", version = "^0.1" }
-sidex-diagnostics = { path = "../sidex-diagnostics" }
-sidex-fmt = { path = "../sidex-fmt", version = "^0.1" }
+sidex-core.workspace = true
+sidex-gen.workspace = true
+sidex-gen-ir.workspace = true
+sidex-gen-rs.workspace = true
+sidex-gen-ts.workspace = true
+sidex-gen-json-schema.workspace = true
+sidex-gen-py.workspace = true
+sidex-diagnostics.workspace = true
+sidex-fmt.workspace = true
 # Required for parsing the command line arguments.
-clap = { version = "4.0", features = ["derive"] }
+clap.workspace = true
 # Required for nice and colorful error reporting.
-eyre = "^0.6"
-color-eyre = "^0.6"
+eyre.workspace = true
+color-eyre.workspace = true
 # Required for terminal colors.
-yansi = "^0.5"
-serde_json = "1"
-
-toml = "^0.5"
+yansi.workspace = true
+serde_json.workspace = true
+toml.workspace = true

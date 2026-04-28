@@ -9,12 +9,12 @@ homepage.workspace = true
 
 [dependencies]
 # Required for rendering diagnostics.
-ariadne = "0.1"  # PRIVATE
-# Required for theard-local diagnostic contexts.
-scoped-tls = "1"  # PRIVATE
-# Required for locks and other concurreny primitives.
-parking_lot = "0.12"  # PRIVATE
+ariadne.workspace = true # PRIVATE
+# Required for thread-local diagnostic contexts.
+scoped-tls.workspace = true # PRIVATE
+# Required for locks and other concurrency primitives.
+parking_lot.workspace = true # PRIVATE
 # Required for wrapping and handling generic errors.
-anyhow = "1"  # PRIVATE
+anyhow.workspace = true # PRIVATE
 # Required for Sidex IR data structures.
-sidex-ir = { path = "../sidex-ir" }  # PUBLIC
+sidex-ir.workspace = true # PUBLIC
