@@ -1,0 +1,20 @@
+[package]
+name = "sidex-fuzz"
+description = "Random JSON instance generation for Sidex types."
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+serde_json.workspace = true
+sidex-attrs-json.workspace = true
+sidex-diagnostics.workspace = true
+sidex-ir.workspace = true
+rand.workspace = true
+rand_chacha.workspace = true
+
+[dev-dependencies]
+sidex-core.workspace = true

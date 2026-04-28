@@ -1,0 +1,43 @@
+record Point {
+    x: f64,
+    y: f64,
+}
+
+record OptFields {
+    required: u32,
+    maybe?: string,
+}
+
+#[json(tagged = externally)]
+variant ExternallyTagged {
+    Unit,
+    Data: u32,
+}
+
+#[json(tagged = adjacently, tag = "kind", content = "data")]
+variant AdjacentlyTagged {
+    Unit,
+    Data: u32,
+}
+
+#[json(tagged = internally, tag = "kind")]
+variant InternallyTagged {
+    Unit,
+    AsRecord: Point,
+}
+
+#[json(tagged = implicitly)]
+variant ImplicitlyTagged {
+    AsString: string,
+    AsBool: bool,
+}
+
+opaque Uuid
+
+#[json(type = "string")]
+opaque UuidString
+
+record BigInts {
+    s: i64,
+    u: u64,
+}

@@ -37,6 +37,8 @@ pub enum Command {
     Fmt(commands::fmt::FmtArgs),
     /// Generate code.
     Generate(commands::generate::GenerateArgs),
+    /// JSON-format helpers (instance generation, validation).
+    Json(commands::json::JsonArgs),
     /// Validate a Sidex IR JSON file.
     ValidateIr(commands::validate_ir::ValidateIrArgs),
 }
@@ -52,6 +54,7 @@ pub fn main() -> color_eyre::Result<()> {
         Command::Check(check_args) => commands::check::exec(check_args),
         Command::Fmt(fmt_args) => commands::fmt::exec(fmt_args),
         Command::Generate(generate_args) => commands::generate::exec(generate_args),
+        Command::Json(json_args) => commands::json::exec(json_args),
         Command::ValidateIr(args) => commands::validate_ir::exec(args),
     }
 }

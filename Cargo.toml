@@ -24,6 +24,7 @@ sidex-codegen-syntax = { path = "crates/sidex-codegen-syntax", version = "0.1" }
 sidex-core = { path = "crates/sidex-core", version = "0.1" }
 sidex-diagnostics = { path = "crates/sidex-diagnostics", version = "0.1" }
 sidex-fmt = { path = "crates/sidex-fmt", version = "0.1" }
+sidex-fuzz = { path = "crates/sidex-fuzz", version = "0.1" }
 sidex-gen = { path = "crates/sidex-gen", version = "0.1" }
 sidex-gen-ir = { path = "crates/sidex-gen-ir", version = "0.1" }
 sidex-gen-json-schema = { path = "crates/sidex-gen-json-schema", version = "0.1" }
@@ -51,6 +52,8 @@ once_cell = "1.13"
 parking_lot = "0.12"
 proc-macro2 = "1"
 quote = "1"
+rand = "0.8"
+rand_chacha = "0.3"
 rayon = "1.5"
 scoped-tls = "1"
 serde = { version = "1.0.219", features = ["derive"] }

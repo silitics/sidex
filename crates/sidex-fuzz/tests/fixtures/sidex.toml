@@ -1,0 +1,5 @@
+[bundle]
+name = "fuzz_fixture"
+version = "0.0.0"
+description = "Fixture types used by sidex-fuzz integration tests."
+authors = ["Silitics GmbH <info@silitics.com>"]

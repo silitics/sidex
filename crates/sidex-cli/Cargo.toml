@@ -23,6 +23,9 @@ sidex-gen-json-schema.workspace = true
 sidex-gen-py.workspace = true
 sidex-diagnostics.workspace = true
 sidex-fmt.workspace = true
+sidex-fuzz.workspace = true
+rand.workspace = true
+rand_chacha.workspace = true
 # Required for parsing the command line arguments.
 clap.workspace = true
 # Required for nice and colorful error reporting.
