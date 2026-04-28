@@ -1,0 +1,18 @@
+//! Typed attributes for the Python codegen target.
+//!
+//! Plugins use these schemas to drive code generation; the compiler parses
+//! source `#[py(...)]` attributes against them and stores the result in the
+//! IR's `typed_attrs["py"]` field. Downstream codegens deserialize that
+//! value directly into the generated Rust types via `serde_json::from_value`.
+
+import ::core::attrs::*
+
+/// Python-specific attributes that may be applied to an `opaque` definition.
+///
+/// Source form: `#[py(typ = "module.Type")]`. The `typ` value is the
+/// fully-qualified Python type path that the codegen emits as a type alias.
+#[attrs(plugin = "py", target = opaque)]
+record OpaqueTypeAttrs {
+    /// The Python type path (e.g. `"datetime.datetime"`).
+    typ?: string,
+}

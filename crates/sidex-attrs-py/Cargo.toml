@@ -8,4 +8,7 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex-gen.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sidex-ir.workspace = true
+sidex-serde.workspace = true

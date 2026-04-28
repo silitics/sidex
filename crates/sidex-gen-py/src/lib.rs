@@ -11,7 +11,6 @@ use sidex_attrs_json::JsonVariantAttrs;
 use sidex_attrs_json::JsonVariantTypeAttrs;
 use sidex_attrs_json::atoms::JsonTaggedAttr;
 use sidex_attrs_json::types::JsonType;
-use sidex_attrs_py::PyOpaqueTypeAttrs;
 use sidex_codegen::Code;
 use sidex_codegen::quote;
 use sidex_gen::Generator;
@@ -972,9 +971,13 @@ fn json_type_to_py(ty: &JsonType) -> OpaqueResolvedType {
 }
 
 fn resolve_opaque_type(def: &ir::Def) -> Result<Option<OpaqueResolvedType>> {
-    let py_attrs = PyOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
+    let py_attrs = sidex_attrs_py::opaque_type_attrs(def)
+        .map_err(|e| {
+            sidex_gen::diagnostics::Diagnostic::error(format!("Invalid `py` attributes: {e}"))
+        })?
+        .unwrap_or_else(|| sidex_attrs_py::OpaqueTypeAttrs { typ: None });
     if let Some(typ) = py_attrs.typ {
-        return Ok(Some(OpaqueResolvedType::Wrapper(typ.path)));
+        return Ok(Some(OpaqueResolvedType::Wrapper(typ)));
     }
 
     let json_attrs = JsonOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
@@ -1001,10 +1004,12 @@ fn collect_opaque_imports(unit: &ir::Ir, schema_idx: ir::SchemaIdx) -> Result<Ve
     let mut modules = Vec::new();
     for (_, def) in unit.defs_of(schema_idx) {
         if let ir::DefKind::OpaqueType(_) = &def.kind {
-            let py_attrs = PyOpaqueTypeAttrs::try_from_attrs(&def.attrs)?;
-            if let Some(typ) = py_attrs.typ {
-                if let Some(dot) = typ.path.rfind('.') {
-                    let module = &typ.path[..dot];
+            let py_attrs = sidex_attrs_py::opaque_type_attrs(def).map_err(|e| {
+                sidex_gen::diagnostics::Diagnostic::error(format!("Invalid `py` attributes: {e}"))
+            })?;
+            if let Some(typ) = py_attrs.and_then(|a| a.typ) {
+                if let Some(dot) = typ.rfind('.') {
+                    let module = &typ[..dot];
                     if !modules.contains(&module.to_owned()) {
                         modules.push(module.to_owned());
                     }

@@ -771,7 +771,10 @@ dependencies = [
 name = "sidex-attrs-py"
 version = "0.1.0"
 dependencies = [
- "sidex-gen",
+ "serde",
+ "serde_json",
+ "sidex-ir",
+ "sidex-serde",
 ]
 
 [[package]]

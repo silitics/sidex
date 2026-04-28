@@ -4,16 +4,16 @@
 //! Scope of the current implementation:
 //! - Records of optional / required primitive fields (bool, string, number, path).
 //! - Multiple `#[plugin(...)]` instances on a single node merge into one record.
-//! - Bare-path `#[plugin]` is accepted only when every field of the schema is
-//!   optional, and produces an empty record.
-//! - Unknown plugins are silently passed through (raw `attrs` remains the
-//!   only representation). Unknown fields against a known schema emit a
-//!   warning diagnostic and are dropped from the typed value.
+//! - Bare-path `#[plugin]` is accepted only when every field of the schema is optional,
+//!   and produces an empty record.
+//! - Unknown plugins are silently passed through (raw `attrs` remains the only
+//!   representation). Unknown fields against a known schema emit a warning diagnostic and
+//!   are dropped from the typed value.
 //!
 //! Out of scope (future passes):
 //! - Variant schemas, sequence fields, nested record fields.
-//! - `#[attr(name = "...")]` / `#[attr(flag)]` / `#[attr(path)]` /
-//!   `#[attr(from_string)]` per-field knobs.
+//! - `#[attr(name = "...")]` / `#[attr(flag)]` / `#[attr(path)]` / `#[attr(from_string)]`
+//!   per-field knobs.
 
 use std::collections::HashMap;
 
@@ -40,8 +40,14 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
     for schema_idx in 0..ir.schemas.len() {
         let attrs = ir.schemas[schema_idx].attrs.clone();
         let enclosing = ir::SchemaIdx::from(schema_idx);
-        let typed =
-            parse_node_attrs(&attrs, AttrTarget::Schema, registry, ir, enclosing, type_ref_def);
+        let typed = parse_node_attrs(
+            &attrs,
+            AttrTarget::Schema,
+            registry,
+            ir,
+            enclosing,
+            type_ref_def,
+        );
         ir.schemas[schema_idx].typed_attrs = typed;
     }
     // Def / Field / Variant attrs.
@@ -56,10 +62,22 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
             ir::DefKind::WrapperType(_) => AttrTarget::Wrapper,
         };
         // Both the kind-specific target and the generic Def target apply.
-        let mut def_typed =
-            parse_node_attrs(&def_attrs, def_target, registry, ir, enclosing, type_ref_def);
-        let generic =
-            parse_node_attrs(&def_attrs, AttrTarget::Def, registry, ir, enclosing, type_ref_def);
+        let mut def_typed = parse_node_attrs(
+            &def_attrs,
+            def_target,
+            registry,
+            ir,
+            enclosing,
+            type_ref_def,
+        );
+        let generic = parse_node_attrs(
+            &def_attrs,
+            AttrTarget::Def,
+            registry,
+            ir,
+            enclosing,
+            type_ref_def,
+        );
         for (plugin, value) in generic {
             def_typed.entry(plugin).or_insert(value);
         }
@@ -79,9 +97,8 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
                 );
                 new_fields[field_idx].typed_attrs = typed;
             }
-            ir.defs[def_idx].kind = ir::DefKind::RecordType(
-                ir::RecordTypeDef::new().with_fields(new_fields),
-            );
+            ir.defs[def_idx].kind =
+                ir::DefKind::RecordType(ir::RecordTypeDef::new().with_fields(new_fields));
         }
         if let ir::DefKind::VariantType(variant) = ir.defs[def_idx].kind.clone() {
             let mut new_variants = variant.variants.clone();
@@ -96,9 +113,8 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
                 );
                 new_variants[var_idx].typed_attrs = typed;
             }
-            ir.defs[def_idx].kind = ir::DefKind::VariantType(
-                ir::VariantTypeDef::new().with_variants(new_variants),
-            );
+            ir.defs[def_idx].kind =
+                ir::DefKind::VariantType(ir::VariantTypeDef::new().with_variants(new_variants));
         }
     }
 }
@@ -171,11 +187,7 @@ fn def_ref_to_json(def_ref: ir::DefRef) -> Value {
 }
 
 /// Returns `true` if `field`'s type resolves to `core::attrs::TypeRef`.
-fn field_is_type_ref(
-    field: &ir::Field,
-    ir: &ir::Ir,
-    type_ref_def: Option<ir::DefRef>,
-) -> bool {
+fn field_is_type_ref(field: &ir::Field, ir: &ir::Ir, type_ref_def: Option<ir::DefRef>) -> bool {
     let Some(type_ref) = type_ref_def else {
         return false;
     };
@@ -314,10 +326,8 @@ fn parse_record(
 
         for arg in args {
             let Some(name) = arg_name(arg) else {
-                return Err(Diagnostic::error(
-                    "Attribute argument must have a name.",
-                )
-                .with_span(arg.span.clone()));
+                return Err(Diagnostic::error("Attribute argument must have a name.")
+                    .with_span(arg.span.clone()));
             };
             let Some(field) = record.fields.iter().find(|f| f.name.as_str() == name) else {
                 Diagnostic::warning(format!(
@@ -385,10 +395,12 @@ fn parse_field_value(
             // Bare-path argument — treat as a `bool` flag set to true.
             Ok(Value::Bool(true))
         }
-        ir::AttrKind::List(_) => Err(Diagnostic::error(
-            "Nested list attributes are not yet supported as field values.",
-        )
-        .with_span(arg.span.clone())),
+        ir::AttrKind::List(_) => {
+            Err(
+                Diagnostic::error("Nested list attributes are not yet supported as field values.")
+                    .with_span(arg.span.clone()),
+            )
+        }
     }
 }
 
