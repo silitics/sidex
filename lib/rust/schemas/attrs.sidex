@@ -1,0 +1,63 @@
+//! Typed attributes for the Rust codegen target.
+//!
+//! Source `#[rust(...)]` attributes are validated against these schemas at
+//! IR build time and stored on the IR's `typed_attrs["rust"]` map. Each
+//! record uses `#[json(rename_all = "snake_case")]` so wire keys match the
+//! parser's emit shape.
+
+import ::core::attrs::*
+
+/// Restriction on a `pub` visibility — `pub(crate)` or `pub(super)`.
+#[json(rename_all = "snake_case")]
+record PubVis {
+    /// `#[rust(pub(crate))]` — restrict to the current crate.
+    #[attr(name = "crate")]
+    is_crate?: bool,
+    /// `#[rust(pub(super))]` — restrict to the parent module.
+    #[attr(name = "super")]
+    is_super?: bool,
+}
+
+/// Rust attributes that may apply to any definition.
+#[attrs(plugin = "rust", target = def)]
+#[json(rename_all = "snake_case")]
+record TypeAttrs {
+    /// `#[rust(type = "::path::To::Type")]` — emit a type alias to the
+    /// referenced Rust type instead of generating one.
+    #[attr(name = "type")]
+    typ?: string,
+    /// `#[rust(derive(Clone, Debug, ...))]` — extra derives applied to the
+    /// generated type. Multiple occurrences accumulate.
+    derive?: [string],
+    /// `#[rust(attr(non_exhaustive))]` — extra Rust attributes applied to
+    /// the generated type. Multiple occurrences accumulate; nested lists
+    /// (e.g. `attr(serde(transparent))`) are stringified verbatim.
+    attr?: [string],
+}
+
+/// Rust attributes that may apply to a record `field`.
+#[attrs(plugin = "rust", target = field)]
+#[json(rename_all = "snake_case")]
+record FieldAttrs {
+    /// `#[rust(name = "explicit")]` — override the Rust identifier.
+    name?: string,
+    /// `#[rust(pub)]` (default) plus `pub(crate)` / `pub(super)` variants.
+    #[attr(name = "pub")]
+    is_pub?: PubVis,
+    /// `#[rust(private)]` — explicitly private (the default for fields, so
+    /// this is mostly used to override a record-level visibility).
+    #[attr(name = "private")]
+    is_private?: bool,
+    /// `#[rust(box)]` — wrap the field type in `::std::boxed::Box`.
+    #[attr(name = "box")]
+    is_box?: bool,
+    /// `#[rust(arc)]` — wrap the field type in `::std::sync::Arc`.
+    #[attr(name = "arc")]
+    is_arc?: bool,
+    /// `#[rust(rc)]` — wrap the field type in `::std::rc::Rc`.
+    #[attr(name = "rc")]
+    is_rc?: bool,
+    /// `#[rust(wrap = "::path::To::Type")]` — wrap the field type in a
+    /// custom Rust type.
+    wrap?: string,
+}

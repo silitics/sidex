@@ -8,9 +8,8 @@ use quote::format_ident;
 use quote::quote;
 use serde::Deserialize;
 use serde::de::IntoDeserializer;
-use sidex_attrs_rust::FieldAttrs;
 use sidex_attrs_rust::Visibility;
-use sidex_gen::attrs::TryFromAttrs;
+use sidex_attrs_rust::field_attrs as rust_field_attrs;
 use sidex_gen::ir;
 
 use crate::config::Config;
@@ -107,9 +106,7 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn field(&self, def: &ir::Def, field: &ir::Field) -> RustField {
-        let attrs = FieldAttrs::try_from_attrs(&field.attrs)
-            .map_err(|_| ())
-            .unwrap();
+        let attrs = rust_field_attrs(field).map_err(|_| ()).unwrap();
 
         let ident = format_ident!(
             "{}",
@@ -149,9 +146,7 @@ impl<'cx> SchemaCtx<'cx> {
     }
 
     pub fn field_info(&self, def: &ir::Def, field: &ir::Field) -> FieldInfo {
-        let attrs = FieldAttrs::try_from_attrs(&field.attrs)
-            .map_err(|_| ())
-            .unwrap();
+        let attrs = rust_field_attrs(field).map_err(|_| ()).unwrap();
 
         let name = format_ident!(
             "{}",

@@ -788,7 +788,12 @@ version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
+ "serde",
+ "serde_json",
+ "sidex-diagnostics",
  "sidex-gen",
+ "sidex-ir",
+ "sidex-serde",
 ]
 
 [[package]]

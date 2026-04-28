@@ -57,6 +57,9 @@ pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> 
     let json_manifest = bundle::try_parse_manifest(read_lib_file!("json", "sidex.toml"))
         .expect("Manifest of json-attrs bundle should be valid.");
     let json_schemas = lib_bundle_schemas!(transformer, "json", ["attrs"]);
+    let rust_manifest = bundle::try_parse_manifest(read_lib_file!("rust", "sidex.toml"))
+        .expect("Manifest of rust-attrs bundle should be valid.");
+    let rust_schemas = lib_bundle_schemas!(transformer, "rust", ["attrs"]);
     vec![
         BundleSource {
             manifest: py_manifest,
@@ -66,6 +69,11 @@ pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> 
         BundleSource {
             manifest: json_manifest,
             schemas: json_schemas,
+            path: None,
+        },
+        BundleSource {
+            manifest: rust_manifest,
+            schemas: rust_schemas,
             path: None,
         },
     ]

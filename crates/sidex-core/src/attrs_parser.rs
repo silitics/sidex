@@ -339,7 +339,7 @@ fn parse_record(
                 continue;
             };
             let value = parse_field_value(arg, field, ir, enclosing_schema, type_ref_def)?;
-            object.insert(field.name.as_str().to_owned(), value);
+            insert_or_extend(&mut object, field.name.as_str(), value);
         }
     }
 
@@ -365,6 +365,9 @@ fn arg_name(arg: &ir::Attr) -> Option<&str> {
 ///     matching variant case; output is the canonical tag as a JSON string (the shape
 ///     serde gives `serialize_tag`).
 ///   * `core::attrs::TypeRef` fields: path resolves to a `DefRef`.
+///   * Sequence-of-string fields: source list `name(item1, item2, ...)` produces a JSON
+///     array of strings — each item must be a path or string literal. Multiple
+///     occurrences of the same field accumulate.
 fn parse_field_value(
     arg: &ir::Attr,
     field: &ir::Field,
@@ -387,6 +390,9 @@ fn parse_field_value(
     }
     if let Some((variant_def, variant)) = field_variant_schema(field, ir) {
         return parse_variant_field(arg, variant_def, variant);
+    }
+    if field_is_string_sequence(field, ir) {
+        return parse_string_sequence_field(arg, field);
     }
     match &arg.kind {
         ir::AttrKind::Assign(assign) => Ok(attr_value_to_json(&assign.value)),
@@ -542,6 +548,99 @@ fn field_variant_schema<'a>(
         Some((def, variant))
     } else {
         None
+    }
+}
+
+/// Insert `value` into `object` under `key`, accumulating arrays when both
+/// the existing entry and the new value are JSON arrays. This lets repeated
+/// source attribute occurrences for sequence fields (e.g. `derive(A) derive(B)`)
+/// stack into a single array.
+fn insert_or_extend(object: &mut serde_json::Map<String, Value>, key: &str, value: Value) {
+    if let Some(existing) = object.get_mut(key) {
+        if let (Value::Array(existing), Value::Array(new)) = (existing, &value) {
+            existing.extend(new.iter().cloned());
+            return;
+        }
+    }
+    object.insert(key.to_owned(), value);
+}
+
+/// Returns true if `field`'s type is `[string]` — a `Sequence<string>` from
+/// the standard library.
+fn field_is_string_sequence(field: &ir::Field, ir: &ir::Ir) -> bool {
+    let ir::TypeKind::Instance(instance) = &field.typ.kind else {
+        return false;
+    };
+    let def = &ir[instance.def];
+    let bundle = &ir[instance.def.bundle];
+    let schema = &ir[instance.def.schema];
+    if bundle.metadata.name != "core"
+        || schema.name != "builtins"
+        || def.name.as_str() != "Sequence"
+    {
+        return false;
+    }
+    let Some(elem) = instance.subst.first() else {
+        return false;
+    };
+    let ir::TypeKind::Instance(elem_instance) = &elem.kind else {
+        return false;
+    };
+    let elem_def = &ir[elem_instance.def];
+    let elem_bundle = &ir[elem_instance.def.bundle];
+    let elem_schema = &ir[elem_instance.def.schema];
+    elem_bundle.metadata.name == "core"
+        && elem_schema.name == "builtins"
+        && elem_def.name.as_str() == "string"
+}
+
+/// Parse a `[string]` field. Source must be `name(item1, item2, ...)` where
+/// each item is convertible to a string. Bare paths and lists are stringified
+/// (so `attr(non_exhaustive)` and `attr(serde(transparent))` both work).
+fn parse_string_sequence_field(arg: &ir::Attr, field: &ir::Field) -> Result<Value, Diagnostic> {
+    let ir::AttrKind::List(list) = &arg.kind else {
+        return Err(Diagnostic::error(format!(
+            "Field `{}` is a sequence — use `{}(...)` form.",
+            field.name.as_str(),
+            field_name_for_diag(arg),
+        ))
+        .with_span(arg.span.clone()));
+    };
+    let mut items = Vec::with_capacity(list.args.len());
+    for inner in &list.args {
+        items.push(Value::String(attr_to_string(inner)?));
+    }
+    Ok(Value::Array(items))
+}
+
+/// Stringify an `ir::Attr` into a compact source-like form. Used by
+/// sequence-of-string fields where each list arg may be a bare path,
+/// a nested list, or an assign.
+fn attr_to_string(attr: &ir::Attr) -> Result<String, Diagnostic> {
+    match &attr.kind {
+        ir::AttrKind::Path(p) => Ok(p.clone()),
+        ir::AttrKind::List(list) => {
+            let inner: Vec<String> = list
+                .args
+                .iter()
+                .map(attr_to_string)
+                .collect::<Result<_, _>>()?;
+            Ok(format!("{}({})", list.path, inner.join(", ")))
+        }
+        ir::AttrKind::Assign(assign) => Ok(format!(
+            "{} = {}",
+            assign.path,
+            attr_value_to_compact_string(&assign.value)
+        )),
+    }
+}
+
+fn attr_value_to_compact_string(value: &ir::AttrValue) -> String {
+    match value {
+        ir::AttrValue::Bool(b) => b.to_string(),
+        ir::AttrValue::Number(n) => n.clone(),
+        ir::AttrValue::String(s) => format!("\"{s}\""),
+        ir::AttrValue::Path(p) => p.clone(),
     }
 }
 
@@ -849,6 +948,46 @@ mod tests {
             .get("json")
             .expect("typed_attrs[json] populated");
         assert_eq!(json_attrs["tagged"], serde_json::json!("Adjacently"));
+    }
+
+    /// Sequence-of-string fields collect the bare-path/list args of each
+    /// source occurrence. `derive(A, B)` populates `["A", "B"]`; nested
+    /// lists like `attr(serde(transparent))` are stringified compactly.
+    /// Multiple `#[demo(derive(...))]` invocations stack.
+    #[test]
+    fn string_sequence_fields_accumulate() {
+        let src = r#"
+            import ::core::attrs::*
+
+            #[attrs(plugin = "demo", target = record)]
+            record DemoAttrs {
+                #[default]
+                derive: [string],
+                #[default]
+                attr: [string],
+            }
+
+            #[demo(derive(Clone, Debug))]
+            #[demo(derive(PartialEq))]
+            #[demo(attr(non_exhaustive))]
+            #[demo(attr(serde(transparent)))]
+            record Target {}
+        "#;
+        let ir = build_ir(src);
+        let target_def = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Target")
+            .expect("Target def not found");
+        let demo = target_def.typed_attrs.get("demo").unwrap();
+        assert_eq!(
+            demo["derive"],
+            serde_json::json!(["Clone", "Debug", "PartialEq"])
+        );
+        assert_eq!(
+            demo["attr"],
+            serde_json::json!(["non_exhaustive", "serde(transparent)"])
+        );
     }
 
     #[test]

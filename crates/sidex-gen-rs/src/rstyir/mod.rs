@@ -15,8 +15,9 @@ use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
 use sidex_attrs_json::variant_attrs as json_variant_attrs;
 use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_attrs_rust::FieldAttrs;
-use sidex_attrs_rust::TypeAttrs;
 use sidex_attrs_rust::Visibility;
+use sidex_attrs_rust::field_attrs as rust_field_attrs;
+use sidex_attrs_rust::type_attrs as rust_type_attrs;
 use sidex_gen::attrs::TryFromAttrs;
 use sidex_gen::diagnostics::Result;
 use sidex_gen::ir::Def;
@@ -129,7 +130,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
         .map(|docs| docs.as_str())
         .unwrap_or_default()
         .to_owned();
-    let attrs = TypeAttrs::try_from(def.attrs.as_slice())?;
+    let attrs = rust_type_attrs(def)?;
     let mut derive = ctx
         .bundle_ctx
         .cfg
@@ -169,7 +170,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                 .fields
                 .iter()
                 .map(|field| {
-                    let attrs = FieldAttrs::try_from_attrs(&field.attrs)?;
+                    let attrs = rust_field_attrs(field)?;
 
                     let name = format_ident!(
                         "{}",

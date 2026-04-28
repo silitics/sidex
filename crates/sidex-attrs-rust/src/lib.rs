@@ -1,80 +1,57 @@
+//! Typed attribute schemas for the Rust codegen target.
+//!
+//! These types mirror [`lib/rust/schemas/attrs.sidex`](https://github.com/silitics/sidex/blob/main/lib/rust/schemas/attrs.sidex).
+//! The compiler validates source `#[rust(...)]` attributes against the
+//! schemas at IR build time and stores the result in
+//! `typed_attrs["rust"]`. The wrapper types in this module read off that
+//! map and adapt the wire shapes into ergonomic codegen-friendly forms
+//! (`Visibility` with a `ToTokens` impl, `Wrapper` with a Rust path,
+//! `TokenStream` derives and attributes).
+
+mod generated;
+
+use std::collections::HashMap;
 use std::str::FromStr;
 
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::quote;
-use sidex_gen::attrs::AttrConvertExt;
-use sidex_gen::attrs::TryApplyAttr;
-use sidex_gen::attrs::TryFromAttr;
-use sidex_gen::attrs::TryFromAttrValue;
-use sidex_gen::attrs::accept;
-use sidex_gen::attrs::new_assign_attr;
-use sidex_gen::attrs::reject;
-use sidex_gen::diagnostics::Diagnostic;
-use sidex_gen::diagnostics::Result;
-use sidex_gen::ir;
+use serde_json::Value;
+use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::Result;
+use sidex_ir as ir;
 
-/// `type = "<PATH>"`
-#[derive(Debug, Clone)]
-pub struct Type {
-    pub path: String,
-}
+pub use generated::attrs as raw;
 
-impl TryFromAttr for Type {
-    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
-        if let ir::AttrKind::Assign(assign) = &attr.kind {
-            if assign.path == "type" {
-                let path = String::try_from_attr_value(&assign.value, attr)?;
-                accept!(Self { path })
-            }
-        }
-        reject!(attr, "Expected type attribute.")
+const PLUGIN: &str = "rust";
+
+/// Pull the typed `rust` attributes off any IR node's `typed_attrs` map and
+/// deserialize them into the generated struct `T`. Returns `Ok(None)` if
+/// the node has no `rust` attrs.
+pub fn extract<T>(typed_attrs: &HashMap<String, Value>) -> Result<Option<T>>
+where
+    T: serde::de::DeserializeOwned,
+{
+    match typed_attrs.get(PLUGIN) {
+        Some(value) => serde_json::from_value(value.clone())
+            .map(Some)
+            .map_err(|err| Diagnostic::error(format!("Invalid `rust` attributes: {err}"))),
+        None => Ok(None),
     }
 }
 
-/// `derive(...)`
-#[derive(Debug, Clone, Default)]
-pub struct Derive {
-    pub positive: Vec<TokenStream>,
-}
-
-/// A *visibility*.
+/// Visibility of a record field as expressed by `#[rust(...)]`.
 #[derive(Clone, Copy, Debug, Default)]
 pub enum Visibility {
-    /// Visibility `pub`.
+    /// `#[rust(pub)]` — the default for record fields.
     #[default]
     Pub,
+    /// `#[rust(pub(crate))]` — restrict to the current crate.
     Crate,
+    /// `#[rust(pub(super))]` — restrict to the parent module.
     Super,
+    /// `#[rust(private)]` — explicitly private.
     Private,
-}
-
-impl TryFromAttr for Visibility {
-    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
-        match &attr.kind {
-            ir::AttrKind::Path(path) => {
-                match path.as_str() {
-                    "pub" => accept!(Self::Pub),
-                    "private" => accept!(Self::Private),
-                    _ => {}
-                }
-            }
-            ir::AttrKind::List(list) if list.path == "pub" && list.args.len() == 1 => {
-                if let ir::AttrKind::Path(path) = &list.args[0].kind {
-                    match path.as_str() {
-                        "crate" => accept!(Self::Crate),
-                        "super" => accept!(Self::Super),
-                        _ => {}
-                    }
-                }
-            }
-            _ => {}
-        };
-        reject!(
-            attr,
-            "Expected visibility: `pub`, `pub(crate)`, `pub(super)`, or `private`."
-        )
-    }
 }
 
 impl ToTokens for Visibility {
@@ -84,57 +61,28 @@ impl ToTokens for Visibility {
             Visibility::Crate => tokens.extend(quote! { pub(crate) }),
             Visibility::Super => tokens.extend(quote! { pub(super) }),
             Visibility::Private => {
-                // Do nothing. Private by default.
+                // No tokens — private by default.
             }
         }
     }
 }
 
+/// A Rust wrapper applied to a field's type (e.g. `Box<T>`).
 #[derive(Clone, Debug)]
 pub struct Wrapper {
+    /// Fully-qualified path to the wrapper type.
     pub wrapper: String,
 }
 
 impl Wrapper {
-    fn new<S: ToString>(wrapper: S) -> Self {
+    fn new(path: impl Into<String>) -> Self {
         Self {
-            wrapper: wrapper.to_string(),
+            wrapper: path.into(),
         }
     }
 }
 
-impl TryFromAttr for Wrapper {
-    fn try_from_attr(attr: &ir::Attr) -> Result<Self> {
-        attr.expect_path()
-            .and_then(|path| {
-                match path {
-                    "box" => accept!(Self::new("::std::boxed::Box")),
-                    "arc" => accept!(Self::new("::std::sync::Arc")),
-                    "rc" => accept!(Self::new("::std::rc::Rc")),
-                    _ => reject!(attr, ""),
-                }
-            })
-            .or_else(|_| -> Result<Self> {
-                let assign = attr.expect_assign_with("wrap")?;
-                match &assign.value {
-                    ir::AttrValue::Path(path) => accept!(Self::new(path)),
-                    _ => reject!(attr, "Expected `wrap = <PATH>`."),
-                }
-            })
-            .or_else(|_| {
-                reject!(
-                    attr,
-                    "Expected wrap attribute: `box`, `arc`, `rc`, or `wrap = \"<PATH>\"."
-                )
-            })
-    }
-}
-
-new_assign_attr! {
-    /// An attribute of the form `name = "<NAME>"`.
-    pub struct NameAttr["name"](pub String)
-}
-
+/// Rust attributes for a record field.
 #[derive(Clone, Debug, Default)]
 pub struct FieldAttrs {
     pub visibility: Visibility,
@@ -142,89 +90,98 @@ pub struct FieldAttrs {
     pub name: Option<String>,
 }
 
-impl TryApplyAttr for FieldAttrs {
-    fn try_apply_attr(&mut self, attr: &ir::Attr) -> Result<()> {
-        if let ir::AttrKind::List(list) = &attr.kind {
-            if list.path == "rust" {
-                for attr in &list.args {
-                    if let Ok(visibility) = Visibility::try_from_attr(attr) {
-                        self.visibility = visibility;
-                    } else if let Ok(wrapper) = Wrapper::try_from_attr(attr) {
-                        self.wrappers.push(wrapper)
-                    } else if let Ok(name) = NameAttr::try_from_attr(attr) {
-                        self.name = Some(name.0);
-                    }
-                }
+/// Read the `FieldAttrs` for `field` from its `typed_attrs["rust"]`.
+pub fn field_attrs(field: &ir::Field) -> Result<FieldAttrs> {
+    let Some(raw) = extract::<raw::FieldAttrs>(&field.typed_attrs)? else {
+        return Ok(FieldAttrs::default());
+    };
+    let is_private = raw.is_private.unwrap_or(false);
+    let visibility = match (raw.is_pub, is_private) {
+        (Some(pub_vis), false) => {
+            if pub_vis.is_crate.unwrap_or(false) {
+                Visibility::Crate
+            } else if pub_vis.is_super.unwrap_or(false) {
+                Visibility::Super
+            } else {
+                Visibility::Pub
             }
         }
-        accept!()
+        (None, true) => Visibility::Private,
+        (None, false) => Visibility::Pub,
+        (Some(_), true) => {
+            return Err(Diagnostic::error(
+                "`#[rust(pub)]` and `#[rust(private)]` cannot both apply to the same field.",
+            ));
+        }
+    };
+    let mut wrappers = Vec::new();
+    if raw.is_box.unwrap_or(false) {
+        wrappers.push(Wrapper::new("::std::boxed::Box"));
     }
+    if raw.is_arc.unwrap_or(false) {
+        wrappers.push(Wrapper::new("::std::sync::Arc"));
+    }
+    if raw.is_rc.unwrap_or(false) {
+        wrappers.push(Wrapper::new("::std::rc::Rc"));
+    }
+    if let Some(custom) = raw.wrap {
+        wrappers.push(Wrapper::new(custom));
+    }
+    Ok(FieldAttrs {
+        visibility,
+        wrappers,
+        name: raw.name,
+    })
 }
 
-pub struct Inner {
-    pub visibility: Visibility,
+/// A `#[rust(type = "...")]` override.
+#[derive(Clone, Debug)]
+pub struct Type {
+    pub path: String,
 }
 
-#[derive(Debug, Clone, Default)]
+/// Extra `#[derive(...)]` traits.
+#[derive(Clone, Debug, Default)]
+pub struct Derive {
+    pub positive: Vec<TokenStream>,
+}
+
+/// Rust attributes for any definition.
+#[derive(Clone, Debug, Default)]
 pub struct TypeAttrs {
     pub typ: Option<Type>,
     pub derive: Derive,
     pub attrs: Vec<TokenStream>,
 }
 
-impl TryFrom<&[ir::Attr]> for TypeAttrs {
-    type Error = Diagnostic;
-
-    fn try_from(value: &[ir::Attr]) -> std::result::Result<Self, Self::Error> {
-        let mut attrs = TypeAttrs::default();
-
-        let mut stack = value
+/// Read the `TypeAttrs` for `def` from its `typed_attrs["rust"]`.
+pub fn type_attrs(def: &ir::Def) -> Result<TypeAttrs> {
+    let Some(raw) = extract::<raw::TypeAttrs>(&def.typed_attrs)? else {
+        return Ok(TypeAttrs::default());
+    };
+    let derive = Derive {
+        positive: raw
+            .derive
+            .unwrap_or_default()
             .iter()
-            .filter_map(|attr| {
-                match &attr.kind {
-                    ir::AttrKind::List(list) => {
-                        if list.path == "rust" {
-                            Some(list.args.iter())
-                        } else {
-                            None
-                        }
-                    }
-                    _ => None,
-                }
-            })
-            .flatten()
-            .collect::<Vec<_>>();
-        while let Some(top) = stack.pop() {
-            match &top.kind {
-                ir::AttrKind::Assign(_) => {
-                    if let Ok(typ) = Type::try_from_attr(top) {
-                        attrs.typ = Some(typ)
-                    }
-                }
-                ir::AttrKind::List(list) => {
-                    match list.path.as_str() {
-                        "derive" => {
-                            for element in &list.args {
-                                if let ir::AttrKind::Path(path) = &element.kind {
-                                    attrs
-                                        .derive
-                                        .positive
-                                        .push(TokenStream::from_str(path.as_str()).unwrap())
-                                }
-                            }
-                        }
-                        "attr" => {
-                            attrs
-                                .attrs
-                                .push(TokenStream::from_str(&list.args[0].to_string()).unwrap())
-                        }
-                        _ => continue,
-                    }
-                }
-                _ => continue,
-            }
-        }
-
-        Ok(attrs)
-    }
+            .map(|s| TokenStream::from_str(s))
+            .collect::<std::result::Result<_, _>>()
+            .map_err(|err| {
+                Diagnostic::error(format!("Invalid token stream in `#[rust(derive(...))]`: {err}"))
+            })?,
+    };
+    let attrs = raw
+        .attr
+        .unwrap_or_default()
+        .iter()
+        .map(|s| TokenStream::from_str(s))
+        .collect::<std::result::Result<_, _>>()
+        .map_err(|err| {
+            Diagnostic::error(format!("Invalid token stream in `#[rust(attr(...))]`: {err}"))
+        })?;
+    Ok(TypeAttrs {
+        typ: raw.typ.map(|path| Type { path }),
+        derive,
+        attrs,
+    })
 }
