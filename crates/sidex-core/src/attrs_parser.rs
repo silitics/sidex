@@ -437,6 +437,8 @@ mod tests {
     #[test]
     fn registers_and_parses_typed_attrs() {
         let src = r#"
+            import ::core::attrs::*
+
             #[attrs(plugin = "demo", target = record)]
             record DemoAttrs {
                 greeting?: string,
@@ -484,9 +486,9 @@ mod tests {
 
     #[test]
     fn type_ref_field_resolves_to_def_ref() {
-        // No explicit `import core::attrs::*` needed — meta-vocabulary is
-        // implicitly in scope alongside builtins.
         let src = r#"
+            import ::core::attrs::*
+
             #[attrs(plugin = "request", target = record)]
             record RequestAttrs {
                 response?: TypeRef,
@@ -520,6 +522,8 @@ mod tests {
     #[test]
     fn merges_repeated_plugin_attrs() {
         let src = r#"
+            import ::core::attrs::*
+
             #[attrs(plugin = "demo", target = record)]
             record DemoAttrs {
                 greeting?: string,

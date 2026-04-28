@@ -224,7 +224,10 @@ impl<'t, 'm> Resolver<'t, 'm> {
             }
         }
 
-        // Implicitly bring builtins into scope.
+        // Implicitly bring builtins into scope. core::attrs is *not*
+        // implicit — user schemas that use the meta-attrs vocabulary
+        // (`#[attrs(...)]`, `TypeRef`, etc.) bring it in with an explicit
+        // `import ::core::attrs::*`.
         let std_bundle = &self.transformer.loaded[STD_BUNDLE.idx()];
         let builtins_local = *std_bundle.schema_by_name.get("builtins").unwrap();
         for (name, &def) in &std_bundle.schemas[builtins_local].def_by_name {
@@ -233,18 +236,6 @@ impl<'t, 'm> Resolver<'t, 'm> {
                 schema: builtins_local,
                 def,
             });
-        }
-        // Implicitly bring the typed-attrs meta-vocabulary into scope so user
-        // schemas can write `#[attrs(...)]`, `TypeRef`, etc. without an
-        // explicit import.
-        if let Some(&attrs_local) = std_bundle.schema_by_name.get("attrs") {
-            for (name, &def) in &std_bundle.schemas[attrs_local].def_by_name {
-                self.table.entry(name.clone()).or_insert(LookupEntry::Def {
-                    bundle: STD_BUNDLE,
-                    schema: attrs_local,
-                    def,
-                });
-            }
         }
     }
 
