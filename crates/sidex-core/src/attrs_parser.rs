@@ -11,7 +11,7 @@
 //!   are dropped from the typed value.
 //!
 //! Out of scope (future passes):
-//! - Variant-typed fields, sequence-typed fields.
+//! - Sequence-typed fields.
 //! - `#[attr(name = "...")]` / `#[attr(path)]` per-field knobs.
 
 use std::collections::HashMap;
@@ -358,9 +358,12 @@ fn arg_name(arg: &ir::Attr) -> Option<&str> {
 /// Parse a single attribute argument's value into JSON, given the schema
 /// field it's targeting. Handles:
 ///   * Primitive AttrValue leaves (Bool / Number / String / Path).
-///   * `#[attr(flag)]`-marked bool fields: bare-path arg → true.
+///   * Bool fields with bare-path source args (`#[plugin(my_flag)]` → true).
 ///   * Nested record-typed fields: bare path → all-default record;
 ///     list `name(args)` → recurse into the record's fields.
+///   * Variant-typed fields with tag-only cases: source `name = path`
+///     resolves to the matching variant case; output is the canonical
+///     tag as a JSON string (the shape serde gives `serialize_tag`).
 ///   * `core::attrs::TypeRef` fields: path resolves to a `DefRef`.
 fn parse_field_value(
     arg: &ir::Attr,
@@ -382,6 +385,9 @@ fn parse_field_value(
             type_ref_def,
         );
     }
+    if let Some((variant_def, variant)) = field_variant_schema(field, ir) {
+        return parse_variant_field(arg, variant_def, variant);
+    }
     match &arg.kind {
         ir::AttrKind::Assign(assign) => Ok(attr_value_to_json(&assign.value)),
         ir::AttrKind::Path(_) => Ok(Value::Bool(true)),
@@ -391,6 +397,55 @@ fn parse_field_value(
         ))
         .with_span(arg.span.clone())),
     }
+}
+
+/// Parse a variant-typed field. Currently supports tag-only cases only:
+/// the source must be `name = <path>` where `<path>` matches one of the
+/// variant's case names (case-insensitive); the JSON output is the
+/// canonical case name as a string.
+fn parse_variant_field(
+    arg: &ir::Attr,
+    def: &ir::Def,
+    variant: &ir::VariantTypeDef,
+) -> Result<Value, Diagnostic> {
+    let ir::AttrKind::Assign(assign) = &arg.kind else {
+        return Err(Diagnostic::error(format!(
+            "Field `{}` expects a variant tag (e.g., `{} = SomeCase`).",
+            field_name_for_diag(arg),
+            field_name_for_diag(arg),
+        ))
+        .with_span(arg.span.clone()));
+    };
+    let ir::AttrValue::Path(tag) = &assign.value else {
+        return Err(Diagnostic::error(format!(
+            "Field `{}` expects a variant tag, not a literal value.",
+            field_name_for_diag(arg),
+        ))
+        .with_span(arg.span.clone()));
+    };
+    let case = variant
+        .variants
+        .iter()
+        .find(|c| c.name.as_str().eq_ignore_ascii_case(tag));
+    let Some(case) = case else {
+        let known: Vec<&str> = variant.variants.iter().map(|c| c.name.as_str()).collect();
+        return Err(Diagnostic::error(format!(
+            "Unknown variant case `{}` for `{}`. Expected one of: {}.",
+            tag,
+            def.name.as_str(),
+            known.join(", ")
+        ))
+        .with_span(arg.span.clone()));
+    };
+    if case.typ.is_some() {
+        return Err(Diagnostic::error(format!(
+            "Variant case `{}::{}` carries a payload, which is not yet supported in attribute schemas.",
+            def.name.as_str(),
+            case.name.as_str()
+        ))
+        .with_span(arg.span.clone()));
+    }
+    Ok(Value::String(case.name.as_str().to_owned()))
 }
 
 fn parse_type_ref_field(
@@ -463,6 +518,21 @@ fn field_record_schema<'a>(
     let def = &ir[def_ref];
     if let ir::DefKind::RecordType(record) = &def.kind {
         Some((def, record))
+    } else {
+        None
+    }
+}
+
+/// Returns the resolved variant def for `field`, or `None` if `field`'s
+/// type is not a variant.
+fn field_variant_schema<'a>(
+    field: &ir::Field,
+    ir: &'a ir::Ir,
+) -> Option<(&'a ir::Def, &'a ir::VariantTypeDef)> {
+    let def_ref = ir.type_def_ref(&field.typ)?;
+    let def = &ir[def_ref];
+    if let ir::DefKind::VariantType(variant) = &def.kind {
+        Some((def, variant))
     } else {
         None
     }
@@ -702,6 +772,48 @@ mod tests {
         assert_eq!(pub_of("pub_crate"), serde_json::json!({"isCrate": true}));
         // `#[rust(pub(isSuper))]` → record with `isSuper: true`.
         assert_eq!(pub_of("pub_super"), serde_json::json!({"isSuper": true}));
+    }
+
+    /// Variant-typed fields (with tag-only cases) accept a path as the
+    /// source value and emit the canonical case name as a JSON string —
+    /// the shape serde produces for unit variants without a `#[json(...)]`
+    /// override.
+    #[test]
+    fn variant_field_accepts_tag_only_cases() {
+        let src = r#"
+            import ::core::attrs::*
+
+            variant Mode {
+                Internally,
+                Externally,
+                Adjacently,
+                Implicitly,
+            }
+
+            #[attrs(plugin = "json", target = variant)]
+            record VariantTypeAttrs {
+                tagged?: Mode,
+            }
+
+            // Source uses lowercase tag; matching is case-insensitive,
+            // canonical PascalCase comes through in the typed value.
+            #[json(tagged = adjacently)]
+            variant Either {
+                Left,
+                Right,
+            }
+        "#;
+        let ir = build_ir(src);
+        let either = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Either")
+            .expect("Either def not found");
+        let json_attrs = either
+            .typed_attrs
+            .get("json")
+            .expect("typed_attrs[json] populated");
+        assert_eq!(json_attrs["tagged"], serde_json::json!("Adjacently"));
     }
 
     #[test]
