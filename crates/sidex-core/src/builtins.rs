@@ -31,7 +31,7 @@ macro_rules! std_bundle_schemas {
 pub fn std_bundle(transformer: &mut Transformer) -> BundleSource {
     let manifest = bundle::try_parse_manifest(read_std_bundle_file!("sidex.toml"))
         .expect("Manifest of Sidex standard library should be valid.");
-    let schemas = std_bundle_schemas!(transformer, ["builtins"]);
+    let schemas = std_bundle_schemas!(transformer, ["builtins", "attrs"]);
 
     BundleSource {
         manifest,
