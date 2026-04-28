@@ -1,10 +1,13 @@
 use std::sync::Arc;
 
 use config::Config;
-use context::{BundleCtx, SchemaCtx};
+use context::BundleCtx;
+use context::SchemaCtx;
 use plugins::Plugin;
-use sidex_codegen::{Code, quote};
-use sidex_gen::{Generator, diagnostics};
+use sidex_codegen::Code;
+use sidex_codegen::quote;
+use sidex_gen::Generator;
+use sidex_gen::diagnostics;
 
 pub mod config;
 pub mod context;

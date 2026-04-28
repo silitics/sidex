@@ -1,6 +1,7 @@
 #![doc = include_str!("../README.md")]
 
-use clap::{Parser, Subcommand};
+use clap::Parser;
+use clap::Subcommand;
 
 pub mod commands;
 pub mod utils;

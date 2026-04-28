@@ -11,11 +11,10 @@
 //! the [`reflect`](https://github.com/silitics/sidex/blob/main/lib/meta/schemas/reflect.sidex)
 //! schema.
 
-use std::{
-    collections::HashMap,
-    fmt::Write,
-    ops::{Index, IndexMut},
-};
+use std::collections::HashMap;
+use std::fmt::Write;
+use std::ops::Index;
+use std::ops::IndexMut;
 
 mod generated;
 

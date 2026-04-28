@@ -1,10 +1,10 @@
 //! The `new` command.
 
 use clap::Parser;
-use sidex_core::{
-    bundle::{MANIFEST_NAME, Manifest, SCHEMAS_DIR},
-    ir,
-};
+use sidex_core::bundle::MANIFEST_NAME;
+use sidex_core::bundle::Manifest;
+use sidex_core::bundle::SCHEMAS_DIR;
+use sidex_core::ir;
 
 #[derive(Parser, Debug)]
 pub struct NewArgs {

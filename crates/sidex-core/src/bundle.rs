@@ -1,11 +1,11 @@
 //! Various helper functions for dealing with bundles.
 
-use std::{
-    collections::HashMap,
-    path::{Path, PathBuf},
-};
+use std::collections::HashMap;
+use std::path::Path;
+use std::path::PathBuf;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use sidex_ir as ir;
 use thiserror::Error;
 

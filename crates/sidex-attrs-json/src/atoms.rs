@@ -1,8 +1,11 @@
-use sidex_gen::{
-    attrs::{AttrConvertExt, TryFromAttr, accept, new_assign_attr, reject},
-    diagnostics, ir,
-    rename::RenameFunction,
-};
+use sidex_gen::attrs::AttrConvertExt;
+use sidex_gen::attrs::TryFromAttr;
+use sidex_gen::attrs::accept;
+use sidex_gen::attrs::new_assign_attr;
+use sidex_gen::attrs::reject;
+use sidex_gen::diagnostics;
+use sidex_gen::ir;
+use sidex_gen::rename::RenameFunction;
 
 use crate::types;
 

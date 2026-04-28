@@ -1,4 +1,6 @@
-use serde::{Serialize, Serializer, ser::SerializeMap};
+use serde::Serialize;
+use serde::Serializer;
+use serde::ser::SerializeMap;
 
 use super::record::InlineSerializer;
 

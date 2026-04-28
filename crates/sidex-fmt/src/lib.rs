@@ -12,7 +12,8 @@ use sidex_ir as ir;
 mod convert;
 mod doc;
 
-pub use doc::{Doc, LayoutOptions};
+pub use doc::Doc;
+pub use doc::LayoutOptions;
 
 /// Configuration for the formatter.
 #[derive(Debug, Clone)]

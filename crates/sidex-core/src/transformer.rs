@@ -1,22 +1,22 @@
 //! Implementation of the transformation process from text sources to Sidex IR.
 
-use std::{
-    collections::HashMap,
-    path::{Path, PathBuf},
-};
+use std::collections::HashMap;
+use std::path::Path;
+use std::path::PathBuf;
 
 use rayon::prelude::*;
-use sidex_syntax::{
-    ast, parse,
-    tokens::{self},
-};
+use sidex_syntax::ast;
+use sidex_syntax::parse;
+use sidex_syntax::tokens::{self};
 use thiserror::Error;
 
-use crate::{
-    builtins,
-    bundle::{self, BundleSource, Manifest, iter_schemas},
-    ir::{self, TokenKind},
-};
+use crate::builtins;
+use crate::bundle::BundleSource;
+use crate::bundle::Manifest;
+use crate::bundle::iter_schemas;
+use crate::bundle::{self};
+use crate::ir::TokenKind;
+use crate::ir::{self};
 
 #[derive(Debug, Error)]
 pub enum Error {

@@ -10,8 +10,10 @@
 //! deserializing record and variant types. Serde's derive macros for structs and enums
 //! work in a similar fashion by generating a `__Field` enum.
 
-use proc_macro2::{Literal, TokenStream};
-use quote::{format_ident, quote};
+use proc_macro2::Literal;
+use proc_macro2::TokenStream;
+use quote::format_ident;
+use quote::quote;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(crate) enum IdentifierKind {

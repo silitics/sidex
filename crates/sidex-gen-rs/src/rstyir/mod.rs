@@ -2,17 +2,21 @@
 
 use std::str::FromStr;
 
-use proc_macro2::{Ident, TokenStream};
-use quote::{format_ident, quote};
-use sidex_attrs_json::{
-    JsonFieldAttrs, JsonRecordTypeAttrs, JsonVariantAttrs, JsonVariantTypeAttrs,
-};
-use sidex_attrs_rust::{FieldAttrs, TypeAttrs, Visibility};
-use sidex_gen::{
-    attrs::TryFromAttrs,
-    diagnostics::Result,
-    ir::{Def, DefKind},
-};
+use proc_macro2::Ident;
+use proc_macro2::TokenStream;
+use quote::format_ident;
+use quote::quote;
+use sidex_attrs_json::JsonFieldAttrs;
+use sidex_attrs_json::JsonRecordTypeAttrs;
+use sidex_attrs_json::JsonVariantAttrs;
+use sidex_attrs_json::JsonVariantTypeAttrs;
+use sidex_attrs_rust::FieldAttrs;
+use sidex_attrs_rust::TypeAttrs;
+use sidex_attrs_rust::Visibility;
+use sidex_gen::attrs::TryFromAttrs;
+use sidex_gen::diagnostics::Result;
+use sidex_gen::ir::Def;
+use sidex_gen::ir::DefKind;
 
 use crate::context::SchemaCtx;
 

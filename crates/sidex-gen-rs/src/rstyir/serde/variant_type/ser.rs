@@ -2,7 +2,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use sidex_attrs_json::atoms::JsonTaggedAttr;
 
-use crate::rstyir::{RsType, RsTypeVariant};
+use crate::rstyir::RsType;
+use crate::rstyir::RsTypeVariant;
 
 pub(crate) fn gen_serialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> TokenStream {
     let ty_name = &ty.name;

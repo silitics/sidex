@@ -3,10 +3,15 @@
 use std::str::FromStr;
 
 use proc_macro2::TokenStream;
-use quote::{ToTokens, format_ident, quote};
-use serde::{Deserialize, de::IntoDeserializer};
-use sidex_attrs_rust::{FieldAttrs, Visibility};
-use sidex_gen::{attrs::TryFromAttrs, ir};
+use quote::ToTokens;
+use quote::format_ident;
+use quote::quote;
+use serde::Deserialize;
+use serde::de::IntoDeserializer;
+use sidex_attrs_rust::FieldAttrs;
+use sidex_attrs_rust::Visibility;
+use sidex_gen::attrs::TryFromAttrs;
+use sidex_gen::ir;
 
 use crate::config::Config;
 

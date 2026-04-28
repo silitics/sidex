@@ -4,13 +4,13 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 use serde::Deserialize;
-use sidex_gen::{diagnostics::Result, ir};
+use sidex_gen::diagnostics::Result;
+use sidex_gen::ir;
 
 use super::Plugin;
-use crate::{
-    context::SchemaCtx,
-    rstyir::{self, rs_type_from_def},
-};
+use crate::context::SchemaCtx;
+use crate::rstyir::rs_type_from_def;
+use crate::rstyir::{self};
 
 #[derive(Debug, Clone, Deserialize)]
 pub(crate) struct SerdePluginConfig {

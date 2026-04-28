@@ -4,13 +4,16 @@
 //! active diagnostic context. They are non-fatal — typically `Warning`
 //! severity — and do not stop further compilation.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
+use std::collections::HashSet;
 
-use sidex_diagnostics::{Diagnostic, Label};
+use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::Label;
 use sidex_ir as ir;
 use sidex_syntax::ast;
 
-use crate::transformer::{ParsedSchema, Transformer};
+use crate::transformer::ParsedSchema;
+use crate::transformer::Transformer;
 
 /// A single unused-import finding.
 #[derive(Debug, Clone)]

@@ -1,9 +1,12 @@
 //! Sidex attributes for Python code generation.
 
-use sidex_gen::{
-    attrs::{AttrConvertExt, TryApplyAttr, TryFromAttr, accept, reject},
-    diagnostics, ir,
-};
+use sidex_gen::attrs::AttrConvertExt;
+use sidex_gen::attrs::TryApplyAttr;
+use sidex_gen::attrs::TryFromAttr;
+use sidex_gen::attrs::accept;
+use sidex_gen::attrs::reject;
+use sidex_gen::diagnostics;
+use sidex_gen::ir;
 
 /// `type = "<PYTHON-TYPE>"`
 #[derive(Debug, Clone)]

@@ -3,7 +3,8 @@ extern crate proc_macro;
 mod expand;
 
 use proc_macro::TokenStream;
-use syn::{LitStr, parse_macro_input};
+use syn::LitStr;
+use syn::parse_macro_input;
 
 /// Indentation-aware code generation macro.
 ///

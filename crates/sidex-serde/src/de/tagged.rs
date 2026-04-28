@@ -2,15 +2,16 @@
 
 use std::marker::PhantomData;
 
-use serde::{
-    Deserialize, Deserializer,
-    de::{DeserializeSeed, Visitor},
-};
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::de::DeserializeSeed;
+use serde::de::Visitor;
 
-use super::{
-    content::{Content, ContentVisitor, content_str_eq, deserialize_content},
-    sanitize_size_hint,
-};
+use super::content::Content;
+use super::content::ContentVisitor;
+use super::content::content_str_eq;
+use super::content::deserialize_content;
+use super::sanitize_size_hint;
 
 enum KeyTagOrContent<'de> {
     Tag,

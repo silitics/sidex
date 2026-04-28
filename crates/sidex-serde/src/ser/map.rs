@@ -1,9 +1,8 @@
 use std::cell::RefCell;
 
-use serde::{
-    Serialize,
-    ser::{SerializeMap, SerializeSeq},
-};
+use serde::Serialize;
+use serde::ser::SerializeMap;
+use serde::ser::SerializeSeq;
 
 pub struct EntriesList<K, V, I: Iterator<Item = (K, V)>> {
     iterator: RefCell<Option<I>>,

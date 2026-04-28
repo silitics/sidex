@@ -1,10 +1,10 @@
 //! Internal utility functions.
 
-use std::{
-    env, io,
-    path::{Path, PathBuf},
-    process,
-};
+use std::env;
+use std::io;
+use std::path::Path;
+use std::path::PathBuf;
+use std::process;
 
 /// Emits a `cargo:rerun-if-changed` directive for the provided path.
 pub(crate) fn emit_rerun_if_changed<P: AsRef<Path>>(path: P) {

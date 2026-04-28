@@ -16,7 +16,9 @@ impl<'m, M: Method> Method for &'m mut M {
 
 /// Invocation _output modes_.
 pub mod output {
-    use core::{future::Future, marker::PhantomData, pin::Pin};
+    use core::future::Future;
+    use core::marker::PhantomData;
+    use core::pin::Pin;
 
     use super::OutputMode;
 

@@ -1,10 +1,12 @@
 #![doc = include_str!("../README.md")]
 
-use sidex_gen::{
-    attrs::{AttrConvertExt, TryApplyAttr, accept, reject},
-    diagnostics, ir,
-    rename::RenameFunction,
-};
+use sidex_gen::attrs::AttrConvertExt;
+use sidex_gen::attrs::TryApplyAttr;
+use sidex_gen::attrs::accept;
+use sidex_gen::attrs::reject;
+use sidex_gen::diagnostics;
+use sidex_gen::ir;
+use sidex_gen::rename::RenameFunction;
 
 pub mod atoms;
 pub mod types;

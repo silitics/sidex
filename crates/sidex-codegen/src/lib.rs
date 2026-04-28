@@ -3,12 +3,15 @@ extern crate self as sidex_codegen;
 
 mod code;
 
-pub use code::{Code, Part, ToCode};
+pub use code::Code;
+pub use code::Part;
+pub use code::ToCode;
 pub use sidex_codegen_macros::quote;
 
 #[cfg(test)]
 mod tests {
-    use crate::{Code, quote};
+    use crate::Code;
+    use crate::quote;
 
     #[test]
     fn test_simple_literal() {

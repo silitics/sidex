@@ -6,18 +6,23 @@
 
 use std::sync::Arc;
 
-use sidex_syntax::{
-    cst::{SyntaxElement, SyntaxKind, SyntaxNode},
-    tokens::{
-        CommentKind, DelimiterKind, DelimiterSymbol, DocKind, Literal, PunctuationKind,
-        PunctuationSymbol, Token, TokenKind,
-    },
-};
+use sidex_syntax::cst::SyntaxElement;
+use sidex_syntax::cst::SyntaxKind;
+use sidex_syntax::cst::SyntaxNode;
+use sidex_syntax::tokens::CommentKind;
+use sidex_syntax::tokens::DelimiterKind;
+use sidex_syntax::tokens::DelimiterSymbol;
+use sidex_syntax::tokens::DocKind;
+use sidex_syntax::tokens::Literal;
+use sidex_syntax::tokens::PunctuationKind;
+use sidex_syntax::tokens::PunctuationSymbol;
+use sidex_syntax::tokens::Token;
+use sidex_syntax::tokens::TokenKind;
 
-use crate::{
-    FormatOptions,
-    doc::{Doc, LayoutOptions, render},
-};
+use crate::FormatOptions;
+use crate::doc::Doc;
+use crate::doc::LayoutOptions;
+use crate::doc::render;
 
 /// Render an entire schema CST to a string.
 pub fn format_schema(node: &SyntaxNode, source: &str, opts: &FormatOptions) -> String {
@@ -812,9 +817,7 @@ fn field(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
                         ..
                     } => docs.push(tok),
                     TokenKind::Comment { .. } => leading_comments.push(tok),
-                    TokenKind::Identifier(s) if name.is_none() => {
-                        name = Some(s.to_string())
-                    }
+                    TokenKind::Identifier(s) if name.is_none() => name = Some(s.to_string()),
                     TokenKind::Punctuation(s) if s.kind == PunctuationKind::QuestionMark => {
                         optional = true;
                     }
@@ -867,9 +870,7 @@ fn variant(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
                         ..
                     } => docs.push(tok),
                     TokenKind::Comment { .. } => leading_comments.push(tok),
-                    TokenKind::Identifier(s) if name.is_none() => {
-                        name = Some(s.to_string())
-                    }
+                    TokenKind::Identifier(s) if name.is_none() => name = Some(s.to_string()),
                     TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => {
                         has_colon = true
                     }

@@ -6,12 +6,19 @@
 use std::sync::Arc;
 
 use config::Config;
-use context::{BundleCtx, SchemaCtx};
+use context::BundleCtx;
+use context::SchemaCtx;
 use plugins::Plugin;
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
-use serde::{Deserialize, de::IntoDeserializer};
-use sidex_gen::{Generator, Job, diagnostics, diagnostics::Result, ir};
+use quote::format_ident;
+use quote::quote;
+use serde::Deserialize;
+use serde::de::IntoDeserializer;
+use sidex_gen::Generator;
+use sidex_gen::Job;
+use sidex_gen::diagnostics;
+use sidex_gen::diagnostics::Result;
+use sidex_gen::ir;
 
 pub mod config;
 pub mod context;

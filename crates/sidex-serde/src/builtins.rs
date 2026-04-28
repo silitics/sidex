@@ -4,7 +4,8 @@
 //! normally are with Serde. For instance, in case of floating-point numbers, for
 //! human-readable formats, they are serialized as strings if they are not finite.
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 /// Constant string for representing `NaN`.
 pub const FLOAT_NAN: &'static str = "NaN";

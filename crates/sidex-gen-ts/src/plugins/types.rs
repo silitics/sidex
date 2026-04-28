@@ -1,12 +1,19 @@
-use sidex_attrs_json::{
-    JsonFieldAttrs, JsonOpaqueTypeAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
-    JsonVariantTypeAttrs, atoms::JsonTaggedAttr,
-};
-use sidex_codegen::{Code, quote};
-use sidex_gen::{attrs::TryFromAttrs, diagnostics, ir};
+use sidex_attrs_json::JsonFieldAttrs;
+use sidex_attrs_json::JsonOpaqueTypeAttrs;
+use sidex_attrs_json::JsonRecordTypeAttrs;
+use sidex_attrs_json::JsonVariantAttrs;
+use sidex_attrs_json::JsonVariantTypeAttrs;
+use sidex_attrs_json::atoms::JsonTaggedAttr;
+use sidex_codegen::Code;
+use sidex_codegen::quote;
+use sidex_gen::attrs::TryFromAttrs;
+use sidex_gen::diagnostics;
+use sidex_gen::ir;
 
 use super::Plugin;
-use crate::context::{BundleCtx, SchemaCtx, TypeExpr};
+use crate::context::BundleCtx;
+use crate::context::SchemaCtx;
+use crate::context::TypeExpr;
 
 pub struct Types;
 

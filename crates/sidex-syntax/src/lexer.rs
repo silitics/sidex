@@ -6,13 +6,19 @@
 
 use std::sync::Arc;
 
-use sidex_diagnostics::{Diagnostic, Label};
+use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::Label;
 use sidex_ir as ir;
 
-use crate::tokens::{
-    CommentKind, DelimiterKind, DelimiterSymbol, DocKind, Literal, PunctuationKind,
-    PunctuationSymbol, Token, TokenKind,
-};
+use crate::tokens::CommentKind;
+use crate::tokens::DelimiterKind;
+use crate::tokens::DelimiterSymbol;
+use crate::tokens::DocKind;
+use crate::tokens::Literal;
+use crate::tokens::PunctuationKind;
+use crate::tokens::PunctuationSymbol;
+use crate::tokens::Token;
+use crate::tokens::TokenKind;
 
 /// Lex `text` and return a vector of tokens including whitespace and trivia.
 ///

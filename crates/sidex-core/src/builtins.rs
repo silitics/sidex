@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use sidex_ir as ir;
 
-use crate::bundle::{self, BundleSource};
+use crate::bundle::BundleSource;
+use crate::bundle::{self};
 
 macro_rules! read_std_bundle_file {
     ($($path:tt)*) => {

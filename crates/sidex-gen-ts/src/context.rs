@@ -1,5 +1,7 @@
 use sidex_attrs_json::types::JsonType;
-use sidex_codegen::{Code, ToCode, quote};
+use sidex_codegen::Code;
+use sidex_codegen::ToCode;
+use sidex_codegen::quote;
 use sidex_gen::ir;
 
 use crate::config::Config;

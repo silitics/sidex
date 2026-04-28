@@ -1,12 +1,14 @@
 //! Generator for the [`serde::Deserialize`] implementation of record types.
 
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
+use quote::format_ident;
+use quote::quote;
 
-use crate::rstyir::{
-    RsField, RsType, RsTypeRecord,
-    serde::identifier_enum::{IdentifierKind, gen_identifier_enum},
-};
+use crate::rstyir::RsField;
+use crate::rstyir::RsType;
+use crate::rstyir::RsTypeRecord;
+use crate::rstyir::serde::identifier_enum::IdentifierKind;
+use crate::rstyir::serde::identifier_enum::gen_identifier_enum;
 
 /// Generates the body of [`deserialize`][serde::Deserialize::deserialize].
 pub(crate) fn gen_deserialize_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {

@@ -1,19 +1,25 @@
-use std::collections::{BTreeSet, VecDeque};
+use std::collections::BTreeSet;
+use std::collections::VecDeque;
 
-use builder::{RecordTypeSchemaBuilder, VariantTypeSchemaBuilder};
-use indexmap::{IndexMap, indexmap};
-use serde::{Deserialize, Serialize};
-use sidex_attrs_json::{
-    JsonFieldAttrs, JsonOpaqueTypeAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
-    JsonVariantTypeAttrs, types::JsonType,
-};
-use sidex_gen::{
-    Generator,
-    attrs::TryFromAttrs,
-    diagnostics,
-    ir::{self, STD_BUNDLE_IDX, TypeVarType},
-    rename::RenameFunction,
-};
+use builder::RecordTypeSchemaBuilder;
+use builder::VariantTypeSchemaBuilder;
+use indexmap::IndexMap;
+use indexmap::indexmap;
+use serde::Deserialize;
+use serde::Serialize;
+use sidex_attrs_json::JsonFieldAttrs;
+use sidex_attrs_json::JsonOpaqueTypeAttrs;
+use sidex_attrs_json::JsonRecordTypeAttrs;
+use sidex_attrs_json::JsonVariantAttrs;
+use sidex_attrs_json::JsonVariantTypeAttrs;
+use sidex_attrs_json::types::JsonType;
+use sidex_gen::Generator;
+use sidex_gen::attrs::TryFromAttrs;
+use sidex_gen::diagnostics;
+use sidex_gen::ir::STD_BUNDLE_IDX;
+use sidex_gen::ir::TypeVarType;
+use sidex_gen::ir::{self};
+use sidex_gen::rename::RenameFunction;
 use sidex_types_json_schema::*;
 
 pub mod builder;
@@ -234,7 +240,8 @@ impl<'cx> JsonSchemaCtx<'cx> {
     }
 
     pub fn resolve(&mut self, typ: &ir::Type) -> diagnostics::Result<TypeSchema> {
-        use ir::{DefKind::*, TypeKind::*};
+        use ir::DefKind::*;
+        use ir::TypeKind::*;
         Ok(match &typ.kind {
             TypeVar(_) => make_schema_var("TODO-REPLACE-WITH-VAR"),
             Instance(instance) => {

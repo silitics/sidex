@@ -5,11 +5,11 @@
 //! against this tree. The AST is owned data; navigating between siblings is
 //! done by indexing rather than pointer chasing.
 
-use std::{
-    fmt::{self, Display, Write},
-    ops::Deref,
-    sync::Arc,
-};
+use std::fmt::Display;
+use std::fmt::Write;
+use std::fmt::{self};
+use std::ops::Deref;
+use std::sync::Arc;
 
 use sidex_ir as ir;
 

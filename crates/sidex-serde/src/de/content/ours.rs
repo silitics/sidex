@@ -2,11 +2,14 @@
 
 use std::marker::PhantomData;
 
-use serde::{
-    Deserialize, Deserializer, Serialize,
-    de::{Expected, Unexpected, Visitor},
-    ser::{SerializeMap, SerializeSeq},
-};
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::de::Expected;
+use serde::de::Unexpected;
+use serde::de::Visitor;
+use serde::ser::SerializeMap;
+use serde::ser::SerializeSeq;
 
 #[cfg(not(feature = "serde-private-content"))]
 use super::ContentVisitor;

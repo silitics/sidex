@@ -1,12 +1,17 @@
 use std::str::FromStr;
 
 use proc_macro2::TokenStream;
-use quote::{ToTokens, quote};
-use sidex_gen::{
-    attrs::{AttrConvertExt, TryApplyAttr, TryFromAttr, accept, new_assign_attr, reject},
-    diagnostics::{Diagnostic, Result},
-    ir,
-};
+use quote::ToTokens;
+use quote::quote;
+use sidex_gen::attrs::AttrConvertExt;
+use sidex_gen::attrs::TryApplyAttr;
+use sidex_gen::attrs::TryFromAttr;
+use sidex_gen::attrs::accept;
+use sidex_gen::attrs::new_assign_attr;
+use sidex_gen::attrs::reject;
+use sidex_gen::diagnostics::Diagnostic;
+use sidex_gen::diagnostics::Result;
+use sidex_gen::ir;
 
 /// `type = "<PATH>"`
 #[derive(Debug, Clone)]

@@ -21,7 +21,8 @@ use std::str::FromStr;
 
 #[doc(hidden)]
 pub use sidex_diagnostics as diagnostics;
-use sidex_diagnostics::{Diagnostic, Result};
+use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::Result;
 #[doc(hidden)]
 pub use sidex_ir as ir;
 

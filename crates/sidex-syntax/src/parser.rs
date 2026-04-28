@@ -6,15 +6,20 @@
 
 use std::sync::Arc;
 
-use sidex_diagnostics::{Diagnostic, Label};
+use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::Label;
 use sidex_ir as ir;
 
-use crate::{
-    ast,
-    cst::{Builder, SyntaxKind, SyntaxNode},
-    lexer,
-    tokens::{self, DocKind, PunctuationKind, Token, TokenKind},
-};
+use crate::ast;
+use crate::cst::Builder;
+use crate::cst::SyntaxKind;
+use crate::cst::SyntaxNode;
+use crate::lexer;
+use crate::tokens::DocKind;
+use crate::tokens::PunctuationKind;
+use crate::tokens::Token;
+use crate::tokens::TokenKind;
+use crate::tokens::{self};
 
 /// A parsed source: the lossless concrete syntax tree and the lowered AST.
 #[derive(Clone)]

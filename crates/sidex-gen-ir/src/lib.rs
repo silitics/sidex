@@ -1,4 +1,5 @@
-use sidex_gen::{diagnostics, Generator};
+use sidex_gen::diagnostics;
+use sidex_gen::Generator;
 
 pub struct IrGenerator;
 

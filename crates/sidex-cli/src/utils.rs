@@ -2,7 +2,8 @@ use std::path::Path;
 
 use color_eyre::Help;
 use eyre::Result;
-use sidex_core::{ir, transformer::Transformer};
+use sidex_core::ir;
+use sidex_core::transformer::Transformer;
 
 pub fn load_unit_and_bundle(
     directory: Option<&Path>,

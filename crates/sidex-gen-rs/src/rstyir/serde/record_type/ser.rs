@@ -3,7 +3,8 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 
-use crate::rstyir::{RsType, RsTypeRecord};
+use crate::rstyir::RsType;
+use crate::rstyir::RsTypeRecord;
 
 /// Generates the body of [`serialize`][serde::Serialize::serialize].
 pub(crate) fn gen_serialize_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {

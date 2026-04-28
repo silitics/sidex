@@ -2,20 +2,25 @@
 
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
-use sidex_attrs_json::{
-    JsonFieldAttrs, JsonOpaqueTypeAttrs, JsonRecordTypeAttrs, JsonVariantAttrs,
-    JsonVariantTypeAttrs, atoms::JsonTaggedAttr, types::JsonType,
-};
+use serde::Deserialize;
+use serde::Serialize;
+use sidex_attrs_json::JsonFieldAttrs;
+use sidex_attrs_json::JsonOpaqueTypeAttrs;
+use sidex_attrs_json::JsonRecordTypeAttrs;
+use sidex_attrs_json::JsonVariantAttrs;
+use sidex_attrs_json::JsonVariantTypeAttrs;
+use sidex_attrs_json::atoms::JsonTaggedAttr;
+use sidex_attrs_json::types::JsonType;
 use sidex_attrs_py::PyOpaqueTypeAttrs;
-use sidex_codegen::{Code, quote};
-use sidex_gen::{
-    Generator, Job,
-    attrs::TryFromAttrs,
-    diagnostics::{self, Result},
-    ir,
-    rename::to_snake_case,
-};
+use sidex_codegen::Code;
+use sidex_codegen::quote;
+use sidex_gen::Generator;
+use sidex_gen::Job;
+use sidex_gen::attrs::TryFromAttrs;
+use sidex_gen::diagnostics::Result;
+use sidex_gen::diagnostics::{self};
+use sidex_gen::ir;
+use sidex_gen::rename::to_snake_case;
 
 /// Configuration for the Python backend.
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]

@@ -1,4 +1,6 @@
-use crate::ast::{Fragment, IterMode, Template};
+use crate::ast::Fragment;
+use crate::ast::IterMode;
+use crate::ast::Template;
 
 /// A template parse error.
 #[derive(Debug, Clone)]
@@ -285,7 +287,8 @@ impl<'a> Parser<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ast::{Fragment, IterMode};
+    use crate::ast::Fragment;
+    use crate::ast::IterMode;
 
     #[test]
     fn test_dedent_basic() {

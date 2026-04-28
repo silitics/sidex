@@ -1,10 +1,10 @@
-use sidex_gen::{diagnostics::Result, ir::Def};
+use sidex_gen::diagnostics::Result;
+use sidex_gen::ir::Def;
 
 use super::Plugin;
-use crate::{
-    context::SchemaCtx,
-    rstyir::{rs_type_from_def, rs_type_to_rs_def},
-};
+use crate::context::SchemaCtx;
+use crate::rstyir::rs_type_from_def;
+use crate::rstyir::rs_type_to_rs_def;
 
 pub struct Types;
 

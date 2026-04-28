@@ -2,9 +2,11 @@ sidex::include_bundle!(json_test_bundle as generated);
 
 #[cfg(test)]
 mod tests {
-    use std::{fs, path::Path};
+    use std::fs;
+    use std::path::Path;
 
-    use serde::{Deserialize, Serialize};
+    use serde::Deserialize;
+    use serde::Serialize;
 
     use super::generated::data::*;
 

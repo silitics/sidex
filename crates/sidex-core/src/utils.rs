@@ -1,6 +1,8 @@
 use std::path::Path;
 
-use crate::{bundle, ir, transformer::Transformer};
+use crate::bundle;
+use crate::ir;
+use crate::transformer::Transformer;
 
 pub fn load_unit_and_bundle(path: &Path) -> eyre::Result<(ir::Unit, ir::BundleIdx, Transformer)> {
     let bundle_path = bundle::try_locate_bundle(path)?

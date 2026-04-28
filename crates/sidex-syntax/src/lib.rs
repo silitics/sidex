@@ -7,4 +7,6 @@ pub mod tokens;
 pub(crate) mod lexer;
 mod parser;
 
-pub use parser::{Parsed, parse, parse_full};
+pub use parser::Parsed;
+pub use parser::parse;
+pub use parser::parse_full;

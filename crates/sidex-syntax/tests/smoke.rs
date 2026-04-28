@@ -1,6 +1,7 @@
 use sidex_diagnostics::DiagnosticCtx;
 use sidex_ir as ir;
-use sidex_syntax::{ast, parse};
+use sidex_syntax::ast;
+use sidex_syntax::parse;
 
 fn parse_str(src: &str) -> ast::Schema {
     let mut storage = ir::SourceStorage::new();

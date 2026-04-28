@@ -1,5 +1,7 @@
-use quote::{format_ident, quote};
-use sidex_gen::{diagnostics::Result, ir};
+use quote::format_ident;
+use quote::quote;
+use sidex_gen::diagnostics::Result;
+use sidex_gen::ir;
 
 use super::Plugin;
 use crate::context::TypeInfo;

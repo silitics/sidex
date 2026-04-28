@@ -1,9 +1,10 @@
-use std::{collections::HashSet, str::FromStr};
+use std::collections::HashSet;
+use std::str::FromStr;
 
-use sidex_gen::{
-    attrs::{AttrConvertExt, TryFromAttr},
-    diagnostics, ir,
-};
+use sidex_gen::attrs::AttrConvertExt;
+use sidex_gen::attrs::TryFromAttr;
+use sidex_gen::diagnostics;
+use sidex_gen::ir;
 
 /// A JSON type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

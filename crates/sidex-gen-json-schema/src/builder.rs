@@ -1,11 +1,17 @@
 //! Helpers for building schemas from type definitions.
 
-use indexmap::{IndexMap, indexmap};
+use indexmap::IndexMap;
+use indexmap::indexmap;
 use sidex_attrs_json::atoms::JsonTaggedAttr;
 
-use crate::{
-    Any, Metadata, ObjectKeywords, Schema, SchemaObject, SubschemaKeywords, Type, TypeSchema,
-};
+use crate::Any;
+use crate::Metadata;
+use crate::ObjectKeywords;
+use crate::Schema;
+use crate::SchemaObject;
+use crate::SubschemaKeywords;
+use crate::Type;
+use crate::TypeSchema;
 
 #[derive(Debug, Clone)]
 pub struct RecordTypeSchemaBuilder {

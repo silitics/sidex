@@ -4,7 +4,8 @@ use std::collections::HashMap;
 
 use sidex_ir as ir;
 
-use crate::{Diagnostic, Severity};
+use crate::Diagnostic;
+use crate::Severity;
 
 /// Source identifier for identifying an Ariadne source in [`Cache`].
 type SourceId = Option<ir::SourceIdx>;

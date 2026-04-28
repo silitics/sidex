@@ -3,10 +3,10 @@
 //! The lexer is hand-written and lives in [`crate::lexer`]. This module
 //! defines the data types that consumers of the lexer and parser see.
 
-use std::{
-    fmt::{self, Display, Write},
-    sync::Arc,
-};
+use std::fmt::Display;
+use std::fmt::Write;
+use std::fmt::{self};
+use std::sync::Arc;
 
 use sidex_ir as ir;
 

@@ -1,6 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use sidex_codegen_syntax::ast::{Fragment, IterMode};
+use sidex_codegen_syntax::ast::Fragment;
+use sidex_codegen_syntax::ast::IterMode;
 
 /// Expands a parsed template into a TokenStream that builds a `Code` value.
 pub fn expand(template: &sidex_codegen_syntax::Template) -> TokenStream {

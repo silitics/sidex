@@ -62,7 +62,8 @@
 //! A report can then be rendered to the standard error output using its
 //! [`eprint`][Report::eprint] method.
 
-use std::{fmt::Debug, panic::Location};
+use std::fmt::Debug;
+use std::panic::Location;
 
 use parking_lot::Mutex;
 use scoped_tls::scoped_thread_local;

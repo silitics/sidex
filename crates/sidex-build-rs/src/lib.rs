@@ -19,12 +19,12 @@
 //!
 //! [`include_bundle!`]: https://docs.rs/sidex/latest/sidex/macro.include_bundle.html
 
-use std::{
-    error::Error,
-    ffi::{OsStr, OsString},
-    fs,
-    path::{Path, PathBuf},
-};
+use std::error::Error;
+use std::ffi::OsStr;
+use std::ffi::OsString;
+use std::fs;
+use std::path::Path;
+use std::path::PathBuf;
 
 use sidex_core::transformer::Transformer;
 use sidex_gen_rs::RustGenerator;

@@ -1,7 +1,8 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 
-use super::{RsType, RsTypeKind};
+use super::RsType;
+use super::RsTypeKind;
 
 mod identifier_enum;
 mod record_type;

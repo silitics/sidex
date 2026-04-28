@@ -1,5 +1,5 @@
 group_imports = "StdExternalCrate"
-imports_granularity = "Crate"
+imports_granularity = "Item"
 wrap_comments = true
 comment_width = 90
 force_multiline_blocks = true

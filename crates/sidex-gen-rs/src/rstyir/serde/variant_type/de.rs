@@ -2,10 +2,11 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use sidex_attrs_json::atoms::JsonTaggedAttr;
 
-use crate::rstyir::{
-    RsType, RsTypeVariant, RsVariant,
-    serde::identifier_enum::{IdentifierKind, gen_identifier_enum},
-};
+use crate::rstyir::RsType;
+use crate::rstyir::RsTypeVariant;
+use crate::rstyir::RsVariant;
+use crate::rstyir::serde::identifier_enum::IdentifierKind;
+use crate::rstyir::serde::identifier_enum::gen_identifier_enum;
 
 pub(crate) fn gen_deserialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> TokenStream {
     let (identifiers, identifier_enum) = gen_identifier_enum(

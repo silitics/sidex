@@ -1,9 +1,12 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use proc_macro2::TokenStream;
-use sidex_gen::{diagnostics::Result, ir};
+use sidex_gen::diagnostics::Result;
+use sidex_gen::ir;
 
-use crate::context::{BundleCtx, SchemaCtx};
+use crate::context::BundleCtx;
+use crate::context::SchemaCtx;
 
 pub mod builder;
 pub mod serde;
