@@ -163,7 +163,7 @@ impl Parser {
 
     fn at_keyword(&self, name: &str) -> bool {
         match self.peek_significant().map(|t| &t.kind) {
-            Some(TokenKind::Identifier(s)) => s.as_str() == name,
+            Some(TokenKind::Identifier(s)) => &**s == name,
             _ => false,
         }
     }
@@ -416,7 +416,7 @@ impl Parser {
                     }
                 }
                 TokenKind::Identifier(s) => {
-                    return match s.as_str() {
+                    return match &**s {
                         "import" => Some(ItemKw::Import),
                         "record" | "variant" | "alias" | "opaque" | "wrapper" => Some(ItemKw::Def),
                         _ => None,
@@ -435,7 +435,7 @@ impl Parser {
         self.skip_trivia();
         let kw = match self.peek_significant().map(|t| &t.kind) {
             Some(TokenKind::Identifier(s)) => {
-                match s.as_str() {
+                match &**s {
                     "record" => DefKw::Record,
                     "variant" => DefKw::Variant,
                     "alias" => DefKw::Alias,

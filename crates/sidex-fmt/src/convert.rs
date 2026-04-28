@@ -248,7 +248,7 @@ fn flatten_tree(
         match el {
             SyntaxElement::Token(tok) => {
                 match &tok.kind {
-                    TokenKind::Identifier(s) if !seen_brace => segments.push(s.as_str().to_owned()),
+                    TokenKind::Identifier(s) if !seen_brace => segments.push(s.to_string()),
                     TokenKind::Punctuation(s)
                         if s.kind == PunctuationKind::Colon && s.is_composed && !seen_brace =>
                     {
@@ -481,7 +481,7 @@ fn first_path_segment_text(tree: &SyntaxNode) -> Option<String> {
     for el in &tree.children {
         if let SyntaxElement::Token(tok) = el {
             match &tok.kind {
-                TokenKind::Identifier(s) => return Some(s.as_str().to_owned()),
+                TokenKind::Identifier(s) => return Some(s.to_string()),
                 TokenKind::Whitespace
                 | TokenKind::Comment { .. }
                 | TokenKind::Doc { .. }
@@ -531,7 +531,7 @@ fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
                     }
                     TokenKind::Identifier(s)
                         if matches!(
-                            s.as_str(),
+                            &**s,
                             "record" | "variant" | "alias" | "opaque" | "wrapper"
                         ) && keyword.is_none() =>
                     {
@@ -539,7 +539,7 @@ fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
                         // then handle the rest based on the kind.
                         flush_def_trivia(&mut parts, &mut between_iter);
                         keyword = Some(tok);
-                        parts.push(Doc::string(s.as_str().to_owned()));
+                        parts.push(Doc::string(s.to_string()));
                         idx += 1;
                         break;
                     }
@@ -583,7 +583,7 @@ fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
                     | TokenKind::Error => {}
                     TokenKind::Identifier(s) if !after_name => {
                         name_parts.push(Doc::text(" "));
-                        name_parts.push(Doc::string(s.as_str().to_owned()));
+                        name_parts.push(Doc::string(s.to_string()));
                         after_name = true;
                     }
                     TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => {
@@ -813,7 +813,7 @@ fn field(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
                     } => docs.push(tok),
                     TokenKind::Comment { .. } => leading_comments.push(tok),
                     TokenKind::Identifier(s) if name.is_none() => {
-                        name = Some(s.as_str().to_owned())
+                        name = Some(s.to_string())
                     }
                     TokenKind::Punctuation(s) if s.kind == PunctuationKind::QuestionMark => {
                         optional = true;
@@ -868,7 +868,7 @@ fn variant(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
                     } => docs.push(tok),
                     TokenKind::Comment { .. } => leading_comments.push(tok),
                     TokenKind::Identifier(s) if name.is_none() => {
-                        name = Some(s.as_str().to_owned())
+                        name = Some(s.to_string())
                     }
                     TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => {
                         has_colon = true
@@ -929,7 +929,7 @@ fn render_type_expr_into(node: &SyntaxNode, out: &mut String) {
                     | TokenKind::Comment { .. }
                     | TokenKind::Doc { .. }
                     | TokenKind::Error => {}
-                    TokenKind::Identifier(s) => out.push_str(s.as_str()),
+                    TokenKind::Identifier(s) => out.push_str(s),
                     TokenKind::Punctuation(s) => {
                         match s.kind {
                             PunctuationKind::Colon if s.is_composed => out.push(':'),
@@ -1005,7 +1005,7 @@ fn render_path_into(path: &SyntaxNode, out: &mut String) {
     for el in &path.children {
         if let SyntaxElement::Token(tok) = el {
             match &tok.kind {
-                TokenKind::Identifier(s) => segments.push(s.as_str().to_owned()),
+                TokenKind::Identifier(s) => segments.push(s.to_string()),
                 TokenKind::Punctuation(s) if s.kind == PunctuationKind::Colon => {
                     if segments.is_empty() && !absolute_done {
                         absolute = true;
@@ -1203,7 +1203,7 @@ fn render_attr_tokens(elements: &[&SyntaxElement], _opts: &FormatOptions) -> Doc
 
 fn render_token(tok: &Token) -> String {
     match &tok.kind {
-        TokenKind::Identifier(s) => s.as_str().to_owned(),
+        TokenKind::Identifier(s) => s.to_string(),
         TokenKind::Literal(Literal::Boolean(b)) => if *b { "true" } else { "false" }.to_owned(),
         TokenKind::Literal(Literal::Numeric {
             has_minus,
@@ -1486,7 +1486,7 @@ fn first_identifier(node: &SyntaxNode) -> Option<String> {
     for el in &node.children {
         if let SyntaxElement::Token(tok) = el {
             if let TokenKind::Identifier(s) = &tok.kind {
-                return Some(s.as_str().to_owned());
+                return Some(s.to_string());
             }
         }
     }

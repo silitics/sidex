@@ -1,18 +1,14 @@
-//! Lexer output: tokens, token kinds, and the public [`tokenize`] entry point.
+//! Lexer output: tokens and token kinds.
 //!
 //! The lexer is hand-written and lives in [`crate::lexer`]. This module
-//! defines the data types that consumers see, plus the convenience function
-//! for tools that only need a token stream.
+//! defines the data types that consumers of the lexer and parser see.
 
 use std::{
     fmt::{self, Display, Write},
-    hash::Hash,
     sync::Arc,
 };
 
 use sidex_ir as ir;
-
-use crate::lexer;
 
 /// A delimiter symbol like `(`, `[`, or `{`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -32,16 +28,6 @@ impl fmt::Display for DelimiterSymbol {
     }
 }
 
-/// Trait describing a specific delimiter pair.
-pub trait Delimiter {
-    /// The kind of the delimiter.
-    const KIND: DelimiterKind;
-    /// The token kind of the opening delimiter.
-    const OPEN: TokenKind;
-    /// The token kind of the closing delimiter.
-    const CLOSE: TokenKind;
-}
-
 macro_rules! gen_delimiters {
     ($( ( $name:ident , $open:literal , $close:literal , $doc:literal ) $(,)? )*) => {
         /// A kind of delimiter.
@@ -59,23 +45,6 @@ macro_rules! gen_delimiters {
             pub fn close(&self) -> &'static str {
                 match self { $( Self::$name => $close, )* }
             }
-        }
-
-        /// Marker types for individual delimiters.
-        pub mod delimiters {
-            use super::*;
-            $(
-                #[doc = $doc]
-                pub struct $name(());
-
-                impl Delimiter for $name {
-                    const KIND: DelimiterKind = DelimiterKind::$name;
-                    const OPEN: TokenKind =
-                        TokenKind::Delimiter(DelimiterSymbol::Open(Self::KIND));
-                    const CLOSE: TokenKind =
-                        TokenKind::Delimiter(DelimiterSymbol::Close(Self::KIND));
-                }
-            )*
         }
     };
 }
@@ -115,16 +84,6 @@ impl fmt::Display for PunctuationSymbol {
     }
 }
 
-/// Trait describing a specific punctuation symbol.
-pub trait Punctuation {
-    /// The kind of the punctuation.
-    const KIND: PunctuationKind;
-    /// The standalone version.
-    const ALONE: TokenKind;
-    /// The composed version (followed by another punctuation).
-    const COMPOSED: TokenKind;
-}
-
 macro_rules! gen_punctuations {
     ($( ( $name:ident , $symbol:literal, $doc:literal ) $(,)? )*) => {
         /// A kind of punctuation.
@@ -134,10 +93,6 @@ macro_rules! gen_punctuations {
         }
 
         impl PunctuationKind {
-            /// The single character of this punctuation.
-            pub fn ch(&self) -> char {
-                match self { $( Self::$name => $symbol.chars().next().unwrap(), )* }
-            }
             /// Try to construct a punctuation kind from a character.
             pub fn from_char(c: char) -> Option<Self> {
                 match c {
@@ -151,23 +106,6 @@ macro_rules! gen_punctuations {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                 match self { $( Self::$name => f.write_str($symbol), )* }
             }
-        }
-
-        /// Marker types for individual punctuation symbols.
-        pub mod punctuations {
-            use super::*;
-            $(
-                #[doc = $doc]
-                pub struct $name(());
-
-                impl Punctuation for $name {
-                    const KIND: PunctuationKind = PunctuationKind::$name;
-                    const ALONE: TokenKind =
-                        TokenKind::Punctuation(PunctuationSymbol::new(Self::KIND, false));
-                    const COMPOSED: TokenKind =
-                        TokenKind::Punctuation(PunctuationSymbol::new(Self::KIND, true));
-                }
-            )*
         }
     };
 }
@@ -192,35 +130,6 @@ gen_punctuations![
     (AngleOpen, "<", "An opening angle `<`."),
     (AngleClose, ">", "A closing angle `>`."),
 ];
-
-/// Keywords like `record`, `variant`, or `import`.
-pub mod keywords {
-    use super::*;
-
-    const fn keyword(keyword: &'static str) -> TokenKind {
-        TokenKind::Identifier(Str::Static(keyword))
-    }
-
-    macro_rules! define {
-        ($( ( $name:ident , $keyword:literal , $doc:literal ) $(,)? )*) => {
-            $( #[doc = $doc] pub const $name: TokenKind = keyword($keyword); )*
-
-            /// Returns true if `s` is a recognised keyword.
-            pub fn is_keyword(s: &str) -> bool {
-                matches!(s, $( $keyword )|*)
-            }
-        }
-    }
-
-    define![
-        (ALIAS, "alias", "The `alias` keyword."),
-        (OPAQUE, "opaque", "The `opaque` keyword."),
-        (RECORD, "record", "The `record` keyword."),
-        (VARIANT, "variant", "The `variant` keyword."),
-        (WRAPPER, "wrapper", "The `wrapper` keyword."),
-        (IMPORT, "import", "The `import` keyword."),
-    ];
-}
 
 /// Indicates the type of a comment.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -282,50 +191,10 @@ impl fmt::Display for Literal {
     }
 }
 
-/// A reference to a string that may be heap-allocated or static.
-#[derive(Debug, Clone)]
-pub enum Str {
-    /// A heap-allocated string.
-    Heap(Arc<str>),
-    /// A statically-allocated string slice.
-    Static(&'static str),
-}
-
-impl Str {
-    /// Borrows the string as a `&str`.
-    pub fn as_str(&self) -> &str {
-        match self {
-            Str::Heap(s) => s.as_ref(),
-            Str::Static(s) => s,
-        }
-    }
-}
-
-impl Display for Str {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-impl PartialEq for Str {
-    fn eq(&self, other: &Self) -> bool {
-        self.as_str() == other.as_str()
-    }
-}
-
-impl Eq for Str {}
-
-impl Hash for Str {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.as_str().hash(state);
-    }
-}
-
 /// The kind of a token.
 ///
-/// All tokens carry their kind, including trivia (comments and docs).
-/// Whitespace is represented by [`TokenKind::Whitespace`] when retained in the
-/// CST, but is filtered out by the public [`tokenize`] function.
+/// All tokens carry their kind, including trivia (comments, docs, and
+/// whitespace) which are retained by the lossless CST.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum TokenKind {
     /// A delimiter token.
@@ -335,7 +204,7 @@ pub enum TokenKind {
     /// A literal token.
     Literal(Literal),
     /// An identifier or keyword token.
-    Identifier(Str),
+    Identifier(Arc<str>),
     /// A comment token.
     Comment {
         /// The body of the comment, excluding the leading marker.
@@ -356,25 +225,13 @@ pub enum TokenKind {
     Error,
 }
 
-impl TokenKind {
-    /// True if the token is not a delimiter.
-    pub fn is_not_delimiter(&self) -> bool {
-        !matches!(self, TokenKind::Delimiter(_))
-    }
-
-    /// True if the token is trivia (whitespace or non-doc comment).
-    pub fn is_trivia(&self) -> bool {
-        matches!(self, TokenKind::Whitespace | TokenKind::Comment { .. })
-    }
-}
-
 impl fmt::Display for TokenKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             TokenKind::Delimiter(d) => d.fmt(f),
             TokenKind::Punctuation(p) => p.fmt(f),
             TokenKind::Literal(l) => l.fmt(f),
-            TokenKind::Identifier(i) => f.write_str(i.as_str()),
+            TokenKind::Identifier(i) => f.write_str(i),
             TokenKind::Comment { comment, kind } => {
                 match kind {
                     CommentKind::Line => write!(f, "//{comment}\n"),
@@ -414,11 +271,6 @@ impl Token {
         &self.span
     }
 
-    /// The id of the source the token originates from.
-    pub fn src(&self) -> &ir::SourceIdx {
-        &self.span.src
-    }
-
     /// The character offset where the token starts.
     pub fn start(&self) -> usize {
         self.span.start
@@ -445,16 +297,4 @@ impl Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.kind.fmt(f)
     }
-}
-
-/// Tokenize a source.
-///
-/// The returned vector contains tokens in source order excluding whitespace,
-/// matching the legacy chumsky-based output. Comment and doc tokens are
-/// preserved.
-pub fn tokenize(source: &ir::Source) -> Option<Vec<Token>> {
-    let text = source.text.as_ref()?;
-    let mut tokens = lexer::lex(source.idx, text);
-    tokens.retain(|t| !matches!(t.kind, TokenKind::Whitespace));
-    Some(tokens)
 }

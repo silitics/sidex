@@ -13,7 +13,7 @@ use std::{
 
 use sidex_ir as ir;
 
-use crate::tokens::{self, Token};
+use crate::tokens::Token;
 
 /// A stream of tokens carried inside an attribute's free-form body.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -69,14 +69,14 @@ impl Iterator for TokenStreamIntoIter {
 /// An identifier with its source span.
 #[derive(Clone, Debug)]
 pub struct Identifier {
-    pub(crate) text: tokens::Str,
+    pub(crate) text: Arc<str>,
     pub(crate) span: ir::Span,
 }
 
 impl Identifier {
     /// The identifier as a `&str`.
     pub fn as_str(&self) -> &str {
-        self.text.as_str()
+        &self.text
     }
 
     /// The source span.

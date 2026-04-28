@@ -11,7 +11,7 @@ use sidex_ir as ir;
 
 use crate::tokens::{
     CommentKind, DelimiterKind, DelimiterSymbol, DocKind, Literal, PunctuationKind,
-    PunctuationSymbol, Str, Token, TokenKind,
+    PunctuationSymbol, Token, TokenKind,
 };
 
 /// Lex `text` and return a vector of tokens including whitespace and trivia.
@@ -321,7 +321,7 @@ impl<'a> Lexer<'a> {
         let kind = match text.as_str() {
             "true" => TokenKind::Literal(Literal::Boolean(true)),
             "false" => TokenKind::Literal(Literal::Boolean(false)),
-            _ => TokenKind::Identifier(Str::Heap(Arc::from(text.as_str()))),
+            _ => TokenKind::Identifier(Arc::from(text.as_str())),
         };
         self.push(kind, start, self.pos);
     }
