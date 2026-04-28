@@ -4,22 +4,24 @@ use crate::bundle::BundleSource;
 use crate::bundle::{self};
 use crate::transformer::Transformer;
 
-macro_rules! read_std_bundle_file {
-    ($($path:tt)*) => {
+macro_rules! read_lib_file {
+    ($dir:literal, $($path:tt)*) => {
         include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../lib/core/",
+            "/../../lib/",
+            $dir,
+            "/",
             $($path)*
         ))
     };
 }
 
-macro_rules! std_bundle_schemas {
-    ($transformer:expr, [ $($name:literal $(,)?)* ]) => {{
+macro_rules! lib_bundle_schemas {
+    ($transformer:expr, $dir:literal, [ $($name:literal $(,)?)* ]) => {{
         let mut schemas = HashMap::new();
         $(
             let source_id = $transformer.insert_source(
-                read_std_bundle_file!(concat!("schemas/", $name, ".sidex")).to_owned(),
+                read_lib_file!($dir, concat!("schemas/", $name, ".sidex")).to_owned(),
                 None,
             );
             schemas.insert($name.to_owned(), source_id);
@@ -29,15 +31,34 @@ macro_rules! std_bundle_schemas {
 }
 
 pub fn std_bundle(transformer: &mut Transformer) -> BundleSource {
-    let manifest = bundle::try_parse_manifest(read_std_bundle_file!("sidex.toml"))
+    let manifest = bundle::try_parse_manifest(read_lib_file!("core", "sidex.toml"))
         .expect("Manifest of Sidex standard library should be valid.");
-    let schemas = std_bundle_schemas!(transformer, ["builtins", "attrs"]);
+    let schemas = lib_bundle_schemas!(transformer, "core", ["builtins", "attrs"]);
 
     BundleSource {
         manifest,
         schemas,
         path: None,
     }
+}
+
+/// Plugin attribute bundles that the compiler auto-loads alongside every user
+/// bundle so that the typed-attrs parser can validate `#[<plugin>(...)]`
+/// attributes against a known schema.
+///
+/// These bundles are flagged [`is_internal`](sidex_ir::Bundle::is_internal)
+/// in the IR. Code generators should skip internal bundles since their defs
+/// are an implementation detail of the compiler, not part of the user's API
+/// surface.
+pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> {
+    let py_manifest = bundle::try_parse_manifest(read_lib_file!("py", "sidex.toml"))
+        .expect("Manifest of py-attrs bundle should be valid.");
+    let py_schemas = lib_bundle_schemas!(transformer, "py", ["attrs"]);
+    vec![BundleSource {
+        manifest: py_manifest,
+        schemas: py_schemas,
+        path: None,
+    }]
 }
 
 #[cfg(test)]

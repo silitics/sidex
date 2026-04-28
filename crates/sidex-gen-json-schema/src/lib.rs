@@ -484,7 +484,10 @@ impl Generator for JsonSchemaGenerator {
         // let config = Config::deserialize(job.config.clone().into_deserializer())?;
         let mut ctx = JsonSchemaCtx::new(&job.unit, Default::default());
         // ctx.set_def_prefix("");
-        for (bundle_idx, _) in job.unit.bundles.iter().enumerate() {
+        for (bundle_idx, bundle) in job.unit.bundles.iter().enumerate() {
+            if bundle.is_internal {
+                continue;
+            }
             let bundle_idx = ir::BundleIdx::from(bundle_idx);
             for (schema_idx, _) in job.unit.schemas_of(bundle_idx) {
                 for (def_idx, def) in job.unit.defs_of(schema_idx) {
@@ -539,7 +542,10 @@ impl Generator for JsonSchemaGenerator {
         let mut ctx = JsonSchemaCtx::new(&job.unit, config);
         ctx.set_def_prefix("#/components/schemas/");
 
-        for (bundle_idx, _) in job.unit.bundles.iter().enumerate() {
+        for (bundle_idx, bundle) in job.unit.bundles.iter().enumerate() {
+            if bundle.is_internal {
+                continue;
+            }
             let bundle_idx = ir::BundleIdx::from(bundle_idx);
             for (schema_idx, _) in job.unit.schemas_of(bundle_idx) {
                 for (def_idx, def) in job.unit.defs_of(schema_idx) {

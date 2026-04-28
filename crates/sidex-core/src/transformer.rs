@@ -37,6 +37,9 @@ struct LoadedBundle {
     source: BundleSource,
     schemas: Vec<ParsedSchema>,
     schema_by_name: HashMap<String, LocalSchemaIdx>,
+    /// Whether this bundle is auto-loaded by the compiler (the standard
+    /// library or a plugin attribute schema). Propagated to [`ir::Bundle::is_internal`].
+    is_internal: bool,
 }
 
 /// Local schema index inside a bundle. We keep a separate type alias to
@@ -459,7 +462,10 @@ impl Transformer {
             bundle_by_path: HashMap::new(),
         };
         let std_bundle = builtins::std_bundle(&mut transformer);
-        transformer.insert_bundle(std_bundle).unwrap();
+        transformer.insert_internal_bundle(std_bundle).unwrap();
+        for plugin_attrs in builtins::plugin_attrs_bundles(&mut transformer) {
+            transformer.insert_internal_bundle(plugin_attrs).unwrap();
+        }
         transformer
     }
 
@@ -497,6 +503,21 @@ impl Transformer {
     }
 
     pub(crate) fn insert_bundle(&mut self, source: BundleSource) -> Result<ir::BundleIdx, Error> {
+        self.insert_bundle_inner(source, false)
+    }
+
+    /// Insert an auto-loaded bundle (the standard library or a plugin
+    /// attribute schema). The resulting `ir::Bundle` is flagged
+    /// [`is_internal`](ir::Bundle::is_internal) so code generators can skip it.
+    fn insert_internal_bundle(&mut self, source: BundleSource) -> Result<ir::BundleIdx, Error> {
+        self.insert_bundle_inner(source, true)
+    }
+
+    fn insert_bundle_inner(
+        &mut self,
+        source: BundleSource,
+        is_internal: bool,
+    ) -> Result<ir::BundleIdx, Error> {
         let idx = ir::BundleIdx::from(self.loaded.len());
         self.bundle_by_name
             .insert(source.manifest.metadata.name.clone(), idx);
@@ -530,6 +551,7 @@ impl Transformer {
                 .map(|(idx, schema)| (schema.name.clone(), idx))
                 .collect(),
             schemas,
+            is_internal,
         });
 
         Ok(idx)
@@ -557,15 +579,25 @@ impl Transformer {
         let path = path.canonicalize()?;
         let manifest = bundle::try_load_manifest(&path)?;
         let name = &manifest.metadata.name;
-        if let Some(idx) = self.bundle_by_name.get(name) {
-            let loaded = &self.loaded[idx.idx()];
-            if loaded.source.path.as_ref() != Some(&path) {
-                let other_path = &loaded.source.path;
-                Err(Error::Other(format!(
-                    "There are two different bundles with name {name:?} ({path:?}, {other_path:?})."
-                )))
-            } else {
-                Ok(*idx)
+        if let Some(idx) = self.bundle_by_name.get(name).copied() {
+            let loaded = &mut self.loaded[idx.idx()];
+            match &loaded.source.path {
+                Some(existing) if existing == &path => Ok(idx),
+                Some(other_path) => {
+                    Err(Error::Other(format!(
+                        "There are two different bundles with name {name:?} ({path:?}, {other_path:?})."
+                    )))
+                }
+                // The bundle was auto-loaded (e.g. a plugin attribute schema)
+                // and the user is now loading it from disk. Adopt the path so
+                // dependency resolution works, and stop treating it as
+                // internal — the user has it on their dependency graph.
+                None => {
+                    loaded.source.path = Some(path.clone());
+                    loaded.is_internal = false;
+                    self.bundle_by_path.insert(path, idx);
+                    Ok(idx)
+                }
             }
         } else {
             let mut schemas = HashMap::new();
@@ -598,7 +630,8 @@ impl Transformer {
         // match the transformer's internal indices.
         for loaded in &self.loaded {
             let metadata = loaded.source.manifest.metadata.clone();
-            ir.bundles.push(ir::Bundle::new(metadata));
+            ir.bundles
+                .push(ir::Bundle::new(metadata).with_is_internal(loaded.is_internal));
         }
 
         // Phase 2: allocate schemas globally and record the mapping.

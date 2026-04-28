@@ -147,19 +147,18 @@ mod tests {
     use super::*;
     use crate::transformer::Transformer;
 
-    /// A schema annotated with `#[attrs(plugin, target)]` is discovered and
-    /// registered. Implicit core::attrs::* import lets the user skip the
-    /// `import core::attrs::*` line; we still test both shapes.
+    /// The auto-loaded plugin attribute bundles (currently `py`) register
+    /// themselves under their plugin name and target via the `#[attrs(...)]`
+    /// meta attribute. A fresh transformer with no user bundle should
+    /// already have these in the registry — no user import required.
     #[test]
     fn registry_finds_attrs_marked_defs() {
-        // The std bundle alone has no #[attrs(...)]-marked defs.
         let transformer = Transformer::new();
         let ir = transformer.transform(ir::STD_BUNDLE_IDX);
         let registry = PluginRegistry::build(&ir);
         assert!(
-            registry.is_empty(),
-            "std bundle should not register any plugin schemas, got {} entries",
-            registry.len()
+            registry.get("py", AttrTarget::Opaque).is_some(),
+            "py-attrs bundle should register an opaque-target schema"
         );
     }
 }

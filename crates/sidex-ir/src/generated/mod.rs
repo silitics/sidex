@@ -1169,6 +1169,8 @@ pub mod ir {
         pub metadata: Metadata,
         #[doc = "The schemas of the bundle.\n"]
         pub schemas: ::std::vec::Vec<SchemaIdx>,
+        #[doc = "Whether the bundle is internal to the compiler.\n\nInternal bundles (the standard library, plugin attribute schemas\nauto-loaded by the compiler) are loaded automatically alongside any\nuser bundle so that the typed-attrs parser can validate plugin\nattributes. Code generators should usually skip them since their\ndefs are not part of the user's API surface.\n"]
+        pub is_internal: bool,
     }
     impl Bundle {
         #[doc = "Creates a new [`Bundle`]."]
@@ -1176,6 +1178,7 @@ pub mod ir {
             Self {
                 metadata,
                 schemas: ::std::default::Default::default(),
+                is_internal: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `metadata`."]
@@ -1198,6 +1201,16 @@ pub mod ir {
             self.schemas = schemas;
             self
         }
+        #[doc = "Sets the value of `is_internal`."]
+        pub fn set_is_internal(&mut self, is_internal: bool) -> &mut Self {
+            self.is_internal = is_internal;
+            self
+        }
+        #[doc = "Sets the value of `is_internal`."]
+        pub fn with_is_internal(mut self, is_internal: bool) -> Self {
+            self.is_internal = is_internal;
+            self
+        }
     }
     #[automatically_derived]
     impl __serde::Serialize for Bundle {
@@ -1206,9 +1219,10 @@ pub mod ir {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "Bundle", 2usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Bundle", 3usize)?;
             __record.serialize_field("metadata", &self.metadata)?;
             __record.serialize_field("schemas", &self.schemas)?;
+            __record.serialize_field("isInternal", &self.is_internal)?;
             __record.end()
         }
     }
@@ -1244,7 +1258,7 @@ pub mod ir {
                                 return ::core::result::Result::Err(
                                     __serde::de::Error::invalid_length(
                                         0usize,
-                                        &"record with 2 fields",
+                                        &"record with 3 fields",
                                     ),
                                 );
                             }
@@ -1256,13 +1270,22 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
+                            );
+                        }
+                    };
+                    let __field2 = match __serde::de::SeqAccess::next_element::<bool>(&mut __seq)? {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
                             );
                         }
                     };
                     ::core::result::Result::Ok(Bundle {
                         metadata: __field0,
                         schemas: __field1,
+                        is_internal: __field2,
                     })
                 }
                 #[inline]
@@ -1274,15 +1297,17 @@ pub mod ir {
                     __A: __serde::de::MapAccess<'de>,
                 {
                     #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] = &["metadata", "schemas"];
+                    const __IDENTIFIERS: &'static [&'static str] =
+                        &["metadata", "schemas", "isInternal"];
                     #[doc(hidden)]
                     const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"metadata\", \"schemas\"]";
+                        "an identifier in [\"metadata\", \"schemas\", \"isInternal\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {
                         __Identifier0,
                         __Identifier1,
+                        __Identifier2,
                         __Unknown,
                     }
                     #[doc(hidden)]
@@ -1305,6 +1330,7 @@ pub mod ir {
                             match __value {
                                 0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
                                 1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -1322,6 +1348,9 @@ pub mod ir {
                                 "schemas" => {
                                     ::core::result::Result::Ok(__Identifier::__Identifier1)
                                 }
+                                "isInternal" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
+                                }
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -1338,6 +1367,9 @@ pub mod ir {
                                 }
                                 b"schemas" => {
                                     ::core::result::Result::Ok(__Identifier::__Identifier1)
+                                }
+                                b"isInternal" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
                                 }
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
@@ -1361,6 +1393,7 @@ pub mod ir {
                         ::core::option::Option::None;
                     let mut __field1: ::core::option::Option<::std::vec::Vec<SchemaIdx>> =
                         ::core::option::Option::None;
+                    let mut __field2: ::core::option::Option<bool> = ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
                     {
@@ -1391,6 +1424,18 @@ pub mod ir {
                                     )?,
                                 );
                             }
+                            __Identifier::__Identifier2 => {
+                                if ::core::option::Option::is_some(&__field2) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "isInternal",
+                                        ),
+                                    );
+                                }
+                                __field2 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<bool>(&mut __map)?,
+                                );
+                            }
                             _ => {
                                 __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
                                     &mut __map,
@@ -1414,14 +1459,23 @@ pub mod ir {
                             );
                         }
                     };
+                    let __field2 = match __field2 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("isInternal"),
+                            );
+                        }
+                    };
                     ::core::result::Result::Ok(Bundle {
                         metadata: __field0,
                         schemas: __field1,
+                        is_internal: __field2,
                     })
                 }
             }
             #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["metadata", "schemas"];
+            const __FIELDS: &'static [&'static str] = &["metadata", "schemas", "isInternal"];
             __serde::Deserializer::deserialize_struct(
                 __deserializer,
                 "Bundle",
@@ -2300,7 +2354,7 @@ pub mod ir {
         #[doc = "The attributes of the schema.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\nPopulated by the compiler for plugins whose attribute schemas are\nloaded; raw [`attrs`] remains the round-trip form for unknown plugins.\n"]
-        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         #[doc = "The definitions of the schema.\n"]
         pub defs: ::std::vec::Vec<DefIdx>,
         #[doc = "The source of the schema.\n"]
@@ -2365,7 +2419,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> &mut Self {
             self.typed_attrs = typed_attrs;
             self
@@ -2373,7 +2427,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> Self {
             self.typed_attrs = typed_attrs;
             self
@@ -2502,7 +2556,7 @@ pub mod ir {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -2689,7 +2743,7 @@ pub mod ir {
                     let mut __field3: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     > = ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<::std::vec::Vec<DefIdx>> =
                         ::core::option::Option::None;
@@ -2761,7 +2815,10 @@ pub mod ir {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::collections::HashMap<::std::string::String, Value>,
+                                        ::std::collections::HashMap<
+                                            ::std::string::String,
+                                            ::serde_json::Value,
+                                        >,
                                     >(&mut __map)?,
                                 );
                             }
@@ -2910,7 +2967,7 @@ pub mod ir {
         #[doc = "The attributes of the definition.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\n"]
-        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         #[doc = "The kind of the definition.\n"]
         pub kind: DefKind,
         #[doc = "The optional span of the definition.\n"]
@@ -2983,7 +3040,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> &mut Self {
             self.typed_attrs = typed_attrs;
             self
@@ -2991,7 +3048,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> Self {
             self.typed_attrs = typed_attrs;
             self
@@ -3118,7 +3175,7 @@ pub mod ir {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -3294,7 +3351,7 @@ pub mod ir {
                     let mut __field4: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     > = ::core::option::Option::None;
                     let mut __field6: ::core::option::Option<DefKind> =
                         ::core::option::Option::None;
@@ -3374,7 +3431,10 @@ pub mod ir {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::collections::HashMap<::std::string::String, Value>,
+                                        ::std::collections::HashMap<
+                                            ::std::string::String,
+                                            ::serde_json::Value,
+                                        >,
                                     >(&mut __map)?,
                                 );
                             }
@@ -4540,7 +4600,7 @@ pub mod ir {
         #[doc = "The attributes of the field.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\n"]
-        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         #[doc = "The type of the field.\n"]
         pub typ: Type,
         #[doc = "Indicates whether the field is optional.\n"]
@@ -4594,7 +4654,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> &mut Self {
             self.typed_attrs = typed_attrs;
             self
@@ -4602,7 +4662,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> Self {
             self.typed_attrs = typed_attrs;
             self
@@ -4715,7 +4775,7 @@ pub mod ir {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -4887,7 +4947,7 @@ pub mod ir {
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     > = ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<Type> = ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<bool> = ::core::option::Option::None;
@@ -4943,7 +5003,10 @@ pub mod ir {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::collections::HashMap<::std::string::String, Value>,
+                                        ::std::collections::HashMap<
+                                            ::std::string::String,
+                                            ::serde_json::Value,
+                                        >,
                                     >(&mut __map)?,
                                 );
                             }
@@ -5291,7 +5354,7 @@ pub mod ir {
         #[doc = "The attributes of the variant.\n"]
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\n"]
-        pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        pub typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         #[doc = "The optional payload type of the variant.\n"]
         pub typ: ::std::option::Option<Type>,
         #[doc = "The optional span of the variant.\n"]
@@ -5342,7 +5405,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> &mut Self {
             self.typed_attrs = typed_attrs;
             self
@@ -5350,7 +5413,7 @@ pub mod ir {
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         ) -> Self {
             self.typed_attrs = typed_attrs;
             self
@@ -5452,7 +5515,7 @@ pub mod ir {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     >(&mut __seq)?
                     {
                         ::core::option::Option::Some(__value) => __value,
@@ -5603,7 +5666,7 @@ pub mod ir {
                     let mut __field2: ::core::option::Option<::std::vec::Vec<Attr>> =
                         ::core::option::Option::None;
                     let mut __field3: ::core::option::Option<
-                        ::std::collections::HashMap<::std::string::String, Value>,
+                        ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
                     > = ::core::option::Option::None;
                     let mut __field4: ::core::option::Option<::std::option::Option<Type>> =
                         ::core::option::Option::None;
@@ -5659,7 +5722,10 @@ pub mod ir {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::collections::HashMap<::std::string::String, Value>,
+                                        ::std::collections::HashMap<
+                                            ::std::string::String,
+                                            ::serde_json::Value,
+                                        >,
                                     >(&mut __map)?,
                                 );
                             }

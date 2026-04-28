@@ -359,11 +359,11 @@ fn arg_name(arg: &ir::Attr) -> Option<&str> {
 /// field it's targeting. Handles:
 ///   * Primitive AttrValue leaves (Bool / Number / String / Path).
 ///   * Bool fields with bare-path source args (`#[plugin(my_flag)]` → true).
-///   * Nested record-typed fields: bare path → all-default record;
-///     list `name(args)` → recurse into the record's fields.
-///   * Variant-typed fields with tag-only cases: source `name = path`
-///     resolves to the matching variant case; output is the canonical
-///     tag as a JSON string (the shape serde gives `serialize_tag`).
+///   * Nested record-typed fields: bare path → all-default record; list `name(args)` →
+///     recurse into the record's fields.
+///   * Variant-typed fields with tag-only cases: source `name = path` resolves to the
+///     matching variant case; output is the canonical tag as a JSON string (the shape
+///     serde gives `serialize_tag`).
 ///   * `core::attrs::TypeRef` fields: path resolves to a `DefRef`.
 fn parse_field_value(
     arg: &ir::Attr,
@@ -391,11 +391,13 @@ fn parse_field_value(
     match &arg.kind {
         ir::AttrKind::Assign(assign) => Ok(attr_value_to_json(&assign.value)),
         ir::AttrKind::Path(_) => Ok(Value::Bool(true)),
-        ir::AttrKind::List(_) => Err(Diagnostic::error(format!(
-            "Field `{}` is a primitive but the source attribute is a list.",
-            field.name.as_str(),
-        ))
-        .with_span(arg.span.clone())),
+        ir::AttrKind::List(_) => {
+            Err(Diagnostic::error(format!(
+                "Field `{}` is a primitive but the source attribute is a list.",
+                field.name.as_str(),
+            ))
+            .with_span(arg.span.clone()))
+        }
     }
 }
 
@@ -471,11 +473,10 @@ fn parse_type_ref_field(
         .with_span(arg.span.clone()));
     };
     let Some(def_ref) = resolve_type_ref_path(path, enclosing_schema, ir) else {
-        return Err(Diagnostic::error(format!(
-            "Cannot resolve type reference `{}`.",
-            path
-        ))
-        .with_span(arg.span.clone()));
+        return Err(
+            Diagnostic::error(format!("Cannot resolve type reference `{}`.", path))
+                .with_span(arg.span.clone()),
+        );
     };
     Ok(def_ref_to_json(def_ref))
 }
@@ -491,16 +492,22 @@ fn parse_nested_record_field<'a>(
     match &arg.kind {
         // Bare-path: parse against an empty arg list; valid only if every
         // field in the nested record is optional.
-        ir::AttrKind::Path(_) => parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def),
+        ir::AttrKind::Path(_) => {
+            parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def)
+        }
         // List form: recurse into the record's fields.
-        ir::AttrKind::List(_) => parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def),
-        ir::AttrKind::Assign(_) => Err(Diagnostic::error(format!(
-            "Field `{}` is a record — use `{}(...)` form, not `{} = ...`.",
-            field_name_for_diag(arg),
-            field_name_for_diag(arg),
-            field_name_for_diag(arg),
-        ))
-        .with_span(arg.span.clone())),
+        ir::AttrKind::List(_) => {
+            parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def)
+        }
+        ir::AttrKind::Assign(_) => {
+            Err(Diagnostic::error(format!(
+                "Field `{}` is a record — use `{}(...)` form, not `{} = ...`.",
+                field_name_for_diag(arg),
+                field_name_for_diag(arg),
+                field_name_for_diag(arg),
+            ))
+            .with_span(arg.span.clone()))
+        }
     }
 }
 

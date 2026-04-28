@@ -84,6 +84,15 @@ record Bundle {
     /// The schemas of the bundle.
     #[default]
     schemas: [SchemaIdx],
+    /// Whether the bundle is internal to the compiler.
+    ///
+    /// Internal bundles (the standard library, plugin attribute schemas
+    /// auto-loaded by the compiler) are loaded automatically alongside any
+    /// user bundle so that the typed-attrs parser can validate plugin
+    /// attributes. Code generators should usually skip them since their
+    /// defs are not part of the user's API surface.
+    #[default]
+    is_internal: bool,
 }
 
 /// Metadata of a bundle.
