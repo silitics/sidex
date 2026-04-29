@@ -2,6 +2,7 @@
 
 pub mod attrs {
     #![doc = "Typed attributes for the Rust codegen target.\n\nSource `#[rust(...)]` attributes are validated against these schemas at\nIR build time and stored on the IR's `typed_attrs[\"rust\"]` map. Each\nrecord uses `#[json(rename_all = \"snake_case\")]` so wire keys match the\nparser's emit shape.\n"]
+    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
     #[allow(unused)]
     use :: serde as __serde;
     #[allow(unused)]
@@ -15,6 +16,10 @@ pub mod attrs {
         pub is_super: ::std::option::Option<bool>,
     }
     #[automatically_derived]
+    impl __sidex_serde::SidexType for PubVis {
+        type Encoding = __sidex_serde::AsSelf;
+    }
+    #[automatically_derived]
     impl __serde::Serialize for PubVis {
         fn serialize<__S: __serde::Serializer>(
             &self,
@@ -22,14 +27,26 @@ pub mod attrs {
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
                 __sidex_serde::ser::RecordSerializer::new(__serializer, "PubVis", 2usize)?;
-            __record.serialize_optional_field(
-                "is_crate",
-                ::core::option::Option::as_ref(&self.is_crate),
-            )?;
-            __record.serialize_optional_field(
-                "is_super",
-                ::core::option::Option::as_ref(&self.is_super),
-            )?;
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.is_crate),
+                    |__v| __sidex_serde::SerializeAsWrap::<bool, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record.serialize_optional_field(
+                    "is_crate",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.is_super),
+                    |__v| __sidex_serde::SerializeAsWrap::<bool, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record.serialize_optional_field(
+                    "is_super",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
             __record.end()
         }
     }
@@ -59,10 +76,13 @@ pub mod attrs {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<bool>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<bool>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
@@ -70,10 +90,13 @@ pub mod attrs {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<bool>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<bool>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
@@ -195,8 +218,12 @@ pub mod attrs {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<bool>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<bool>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier1 => {
@@ -209,8 +236,12 @@ pub mod attrs {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<bool>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<bool>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             _ => {
@@ -257,6 +288,10 @@ pub mod attrs {
         pub attr: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     }
     #[automatically_derived]
+    impl __sidex_serde::SidexType for TypeAttrs {
+        type Encoding = __sidex_serde::AsSelf;
+    }
+    #[automatically_derived]
     impl __serde::Serialize for TypeAttrs {
         fn serialize<__S: __serde::Serializer>(
             &self,
@@ -264,11 +299,44 @@ pub mod attrs {
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
                 __sidex_serde::ser::RecordSerializer::new(__serializer, "TypeAttrs", 3usize)?;
-            __record.serialize_optional_field("typ", ::core::option::Option::as_ref(&self.typ))?;
-            __record
-                .serialize_optional_field("derive", ::core::option::Option::as_ref(&self.derive))?;
-            __record
-                .serialize_optional_field("attr", ::core::option::Option::as_ref(&self.attr))?;
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.typ),
+                    |__v| {
+                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
+                    },
+                );
+                __record
+                    .serialize_optional_field("typ", ::core::option::Option::as_ref(&__wrapped))?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.derive),
+                    |__v| {
+                        __sidex_serde::SerializeAsWrap::<
+                            ::std::vec::Vec<::std::string::String>,
+                            ::std::vec::Vec<__sidex_serde::AsSelf>,
+                        >::new(__v)
+                    },
+                );
+                __record.serialize_optional_field(
+                    "derive",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.attr),
+                    |__v| {
+                        __sidex_serde::SerializeAsWrap::<
+                            ::std::vec::Vec<::std::string::String>,
+                            ::std::vec::Vec<__sidex_serde::AsSelf>,
+                        >::new(__v)
+                    },
+                );
+                __record
+                    .serialize_optional_field("attr", ::core::option::Option::as_ref(&__wrapped))?;
+            }
             __record.end()
         }
     }
@@ -298,10 +366,13 @@ pub mod attrs {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<::std::string::String>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<::std::string::String>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(0usize, &"record with 3 fields"),
@@ -309,10 +380,13 @@ pub mod attrs {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                            ::std::option::Option<::std::vec::Vec<__sidex_serde::AsSelf>>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
@@ -320,10 +394,13 @@ pub mod attrs {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                            ::std::option::Option<::std::vec::Vec<__sidex_serde::AsSelf>>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
@@ -447,8 +524,12 @@ pub mod attrs {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<::std::string::String>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<::std::string::String>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier1 => {
@@ -461,10 +542,16 @@ pub mod attrs {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<
-                                            ::std::vec::Vec<::std::string::String>,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<
+                                                ::std::vec::Vec<::std::string::String>,
+                                            >,
+                                            ::std::option::Option<
+                                                ::std::vec::Vec<__sidex_serde::AsSelf>,
+                                            >,
                                         >,
-                                    >(&mut __map)?,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -475,10 +562,16 @@ pub mod attrs {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<
-                                            ::std::vec::Vec<::std::string::String>,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<
+                                                ::std::vec::Vec<::std::string::String>,
+                                            >,
+                                            ::std::option::Option<
+                                                ::std::vec::Vec<__sidex_serde::AsSelf>,
+                                            >,
                                         >,
-                                    >(&mut __map)?,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             _ => {
@@ -538,6 +631,10 @@ pub mod attrs {
         pub wrap: ::std::option::Option<::std::string::String>,
     }
     #[automatically_derived]
+    impl __sidex_serde::SidexType for FieldAttrs {
+        type Encoding = __sidex_serde::AsSelf;
+    }
+    #[automatically_derived]
     impl __serde::Serialize for FieldAttrs {
         fn serialize<__S: __serde::Serializer>(
             &self,
@@ -545,22 +642,76 @@ pub mod attrs {
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
                 __sidex_serde::ser::RecordSerializer::new(__serializer, "FieldAttrs", 7usize)?;
-            __record
-                .serialize_optional_field("name", ::core::option::Option::as_ref(&self.name))?;
-            __record
-                .serialize_optional_field("is_pub", ::core::option::Option::as_ref(&self.is_pub))?;
-            __record.serialize_optional_field(
-                "is_private",
-                ::core::option::Option::as_ref(&self.is_private),
-            )?;
-            __record
-                .serialize_optional_field("is_box", ::core::option::Option::as_ref(&self.is_box))?;
-            __record
-                .serialize_optional_field("is_arc", ::core::option::Option::as_ref(&self.is_arc))?;
-            __record
-                .serialize_optional_field("is_rc", ::core::option::Option::as_ref(&self.is_rc))?;
-            __record
-                .serialize_optional_field("wrap", ::core::option::Option::as_ref(&self.wrap))?;
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.name),
+                    |__v| {
+                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
+                    },
+                );
+                __record
+                    .serialize_optional_field("name", ::core::option::Option::as_ref(&__wrapped))?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.is_pub),
+                    |__v| __sidex_serde::SerializeAsWrap::<PubVis, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record.serialize_optional_field(
+                    "is_pub",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.is_private),
+                    |__v| __sidex_serde::SerializeAsWrap::<bool, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record.serialize_optional_field(
+                    "is_private",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.is_box),
+                    |__v| __sidex_serde::SerializeAsWrap::<bool, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record.serialize_optional_field(
+                    "is_box",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.is_arc),
+                    |__v| __sidex_serde::SerializeAsWrap::<bool, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record.serialize_optional_field(
+                    "is_arc",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.is_rc),
+                    |__v| __sidex_serde::SerializeAsWrap::<bool, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record.serialize_optional_field(
+                    "is_rc",
+                    ::core::option::Option::as_ref(&__wrapped),
+                )?;
+            }
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.wrap),
+                    |__v| {
+                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
+                    },
+                );
+                __record
+                    .serialize_optional_field("wrap", ::core::option::Option::as_ref(&__wrapped))?;
+            }
             __record.end()
         }
     }
@@ -590,10 +741,13 @@ pub mod attrs {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<::std::string::String>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<::std::string::String>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(0usize, &"record with 7 fields"),
@@ -601,10 +755,13 @@ pub mod attrs {
                         }
                     };
                     let __field1 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<PubVis>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<PubVis>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(1usize, &"record with 7 fields"),
@@ -612,10 +769,13 @@ pub mod attrs {
                         }
                     };
                     let __field2 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<bool>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<bool>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(2usize, &"record with 7 fields"),
@@ -623,10 +783,13 @@ pub mod attrs {
                         }
                     };
                     let __field3 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<bool>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<bool>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(3usize, &"record with 7 fields"),
@@ -634,10 +797,13 @@ pub mod attrs {
                         }
                     };
                     let __field4 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<bool>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<bool>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(4usize, &"record with 7 fields"),
@@ -645,10 +811,13 @@ pub mod attrs {
                         }
                     };
                     let __field5 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<bool>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<bool>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(5usize, &"record with 7 fields"),
@@ -656,10 +825,13 @@ pub mod attrs {
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<::std::string::String>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<::std::string::String>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(6usize, &"record with 7 fields"),
@@ -825,8 +997,12 @@ pub mod attrs {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<::std::string::String>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<::std::string::String>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier1 => {
@@ -839,8 +1015,12 @@ pub mod attrs {
                                 }
                                 __field1 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<PubVis>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<PubVis>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier2 => {
@@ -853,8 +1033,12 @@ pub mod attrs {
                                 }
                                 __field2 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<bool>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<bool>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier3 => {
@@ -867,8 +1051,12 @@ pub mod attrs {
                                 }
                                 __field3 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<bool>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<bool>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier4 => {
@@ -881,8 +1069,12 @@ pub mod attrs {
                                 }
                                 __field4 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<bool>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<bool>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier5 => {
@@ -895,8 +1087,12 @@ pub mod attrs {
                                 }
                                 __field5 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<bool>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<bool>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             __Identifier::__Identifier6 => {
@@ -907,8 +1103,12 @@ pub mod attrs {
                                 }
                                 __field6 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<::std::string::String>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<::std::string::String>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             _ => {

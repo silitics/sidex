@@ -115,6 +115,12 @@ impl RustGenerator {
                 Ok(quote! {
                     pub mod #name {
                         #![doc = #docs]
+                        // Generated code is emitted mechanically and uses
+                        // shapes (fully-qualified paths, while-let-Some
+                        // loops, redundant patterns) that clippy doesn't
+                        // love. Silence clippy at the module boundary;
+                        // rustc warnings stay on so codegen bugs surface.
+                        #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 
                         #(#schema_preambles)*
                         #(#defs)*

@@ -2,6 +2,7 @@
 
 pub mod attrs {
     #![doc = "Typed attributes for the Python codegen target.\n\nPlugins use these schemas to drive code generation; the compiler parses\nsource `#[py(...)]` attributes against them and stores the result in the\nIR's `typed_attrs[\"py\"]` field. Downstream codegens deserialize that\nvalue directly into the generated Rust types via `serde_json::from_value`.\n"]
+    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
     #[allow(unused)]
     use :: serde as __serde;
     #[allow(unused)]
@@ -13,6 +14,10 @@ pub mod attrs {
         pub typ: ::std::option::Option<::std::string::String>,
     }
     #[automatically_derived]
+    impl __sidex_serde::SidexType for OpaqueTypeAttrs {
+        type Encoding = __sidex_serde::AsSelf;
+    }
+    #[automatically_derived]
     impl __serde::Serialize for OpaqueTypeAttrs {
         fn serialize<__S: __serde::Serializer>(
             &self,
@@ -20,7 +25,16 @@ pub mod attrs {
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
                 __sidex_serde::ser::RecordSerializer::new(__serializer, "OpaqueTypeAttrs", 1usize)?;
-            __record.serialize_optional_field("typ", ::core::option::Option::as_ref(&self.typ))?;
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.typ),
+                    |__v| {
+                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
+                    },
+                );
+                __record
+                    .serialize_optional_field("typ", ::core::option::Option::as_ref(&__wrapped))?;
+            }
             __record.end()
         }
     }
@@ -50,10 +64,13 @@ pub mod attrs {
                     __A: __serde::de::SeqAccess<'de>,
                 {
                     let __field0 = match __serde::de::SeqAccess::next_element::<
-                        ::std::option::Option<::std::string::String>,
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<::std::string::String>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
                     >(&mut __seq)?
                     {
-                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
                                 __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
@@ -156,8 +173,12 @@ pub mod attrs {
                                 }
                                 __field0 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
-                                        ::std::option::Option<::std::string::String>,
-                                    >(&mut __map)?,
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<::std::string::String>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
                                 );
                             }
                             _ => {
