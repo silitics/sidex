@@ -320,6 +320,19 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
                 quote!("from . import @module as @alias  # noqa: F401")
             })
             .collect();
+        // Sibling-schema imports are gated on `TYPE_CHECKING` because
+        // sibling schemas can form import cycles (modules.py uses
+        // circuits.X, namespaces.py uses modules.Y, circuits.py
+        // transitively reaches namespaces — no topological order
+        // exists). Eager attribute access into a partially-loaded
+        // sibling raises `AttributeError`, which pydantic doesn't
+        // recover from. Keeping the imports type-only means
+        // annotations like `_schema_circuits.CircuitInfo` evaluate to
+        // `NameError` at class-construction time; pydantic catches
+        // that, marks the model as `__pydantic_complete__ = False`,
+        // and the bundle's `__init__.py` resolves everything by
+        // pumping `_schema_*` aliases and calling `model_rebuild()`
+        // once every sibling has finished loading.
         preamble_blocks.push(quote!(
             r#"
 
@@ -328,12 +341,33 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
         ));
     }
 
-    let mut externals: Vec<_> = ctx.bundle_ctx.cfg.external.iter().collect();
-    externals.sort_by_key(|(k, _)| (*k).clone());
-    if !externals.is_empty() {
-        let lines: Vec<Code> = externals
+    // Cross-bundle imports: emit one `import <path>` per other bundle this
+    // schema references. The path comes from the user's `[backend.py.external]`
+    // table when present; otherwise we fall back to the bundle's own name,
+    // matching the convention that Python packages match Sidex bundle names.
+    // This must be driven by *referenced* bundles rather than just
+    // `cfg.external` — many production schemas don't bother to declare a
+    // `[backend.py]` block, but their `resolve_type` output still emits
+    // `<bundle>.<schema>.<Type>` references, so we have to import them.
+    let mut external_paths: Vec<String> =
+        referenced_bundles(unit, ctx.bundle_ctx.cfg, ctx.schema_idx, ctx.bundle_ctx.bundle_idx)
+            .into_iter()
+            .map(|b| {
+                let bundle = &unit[b];
+                ctx.bundle_ctx
+                    .cfg
+                    .external
+                    .get(&bundle.metadata.name)
+                    .cloned()
+                    .unwrap_or_else(|| bundle.metadata.name.clone())
+            })
+            .collect();
+    external_paths.sort();
+    external_paths.dedup();
+    if !external_paths.is_empty() {
+        let lines: Vec<Code> = external_paths
             .iter()
-            .map(|(_, path)| quote!("import @path  # noqa: F401"))
+            .map(|path| quote!("import @path  # noqa: F401"))
             .collect();
         preamble_blocks.push(quote!(
             r#"
@@ -496,7 +530,7 @@ fn generate_record(ctx: &SchemaCtx, def: &ir::Def, rec: &ir::RecordTypeDef) -> R
 
         class @name(pydantic.BaseModel@generics):
             @(@docstring_block)*
-            model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)
+            model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
             @(@fields)*
         "#
@@ -597,7 +631,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
 
 
                         class @class_name(pydantic.BaseModel@gen_bases):
-                            model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)
+                            model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                             value: @inner = pydantic.Field(validation_alias="@json_name", serialization_alias="@json_name")
                         "#
@@ -701,17 +735,59 @@ fn generate_internally_tagged_variant(
             json_attrs.content.is_none() && ctx.bundle_ctx.unit.record_type(&resolved).is_some();
 
         if is_flat_record {
-            let base = ctx.resolve_type(def, &resolved);
-            Ok(quote!(
-                r#"
+            // Same-schema records are inherited from directly. Cross-schema
+            // (same bundle, different schema) and cross-bundle records are
+            // *inlined* — we walk the record's fields and emit them on the
+            // variant case class. Inheritance from a `_schema_X.Y`-style
+            // base would either require a runtime sibling import (which
+            // breaks under cycles between sibling schemas; pydantic's
+            // model-rebuild fallback recovers from `NameError`-deferred
+            // annotations but Python itself raises before pydantic gets a
+            // chance for class bases) or fail outright at class creation.
+            let resolved_inst = match &resolved.kind {
+                ir::TypeKind::Instance(inst) => inst,
+                _ => unreachable!("`is_flat_record` guarantees an Instance type"),
+            };
+            let target_def_ref = resolved_inst.def;
+            let same_schema = target_def_ref.bundle == ctx.bundle_ctx.bundle_idx
+                && target_def_ref.schema == ctx.schema_idx;
+            if same_schema {
+                let base = ctx.resolve_type(def, &resolved);
+                Ok(quote!(
+                    r#"
 
 
-                class @class_name(@base):
-                    model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)
+                    class @class_name(@base):
+                        model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
-                    @tag_field
-                "#
-            ))
+                        @tag_field
+                    "#
+                ))
+            } else {
+                let target_def = &ctx.bundle_ctx.unit[target_def_ref];
+                let target_record = match &target_def.kind {
+                    ir::DefKind::RecordType(r) => r,
+                    _ => unreachable!("`is_flat_record` guarantees a record def"),
+                };
+                let target_ty_json = json_record_type_attrs(target_def)?;
+                let inlined_fields: Vec<Code> = target_record
+                    .fields
+                    .iter()
+                    .map(|f| generate_record_field(ctx, target_def, f, &target_ty_json))
+                    .collect::<Result<Vec<_>>>()?;
+                let gen_bases = generic_bases_for(used_vars);
+                Ok(quote!(
+                    r#"
+
+
+                    class @class_name(pydantic.BaseModel@gen_bases):
+                        model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
+
+                        @tag_field
+                        @(@inlined_fields)*
+                    "#
+                ))
+            }
         } else {
             let content_json = ty_json.content_field_name(json_attrs);
             let content_py = sanitize_py_name(&to_snake_case(&content_json));
@@ -725,7 +801,7 @@ fn generate_internally_tagged_variant(
 
 
                 class @class_name(pydantic.BaseModel@gen_bases):
-                    model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)
+                    model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                     @tag_field
                     @content_field
@@ -739,7 +815,7 @@ fn generate_internally_tagged_variant(
 
 
             class @class_name(pydantic.BaseModel@gen_bases):
-                model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)
+                model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                 @tag_field
             "#
@@ -785,7 +861,7 @@ fn generate_adjacently_tagged_variant(
 
 
         class @class_name(pydantic.BaseModel@gen_bases):
-            model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True)
+            model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
             @tag_field
             @(@content_field_block)*
@@ -902,6 +978,78 @@ fn collect_referenced_schemas(
             }
         }
     }
+}
+
+fn collect_referenced_bundles(
+    typ: &ir::Type,
+    unit: &ir::Ir,
+    cfg: &Config,
+    bundle_idx: ir::BundleIdx,
+    out: &mut Vec<ir::BundleIdx>,
+) {
+    match &typ.kind {
+        ir::TypeKind::TypeVar(_) => {}
+        ir::TypeKind::Instance(inst) => {
+            // Skip the current bundle, internal bundles (core/meta/etc.),
+            // and types whose qualified name is mapped through the
+            // `types.table` to a native Python type (no import needed).
+            if inst.def.bundle != bundle_idx
+                && !unit[inst.def.bundle].is_internal
+                && !out.contains(&inst.def.bundle)
+            {
+                let bundle = &unit[inst.def.bundle];
+                let schema = &unit[inst.def.schema];
+                let def = &unit[inst.def];
+                let qualified = format!(
+                    "::{}::{}::{}",
+                    bundle.metadata.name,
+                    schema.name,
+                    def.name.as_str()
+                );
+                if !cfg.types.table.contains_key(&qualified) {
+                    out.push(inst.def.bundle);
+                }
+            }
+            for sub in &inst.subst {
+                collect_referenced_bundles(sub, unit, cfg, bundle_idx, out);
+            }
+        }
+    }
+}
+
+/// Other bundles whose types are referenced from definitions in `schema_idx`,
+/// excluding builtin/internal bundles and types resolved via `cfg.types.table`.
+fn referenced_bundles(
+    unit: &ir::Ir,
+    cfg: &Config,
+    schema_idx: ir::SchemaIdx,
+    bundle_idx: ir::BundleIdx,
+) -> Vec<ir::BundleIdx> {
+    let mut refs = Vec::new();
+    for (_, def) in unit.defs_of(schema_idx) {
+        match &def.kind {
+            ir::DefKind::TypeAlias(a) => {
+                collect_referenced_bundles(&a.aliased, unit, cfg, bundle_idx, &mut refs);
+            }
+            ir::DefKind::RecordType(r) => {
+                for field in &r.fields {
+                    collect_referenced_bundles(&field.typ, unit, cfg, bundle_idx, &mut refs);
+                }
+            }
+            ir::DefKind::VariantType(v) => {
+                for variant in &v.variants {
+                    if let Some(typ) = &variant.typ {
+                        collect_referenced_bundles(typ, unit, cfg, bundle_idx, &mut refs);
+                    }
+                }
+            }
+            ir::DefKind::WrapperType(w) => {
+                collect_referenced_bundles(&w.wrapped, unit, cfg, bundle_idx, &mut refs);
+            }
+            ir::DefKind::OpaqueType(_) => {}
+        }
+    }
+    refs
 }
 
 fn referenced_schemas(
