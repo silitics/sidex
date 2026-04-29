@@ -349,19 +349,23 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
     // `cfg.external` — many production schemas don't bother to declare a
     // `[backend.py]` block, but their `resolve_type` output still emits
     // `<bundle>.<schema>.<Type>` references, so we have to import them.
-    let mut external_paths: Vec<String> =
-        referenced_bundles(unit, ctx.bundle_ctx.cfg, ctx.schema_idx, ctx.bundle_ctx.bundle_idx)
-            .into_iter()
-            .map(|b| {
-                let bundle = &unit[b];
-                ctx.bundle_ctx
-                    .cfg
-                    .external
-                    .get(&bundle.metadata.name)
-                    .cloned()
-                    .unwrap_or_else(|| bundle.metadata.name.clone())
-            })
-            .collect();
+    let mut external_paths: Vec<String> = referenced_bundles(
+        unit,
+        ctx.bundle_ctx.cfg,
+        ctx.schema_idx,
+        ctx.bundle_ctx.bundle_idx,
+    )
+    .into_iter()
+    .map(|b| {
+        let bundle = &unit[b];
+        ctx.bundle_ctx
+            .cfg
+            .external
+            .get(&bundle.metadata.name)
+            .cloned()
+            .unwrap_or_else(|| bundle.metadata.name.clone())
+    })
+    .collect();
     external_paths.sort();
     external_paths.dedup();
     if !external_paths.is_empty() {
@@ -626,6 +630,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
 
                 if let Some(typ) = &variant.typ {
                     let inner = ctx.resolve_type(def, typ);
+                    let payload_method = field_payload_method("value", &inner);
                     variant_classes.push(quote!(
                         r#"
 
@@ -634,6 +639,8 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
                             model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                             value: @inner = pydantic.Field(validation_alias="@json_name", serialization_alias="@json_name")
+
+                            @payload_method
                         "#
                     ));
                 } else {
@@ -729,73 +736,61 @@ fn generate_internally_tagged_variant(
     tag_needs_alias: bool,
 ) -> Result<Code> {
     let tag_field = tag_field_line(tag_py, tag_json, json_name, tag_needs_alias);
+    let gen_bases = generic_bases_for(used_vars);
     if let Some(typ) = &variant.typ {
         let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
         let is_flat_record =
             json_attrs.content.is_none() && ctx.bundle_ctx.unit.record_type(&resolved).is_some();
 
         if is_flat_record {
-            // Same-schema records are inherited from directly. Cross-schema
-            // (same bundle, different schema) and cross-bundle records are
-            // *inlined* — we walk the record's fields and emit them on the
-            // variant case class. Inheritance from a `_schema_X.Y`-style
-            // base would either require a runtime sibling import (which
-            // breaks under cycles between sibling schemas; pydantic's
-            // model-rebuild fallback recovers from `NameError`-deferred
-            // annotations but Python itself raises before pydantic gets a
-            // chance for class bases) or fail outright at class creation.
+            // Flat-record variant cases *always* inline the target record's
+            // fields rather than inheriting from it. Inheritance from a
+            // sibling schema's class breaks at class-definition time
+            // (`_schema_X` is `TYPE_CHECKING`-gated, so the alias doesn't
+            // exist at runtime); inheritance from a same-schema class
+            // would technically work, but going through the same code
+            // path for every variant case keeps the API uniform. The
+            // logical relationship to the base record is exposed through
+            // a `.payload()` method that constructs a fresh instance on
+            // demand.
             let resolved_inst = match &resolved.kind {
                 ir::TypeKind::Instance(inst) => inst,
                 _ => unreachable!("`is_flat_record` guarantees an Instance type"),
             };
             let target_def_ref = resolved_inst.def;
-            let same_schema = target_def_ref.bundle == ctx.bundle_ctx.bundle_idx
-                && target_def_ref.schema == ctx.schema_idx;
-            if same_schema {
-                let base = ctx.resolve_type(def, &resolved);
-                Ok(quote!(
-                    r#"
+            let target_def = &ctx.bundle_ctx.unit[target_def_ref];
+            let target_record = match &target_def.kind {
+                ir::DefKind::RecordType(r) => r,
+                _ => unreachable!("`is_flat_record` guarantees a record def"),
+            };
+            let target_ty_json = json_record_type_attrs(target_def)?;
+            let inlined_fields: Vec<Code> = target_record
+                .fields
+                .iter()
+                .map(|f| generate_record_field(ctx, target_def, f, &target_ty_json))
+                .collect::<Result<Vec<_>>>()?;
+            let payload_method = inlined_payload_method(ctx, target_def_ref, target_record);
+            Ok(quote!(
+                r#"
 
 
-                    class @class_name(@base):
-                        model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
+                class @class_name(pydantic.BaseModel@gen_bases):
+                    model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
-                        @tag_field
-                    "#
-                ))
-            } else {
-                let target_def = &ctx.bundle_ctx.unit[target_def_ref];
-                let target_record = match &target_def.kind {
-                    ir::DefKind::RecordType(r) => r,
-                    _ => unreachable!("`is_flat_record` guarantees a record def"),
-                };
-                let target_ty_json = json_record_type_attrs(target_def)?;
-                let inlined_fields: Vec<Code> = target_record
-                    .fields
-                    .iter()
-                    .map(|f| generate_record_field(ctx, target_def, f, &target_ty_json))
-                    .collect::<Result<Vec<_>>>()?;
-                let gen_bases = generic_bases_for(used_vars);
-                Ok(quote!(
-                    r#"
+                    @tag_field
+                    @(@inlined_fields)*
 
-
-                    class @class_name(pydantic.BaseModel@gen_bases):
-                        model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
-
-                        @tag_field
-                        @(@inlined_fields)*
-                    "#
-                ))
-            }
+                    @payload_method
+                "#
+            ))
         } else {
             let content_json = ty_json.content_field_name(json_attrs);
             let content_py = sanitize_py_name(&to_snake_case(&content_json));
             let content_alias = content_py != content_json;
             let inner = ctx.resolve_type(def, typ);
-            let gen_bases = generic_bases_for(used_vars);
             let content_field =
                 content_field_line(&content_py, &content_json, &inner, content_alias);
+            let payload_method = field_payload_method(&content_py, &inner);
             Ok(quote!(
                 r#"
 
@@ -805,11 +800,12 @@ fn generate_internally_tagged_variant(
 
                     @tag_field
                     @content_field
+
+                    @payload_method
                 "#
             ))
         }
     } else {
-        let gen_bases = generic_bases_for(used_vars);
         Ok(quote!(
             r#"
 
@@ -844,16 +840,19 @@ fn generate_adjacently_tagged_variant(
     let content_py = sanitize_py_name(&to_snake_case(&content_json));
     let content_alias = content_py != content_json;
 
-    let content_field_block = if let Some(typ) = &variant.typ {
+    let (content_field_block, payload_method_block) = if let Some(typ) = &variant.typ {
         let inner = ctx.resolve_type(def, typ);
-        vec![content_field_line(
-            &content_py,
-            &content_json,
-            &inner,
-            content_alias,
-        )]
+        (
+            vec![content_field_line(
+                &content_py,
+                &content_json,
+                &inner,
+                content_alias,
+            )],
+            vec![field_payload_method(&content_py, &inner)],
+        )
     } else {
-        Vec::new()
+        (Vec::new(), Vec::new())
     };
 
     Ok(quote!(
@@ -865,6 +864,8 @@ fn generate_adjacently_tagged_variant(
 
             @tag_field
             @(@content_field_block)*
+
+            @(@payload_method_block)*
         "#
     ))
 }
@@ -887,6 +888,88 @@ fn content_field_line(py_name: &str, json_name: &str, type_expr: &str, needs_ali
     } else {
         quote!("@py_name: @type_expr")
     }
+}
+
+/// Translation method for an inlined flat-record variant case. Emits a
+/// `payload(self) -> "Base"` returning a freshly constructed instance of the
+/// base record. The kwargs use the Python field names on both sides
+/// (`field=self.field`); pydantic accepts the Python attribute name
+/// regardless of any JSON alias.
+///
+/// Cross-schema references go through a method-local `from . import` so the
+/// translation works even when the variant module is imported standalone
+/// (i.e., before the bundle's `__init__.py` has wired up the
+/// `_schema_<name>` aliases).
+fn inlined_payload_method(
+    ctx: &SchemaCtx,
+    target_def_ref: ir::DefRef,
+    target_record: &ir::RecordTypeDef,
+) -> Code {
+    let unit = ctx.bundle_ctx.unit;
+    let bundle = &unit[target_def_ref.bundle];
+    let schema = &unit[target_def_ref.schema];
+    let target_def = &unit[target_def_ref];
+    let class_name = target_def.name.as_str();
+
+    let kwargs = target_record
+        .fields
+        .iter()
+        .map(|f| {
+            let py = sanitize_py_name(&to_snake_case(f.name.as_str()));
+            format!("{py}=self.{py}")
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    let same_bundle = target_def_ref.bundle == ctx.bundle_ctx.bundle_idx;
+    let same_schema = same_bundle && target_def_ref.schema == ctx.schema_idx;
+
+    if same_schema {
+        quote!(
+            r#"
+            def payload(self) -> "@class_name":
+                return @class_name(@kwargs)
+            "#
+        )
+    } else if same_bundle {
+        let module = sanitize_py_name(schema.name.as_str());
+        let alias = format!("_schema_{}", schema.name);
+        quote!(
+            r#"
+            def payload(self) -> "@alias.@class_name":
+                from . import @module as @alias
+                return @alias.@class_name(@kwargs)
+            "#
+        )
+    } else {
+        let ext = ctx
+            .bundle_ctx
+            .cfg
+            .external
+            .get(&bundle.metadata.name)
+            .cloned()
+            .unwrap_or_else(|| bundle.metadata.name.clone());
+        let module_schema = sanitize_py_name(schema.name.as_str());
+        let qualified = format!("{ext}.{module_schema}.{class_name}");
+        quote!(
+            r#"
+            def payload(self) -> "@qualified":
+                return @qualified(@kwargs)
+            "#
+        )
+    }
+}
+
+/// Translation method for a variant case whose payload is held in a single
+/// field (externally-tagged `value`, adjacently-tagged `content`,
+/// internally-tagged `content`). Just unwraps the field.
+fn field_payload_method(field_py: &str, type_expr: &str) -> Code {
+    quote!(
+        r#"
+        def payload(self) -> "@type_expr":
+            return self.@field_py
+        "#
+    )
 }
 
 fn doc_comment_lines(def: &ir::Def) -> Vec<Code> {

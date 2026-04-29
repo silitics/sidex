@@ -65,20 +65,27 @@ class TestVariantInternallyTagged:
         obj = adapter.validate_json((FIXTURES / "VariantInternallyTagged/data-variant-a.json").read_text())
         assert isinstance(obj, data.VariantInternallyTagged_A)
 
-    def test_variant_e_inherits_record(self, data):
+    def test_variant_e_inlines_record(self, data):
         adapter = self._adapter(data)
         obj = adapter.validate_json((FIXTURES / "VariantInternallyTagged/data-variant-e-with-optional.json").read_text())
         assert isinstance(obj, data.VariantInternallyTagged_E)
-        assert isinstance(obj, data.VariantTestRecord)
         assert obj.a == 42
         assert obj.b == "Hello World!"
+        payload = obj.payload()
+        assert isinstance(payload, data.VariantTestRecord)
+        assert payload.a == 42
+        assert payload.b == "Hello World!"
 
-    def test_variant_f_inherits_generic_record(self, data):
+    def test_variant_f_inlines_generic_record(self, data):
         adapter = self._adapter(data)
         obj = adapter.validate_json((FIXTURES / "VariantInternallyTagged/data-variant-f-with-optional.json").read_text())
         assert isinstance(obj, data.VariantInternallyTagged_F)
         assert obj.x == 32
         assert obj.y == "Hello World!"
+        payload = obj.payload()
+        assert isinstance(payload, data.VarRecord)
+        assert payload.x == 32
+        assert payload.y == "Hello World!"
 
     def test_variant_g_generic_content(self, data):
         adapter = self._adapter(data)
