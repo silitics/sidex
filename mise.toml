@@ -50,28 +50,28 @@ run = [
 [tasks."regenerate:json-schema"]
 description = "Regenerate the JSON Schema Rust types from the schema."
 run = [
-    "cd lib/json-schema && cargo run --bin sidex -- generate rust ../../crates/sidex-types-json-schema/src/generated",
+    "cd crates/sidex-types-openapi/lib/json-schema && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-types-json-schema/src/generated",
     "cargo +nightly fmt",
 ]
 
 [tasks."regenerate:py-attrs"]
 description = "Regenerate the Python plugin attribute Rust types."
 run = [
-    "cd lib/py && cargo run --bin sidex -- generate rust ../../crates/sidex-attrs-py/src/generated",
+    "cd crates/sidex-core/lib/py && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-attrs-py/src/generated",
     "cargo +nightly fmt",
 ]
 
 [tasks."regenerate:json-attrs"]
 description = "Regenerate the JSON plugin attribute Rust types."
 run = [
-    "cd lib/json && cargo run --bin sidex -- generate rust ../../crates/sidex-attrs-json/src/generated",
+    "cd crates/sidex-core/lib/json && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-attrs-json/src/generated",
     "cargo +nightly fmt",
 ]
 
 [tasks."regenerate:rust-attrs"]
 description = "Regenerate the Rust plugin attribute Rust types."
 run = [
-    "cd lib/rust && cargo run --bin sidex -- generate rust ../../crates/sidex-attrs-rust/src/generated",
+    "cd crates/sidex-core/lib/rust && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-attrs-rust/src/generated",
     "cargo +nightly fmt",
 ]
 

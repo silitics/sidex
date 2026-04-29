@@ -4,11 +4,15 @@ use crate::bundle::BundleSource;
 use crate::bundle::{self};
 use crate::transformer::Transformer;
 
+// The `core`, `py`, `json`, and `rust` Sidex bundles are read at compile
+// time and embedded into the binary, so they must live inside the
+// `sidex-core` crate directory — otherwise `cargo publish` / vendored
+// downstream consumers (e.g. Nix-built apps) wouldn't ship them.
 macro_rules! read_lib_file {
     ($dir:literal, $($path:tt)*) => {
         include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../lib/",
+            "/lib/",
             $dir,
             "/",
             $($path)*

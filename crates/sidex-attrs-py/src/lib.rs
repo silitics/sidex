@@ -1,7 +1,7 @@
 //! Typed attribute schemas for the Python codegen target.
 //!
 //! These types are generated from
-//! [`lib/py/schemas/attrs.sidex`](https://github.com/silitics/sidex/blob/main/lib/py/schemas/attrs.sidex).
+//! [`lib/py/schemas/attrs.sidex`](https://github.com/silitics/sidex/blob/main/crates/sidex-core/lib/py/schemas/attrs.sidex).
 //! Codegen consumers read them off the IR's `typed_attrs["py"]` map via
 //! [`extract`].
 

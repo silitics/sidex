@@ -1,6 +1,6 @@
 //! Typed attribute schemas for the Rust codegen target.
 //!
-//! These types mirror [`lib/rust/schemas/attrs.sidex`](https://github.com/silitics/sidex/blob/main/lib/rust/schemas/attrs.sidex).
+//! These types mirror [`lib/rust/schemas/attrs.sidex`](https://github.com/silitics/sidex/blob/main/crates/sidex-core/lib/rust/schemas/attrs.sidex).
 //! The compiler validates source `#[rust(...)]` attributes against the
 //! schemas at IR build time and stores the result in
 //! `typed_attrs["rust"]`. The wrapper types in this module read off that
