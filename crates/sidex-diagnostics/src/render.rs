@@ -30,9 +30,7 @@ impl ariadne::Cache<SourceId> for Cache<'_> {
         Ok(self.cache.entry(*id).or_insert_with(|| {
             match id {
                 Some(idx) => {
-                    ariadne::Source::from(
-                        self.sources[idx.idx()].text.as_deref().unwrap_or(""),
-                    )
+                    ariadne::Source::from(self.sources[idx.idx()].text.as_deref().unwrap_or(""))
                 }
                 None => ariadne::Source::from(""),
             }

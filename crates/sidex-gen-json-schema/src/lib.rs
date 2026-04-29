@@ -4,7 +4,6 @@ use std::collections::VecDeque;
 use builder::RecordTypeSchemaBuilder;
 use builder::VariantTypeSchemaBuilder;
 use indexmap::IndexMap;
-use indexmap::indexmap;
 use serde::Deserialize;
 use serde::Serialize;
 use sidex_attrs_json::field_attrs;
@@ -143,7 +142,7 @@ fn make_schema_ref<S: AsRef<str>>(string: S) -> SchemaObject {
     SchemaObject::new().with_reference(Some(SchemaRef::new(string.as_ref().to_owned())))
 }
 
-fn make_schema_var<S: AsRef<str>>(name: S) -> TypeSchema {
+fn make_schema_var<S: AsRef<str>>(_name: S) -> TypeSchema {
     let schema = SchemaObject::new();
     // .with_extensions(Some(indexmap! {
     //     "x-sidex-var".to_owned() => Any::String(name.as_ref().to_owned()),
@@ -216,7 +215,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
         );
         if !typ.subst.is_empty() {
             // name.push_str(".");
-            for (_idx, (subst, _var)) in typ.subst.iter().zip(&def.vars).enumerate() {
+            for (subst, _var) in typ.subst.iter().zip(&def.vars) {
                 // if idx > 0 {
                 //     name.push_str("&");
                 // }
@@ -299,7 +298,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
                             ),
                     )));
                     if self.config.emit_ids {
-                        def_schema.set_id(Some(format!("{def_name}")));
+                        def_schema.set_id(Some(def_name.clone()));
                     }
                     let type_schema = TypeSchema {
                         name: def_name.clone(),
@@ -355,13 +354,13 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 let element_type = &instance.subst[0];
                 json_schema.set_allowed_types(Some(Type::Array.into()));
                 json_schema.set_array_keywords(Some(Box::new(ArrayKeywords::new().with_items(
-                    Some(Box::new(self.resolve(&element_type)?.use_schema.into())),
+                    Some(Box::new(self.resolve(element_type)?.use_schema.into())),
                 ))));
             }
             "::core::builtins::Map" => {
                 let _key_type = &instance.subst[0];
                 let value_type = &instance.subst[1];
-                let type_schema = self.resolve(&value_type)?;
+                let type_schema = self.resolve(value_type)?;
                 // TODO: Check that key is string.
                 json_schema.set_allowed_types(Some(Type::Object.into()));
                 json_schema.set_object_keywords(Some(Box::new(
@@ -481,7 +480,7 @@ pub struct JsonSchemaGenerator;
 impl Generator for JsonSchemaGenerator {
     fn generate(&self, job: sidex_gen::Job) -> diagnostics::Result<()> {
         // let config = Config::deserialize(job.config.clone().into_deserializer())?;
-        let mut ctx = JsonSchemaCtx::new(&job.unit, Default::default());
+        let mut ctx = JsonSchemaCtx::new(job.unit, Default::default());
         // ctx.set_def_prefix("");
         for (bundle_idx, bundle) in job.unit.bundles.iter().enumerate() {
             if bundle.is_internal {
@@ -535,10 +534,12 @@ impl Generator for JsonSchemaGenerator {
             std::fs::write(schema_file, serde_json::to_string_pretty(&root_schema)?)?;
         }
 
-        let mut config = JsonSchemaConfig::default();
-        config.emit_ids = false;
+        let config = JsonSchemaConfig {
+            emit_ids: false,
+            ..Default::default()
+        };
 
-        let mut ctx = JsonSchemaCtx::new(&job.unit, config);
+        let mut ctx = JsonSchemaCtx::new(job.unit, config);
         ctx.set_def_prefix("#/components/schemas/");
 
         for (bundle_idx, bundle) in job.unit.bundles.iter().enumerate() {
@@ -571,7 +572,7 @@ impl Generator for JsonSchemaGenerator {
 
         defs.sort_by(|k1, _, k2, _| k1.cmp(k2));
 
-        let schema_file = job.output.join(format!("schema-defs.json"));
+        let schema_file = job.output.join("schema-defs.json");
         std::fs::write(schema_file, serde_json::to_string_pretty(&defs)?)?;
 
         Ok(())
@@ -625,10 +626,10 @@ fn walk_refs(value: &serde_json::Value, prefix: &str, out: &mut Vec<String>) {
         serde_json::Value::Object(map) => {
             for (key, v) in map {
                 if key == "$ref" {
-                    if let serde_json::Value::String(s) = v {
-                        if let Some(name) = s.strip_prefix(prefix) {
-                            out.push(name.to_owned());
-                        }
+                    if let serde_json::Value::String(s) = v
+                        && let Some(name) = s.strip_prefix(prefix)
+                    {
+                        out.push(name.to_owned());
                     }
                 } else {
                     walk_refs(v, prefix, out);

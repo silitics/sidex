@@ -9,9 +9,9 @@ use serde::Serialize;
 use sidex_ir as ir;
 use thiserror::Error;
 
-pub const MANIFEST_NAME: &'static str = "sidex.toml";
-pub const SCHEMAS_DIR: &'static str = "schemas";
-pub const SCHEMA_EXTENSION: &'static str = ".sidex";
+pub const MANIFEST_NAME: &str = "sidex.toml";
+pub const SCHEMAS_DIR: &str = "schemas";
+pub const SCHEMA_EXTENSION: &str = ".sidex";
 
 /// A model manifest.
 #[derive(Serialize, Deserialize, Clone, Debug)]

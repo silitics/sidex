@@ -2,7 +2,13 @@
 
 pub mod attrs {
     #![doc = "Typed attributes for the Python codegen target.\n\nPlugins use these schemas to drive code generation; the compiler parses\nsource `#[py(...)]` attributes against them and stores the result in the\nIR's `typed_attrs[\"py\"]` field. Downstream codegens deserialize that\nvalue directly into the generated Rust types via `serde_json::from_value`.\n"]
-    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+    #![allow(
+        clippy::all,
+        clippy::pedantic,
+        clippy::nursery,
+        clippy::cargo,
+        dead_code
+    )]
     #[allow(unused)]
     use :: serde as __serde;
     #[allow(unused)]

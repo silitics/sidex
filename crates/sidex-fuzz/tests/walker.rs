@@ -107,8 +107,10 @@ fn float_table_emits_nan_and_inf_as_strings_when_enabled() {
     // With `floats_as_strings`, ±Infinity and NaN appear as JSON strings.
     let ir = load_fixture();
     let typ = sidex_fuzz::lookup_type(&ir, "fuzz_fixture::data::Point").unwrap();
-    let mut config = sidex_fuzz::Config::default();
-    config.floats_as_strings = true;
+    let config = sidex_fuzz::Config {
+        floats_as_strings: true,
+        ..Default::default()
+    };
     let mut seen = std::collections::HashSet::new();
     for seed in 0..500 {
         let mut source = sidex_fuzz::Source::from_seed(seed);
@@ -248,8 +250,10 @@ fn i64_strings_mode_includes_full_range() {
     // as JSON strings rather than numbers.
     let ir = load_fixture();
     let typ = sidex_fuzz::lookup_type(&ir, "fuzz_fixture::data::BigInts").unwrap();
-    let mut config = sidex_fuzz::Config::default();
-    config.integers_as_strings = true;
+    let config = sidex_fuzz::Config {
+        integers_as_strings: true,
+        ..Default::default()
+    };
     let mut saw_max = false;
     for seed in 0..300 {
         let mut source = sidex_fuzz::Source::from_seed(seed);
@@ -266,8 +270,10 @@ fn i64_strings_mode_includes_full_range() {
 fn integers_as_strings_emits_decimal_strings() {
     let ir = load_fixture();
     let typ = sidex_fuzz::lookup_type(&ir, "fuzz_fixture::data::BigInts").unwrap();
-    let mut config = sidex_fuzz::Config::default();
-    config.integers_as_strings = true;
+    let config = sidex_fuzz::Config {
+        integers_as_strings: true,
+        ..Default::default()
+    };
     for seed in 0..50 {
         let mut source = sidex_fuzz::Source::from_seed(seed);
         let v = sidex_fuzz::generate(&ir, &typ, &mut source, &config).unwrap();

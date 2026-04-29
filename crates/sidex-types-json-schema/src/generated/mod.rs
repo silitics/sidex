@@ -2,7 +2,13 @@
 
 pub mod schema {
     #![doc = "Types of [JSON Schema](https://json-schema.org) version `2020-12`.\n\nThe types have been inspired by [Schemars](https://crates.io/crates/schemars).\n\n**References**:\n\n- [JSON Schema Core](https://json-schema.org/draft/2020-12/json-schema-core.html)\n- [JSON Schema Validation](https://json-schema.org/draft/2020-12/json-schema-validation.html)\n"]
-    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+    #![allow(
+        clippy::all,
+        clippy::pedantic,
+        clippy::nursery,
+        clippy::cargo,
+        dead_code
+    )]
     #[allow(unused)]
     use :: serde as __serde;
     #[allow(unused)]

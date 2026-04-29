@@ -32,9 +32,15 @@ where
     T: serde::de::DeserializeOwned,
 {
     match typed_attrs.get(PLUGIN) {
-        Some(value) => serde_json::from_value(value.clone()).map(Some).map_err(|err| {
-            Box::new(Diagnostic::error(format!("Invalid `rust` attributes: {err}")))
-        }),
+        Some(value) => {
+            serde_json::from_value(value.clone())
+                .map(Some)
+                .map_err(|err| {
+                    Box::new(Diagnostic::error(format!(
+                        "Invalid `rust` attributes: {err}"
+                    )))
+                })
+        }
         None => Ok(None),
     }
 }

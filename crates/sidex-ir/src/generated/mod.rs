@@ -2,7 +2,13 @@
 
 pub mod ir {
     #![doc = ""]
-    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+    #![allow(
+        clippy::all,
+        clippy::pedantic,
+        clippy::nursery,
+        clippy::cargo,
+        dead_code
+    )]
     #[allow(unused)]
     use :: serde as __serde;
     #[allow(unused)]

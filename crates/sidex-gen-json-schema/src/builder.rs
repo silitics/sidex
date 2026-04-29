@@ -19,6 +19,12 @@ pub struct RecordTypeSchemaBuilder {
     inline_schemas: Vec<SchemaObject>,
 }
 
+impl Default for RecordTypeSchemaBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RecordTypeSchemaBuilder {
     pub fn new() -> Self {
         Self {
@@ -45,8 +51,7 @@ impl RecordTypeSchemaBuilder {
     }
 
     pub fn add_inline_field(&mut self, schema: TypeSchema) {
-        self.inline_schemas
-            .push(schema.inline_schema.unwrap().into());
+        self.inline_schemas.push(schema.inline_schema.unwrap());
     }
 
     pub fn deny_other_fields(&mut self) {
@@ -241,9 +246,7 @@ pub fn inline_object(target: &mut SchemaObject, other: &SchemaObject) {
 }
 
 fn make_schema_string<S: AsRef<str>>(string: S) -> SchemaObject {
-    SchemaObject::new()
-        .with_allowed_value(Some(Any::String(string.as_ref().to_owned())))
-        .into()
+    SchemaObject::new().with_allowed_value(Some(Any::String(string.as_ref().to_owned())))
 }
 
 pub fn pure_tag(variant_name: &str) -> SchemaObject {

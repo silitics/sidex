@@ -255,11 +255,12 @@ fn flatten_tree(
                 match &tok.kind {
                     TokenKind::Identifier(s) if !seen_brace => segments.push(s.to_string()),
                     TokenKind::Punctuation(s)
-                        if s.kind == PunctuationKind::Colon && s.is_composed && !seen_brace =>
+                        if s.kind == PunctuationKind::Colon
+                            && s.is_composed
+                            && !seen_brace
+                            && segments.is_empty() =>
                     {
-                        if segments.is_empty() {
-                            local_absolute = true;
-                        }
+                        local_absolute = true;
                     }
                     TokenKind::Punctuation(s)
                         if s.kind == PunctuationKind::Asterisk && !seen_brace =>
@@ -326,7 +327,7 @@ fn flatten_tree(
 }
 
 fn first_segment_of(path: &str) -> String {
-    path.splitn(2, "::").next().unwrap_or("").to_owned()
+    path.split("::").next().unwrap_or("").to_owned()
 }
 
 /// Render the imports section: external (sub-grouped by bundle) then
@@ -449,18 +450,18 @@ fn is_external_import(import: &SyntaxNode, opts: &FormatOptions) -> bool {
     if import_tree_is_absolute(&tree) {
         return true;
     }
-    if let Some(first) = first_path_segment_text(&tree) {
-        if first == "std" || opts.external_bundles.iter().any(|b| b == &first) {
-            return true;
-        }
+    if let Some(first) = first_path_segment_text(&tree)
+        && (first == "std" || opts.external_bundles.iter().any(|b| b == &first))
+    {
+        return true;
     }
     false
 }
 
 fn import_tree_is_absolute(tree: &SyntaxNode) -> bool {
     // An ImportTree is absolute when its first significant tokens are `::`.
-    let mut iter = tree.children.iter();
-    while let Some(el) = iter.next() {
+    let iter = tree.children.iter();
+    for el in iter {
         match el {
             SyntaxElement::Token(tok) => {
                 match &tok.kind {
@@ -595,7 +596,7 @@ fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
                         // Alias / wrapper: `kw NAME: TYPE`.
                         name_parts.push(Doc::text(":"));
                         idx += 1;
-                        parts.extend(name_parts.drain(..));
+                        parts.append(&mut name_parts);
                         let ty = collect_type_expr_after(children, &mut idx, opts);
                         parts.push(Doc::text(" "));
                         parts.push(ty);
@@ -603,7 +604,7 @@ fn def_node(node: &SyntaxNode, cx: &Cx<'_>, opts: &FormatOptions) -> Doc {
                     }
                     TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Brace)) => {
                         // Record/variant body.
-                        parts.extend(name_parts.drain(..));
+                        parts.append(&mut name_parts);
                         parts.push(Doc::text(" {"));
                         idx += 1;
                         let body = collect_brace_body(children, &mut idx, cx, opts);
@@ -664,12 +665,11 @@ fn type_vars(node: &SyntaxNode) -> Doc {
     debug_assert_eq!(node.kind, SyntaxKind::TypeVars);
     let mut names: Vec<String> = Vec::new();
     for el in &node.children {
-        if let SyntaxElement::Node(child) = el {
-            if child.kind == SyntaxKind::TypeVar {
-                if let Some(t) = first_identifier(child) {
-                    names.push(t);
-                }
-            }
+        if let SyntaxElement::Node(child) = el
+            && child.kind == SyntaxKind::TypeVar
+            && let Some(t) = first_identifier(child)
+        {
+            names.push(t);
         }
     }
     Doc::string(format!("<{}>", names.join(", ")))
@@ -731,11 +731,11 @@ fn collect_brace_body(
                         *idx += 1;
                         return assemble_body(pieces, opts);
                     }
-                    TokenKind::Whitespace => {
-                        if cx.newlines_in(tok) >= 2 && !pieces.is_empty() && !last_was_blank {
-                            pieces.push(BodyPiece::BlankLine);
-                            last_was_blank = true;
-                        }
+                    TokenKind::Whitespace
+                        if cx.newlines_in(tok) >= 2 && !pieces.is_empty() && !last_was_blank =>
+                    {
+                        pieces.push(BodyPiece::BlankLine);
+                        last_was_blank = true;
                     }
                     TokenKind::Comment { .. } => {
                         pieces.push(BodyPiece::Comment(tok));
@@ -900,11 +900,9 @@ fn variant(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
     }
     let name = name.unwrap_or_default();
     parts.push(Doc::string(name));
-    if has_colon {
-        if let Some(t) = ty {
-            parts.push(Doc::text(": "));
-            parts.push(type_expr(t));
-        }
+    if has_colon && let Some(t) = ty {
+        parts.push(Doc::text(": "));
+        parts.push(type_expr(t));
     }
     Doc::concat(parts)
 }
@@ -976,14 +974,14 @@ fn render_type_expr_into(node: &SyntaxNode, out: &mut String) {
                         out.push('<');
                         let mut first = true;
                         for sub in &child.children {
-                            if let SyntaxElement::Node(n) = sub {
-                                if n.kind == SyntaxKind::TypeExpr {
-                                    if !first {
-                                        out.push_str(", ");
-                                    }
-                                    first = false;
-                                    render_type_expr_into(n, out);
+                            if let SyntaxElement::Node(n) = sub
+                                && n.kind == SyntaxKind::TypeExpr
+                            {
+                                if !first {
+                                    out.push_str(", ");
                                 }
+                                first = false;
+                                render_type_expr_into(n, out);
                             }
                         }
                         out.push('>');
@@ -1041,14 +1039,14 @@ fn attr(node: &SyntaxNode, opts: &FormatOptions) -> Doc {
 fn render_attr_body(attr_node: &SyntaxNode, opts: &FormatOptions) -> Doc {
     // Collect the elements between `[` and `]`.
     let mut iter = attr_node.children.iter();
-    while let Some(el) = iter.next() {
-        if let SyntaxElement::Token(t) = el {
-            if matches!(
+    for el in iter.by_ref() {
+        if let SyntaxElement::Token(t) = el
+            && matches!(
                 t.kind,
                 TokenKind::Delimiter(DelimiterSymbol::Open(DelimiterKind::Bracket))
-            ) {
-                break;
-            }
+            )
+        {
+            break;
         }
     }
     let body_elements: Vec<&SyntaxElement> = iter
@@ -1078,11 +1076,11 @@ fn render_attr_term(elements: &[&SyntaxElement], opts: &FormatOptions) -> Doc {
 
     // Pull a leading Path node if present.
     let mut path_str = String::new();
-    if let SyntaxElement::Node(n) = elements[i] {
-        if n.kind == SyntaxKind::Path {
-            render_path_into(n, &mut path_str);
-            i += 1;
-        }
+    if let SyntaxElement::Node(n) = elements[i]
+        && n.kind == SyntaxKind::Path
+    {
+        render_path_into(n, &mut path_str);
+        i += 1;
     }
 
     while i < elements.len() && is_trivia(elements[i]) {
@@ -1118,7 +1116,7 @@ fn render_attr_term(elements: &[&SyntaxElement], opts: &FormatOptions) -> Doc {
                             group_docs.push(Doc::text(","));
                             group_docs.push(Doc::Line);
                         }
-                        let g_refs: Vec<&SyntaxElement> = g.iter().copied().collect();
+                        let g_refs: Vec<&SyntaxElement> = g.to_vec();
                         group_docs.push(render_attr_term(&g_refs, opts));
                     }
                     // Trailing comma when broken (empty when flat).
@@ -1316,11 +1314,11 @@ fn collect_trivia_pieces(
     let mut last_was_blank = false;
     for tok in tokens {
         match &tok.kind {
-            TokenKind::Whitespace => {
-                if cx.newlines_in(tok) >= 2 && !pieces.is_empty() && !last_was_blank {
-                    pieces.push(TriviaPiece::BlankLine);
-                    last_was_blank = true;
-                }
+            TokenKind::Whitespace
+                if cx.newlines_in(tok) >= 2 && !pieces.is_empty() && !last_was_blank =>
+            {
+                pieces.push(TriviaPiece::BlankLine);
+                last_was_blank = true;
             }
             TokenKind::Comment {
                 kind: CommentKind::Line,
@@ -1474,10 +1472,10 @@ fn doc_token(tok: &Token) -> Doc {
 
 fn first_node_of_kind(node: &SyntaxNode, kind: SyntaxKind) -> Option<Arc<SyntaxNode>> {
     for el in &node.children {
-        if let SyntaxElement::Node(child) = el {
-            if child.kind == kind {
-                return Some(child.clone());
-            }
+        if let SyntaxElement::Node(child) = el
+            && child.kind == kind
+        {
+            return Some(child.clone());
         }
     }
     None
@@ -1485,10 +1483,10 @@ fn first_node_of_kind(node: &SyntaxNode, kind: SyntaxKind) -> Option<Arc<SyntaxN
 
 fn first_identifier(node: &SyntaxNode) -> Option<String> {
     for el in &node.children {
-        if let SyntaxElement::Token(tok) = el {
-            if let TokenKind::Identifier(s) = &tok.kind {
-                return Some(s.to_string());
-            }
+        if let SyntaxElement::Token(tok) = el
+            && let TokenKind::Identifier(s) = &tok.kind
+        {
+            return Some(s.to_string());
         }
     }
     None

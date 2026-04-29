@@ -453,6 +453,12 @@ fn docs_or_none(text: &str) -> Option<ir::Docs> {
     }
 }
 
+impl Default for Transformer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Transformer {
     pub fn new() -> Self {
         let mut transformer = Self {

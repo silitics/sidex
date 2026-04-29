@@ -48,10 +48,10 @@ impl Plugin for Builder {
 
                     let is_container = match &field.typ.kind {
                         ir::TypeKind::Instance(instance) => {
-                            match ctx.fully_qualified_type_name(instance).as_str() {
-                                "::std::builtins::Sequence" | "::std::builtins::Map" => true,
-                                _ => false,
-                            }
+                            matches!(
+                                ctx.fully_qualified_type_name(instance).as_str(),
+                                "::std::builtins::Sequence" | "::std::builtins::Map"
+                            )
                         }
                         _ => false,
                     };

@@ -31,6 +31,12 @@ pub struct RustGenerator {
     plugins: Vec<Arc<dyn 'static + Plugin + Sync>>,
 }
 
+impl Default for RustGenerator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RustGenerator {
     pub fn new() -> Self {
         Self {
@@ -118,9 +124,17 @@ impl RustGenerator {
                         // Generated code is emitted mechanically and uses
                         // shapes (fully-qualified paths, while-let-Some
                         // loops, redundant patterns) that clippy doesn't
-                        // love. Silence clippy at the module boundary;
-                        // rustc warnings stay on so codegen bugs surface.
-                        #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+                        // love, and may declare types or fields a given
+                        // consumer never reaches. Silence clippy + dead
+                        // code at the module boundary; the rest of rustc
+                        // stays on so real codegen bugs surface.
+                        #![allow(
+                            clippy::all,
+                            clippy::pedantic,
+                            clippy::nursery,
+                            clippy::cargo,
+                            dead_code,
+                        )]
 
                         #(#schema_preambles)*
                         #(#defs)*

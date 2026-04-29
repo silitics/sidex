@@ -364,10 +364,12 @@ impl<'a> Walker<'a> {
                 let inner = self.ir.apply_subst(&wrapper.wrapped, &instance.subst);
                 self.inline_record_into(&inner, source, out)
             }
-            _ => Err(Box::new(Diagnostic::error(format!(
-                "cannot inline non-record type `{}`",
-                def.name.as_str()
-            )))),
+            _ => {
+                Err(Box::new(Diagnostic::error(format!(
+                    "cannot inline non-record type `{}`",
+                    def.name.as_str()
+                ))))
+            }
         }
     }
 

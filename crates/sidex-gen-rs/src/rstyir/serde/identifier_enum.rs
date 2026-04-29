@@ -26,7 +26,7 @@ pub(crate) enum IdentifierKind {
 /// Returns a vector of identifiers for the variants of the `__Identifier` enum and the
 /// token stream containing the definition of the `__Identifier` enum itself as well as
 /// the implementation of [`serde::Deserialize`] for it.
-pub(crate) fn gen_identifier_enum<'n, S: AsRef<str>, I: IntoIterator<Item = S>>(
+pub(crate) fn gen_identifier_enum<S: AsRef<str>, I: IntoIterator<Item = S>>(
     identifiers: I,
     kind: IdentifierKind,
 ) -> (Vec<syn::Ident>, TokenStream) {

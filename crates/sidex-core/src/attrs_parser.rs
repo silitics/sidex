@@ -299,34 +299,40 @@ fn parse_record(
                 if all_optional {
                     Vec::new()
                 } else {
-                    return Err(Box::new(Diagnostic::error(format!(
-                        "`{}` requires arguments — schema `{}` has required fields.",
-                        outer_plugin(plugin_attr).unwrap_or("?"),
-                        def.name.as_str(),
-                    ))
-                    .with_span(plugin_attr.span.clone())
-                    .with_label(Label::new(
-                        plugin_attr
-                            .span
-                            .clone()
-                            .unwrap_or_else(|| ir::Span::new(0.into(), 0, 0)),
-                        "expected `(...)` form",
-                    ))));
+                    return Err(Box::new(
+                        Diagnostic::error(format!(
+                            "`{}` requires arguments — schema `{}` has required fields.",
+                            outer_plugin(plugin_attr).unwrap_or("?"),
+                            def.name.as_str(),
+                        ))
+                        .with_span(plugin_attr.span.clone())
+                        .with_label(Label::new(
+                            plugin_attr
+                                .span
+                                .clone()
+                                .unwrap_or_else(|| ir::Span::new(0.into(), 0, 0)),
+                            "expected `(...)` form",
+                        )),
+                    ));
                 }
             }
             ir::AttrKind::List(list) => list.args.iter().collect(),
             ir::AttrKind::Assign(_) => {
-                return Err(Box::new(Diagnostic::error(
-                    "Top-level plugin attribute must be a list, not an assignment.",
-                )
-                .with_span(plugin_attr.span.clone())));
+                return Err(Box::new(
+                    Diagnostic::error(
+                        "Top-level plugin attribute must be a list, not an assignment.",
+                    )
+                    .with_span(plugin_attr.span.clone()),
+                ));
             }
         };
 
         for arg in args {
             let Some(name) = arg_name(arg) else {
-                return Err(Box::new(Diagnostic::error("Attribute argument must have a name.")
-                    .with_span(arg.span.clone())));
+                return Err(Box::new(
+                    Diagnostic::error("Attribute argument must have a name.")
+                        .with_span(arg.span.clone()),
+                ));
             };
             let Some(field) = record.fields.iter().find(|f| field_source_name(f) == name) else {
                 Diagnostic::warning(format!(
@@ -398,11 +404,13 @@ fn parse_field_value(
         ir::AttrKind::Assign(assign) => Ok(attr_value_to_json(&assign.value)),
         ir::AttrKind::Path(_) => Ok(Value::Bool(true)),
         ir::AttrKind::List(_) => {
-            Err(Box::new(Diagnostic::error(format!(
-                "Field `{}` is a primitive but the source attribute is a list.",
-                field.name.as_str(),
+            Err(Box::new(
+                Diagnostic::error(format!(
+                    "Field `{}` is a primitive but the source attribute is a list.",
+                    field.name.as_str(),
+                ))
+                .with_span(arg.span.clone()),
             ))
-            .with_span(arg.span.clone())))
         }
     }
 }
@@ -417,19 +425,23 @@ fn parse_variant_field(
     variant: &ir::VariantTypeDef,
 ) -> Result<Value, Box<Diagnostic>> {
     let ir::AttrKind::Assign(assign) = &arg.kind else {
-        return Err(Box::new(Diagnostic::error(format!(
-            "Field `{}` expects a variant tag (e.g., `{} = SomeCase`).",
-            field_name_for_diag(arg),
-            field_name_for_diag(arg),
-        ))
-        .with_span(arg.span.clone())));
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Field `{}` expects a variant tag (e.g., `{} = SomeCase`).",
+                field_name_for_diag(arg),
+                field_name_for_diag(arg),
+            ))
+            .with_span(arg.span.clone()),
+        ));
     };
     let ir::AttrValue::Path(tag) = &assign.value else {
-        return Err(Box::new(Diagnostic::error(format!(
-            "Field `{}` expects a variant tag, not a literal value.",
-            field_name_for_diag(arg),
-        ))
-        .with_span(arg.span.clone())));
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Field `{}` expects a variant tag, not a literal value.",
+                field_name_for_diag(arg),
+            ))
+            .with_span(arg.span.clone()),
+        ));
     };
     let case = variant
         .variants
@@ -437,13 +449,15 @@ fn parse_variant_field(
         .find(|c| c.name.as_str().eq_ignore_ascii_case(tag));
     let Some(case) = case else {
         let known: Vec<&str> = variant.variants.iter().map(|c| c.name.as_str()).collect();
-        return Err(Box::new(Diagnostic::error(format!(
-            "Unknown variant case `{}` for `{}`. Expected one of: {}.",
-            tag,
-            def.name.as_str(),
-            known.join(", ")
-        ))
-        .with_span(arg.span.clone())));
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Unknown variant case `{}` for `{}`. Expected one of: {}.",
+                tag,
+                def.name.as_str(),
+                known.join(", ")
+            ))
+            .with_span(arg.span.clone()),
+        ));
     };
     if case.typ.is_some() {
         return Err(Box::new(Diagnostic::error(format!(
@@ -463,20 +477,24 @@ fn parse_type_ref_field(
     enclosing_schema: ir::SchemaIdx,
 ) -> Result<Value, Box<Diagnostic>> {
     let ir::AttrKind::Assign(assign) = &arg.kind else {
-        return Err(Box::new(Diagnostic::error(format!(
-            "Field `{}` expects a type reference (e.g., `{} = MyType`).",
-            field.name.as_str(),
-            field.name.as_str(),
-        ))
-        .with_span(arg.span.clone())));
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Field `{}` expects a type reference (e.g., `{} = MyType`).",
+                field.name.as_str(),
+                field.name.as_str(),
+            ))
+            .with_span(arg.span.clone()),
+        ));
     };
     let ir::AttrValue::Path(path) = &assign.value else {
-        return Err(Box::new(Diagnostic::error(format!(
-            "Field `{}` expects a type reference (e.g., `{} = MyType`).",
-            field.name.as_str(),
-            field.name.as_str(),
-        ))
-        .with_span(arg.span.clone())));
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Field `{}` expects a type reference (e.g., `{} = MyType`).",
+                field.name.as_str(),
+                field.name.as_str(),
+            ))
+            .with_span(arg.span.clone()),
+        ));
     };
     let Some(def_ref) = resolve_type_ref_path(path, enclosing_schema, ir) else {
         return Err(Box::new(
@@ -506,13 +524,15 @@ fn parse_nested_record_field<'a>(
             parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def)
         }
         ir::AttrKind::Assign(_) => {
-            Err(Box::new(Diagnostic::error(format!(
-                "Field `{}` is a record — use `{}(...)` form, not `{} = ...`.",
-                field_name_for_diag(arg),
-                field_name_for_diag(arg),
-                field_name_for_diag(arg),
+            Err(Box::new(
+                Diagnostic::error(format!(
+                    "Field `{}` is a record — use `{}(...)` form, not `{} = ...`.",
+                    field_name_for_diag(arg),
+                    field_name_for_diag(arg),
+                    field_name_for_diag(arg),
+                ))
+                .with_span(arg.span.clone()),
             ))
-            .with_span(arg.span.clone())))
         }
     }
 }
@@ -556,11 +576,11 @@ fn field_variant_schema<'a>(
 /// source attribute occurrences for sequence fields (e.g. `derive(A) derive(B)`)
 /// stack into a single array.
 fn insert_or_extend(object: &mut serde_json::Map<String, Value>, key: &str, value: Value) {
-    if let Some(existing) = object.get_mut(key) {
-        if let (Value::Array(existing), Value::Array(new)) = (existing, &value) {
-            existing.extend(new.iter().cloned());
-            return;
-        }
+    if let Some(existing) = object.get_mut(key)
+        && let (Value::Array(existing), Value::Array(new)) = (existing, &value)
+    {
+        existing.extend(new.iter().cloned());
+        return;
     }
     object.insert(key.to_owned(), value);
 }
@@ -597,14 +617,19 @@ fn field_is_string_sequence(field: &ir::Field, ir: &ir::Ir) -> bool {
 /// Parse a `[string]` field. Source must be `name(item1, item2, ...)` where
 /// each item is convertible to a string. Bare paths and lists are stringified
 /// (so `attr(non_exhaustive)` and `attr(serde(transparent))` both work).
-fn parse_string_sequence_field(arg: &ir::Attr, field: &ir::Field) -> Result<Value, Box<Diagnostic>> {
+fn parse_string_sequence_field(
+    arg: &ir::Attr,
+    field: &ir::Field,
+) -> Result<Value, Box<Diagnostic>> {
     let ir::AttrKind::List(list) = &arg.kind else {
-        return Err(Box::new(Diagnostic::error(format!(
-            "Field `{}` is a sequence — use `{}(...)` form.",
-            field.name.as_str(),
-            field_name_for_diag(arg),
-        ))
-        .with_span(arg.span.clone())));
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Field `{}` is a sequence — use `{}(...)` form.",
+                field.name.as_str(),
+                field_name_for_diag(arg),
+            ))
+            .with_span(arg.span.clone()),
+        ));
     };
     let mut items = Vec::with_capacity(list.args.len());
     for inner in &list.args {

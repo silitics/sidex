@@ -52,8 +52,8 @@ impl Generics {
     pub fn split_for_impl(
         &self,
     ) -> (
-        syn::ImplGenerics,
-        syn::TypeGenerics,
+        syn::ImplGenerics<'_>,
+        syn::TypeGenerics<'_>,
         Option<&syn::WhereClause>,
     ) {
         self.generics.split_for_impl()
@@ -160,7 +160,7 @@ impl<'cx> SchemaCtx<'cx> {
         if field.is_optional {
             typ = quote! { ::std::option::Option< #typ > };
         }
-        let vis = attrs.visibility.clone();
+        let vis = attrs.visibility;
         FieldInfo {
             name,
             typ: syn::parse2::<syn::Type>(typ).unwrap(),
@@ -363,7 +363,7 @@ impl<'cx> SchemaCtx<'cx> {
                             .external
                             .get(&bundle.metadata.name)
                             .unwrap();
-                        let parsed = syn::parse_str::<TokenStream>(&external_path).unwrap();
+                        let parsed = syn::parse_str::<TokenStream>(external_path).unwrap();
                         let schema_name = format_ident!("{}", &schema.name);
                         let def_name = format_ident!("{}", &instance_def.name.as_str());
                         quote! { #parsed::#schema_name::#def_name }

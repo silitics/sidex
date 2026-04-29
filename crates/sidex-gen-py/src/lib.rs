@@ -4,8 +4,6 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 use serde::Serialize;
-use sidex_attrs_json::JsonFieldAttrs;
-use sidex_attrs_json::JsonOpaqueTypeAttrs;
 use sidex_attrs_json::JsonRecordTypeAttrs;
 use sidex_attrs_json::JsonTaggedAttr;
 use sidex_attrs_json::JsonVariantAttrs;
@@ -105,12 +103,14 @@ struct BundleCtx<'cx> {
     cfg: &'cx Config,
     unit: &'cx ir::Ir,
     bundle_idx: ir::BundleIdx,
+    #[allow(dead_code)]
     bundle: &'cx ir::Bundle,
 }
 
 struct SchemaCtx<'cx> {
     bundle_ctx: &'cx BundleCtx<'cx>,
     schema_idx: ir::SchemaIdx,
+    #[allow(dead_code)]
     schema: &'cx ir::Schema,
 }
 
@@ -1002,7 +1002,7 @@ fn resolve_opaque_type(cfg: &Config, def: &ir::Def) -> Result<Option<OpaqueResol
             .map_err(|e| {
                 sidex_gen::diagnostics::Diagnostic::error(format!("Invalid `py` attributes: {e}"))
             })?
-            .unwrap_or_else(|| sidex_attrs_py::OpaqueTypeAttrs { typ: None });
+            .unwrap_or(sidex_attrs_py::OpaqueTypeAttrs { typ: None });
         if let Some(typ) = py_attrs.typ {
             return Ok(Some(OpaqueResolvedType::Wrapper(typ)));
         }
@@ -1040,12 +1040,12 @@ fn collect_opaque_imports(unit: &ir::Ir, schema_idx: ir::SchemaIdx) -> Result<Ve
             let py_attrs = sidex_attrs_py::opaque_type_attrs(def).map_err(|e| {
                 sidex_gen::diagnostics::Diagnostic::error(format!("Invalid `py` attributes: {e}"))
             })?;
-            if let Some(typ) = py_attrs.and_then(|a| a.typ) {
-                if let Some(dot) = typ.rfind('.') {
-                    let module = &typ[..dot];
-                    if !modules.contains(&module.to_owned()) {
-                        modules.push(module.to_owned());
-                    }
+            if let Some(typ) = py_attrs.and_then(|a| a.typ)
+                && let Some(dot) = typ.rfind('.')
+            {
+                let module = &typ[..dot];
+                if !modules.contains(&module.to_owned()) {
+                    modules.push(module.to_owned());
                 }
             }
         }

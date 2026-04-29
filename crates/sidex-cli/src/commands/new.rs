@@ -24,7 +24,7 @@ pub fn exec(args: &NewArgs) -> eyre::Result<()> {
 
     let manifest = Manifest::new(ir::Metadata::new(args.name.to_owned(), "0.1.0".to_owned()));
 
-    std::fs::write(manifest_path, &toml::to_vec(&manifest).unwrap())?;
+    std::fs::write(manifest_path, toml::to_vec(&manifest).unwrap())?;
 
     Ok(())
 }

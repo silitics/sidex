@@ -33,9 +33,15 @@ where
     T: serde::de::DeserializeOwned,
 {
     match typed_attrs.get(PLUGIN) {
-        Some(value) => serde_json::from_value(value.clone()).map(Some).map_err(|err| {
-            Box::new(Diagnostic::error(format!("Invalid `json` attributes: {err}")))
-        }),
+        Some(value) => {
+            serde_json::from_value(value.clone())
+                .map(Some)
+                .map_err(|err| {
+                    Box::new(Diagnostic::error(format!(
+                        "Invalid `json` attributes: {err}"
+                    )))
+                })
+        }
         None => Ok(None),
     }
 }

@@ -2,7 +2,13 @@
 
 pub mod attrs {
     #![doc = "Typed attributes for the Rust codegen target.\n\nSource `#[rust(...)]` attributes are validated against these schemas at\nIR build time and stored on the IR's `typed_attrs[\"rust\"]` map. Each\nrecord uses `#[json(rename_all = \"snake_case\")]` so wire keys match the\nparser's emit shape.\n"]
-    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+    #![allow(
+        clippy::all,
+        clippy::pedantic,
+        clippy::nursery,
+        clippy::cargo,
+        dead_code
+    )]
     #[allow(unused)]
     use :: serde as __serde;
     #[allow(unused)]

@@ -111,7 +111,7 @@ impl Plugin for Types {
                         });
                     }
                 }
-                TypeExpr::union(variant_ts_types.into_iter())
+                TypeExpr::union(variant_ts_types)
             }
             ir::DefKind::WrapperType(typ) => ctx.resolve_type(def, &typ.wrapped),
         };
@@ -152,7 +152,7 @@ impl Plugin for Types {
             .collect();
 
         let mut external: Vec<(&String, &String)> = ctx.bundle_ctx.cfg.external.iter().collect();
-        external.sort_by(|(a, _), (b, _)| a.cmp(b));
+        external.sort_by_key(|(a, _)| (*a).clone());
         let external_imports: Vec<Code> = external
             .iter()
             .map(|(name, path)| {

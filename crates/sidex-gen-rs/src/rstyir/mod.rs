@@ -17,7 +17,6 @@ use sidex_attrs_json::types::JsonShape;
 use sidex_attrs_json::types::JsonType;
 use sidex_attrs_json::variant_attrs as json_variant_attrs;
 use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
-use sidex_attrs_rust::FieldAttrs;
 use sidex_attrs_rust::Visibility;
 use sidex_attrs_rust::field_attrs as rust_field_attrs;
 use sidex_attrs_rust::type_attrs as rust_type_attrs;
@@ -233,7 +232,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         name: field.name.name.clone(),
                         ident: name,
                         docs,
-                        visibility: attrs.visibility.clone(),
+                        visibility: attrs.visibility,
                         is_optional: field.is_optional,
                         json_name: ty_json_attrs.field_name(field, &json_attrs),
                         json_attrs,
@@ -263,11 +262,10 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         .map(|docs| docs.as_str())
                         .unwrap_or_default()
                         .to_owned();
-                    let ty = if let Some(typ) = &variant.typ {
-                        Some(ctx.resolve_type_old(def, typ, false))
-                    } else {
-                        None
-                    };
+                    let ty = variant
+                        .typ
+                        .as_ref()
+                        .map(|typ| ctx.resolve_type_old(def, typ, false));
                     let encoding = variant
                         .typ
                         .as_ref()
@@ -295,10 +293,6 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                 variants,
                 json_attrs: ty_json_attrs,
             })
-        }
-        _ => {
-            // Service definitions and derived types are handled separately.
-            return Ok(None);
         }
     };
     Ok(Some(RsType {

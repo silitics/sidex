@@ -2,7 +2,13 @@
 
 pub mod attrs {
     #![doc = "Typed attributes for the JSON codegen target.\n\nPlugins use these schemas to drive code generation; the compiler parses\nsource `#[json(...)]` attributes against them and stores the result in\nthe IR's `typed_attrs[\"json\"]` map. Downstream codegens deserialize\nthat value directly into the generated Rust types via\n`serde_json::from_value`.\n\nEach record is annotated `#[json(rename_all = \"snake_case\")]` so that\nthe generated deserializers expect JSON keys matching the parser's\nemit shape (the parser writes Sidex field names verbatim, which are\nalready in `snake_case`).\n"]
-    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+    #![allow(
+        clippy::all,
+        clippy::pedantic,
+        clippy::nursery,
+        clippy::cargo,
+        dead_code
+    )]
     #[allow(unused)]
     use :: serde as __serde;
     #[allow(unused)]

@@ -75,11 +75,11 @@ pub fn exec(args: &FmtArgs) -> Result<()> {
 fn format_options_from_cwd() -> Result<FormatOptions> {
     let mut opts = FormatOptions::default();
     let cwd = std::env::current_dir()?;
-    if let Some(bundle_path) = bundle::try_locate_bundle(&cwd)? {
-        if let Ok(manifest) = bundle::try_load_manifest(&bundle_path) {
-            for (name, _) in manifest.dependencies() {
-                opts.external_bundles.push(name.to_owned());
-            }
+    if let Some(bundle_path) = bundle::try_locate_bundle(&cwd)?
+        && let Ok(manifest) = bundle::try_load_manifest(&bundle_path)
+    {
+        for (name, _) in manifest.dependencies() {
+            opts.external_bundles.push(name.to_owned());
         }
     }
     opts.external_bundles.sort();

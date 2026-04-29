@@ -53,8 +53,10 @@ fn native_mode_uses_rust_typ_attribute() {
 fn json_mode_overrides_rust_typ_attribute() {
     // With opaque_lowering = "json", the `#[rust(typ)]` is ignored. `Uuid`
     // has no JSON attribute, so it falls back to `serde_json::Value`.
-    let mut cfg = Config::default();
-    cfg.opaque_lowering = OpaqueLowering::Json;
+    let cfg = Config {
+        opaque_lowering: OpaqueLowering::Json,
+        ..Default::default()
+    };
     let out = render_normalized(cfg);
     assert!(
         !out.contains("uuid :: Uuid"),
@@ -68,8 +70,10 @@ fn json_mode_overrides_rust_typ_attribute() {
 
 #[test]
 fn json_mode_lowers_string_to_native_string() {
-    let mut cfg = Config::default();
-    cfg.opaque_lowering = OpaqueLowering::Json;
+    let cfg = Config {
+        opaque_lowering: OpaqueLowering::Json,
+        ..Default::default()
+    };
     let out = render_normalized(cfg);
     assert!(
         out.contains("type Email < > = :: std :: string :: String"),
@@ -79,8 +83,10 @@ fn json_mode_lowers_string_to_native_string() {
 
 #[test]
 fn json_mode_lowers_nullable_string_to_option() {
-    let mut cfg = Config::default();
-    cfg.opaque_lowering = OpaqueLowering::Json;
+    let cfg = Config {
+        opaque_lowering: OpaqueLowering::Json,
+        ..Default::default()
+    };
     let out = render_normalized(cfg);
     assert!(
         out.contains(
@@ -92,8 +98,10 @@ fn json_mode_lowers_nullable_string_to_option() {
 
 #[test]
 fn json_mode_lowers_any_to_value() {
-    let mut cfg = Config::default();
-    cfg.opaque_lowering = OpaqueLowering::Json;
+    let cfg = Config {
+        opaque_lowering: OpaqueLowering::Json,
+        ..Default::default()
+    };
     let out = render_normalized(cfg);
     assert!(
         out.contains("type Anything < > = :: serde_json :: Value"),
@@ -103,8 +111,10 @@ fn json_mode_lowers_any_to_value() {
 
 #[test]
 fn json_mode_lowers_multi_union_to_value() {
-    let mut cfg = Config::default();
-    cfg.opaque_lowering = OpaqueLowering::Json;
+    let cfg = Config {
+        opaque_lowering: OpaqueLowering::Json,
+        ..Default::default()
+    };
     let out = render_normalized(cfg);
     assert!(
         out.contains("type StringOrNumber < > = :: serde_json :: Value"),
