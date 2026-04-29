@@ -695,7 +695,7 @@ pub mod attrs {
                         "wrap",
                     ];
                     #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS : & 'static str = "an identifier in [\"name\", \"is_pub\", \"is_private\", \"is_box\", \"is_arc\", \"is_rc\", \"wrap\"]" ;
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"name\", \"is_pub\", \"is_private\", \"is_box\", \"is_arc\", \"is_rc\", \"wrap\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {

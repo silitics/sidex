@@ -627,11 +627,13 @@ fn attr_to_string(attr: &ir::Attr) -> Result<String, Diagnostic> {
                 .collect::<Result<_, _>>()?;
             Ok(format!("{}({})", list.path, inner.join(", ")))
         }
-        ir::AttrKind::Assign(assign) => Ok(format!(
-            "{} = {}",
-            assign.path,
-            attr_value_to_compact_string(&assign.value)
-        )),
+        ir::AttrKind::Assign(assign) => {
+            Ok(format!(
+                "{} = {}",
+                assign.path,
+                attr_value_to_compact_string(&assign.value)
+            ))
+        }
     }
 }
 

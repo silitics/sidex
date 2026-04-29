@@ -105,9 +105,7 @@ fn apply_config_override(config: &mut serde_json::Value, spec: &str) -> eyre::Re
     let mut cursor = config;
     for segment in &segments[..segments.len() - 1] {
         let map = cursor.as_object_mut().ok_or_else(|| {
-            eyre::eyre!(
-                "--config-override `{spec}` traverses non-object at segment `{segment}`"
-            )
+            eyre::eyre!("--config-override `{spec}` traverses non-object at segment `{segment}`")
         })?;
         cursor = map
             .entry(segment.clone())
@@ -119,9 +117,7 @@ fn apply_config_override(config: &mut serde_json::Value, spec: &str) -> eyre::Re
     let last = &segments[segments.len() - 1];
     cursor
         .as_object_mut()
-        .ok_or_else(|| {
-            eyre::eyre!("--config-override `{spec}` ends in a non-object container")
-        })?
+        .ok_or_else(|| eyre::eyre!("--config-override `{spec}` ends in a non-object container"))?
         .insert(last.clone(), value);
     Ok(())
 }

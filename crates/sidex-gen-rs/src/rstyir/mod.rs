@@ -154,7 +154,11 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
             derive.push(derive_trait.clone());
         }
     }
-    let attr_iter: &[TokenStream] = if strip_type_derives { &[] } else { &attrs.attrs };
+    let attr_iter: &[TokenStream] = if strip_type_derives {
+        &[]
+    } else {
+        &attrs.attrs
+    };
     let meta = quote! {
         #(#[derive(#derive)])*
         #(#[#attr_iter])*
@@ -212,8 +216,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     let mut inner_ty = ctx.resolve_type_old(def, &field.typ, false);
                     let mut inner_encoding = ctx.resolve_encoding(def, &field.typ);
                     for wrapper in attrs.wrappers {
-                        let wrapper_path =
-                            TokenStream::from_str(&wrapper.wrapper).unwrap();
+                        let wrapper_path = TokenStream::from_str(&wrapper.wrapper).unwrap();
                         inner_encoding =
                             wrap_encoding(&wrapper.wrapper, &wrapper_path, &inner_encoding);
                         inner_ty = quote! { #wrapper_path < #inner_ty > };
@@ -330,12 +333,7 @@ fn wrap_encoding(
 ) -> TokenStream {
     let propagates = matches!(
         wrapper_path,
-        "::std::boxed::Box"
-            | "::std::sync::Arc"
-            | "::std::rc::Rc"
-            | "Box"
-            | "Arc"
-            | "Rc"
+        "::std::boxed::Box" | "::std::sync::Arc" | "::std::rc::Rc" | "Box" | "Arc" | "Rc"
     );
     if propagates {
         quote! { #wrapper_tokens < #inner_encoding > }

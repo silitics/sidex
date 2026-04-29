@@ -7,10 +7,12 @@ use indexmap::IndexMap;
 use indexmap::indexmap;
 use serde::Deserialize;
 use serde::Serialize;
+use sidex_attrs_json::field_attrs;
+use sidex_attrs_json::opaque_type_attrs;
+use sidex_attrs_json::record_type_attrs;
 use sidex_attrs_json::types::JsonType;
-use sidex_attrs_json::{
-    field_attrs, opaque_type_attrs, record_type_attrs, variant_attrs, variant_type_attrs,
-};
+use sidex_attrs_json::variant_attrs;
+use sidex_attrs_json::variant_type_attrs;
 use sidex_gen::Generator;
 use sidex_gen::diagnostics;
 use sidex_gen::ir::STD_BUNDLE_IDX;

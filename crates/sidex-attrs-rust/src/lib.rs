@@ -13,6 +13,7 @@ mod generated;
 use std::collections::HashMap;
 use std::str::FromStr;
 
+pub use generated::attrs as raw;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::quote;
@@ -20,8 +21,6 @@ use serde_json::Value;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Result;
 use sidex_ir as ir;
-
-pub use generated::attrs as raw;
 
 const PLUGIN: &str = "rust";
 
@@ -33,9 +32,11 @@ where
     T: serde::de::DeserializeOwned,
 {
     match typed_attrs.get(PLUGIN) {
-        Some(value) => serde_json::from_value(value.clone())
-            .map(Some)
-            .map_err(|err| Diagnostic::error(format!("Invalid `rust` attributes: {err}"))),
+        Some(value) => {
+            serde_json::from_value(value.clone())
+                .map(Some)
+                .map_err(|err| Diagnostic::error(format!("Invalid `rust` attributes: {err}")))
+        }
         None => Ok(None),
     }
 }
@@ -167,7 +168,9 @@ pub fn type_attrs(def: &ir::Def) -> Result<TypeAttrs> {
             .map(|s| TokenStream::from_str(s))
             .collect::<std::result::Result<_, _>>()
             .map_err(|err| {
-                Diagnostic::error(format!("Invalid token stream in `#[rust(derive(...))]`: {err}"))
+                Diagnostic::error(format!(
+                    "Invalid token stream in `#[rust(derive(...))]`: {err}"
+                ))
             })?,
     };
     let attrs = raw
@@ -177,7 +180,9 @@ pub fn type_attrs(def: &ir::Def) -> Result<TypeAttrs> {
         .map(|s| TokenStream::from_str(s))
         .collect::<std::result::Result<_, _>>()
         .map_err(|err| {
-            Diagnostic::error(format!("Invalid token stream in `#[rust(attr(...))]`: {err}"))
+            Diagnostic::error(format!(
+                "Invalid token stream in `#[rust(attr(...))]`: {err}"
+            ))
         })?;
     Ok(TypeAttrs {
         typ: raw.typ.map(|path| Type { path }),

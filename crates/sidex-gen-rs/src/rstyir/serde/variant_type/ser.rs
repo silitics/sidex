@@ -27,11 +27,16 @@ pub(crate) fn gen_serialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> Tok
 
             // For variants carrying data, wrap the value with the encoding
             // so the underlying serializer drives the override-aware wire form.
-            let wrapped_value = variant.ty.as_ref().zip(variant.encoding.as_ref()).map(|(ty, encoding)| {
-                quote! {
-                    &__sidex_serde::SerializeAsWrap::<#ty, #encoding>::new(__value)
-                }
-            });
+            let wrapped_value =
+                variant
+                    .ty
+                    .as_ref()
+                    .zip(variant.encoding.as_ref())
+                    .map(|(ty, encoding)| {
+                        quote! {
+                            &__sidex_serde::SerializeAsWrap::<#ty, #encoding>::new(__value)
+                        }
+                    });
 
             let adjacently_tagged = if let Some(wrapped) = wrapped_value.as_ref() {
                 quote! {

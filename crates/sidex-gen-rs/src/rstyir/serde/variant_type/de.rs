@@ -29,9 +29,7 @@ pub(crate) fn gen_deserialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> T
             variant_ty.json_attrs.tagged,
             JsonTaggedAttr::Implicitly
         ) {
-            let try_variants = variant_ty.variants
-            .iter()
-            .map(|variant| {
+            let try_variants = variant_ty.variants.iter().map(|variant| {
                 let ident = &variant.ident;
                 if let (Some(ty), Some(encoding)) = (&variant.ty, &variant.encoding) {
                     quote! {
@@ -53,36 +51,17 @@ pub(crate) fn gen_deserialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> T
                 Err(<__D::Error as __serde::de::Error>::custom("no matching variant found"))
             }
         } else {
-            let human_readable_match_arms = variant_ty.variants
-            .iter()
-            .zip(identifiers.iter())
-            .map(|(variant, de_ident)| {
-                let ident = &variant.ident;
-                let constructor = if let (Some(ty), Some(encoding)) = (&variant.ty, &variant.encoding) {
-                    let content_field = variant_ty.json_attrs.content_field_name(&variant.json_attrs);
-                    match &variant_ty.json_attrs.tagged {
-                        JsonTaggedAttr::Adjacently => {
-                            quote! {
-                                #ty_ident::#ident(
-                                    __tagged.deserialize_adjacently_tagged::<
-                                        __sidex_serde::DeserializeAsWrap<#ty, #encoding>,
-                                        __D::Error,
-                                    >(#content_field)?.into_inner()
-                                )
-                            }
-                        }
-                        JsonTaggedAttr::Internally => {
-                            let is_record = variant.is_record;
-                            if is_record && variant.json_attrs.content.is_none() {
-                                quote! {
-                                    #ty_ident::#ident(
-                                        __tagged.deserialize_internally_tagged::<
-                                            __sidex_serde::DeserializeAsWrap<#ty, #encoding>,
-                                            __D::Error,
-                                        >()?.into_inner()
-                                    )
-                                }
-                            } else {
+            let human_readable_match_arms = variant_ty.variants.iter().zip(identifiers.iter()).map(
+                |(variant, de_ident)| {
+                    let ident = &variant.ident;
+                    let constructor = if let (Some(ty), Some(encoding)) =
+                        (&variant.ty, &variant.encoding)
+                    {
+                        let content_field = variant_ty
+                            .json_attrs
+                            .content_field_name(&variant.json_attrs);
+                        match &variant_ty.json_attrs.tagged {
+                            JsonTaggedAttr::Adjacently => {
                                 quote! {
                                     #ty_ident::#ident(
                                         __tagged.deserialize_adjacently_tagged::<
@@ -92,22 +71,44 @@ pub(crate) fn gen_deserialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> T
                                     )
                                 }
                             }
+                            JsonTaggedAttr::Internally => {
+                                let is_record = variant.is_record;
+                                if is_record && variant.json_attrs.content.is_none() {
+                                    quote! {
+                                        #ty_ident::#ident(
+                                            __tagged.deserialize_internally_tagged::<
+                                                __sidex_serde::DeserializeAsWrap<#ty, #encoding>,
+                                                __D::Error,
+                                            >()?.into_inner()
+                                        )
+                                    }
+                                } else {
+                                    quote! {
+                                        #ty_ident::#ident(
+                                            __tagged.deserialize_adjacently_tagged::<
+                                                __sidex_serde::DeserializeAsWrap<#ty, #encoding>,
+                                                __D::Error,
+                                            >(#content_field)?.into_inner()
+                                        )
+                                    }
+                                }
+                            }
+                            _ => TokenStream::default(),
                         }
-                        _ => TokenStream::default(),
-                    }
-                } else {
-                    quote! {
-                        // Ignore content without any warning.
-                        #ty_ident::#ident
-                    }
-                };
+                    } else {
+                        quote! {
+                            // Ignore content without any warning.
+                            #ty_ident::#ident
+                        }
+                    };
 
-                quote! {
-                    __Identifier::#de_ident => {
-                        ::core::result::Result::Ok(#constructor)
+                    quote! {
+                        __Identifier::#de_ident => {
+                            ::core::result::Result::Ok(#constructor)
+                        }
                     }
-                }
-            });
+                },
+            );
             let tag_field = variant_ty.json_attrs.tag_field_name();
             quote! {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<__Identifier, __D>(__deserializer, #tag_field)?;
@@ -142,30 +143,34 @@ fn gen_externally_tagged_body(
     let ty_ident = &ty.ident;
     let ty_name = &ty.name;
 
-    let match_arms = variant_ty.variants.iter().zip(identifiers.iter()).map(
-        |(variant, de_ident)| {
-            let ident = &variant.ident;
-            let constructor = if let (Some(ty), Some(encoding)) = (&variant.ty, &variant.encoding) {
-                quote! {
-                    let __value = __serde::de::VariantAccess::newtype_variant::<
-                        __sidex_serde::DeserializeAsWrap<#ty, #encoding>,
-                    >(__variant)?;
-                    ::core::result::Result::Ok(#ty_ident::#ident(__value.into_inner()))
-                }
-            } else {
-                quote! {
-                    __serde::de::VariantAccess::unit_variant(__variant)?;
-                    ::core::result::Result::Ok(#ty_ident::#ident)
-                }
-            };
+    let match_arms =
+        variant_ty
+            .variants
+            .iter()
+            .zip(identifiers.iter())
+            .map(|(variant, de_ident)| {
+                let ident = &variant.ident;
+                let constructor =
+                    if let (Some(ty), Some(encoding)) = (&variant.ty, &variant.encoding) {
+                        quote! {
+                            let __value = __serde::de::VariantAccess::newtype_variant::<
+                                __sidex_serde::DeserializeAsWrap<#ty, #encoding>,
+                            >(__variant)?;
+                            ::core::result::Result::Ok(#ty_ident::#ident(__value.into_inner()))
+                        }
+                    } else {
+                        quote! {
+                            __serde::de::VariantAccess::unit_variant(__variant)?;
+                            ::core::result::Result::Ok(#ty_ident::#ident)
+                        }
+                    };
 
-            quote! {
-                (__Identifier::#de_ident, __variant) => {
-                    #constructor
+                quote! {
+                    (__Identifier::#de_ident, __variant) => {
+                        #constructor
+                    }
                 }
-            }
-        },
-    );
+            });
 
     let match_arms_str = variant_ty
         .variants
