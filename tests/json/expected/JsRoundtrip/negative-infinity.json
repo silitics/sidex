@@ -1,0 +1,10 @@
+{
+    "bigU": 1,
+    "negI": "9223372036854775807",
+    "finiteF": -0.0,
+    "nonFiniteF": "-Infinity",
+    "seqU": [42],
+    "mapU": {
+        "alpha": 1
+    }
+}

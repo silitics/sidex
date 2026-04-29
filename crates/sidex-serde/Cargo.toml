@@ -11,7 +11,15 @@ homepage.workspace = true
 serde.workspace = true
 # Required for serializing and deserializing Base64 encoded bytes.
 base64.workspace = true # PRIVATE
+# Required when the `serde_json` feature is on for `SidexType` impls on
+# `serde_json::Value` and `serde_json::Map` (used by the JSON opaque
+# lowering and `::meta::ir::Value`).
+serde_json = { workspace = true, optional = true }
+
+[dev-dependencies]
+serde_json.workspace = true
 
 [features]
 serde-private-content = []
-default = []
+serde_json = ["dep:serde_json"]
+default = ["serde_json"]

@@ -51,7 +51,7 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
             }
         }
         RsTypeKind::Wrapper(rs_type_wrapper) => {
-            let RsTypeWrapper { wrapped } = rs_type_wrapper;
+            let RsTypeWrapper { wrapped, .. } = rs_type_wrapper;
             quote! {
                 #[doc = #docs]
                 #meta
@@ -162,7 +162,11 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
     let kind = match &def.kind {
         DefKind::WrapperType(wrapper_type_def) => {
             let wrapped = ctx.resolve_type_old(def, &wrapper_type_def.wrapped, false);
-            RsTypeKind::Wrapper(RsTypeWrapper { wrapped })
+            let wrapped_encoding = ctx.resolve_encoding(def, &wrapper_type_def.wrapped);
+            RsTypeKind::Wrapper(RsTypeWrapper {
+                wrapped,
+                wrapped_encoding,
+            })
         }
         DefKind::TypeAlias(alias) => {
             let aliased = ctx.resolve_type_old(def, &alias.aliased, false);
@@ -205,14 +209,23 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         .map(|docs| docs.as_str())
                         .unwrap_or_default()
                         .to_owned();
-                    let mut typ = ctx.resolve_type_old(def, &field.typ, false);
+                    let mut inner_ty = ctx.resolve_type_old(def, &field.typ, false);
+                    let mut inner_encoding = ctx.resolve_encoding(def, &field.typ);
                     for wrapper in attrs.wrappers {
-                        let wrapper = TokenStream::from_str(&wrapper.wrapper).unwrap();
-                        typ = quote! { #wrapper < #typ > }
+                        let wrapper_path =
+                            TokenStream::from_str(&wrapper.wrapper).unwrap();
+                        inner_encoding =
+                            wrap_encoding(&wrapper.wrapper, &wrapper_path, &inner_encoding);
+                        inner_ty = quote! { #wrapper_path < #inner_ty > };
                     }
-                    if field.is_optional {
-                        typ = quote! { ::std::option::Option< #typ > };
-                    }
+                    let (ty, encoding) = if field.is_optional {
+                        (
+                            quote! { ::std::option::Option< #inner_ty > },
+                            quote! { ::std::option::Option< #inner_encoding > },
+                        )
+                    } else {
+                        (inner_ty.clone(), inner_encoding.clone())
+                    };
                     let json_attrs = json_field_attrs(field)?;
                     Ok(RsField {
                         name: field.name.name.clone(),
@@ -222,7 +235,10 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         is_optional: field.is_optional,
                         json_name: ty_json_attrs.field_name(field, &json_attrs),
                         json_attrs,
-                        ty: typ,
+                        ty,
+                        encoding,
+                        inner_ty,
+                        inner_encoding,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
@@ -250,6 +266,10 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     } else {
                         None
                     };
+                    let encoding = variant
+                        .typ
+                        .as_ref()
+                        .map(|typ| ctx.resolve_encoding(def, typ));
                     let json_attrs = json_variant_attrs(variant)?;
                     Ok(RsVariant {
                         name: variant.name.name.clone(),
@@ -264,6 +284,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                             false
                         },
                         ty,
+                        encoding,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
@@ -287,6 +308,40 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
         meta,
         kind,
     }))
+}
+
+/// Wrap an inner [`SerializeAs`]/[`DeserializeAs`] encoding in a user-supplied
+/// field wrapper.
+///
+/// For the standard library's transparent shared-pointer wrappers (`Box`,
+/// `Arc`, `Rc`) Sidex provides blanket encoding propagation, so the inner
+/// encoding bubbles up through the wrapper. For other wrappers we don't know
+/// their `SerializeAs` impl shape, so we collapse to [`AsSelf`] over the
+/// wrapped type — string-encoded `i64`/`u64`/floats inside an arbitrary
+/// user wrapper degrade to their native serde encoding.
+///
+/// [`SerializeAs`]: sidex_serde::SerializeAs
+/// [`DeserializeAs`]: sidex_serde::DeserializeAs
+/// [`AsSelf`]: sidex_serde::AsSelf
+fn wrap_encoding(
+    wrapper_path: &str,
+    wrapper_tokens: &TokenStream,
+    inner_encoding: &TokenStream,
+) -> TokenStream {
+    let propagates = matches!(
+        wrapper_path,
+        "::std::boxed::Box"
+            | "::std::sync::Arc"
+            | "::std::rc::Rc"
+            | "Box"
+            | "Arc"
+            | "Rc"
+    );
+    if propagates {
+        quote! { #wrapper_tokens < #inner_encoding > }
+    } else {
+        quote! { __sidex_serde::AsSelf }
+    }
 }
 
 /// Lower an opaque definition to a Rust type token stream that mirrors its
@@ -357,6 +412,7 @@ pub enum RsTypeKind {
 #[derive(Debug, Clone)]
 pub struct RsTypeWrapper {
     pub wrapped: RsTypePath,
+    pub wrapped_encoding: TokenStream,
 }
 
 #[derive(Debug, Clone)]
@@ -379,7 +435,18 @@ pub struct RsField {
     pub is_optional: bool,
     pub json_attrs: JsonFieldAttrs,
     pub json_name: String,
+    /// Field type as written in the generated struct. For optional fields,
+    /// this is `Option<inner_ty>`.
     pub ty: RsTypePath,
+    /// `SerializeAs` / `DeserializeAs` encoding mirroring [`Self::ty`],
+    /// substituting Sidex-specific wire forms at the leaves.
+    pub encoding: TokenStream,
+    /// `ty` without the optional `Option<...>` wrap. Equal to `ty` when the
+    /// field is non-optional.
+    pub inner_ty: RsTypePath,
+    /// `encoding` without the optional `Option<...>` wrap. Equal to
+    /// `encoding` when the field is non-optional.
+    pub inner_encoding: TokenStream,
 }
 
 #[derive(Debug, Clone)]
@@ -397,4 +464,6 @@ pub struct RsVariant {
     pub json_name: String,
     pub is_record: bool,
     pub ty: Option<RsTypePath>,
+    /// Marker mirroring `ty`. `None` iff `ty` is `None`.
+    pub encoding: Option<TokenStream>,
 }

@@ -93,3 +93,16 @@ record Point {
     x: f64,
     y: f64,
 }
+
+/// Exercises encodings that don't roundtrip through JS via serde's defaults:
+/// - `i64`/`u64` as decimal strings (JS `Number` loses precision past `2^53`),
+/// - `f32`/`f64` non-finite values as `"NaN"` / `"+Infinity"` / `"-Infinity"`.
+record JsRoundtrip {
+    big_u: u64,
+    neg_i: i64,
+    finite_f: f64,
+    non_finite_f: f64,
+    optional_u?: u64,
+    seq_u: [u64],
+    map_u: [string: u64],
+}

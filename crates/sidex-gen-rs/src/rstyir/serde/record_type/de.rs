@@ -39,7 +39,7 @@ fn gen_visitor(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
     let expecting = format!("record {}", ty.name);
 
     let type_generics = ty.type_generics();
-    let impl_generics = ty.type_generics_with_bounds(&quote! { __serde::Deserialize<'de> });
+    let impl_generics = ty.type_generics_with_bounds(&quote! { __sidex_serde::SidexType });
 
     let visit_map_body = gen_visit_map_body(ty, record_ty);
     let visit_seq_body = gen_visit_seq_body(ty, record_ty);
@@ -98,6 +98,12 @@ fn gen_visit_seq_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
         .map(|field| &field.ty)
         .collect::<Vec<_>>();
 
+    let field_encodings = record_ty
+        .fields
+        .iter()
+        .map(|field| &field.encoding)
+        .collect::<Vec<_>>();
+
     let expected_length = format!("record with {num_fields} fields");
 
     let constructor = quote! {
@@ -111,8 +117,8 @@ fn gen_visit_seq_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
     quote! {
         #(
             // Optional fields are deserialized as `Option<T>` and, hence, need no special treatment.
-            let #field_vars = match __serde::de::SeqAccess::next_element::<#field_tys>(&mut __seq)? {
-                ::core::option::Option::Some(__value) => __value,
+            let #field_vars = match __serde::de::SeqAccess::next_element::<__sidex_serde::DeserializeAsWrap<#field_tys, #field_encodings>>(&mut __seq)? {
+                ::core::option::Option::Some(__value) => __value.into_inner(),
                 ::core::option::Option::None => {
                     return ::core::result::Result::Err(
                         __serde::de::Error::invalid_length(#field_indices, &#expected_length)
@@ -157,6 +163,13 @@ fn gen_visit_map_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
         .map(|field| &field.ty)
         .collect::<Vec<_>>();
 
+    let field_encodings = record_ty
+        .fields
+        .iter()
+        .filter(|f| !f.json_attrs.inline)
+        .map(|field| &field.encoding)
+        .collect::<Vec<_>>();
+
     let field_names = record_ty
         .fields
         .iter()
@@ -199,13 +212,30 @@ fn gen_visit_map_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
         .map(|field| &field.ident)
         .collect::<Vec<_>>();
 
+    let inline_field_tys = record_ty
+        .fields
+        .iter()
+        .filter(|f| f.json_attrs.inline)
+        .map(|field| &field.ty)
+        .collect::<Vec<_>>();
+
+    let inline_field_encodings = record_ty
+        .fields
+        .iter()
+        .filter(|f| f.json_attrs.inline)
+        .map(|field| &field.encoding)
+        .collect::<Vec<_>>();
+
     let constructor = quote! {
         ::core::result::Result::Ok(#ty_ident {
             #(
                 #field_idents: #field_vars,
             )*
             #(
-                #inline_field_idents: __sidex_serde::de::content::deserialize_content_ref(&__content)?,
+                #inline_field_idents: __sidex_serde::de::content::deserialize_content_ref::<
+                    __sidex_serde::DeserializeAsWrap<#inline_field_tys, #inline_field_encodings>,
+                    _,
+                >(&__content)?.into_inner(),
             )*
         })
     };
@@ -230,7 +260,7 @@ fn gen_visit_map_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
                                 );
                             }
                             #field_vars = ::core::option::Option::Some(
-                                __serde::de::MapAccess::next_value::<#field_tys>(&mut __map)?
+                                __serde::de::MapAccess::next_value::<__sidex_serde::DeserializeAsWrap<#field_tys, #field_encodings>>(&mut __map)?.into_inner()
                             );
                         },
                     )*
@@ -271,7 +301,10 @@ fn gen_visit_map_body(ty: &RsType, record_ty: &RsTypeRecord) -> TokenStream {
                                 );
                             }
                             #field_vars = ::core::option::Option::Some(
-                                __sidex_serde::de::content::deserialize_content_ref(__value)?
+                                __sidex_serde::de::content::deserialize_content_ref::<
+                                    __sidex_serde::DeserializeAsWrap<#field_tys, #field_encodings>,
+                                    _,
+                                >(__value)?.into_inner()
                             );
                         },
                     )*

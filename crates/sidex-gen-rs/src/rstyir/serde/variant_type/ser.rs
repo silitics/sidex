@@ -25,11 +25,19 @@ pub(crate) fn gen_serialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> Tok
                 .json_attrs
                 .content_field_name(&variant.json_attrs);
 
-            let adjacently_tagged = if variant.ty.is_some() {
+            // For variants carrying data, wrap the value with the encoding
+            // so the underlying serializer drives the override-aware wire form.
+            let wrapped_value = variant.ty.as_ref().zip(variant.encoding.as_ref()).map(|(ty, encoding)| {
+                quote! {
+                    &__sidex_serde::SerializeAsWrap::<#ty, #encoding>::new(__value)
+                }
+            });
+
+            let adjacently_tagged = if let Some(wrapped) = wrapped_value.as_ref() {
                 quote! {
                     Self::#ident(__value) => {
                         __serializer.serialize_adjacently_tagged(
-                            #tag_field, #value_field, #variant_tag, #variant_idx, __value
+                            #tag_field, #value_field, #variant_tag, #variant_idx, #wrapped
                         )
                     }
                 }
@@ -46,11 +54,11 @@ pub(crate) fn gen_serialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> Tok
             match variant_ty.json_attrs.tagged {
                 Adjacently => adjacently_tagged,
                 Externally => {
-                    if variant.ty.is_some() {
+                    if let Some(wrapped) = wrapped_value.as_ref() {
                         quote! {
                             Self::#ident(__value) => {
                                 __serializer.serialize_externally_tagged(
-                                    #variant_tag, #variant_idx, __value
+                                    #variant_tag, #variant_idx, #wrapped
                                 )
                             }
                         }
@@ -67,12 +75,12 @@ pub(crate) fn gen_serialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> Tok
                 Internally => {
                     if variant.json_attrs.content.is_some() {
                         adjacently_tagged
-                    } else if variant.ty.is_some() {
+                    } else if let Some(wrapped) = wrapped_value.as_ref() {
                         if variant.is_record {
                             quote! {
                                 Self::#ident(__value) => {
                                     __serializer.serialize_internally_tagged(
-                                        #tag_field, #variant_tag, #variant_idx, __value
+                                        #tag_field, #variant_tag, #variant_idx, #wrapped
                                     )
                                 }
                             }
@@ -92,11 +100,11 @@ pub(crate) fn gen_serialize_body(ty: &RsType, variant_ty: &RsTypeVariant) -> Tok
                 Implicitly => {
                     if variant.json_attrs.content.is_some() {
                         adjacently_tagged
-                    } else if variant.ty.is_some() {
+                    } else if let Some(wrapped) = wrapped_value.as_ref() {
                         quote! {
                             Self::#ident(__value) => {
                                 __serializer.serialize_implicitly_tagged(
-                                    #variant_tag, #variant_idx, __value
+                                    #variant_tag, #variant_idx, #wrapped
                                 )
                             }
                         }

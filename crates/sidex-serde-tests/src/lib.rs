@@ -54,5 +54,6 @@ mod tests {
     fn test_record_types() {
         test!(RecordFieldNamesDefault);
         test!(RecordFieldNamesScreamingSnake);
+        test!(JsRoundtrip);
     }
 }

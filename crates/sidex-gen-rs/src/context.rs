@@ -232,6 +232,60 @@ impl<'cx> SchemaCtx<'cx> {
         syn::parse2(self.resolve_type_old(def, typ, false)).unwrap()
     }
 
+    /// Resolves a Sidex type into the [`SerializeAs`]/[`DeserializeAs`]
+    /// encoding that pairs with the Rust type returned by
+    /// [`Self::resolve_type_old`].
+    ///
+    /// The encoding mirrors the structure of the Rust type but substitutes
+    /// a Sidex-specific wire form (e.g. `AsU64`) at the leaves where the
+    /// default Serde encoding doesn't roundtrip cleanly through JavaScript
+    /// JSON. Container types like `Vec`, `Option`, and `HashMap` carry the
+    /// encoding of their element type.
+    ///
+    /// [`SerializeAs`]: sidex_serde::SerializeAs
+    /// [`DeserializeAs`]: sidex_serde::DeserializeAs
+    pub fn resolve_encoding(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
+        let resolved = self.bundle_ctx.unit.resolve_aliases(typ);
+        match &resolved.kind {
+            ir::TypeKind::TypeVar(var) => {
+                let name = format_ident!("{}", def[var.idx].name.as_str());
+                quote! { <#name as __sidex_serde::SidexType>::Encoding }
+            }
+            ir::TypeKind::Instance(instance) => {
+                let unit = self.bundle_ctx.unit;
+                let bundle = &unit[instance.def.bundle];
+                let schema = &unit[instance.def.schema];
+                let instance_def = &unit[instance.def];
+                let qualified_path = format!(
+                    "::{}::{}::{}",
+                    bundle.metadata.name,
+                    schema.name,
+                    instance_def.name.as_str()
+                );
+
+                match qualified_path.as_str() {
+                    "::core::builtins::i64" => return quote! { __sidex_serde::AsI64 },
+                    "::core::builtins::u64" => return quote! { __sidex_serde::AsU64 },
+                    "::core::builtins::f32" => return quote! { __sidex_serde::AsF32 },
+                    "::core::builtins::f64" => return quote! { __sidex_serde::AsF64 },
+                    "::core::builtins::bytes" => return quote! { __sidex_serde::AsBytes },
+                    "::core::builtins::Sequence" => {
+                        let inner = self.resolve_encoding(def, &instance.subst[0]);
+                        return quote! { ::std::vec::Vec<#inner> };
+                    }
+                    "::core::builtins::Map" => {
+                        let key = self.resolve_encoding(def, &instance.subst[0]);
+                        let value = self.resolve_encoding(def, &instance.subst[1]);
+                        return quote! { ::std::collections::HashMap<#key, #value> };
+                    }
+                    _ => {}
+                }
+
+                quote! { __sidex_serde::AsSelf }
+            }
+        }
+    }
+
     pub fn resolve_type_old(
         &self,
         def: &ir::Def,
