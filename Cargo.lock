@@ -1099,6 +1099,7 @@ name = "sidex-serde"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "indexmap",
  "serde",
  "serde_json",
 ]
@@ -1130,6 +1131,18 @@ dependencies = [
  "serde",
  "serde_json",
  "sidex-serde",
+]
+
+[[package]]
+name = "sidex-types-openapi"
+version = "0.1.0"
+dependencies = [
+ "indexmap",
+ "serde",
+ "sidex",
+ "sidex-build-rs",
+ "sidex-serde",
+ "sidex-types-json-schema",
 ]
 
 [[package]]

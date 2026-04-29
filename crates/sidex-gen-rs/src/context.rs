@@ -244,6 +244,24 @@ impl<'cx> SchemaCtx<'cx> {
     ///
     /// [`SerializeAs`]: sidex_serde::SerializeAs
     /// [`DeserializeAs`]: sidex_serde::DeserializeAs
+    /// Returns the concrete Rust path the user has configured for a
+    /// container builtin (e.g. `indexmap::IndexMap` for `::core::builtins::Map`),
+    /// falling back to `default_path` (e.g. `::std::collections::HashMap`)
+    /// when no override is set.
+    fn container_path(&self, qualified_path: &str, default_path: &str) -> TokenStream {
+        let path = self
+            .bundle_ctx
+            .cfg
+            .types
+            .table
+            .get(qualified_path)
+            .map(String::as_str)
+            .unwrap_or(default_path);
+        syn::parse_str::<syn::TypePath>(path)
+            .unwrap()
+            .to_token_stream()
+    }
+
     pub fn resolve_encoding(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
         let resolved = self.bundle_ctx.unit.resolve_aliases(typ);
         match &resolved.kind {
@@ -269,14 +287,24 @@ impl<'cx> SchemaCtx<'cx> {
                     "::core::builtins::f32" => return quote! { __sidex_serde::AsF32 },
                     "::core::builtins::f64" => return quote! { __sidex_serde::AsF64 },
                     "::core::builtins::bytes" => return quote! { __sidex_serde::AsBytes },
+                    // For `Sequence` and `Map` we reuse the same concrete
+                    // container the user configured for the value type
+                    // (e.g. `indexmap::IndexMap` instead of `HashMap`) — the
+                    // encoding only flips the leaf type parameters to their
+                    // `SidexType::Encoding` equivalents. `sidex-serde` ships
+                    // `SerializeAs`/`DeserializeAs`/`SidexType` impls for
+                    // every container path it knows about.
                     "::core::builtins::Sequence" => {
+                        let container = self.container_path(&qualified_path, "::std::vec::Vec");
                         let inner = self.resolve_encoding(def, &instance.subst[0]);
-                        return quote! { ::std::vec::Vec<#inner> };
+                        return quote! { #container<#inner> };
                     }
                     "::core::builtins::Map" => {
+                        let container =
+                            self.container_path(&qualified_path, "::std::collections::HashMap");
                         let key = self.resolve_encoding(def, &instance.subst[0]);
                         let value = self.resolve_encoding(def, &instance.subst[1]);
-                        return quote! { ::std::collections::HashMap<#key, #value> };
+                        return quote! { #container<#key, #value> };
                     }
                     _ => {}
                 }

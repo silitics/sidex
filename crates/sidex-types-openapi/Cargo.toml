@@ -1,0 +1,18 @@
+[package]
+name = "sidex-types-openapi"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+sidex.workspace = true
+sidex-serde.workspace = true
+sidex-types-json-schema.workspace = true
+serde.workspace = true
+indexmap.workspace = true
+
+[build-dependencies]
+sidex-build-rs.workspace = true

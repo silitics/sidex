@@ -3,11 +3,11 @@
 //! for primitives whose default Serde encoding doesn't roundtrip cleanly through
 //! JavaScript JSON, namely:
 //!
-//! - 64-bit integers: a JavaScript `Number` is an IEEE-754 double, so values
-//!   above `2^53` lose precision when read into a JS runtime. We therefore emit
-//!   `i64`/`u64` as decimal strings on the wire for human-readable formats.
-//! - Non-finite floats: `NaN` and `±Infinity` have no canonical JSON spelling.
-//!   We emit them as `"NaN"` / `"+Infinity"` / `"-Infinity"`.
+//! - 64-bit integers: a JavaScript `Number` is an IEEE-754 double, so values above `2^53`
+//!   lose precision when read into a JS runtime. We therefore emit `i64`/`u64` as decimal
+//!   strings on the wire for human-readable formats.
+//! - Non-finite floats: `NaN` and `±Infinity` have no canonical JSON spelling. We emit
+//!   them as `"NaN"` / `"+Infinity"` / `"-Infinity"`.
 //! - Bytes: emitted as Base64 strings in human-readable formats.
 //!
 //! Binary (non-human-readable) formats keep the native Serde encoding.
@@ -281,9 +281,7 @@ impl SerializeAs<f32> for AsF32 {
 impl<'de> DeserializeAs<'de, f32> for AsF32 {
     fn deserialize_as<D: Deserializer<'de>>(deserializer: D) -> Result<f32, D::Error> {
         if deserializer.is_human_readable() {
-            deserializer
-                .deserialize_any(F64Visitor)
-                .map(|v| v as f32)
+            deserializer.deserialize_any(F64Visitor).map(|v| v as f32)
         } else {
             deserializer.deserialize_f32(F32Visitor)
         }
@@ -404,9 +402,7 @@ where
     K: Eq + Hash,
     S: BuildHasher + Default,
 {
-    fn deserialize_as<D: Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<HashMap<K, V, S>, D::Error> {
+    fn deserialize_as<D: Deserializer<'de>>(deserializer: D) -> Result<HashMap<K, V, S>, D::Error> {
         deserializer.deserialize_map(MapVisitor::<HashMap<K, V, S>, KU, VU>(PhantomData))
     }
 }
@@ -425,8 +421,7 @@ where
     U: DeserializeAs<'de, T>,
 {
     fn deserialize_as<D: Deserializer<'de>>(deserializer: D) -> Result<Box<T>, D::Error> {
-        DeserializeAsWrap::<T, U>::deserialize(deserializer)
-            .map(|w| Box::new(w.into_inner()))
+        DeserializeAsWrap::<T, U>::deserialize(deserializer).map(|w| Box::new(w.into_inner()))
     }
 }
 
@@ -444,8 +439,7 @@ where
     U: DeserializeAs<'de, T>,
 {
     fn deserialize_as<D: Deserializer<'de>>(deserializer: D) -> Result<Arc<T>, D::Error> {
-        DeserializeAsWrap::<T, U>::deserialize(deserializer)
-            .map(|w| Arc::new(w.into_inner()))
+        DeserializeAsWrap::<T, U>::deserialize(deserializer).map(|w| Arc::new(w.into_inner()))
     }
 }
 
@@ -463,8 +457,7 @@ where
     U: DeserializeAs<'de, T>,
 {
     fn deserialize_as<D: Deserializer<'de>>(deserializer: D) -> Result<Rc<T>, D::Error> {
-        DeserializeAsWrap::<T, U>::deserialize(deserializer)
-            .map(|w| Rc::new(w.into_inner()))
+        DeserializeAsWrap::<T, U>::deserialize(deserializer).map(|w| Rc::new(w.into_inner()))
     }
 }
 
@@ -492,10 +485,45 @@ where
     VU: DeserializeAs<'de, V>,
     K: Ord,
 {
+    fn deserialize_as<D: Deserializer<'de>>(deserializer: D) -> Result<BTreeMap<K, V>, D::Error> {
+        deserializer.deserialize_map(MapVisitor::<BTreeMap<K, V>, KU, VU>(PhantomData))
+    }
+}
+
+#[cfg(feature = "indexmap")]
+impl<K, V, KU, VU, S> SerializeAs<indexmap::IndexMap<K, V, S>> for indexmap::IndexMap<KU, VU, S>
+where
+    KU: SerializeAs<K>,
+    VU: SerializeAs<V>,
+{
+    fn serialize_as<Ser: Serializer>(
+        value: &indexmap::IndexMap<K, V, S>,
+        serializer: Ser,
+    ) -> Result<Ser::Ok, Ser::Error> {
+        serializer.collect_map(value.iter().map(|(k, v)| {
+            (
+                SerializeAsWrap::<K, KU>::new(k),
+                SerializeAsWrap::<V, VU>::new(v),
+            )
+        }))
+    }
+}
+
+#[cfg(feature = "indexmap")]
+impl<'de, K, V, KU, VU, S> DeserializeAs<'de, indexmap::IndexMap<K, V, S>>
+    for indexmap::IndexMap<KU, VU, S>
+where
+    KU: DeserializeAs<'de, K>,
+    VU: DeserializeAs<'de, V>,
+    K: Eq + Hash,
+    S: BuildHasher + Default,
+{
     fn deserialize_as<D: Deserializer<'de>>(
         deserializer: D,
-    ) -> Result<BTreeMap<K, V>, D::Error> {
-        deserializer.deserialize_map(MapVisitor::<BTreeMap<K, V>, KU, VU>(PhantomData))
+    ) -> Result<indexmap::IndexMap<K, V, S>, D::Error> {
+        deserializer.deserialize_map(MapVisitor::<indexmap::IndexMap<K, V, S>, KU, VU>(
+            PhantomData,
+        ))
     }
 }
 
@@ -561,6 +589,16 @@ where
     type Encoding = BTreeMap<K::Encoding, V::Encoding>;
 }
 
+#[cfg(feature = "indexmap")]
+impl<K, V, S> SidexType for indexmap::IndexMap<K, V, S>
+where
+    K: SidexType + Eq + Hash,
+    V: SidexType,
+    S: BuildHasher + Default + 'static,
+{
+    type Encoding = indexmap::IndexMap<K::Encoding, V::Encoding, S>;
+}
+
 #[cfg(feature = "serde_json")]
 impl SidexType for serde_json::Value {
     type Encoding = AsSelf;
@@ -586,10 +624,12 @@ fn parse_non_finite<E: de::Error>(s: &str) -> Result<f64, E> {
         FLOAT_NAN => Ok(f64::NAN),
         FLOAT_POSITIVE_INFINITY => Ok(f64::INFINITY),
         FLOAT_NEGATIVE_INFINITY => Ok(f64::NEG_INFINITY),
-        _ => Err(E::invalid_value(
-            de::Unexpected::Str(s),
-            &"\"NaN\", \"+Infinity\", or \"-Infinity\"",
-        )),
+        _ => {
+            Err(E::invalid_value(
+                de::Unexpected::Str(s),
+                &"\"NaN\", \"+Infinity\", or \"-Infinity\"",
+            ))
+        }
     }
 }
 
@@ -754,10 +794,8 @@ where
     }
 
     fn visit_map<A: de::MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
-        let mut out = HashMap::with_capacity_and_hasher(
-            sanitize_size_hint(access.size_hint()),
-            S::default(),
-        );
+        let mut out =
+            HashMap::with_capacity_and_hasher(sanitize_size_hint(access.size_hint()), S::default());
         while let Some((k, v)) =
             access.next_entry::<DeserializeAsWrap<K, KU>, DeserializeAsWrap<V, VU>>()?
         {
@@ -781,6 +819,34 @@ where
 
     fn visit_map<A: de::MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
         let mut out = BTreeMap::new();
+        while let Some((k, v)) =
+            access.next_entry::<DeserializeAsWrap<K, KU>, DeserializeAsWrap<V, VU>>()?
+        {
+            out.insert(k.into_inner(), v.into_inner());
+        }
+        Ok(out)
+    }
+}
+
+#[cfg(feature = "indexmap")]
+impl<'de, K, V, KU, VU, S> Visitor<'de> for MapVisitor<indexmap::IndexMap<K, V, S>, KU, VU>
+where
+    KU: DeserializeAs<'de, K>,
+    VU: DeserializeAs<'de, V>,
+    K: Eq + Hash,
+    S: BuildHasher + Default,
+{
+    type Value = indexmap::IndexMap<K, V, S>;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a map")
+    }
+
+    fn visit_map<A: de::MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
+        let mut out = indexmap::IndexMap::with_capacity_and_hasher(
+            sanitize_size_hint(access.size_hint()),
+            S::default(),
+        );
         while let Some((k, v)) =
             access.next_entry::<DeserializeAsWrap<K, KU>, DeserializeAsWrap<V, VU>>()?
         {
@@ -832,18 +898,23 @@ mod tests {
             .into_inner();
         assert_eq!(v, 9);
         // Large value coming in as a string still round-trips.
-        let v: u64 = serde_json::from_str::<DeserializeAsWrap<u64, AsU64>>(
-            "\"18446744073709551615\"",
-        )
-        .unwrap()
-        .into_inner();
+        let v: u64 =
+            serde_json::from_str::<DeserializeAsWrap<u64, AsU64>>("\"18446744073709551615\"")
+                .unwrap()
+                .into_inner();
         assert_eq!(v, u64::MAX);
     }
 
     #[test]
     fn i64_threshold_split() {
         // Inside the safe range — emit numbers.
-        for &v in &[0i64, 1, -1, JS_MAX_SAFE_INTEGER as i64, -(JS_MAX_SAFE_INTEGER as i64)] {
+        for &v in &[
+            0i64,
+            1,
+            -1,
+            JS_MAX_SAFE_INTEGER as i64,
+            -(JS_MAX_SAFE_INTEGER as i64),
+        ] {
             let s = serde_json::to_string(&SerializeAsWrap::<i64, AsI64>::new(&v)).unwrap();
             assert_eq!(s, v.to_string(), "value {v}");
             assert_eq!(roundtrip_json::<i64, AsI64>(&v), v);
@@ -894,18 +965,16 @@ mod tests {
         let s = serde_json::to_string(&SerializeAsWrap::<_, Vec<AsU64>>::new(&xs)).unwrap();
         // Small values stay as numbers; only the >2^53 element becomes a string.
         assert_eq!(s, "[1,2,\"1152921504606846976\"]");
-        let back: Vec<u64> =
-            serde_json::from_str::<DeserializeAsWrap<Vec<u64>, Vec<AsU64>>>(&s)
-                .unwrap()
-                .into_inner();
+        let back: Vec<u64> = serde_json::from_str::<DeserializeAsWrap<Vec<u64>, Vec<AsU64>>>(&s)
+            .unwrap()
+            .into_inner();
         assert_eq!(back, xs);
     }
 
     #[test]
     fn option_propagates() {
         let some: Option<u64> = Some(1u64 << 60);
-        let s =
-            serde_json::to_string(&SerializeAsWrap::<_, Option<AsU64>>::new(&some)).unwrap();
+        let s = serde_json::to_string(&SerializeAsWrap::<_, Option<AsU64>>::new(&some)).unwrap();
         assert_eq!(s, "\"1152921504606846976\"");
         let back: Option<u64> =
             serde_json::from_str::<DeserializeAsWrap<Option<u64>, Option<AsU64>>>(&s)
@@ -914,8 +983,7 @@ mod tests {
         assert_eq!(back, some);
 
         let none: Option<u64> = None;
-        let s =
-            serde_json::to_string(&SerializeAsWrap::<_, Option<AsU64>>::new(&none)).unwrap();
+        let s = serde_json::to_string(&SerializeAsWrap::<_, Option<AsU64>>::new(&none)).unwrap();
         assert_eq!(s, "null");
     }
 
@@ -929,10 +997,9 @@ mod tests {
         >::new(&m))
         .unwrap();
         assert_eq!(s, "{\"k\":\"18446744073709551615\"}");
-        let back: HashMap<String, u64> = serde_json::from_str::<DeserializeAsWrap<
-            HashMap<String, u64>,
-            HashMap<AsSelf, AsU64>,
-        >>(&s)
+        let back: HashMap<String, u64> = serde_json::from_str::<
+            DeserializeAsWrap<HashMap<String, u64>, HashMap<AsSelf, AsU64>>,
+        >(&s)
         .unwrap()
         .into_inner();
         assert_eq!(back, m);
@@ -940,8 +1007,7 @@ mod tests {
 
     #[test]
     fn as_self_passes_through() {
-        let s =
-            serde_json::to_string(&SerializeAsWrap::<u32, AsSelf>::new(&7u32)).unwrap();
+        let s = serde_json::to_string(&SerializeAsWrap::<u32, AsSelf>::new(&7u32)).unwrap();
         assert_eq!(s, "7");
     }
 
@@ -982,8 +1048,7 @@ mod tests {
     #[test]
     fn bytes_base64_roundtrip() {
         let bs: Vec<u8> = vec![0x01, 0x02, 0xff];
-        let s =
-            serde_json::to_string(&SerializeAsWrap::<Vec<u8>, AsBytes>::new(&bs)).unwrap();
+        let s = serde_json::to_string(&SerializeAsWrap::<Vec<u8>, AsBytes>::new(&bs)).unwrap();
         assert_eq!(s, "\"AQL/\"");
         let back: Vec<u8> = serde_json::from_str::<DeserializeAsWrap<Vec<u8>, AsBytes>>(&s)
             .unwrap()
