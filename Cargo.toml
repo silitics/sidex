@@ -13,7 +13,6 @@ homepage = "https://oss.silitics.com/sidex"
 [workspace.dependencies]
 # Internal crates.
 sidex = { path = "crates/sidex", version = "0.1" }
-sidex-attrs = { path = "crates/sidex-attrs", version = "0.1" }
 sidex-attrs-json = { path = "crates/sidex-attrs-json", version = "0.1" }
 sidex-attrs-py = { path = "crates/sidex-attrs-py", version = "0.1" }
 sidex-attrs-rust = { path = "crates/sidex-attrs-rust", version = "0.1" }

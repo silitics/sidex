@@ -1,7 +1,6 @@
 use std::path::Path;
 
 // Re-export
-pub use sidex_attrs as attrs;
 pub use sidex_diagnostics as diagnostics;
 // Re-export the Sidex Intermediate Representation.
 pub use sidex_ir as ir;

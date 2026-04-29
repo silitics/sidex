@@ -856,14 +856,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sidex-attrs"
-version = "0.1.0"
-dependencies = [
- "sidex-diagnostics",
- "sidex-ir",
-]
-
-[[package]]
 name = "sidex-attrs-json"
 version = "0.1.0"
 dependencies = [
@@ -1012,7 +1004,6 @@ name = "sidex-gen"
 version = "0.1.0"
 dependencies = [
  "serde_json",
- "sidex-attrs",
  "sidex-diagnostics",
  "sidex-ir",
  "thiserror",

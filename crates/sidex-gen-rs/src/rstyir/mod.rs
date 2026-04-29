@@ -21,7 +21,6 @@ use sidex_attrs_rust::FieldAttrs;
 use sidex_attrs_rust::Visibility;
 use sidex_attrs_rust::field_attrs as rust_field_attrs;
 use sidex_attrs_rust::type_attrs as rust_type_attrs;
-use sidex_gen::attrs::TryFromAttrs;
 use sidex_gen::diagnostics::Result;
 use sidex_gen::ir::Def;
 use sidex_gen::ir::DefKind;

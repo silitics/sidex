@@ -13,4 +13,3 @@ thiserror.workspace = true
 serde_json.workspace = true
 sidex-ir.workspace = true
 sidex-diagnostics.workspace = true
-sidex-attrs.workspace = true
