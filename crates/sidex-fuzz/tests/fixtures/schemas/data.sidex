@@ -3,6 +3,11 @@ record Point {
     y: f64,
 }
 
+record F32Point {
+    x: f32,
+    y: f32,
+}
+
 record OptFields {
     required: u32,
     maybe?: string,

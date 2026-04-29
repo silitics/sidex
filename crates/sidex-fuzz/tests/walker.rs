@@ -69,6 +69,40 @@ fn float_table_finite_only_by_default() {
 }
 
 #[test]
+fn f32_field_wire_form_survives_f32_roundtrip() {
+    // Regression: when the same float table was used for both `f32` and `f64`
+    // fields, sample values like `f64::MAX` would land in an `f32` field, the
+    // Rust driver would deserialize to `f32::INFINITY`, and the round-trip
+    // would diverge from looser dynamic-type targets that kept f64 precision.
+    // After the fix, every value drawn for an `f32` field is in `f32` range
+    // *and* its JSON wire form is the f32-shortest decimal — critical because
+    // the Rust driver re-serializes via `ryu_f32`, which would otherwise emit
+    // a different (shorter) string than the source.
+    let ir = load_fixture();
+    for seed in 0..500 {
+        let value = sample(&ir, "fuzz_fixture::data::F32Point", seed);
+        let obj = value.as_object().unwrap();
+        for key in ["x", "y"] {
+            let f = obj.get(key).and_then(Value::as_f64).unwrap();
+            assert!(
+                f.is_finite(),
+                "f32 field got non-finite value {f} (seed {seed}, key {key})",
+            );
+            // The wire form must equal the value's f32-shortest decimal —
+            // otherwise the Rust driver's deserialize-as-f32 / serialize-as-f32
+            // path emits a different string and the conformance suite flags
+            // it as a divergence.
+            assert_eq!(
+                f.to_string(),
+                (f as f32).to_string(),
+                "f32 field's JSON wire form differs from its f32-shortest decimal \
+                 (seed {seed}, key {key})",
+            );
+        }
+    }
+}
+
+#[test]
 fn float_table_emits_nan_and_inf_as_strings_when_enabled() {
     // With `floats_as_strings`, ±Infinity and NaN appear as JSON strings.
     let ir = load_fixture();
@@ -189,21 +223,23 @@ fn implicitly_tagged_emits_just_payload() {
 fn i64_default_mode_stays_in_safe_range() {
     // Without `integers_as_strings`, the table is restricted to JS-safe
     // values so all targets (including JS) round-trip without precision loss.
-    // `±2^53` is the boundary and must appear; `i64::MAX` must NOT.
+    // `Number.MAX_SAFE_INTEGER` is `2^53 - 1`; `±(2^53 - 1)` is the boundary
+    // and must appear, `±(2^53)` must NOT.
     let ir = load_fixture();
+    const SAFE_MAX: i64 = (1i64 << 53) - 1;
     let mut saw_boundary = false;
     for seed in 0..300 {
         let value = sample(&ir, "fuzz_fixture::data::BigInts", seed);
         let s = value.get("s").and_then(Value::as_i64).unwrap();
         assert!(
-            s.abs() <= 1i64 << 53,
+            s.abs() <= SAFE_MAX,
             "default-mode i64 must stay in JS-safe range, got {s}"
         );
-        if s == 1i64 << 53 || s == -(1i64 << 53) {
+        if s == SAFE_MAX || s == -SAFE_MAX {
             saw_boundary = true;
         }
     }
-    assert!(saw_boundary, "expected ±2^53 to appear in i64 draws");
+    assert!(saw_boundary, "expected ±(2^53 - 1) to appear in i64 draws");
 }
 
 #[test]

@@ -104,8 +104,11 @@ impl<'a> Walker<'a> {
             "::core::builtins::u64" | "::core::builtins::idx" => {
                 return Ok(self.draw_u64(source));
             }
-            "::core::builtins::f32" | "::core::builtins::f64" => {
-                return Ok(self.draw_float(source));
+            "::core::builtins::f32" => {
+                return Ok(self.draw_float_f32(source));
+            }
+            "::core::builtins::f64" => {
+                return Ok(self.draw_float(source, FLOAT_F64_FINITE_TABLE));
             }
             _ => {}
         }
@@ -151,21 +154,50 @@ impl<'a> Walker<'a> {
         }
     }
 
-    /// Draw a float. The finite table is always available; the special-value
-    /// table extends it only when `floats_as_strings` is set, and those entries
-    /// encode as the JSON strings `"NaN"`, `"Infinity"`, `"-Infinity"`.
-    fn draw_float(&self, source: &mut Source) -> Value {
-        let len = FLOAT_FINITE_TABLE.len()
+    /// Draw an `f64` field's value from [`FLOAT_F64_FINITE_TABLE`]. The
+    /// special-value table extends the choice only when `floats_as_strings`
+    /// is set; those entries encode as the JSON strings `"NaN"`, `"Infinity"`,
+    /// `"-Infinity"`.
+    fn draw_float<T: Copy + Into<f64>>(&self, source: &mut Source, table: &[T]) -> Value {
+        let len = table.len()
             + if self.config.floats_as_strings {
                 FLOAT_SPECIAL_TABLE.len()
             } else {
                 0
             };
         let idx = source.draw_choice(len);
-        if idx < FLOAT_FINITE_TABLE.len() {
-            json_f64(FLOAT_FINITE_TABLE[idx])
+        if idx < table.len() {
+            json_f64(table[idx].into())
         } else {
-            Value::String(FLOAT_SPECIAL_TABLE[idx - FLOAT_FINITE_TABLE.len()].to_owned())
+            Value::String(FLOAT_SPECIAL_TABLE[idx - table.len()].to_owned())
+        }
+    }
+
+    /// Draw an `f32` field's value from [`FLOAT_F32_FINITE_TABLE`].
+    ///
+    /// The wire form must be the *f32-shortest* decimal so that a roundtrip
+    /// through Rust (which deserializes to `f32`, then re-serializes via
+    /// `ryu_f32`) produces the same string the dynamic targets see. Emitting
+    /// the f64-shortest of `f32::MIN as f64` (`-3.4028234663852886e+38`)
+    /// would round-trip differently than the f32-shortest (`-3.4028235e+38`),
+    /// so we route through `f32::to_string` then re-parse to `f64`.
+    fn draw_float_f32(&self, source: &mut Source) -> Value {
+        let len = FLOAT_F32_FINITE_TABLE.len()
+            + if self.config.floats_as_strings {
+                FLOAT_SPECIAL_TABLE.len()
+            } else {
+                0
+            };
+        let idx = source.draw_choice(len);
+        if idx < FLOAT_F32_FINITE_TABLE.len() {
+            let v = FLOAT_F32_FINITE_TABLE[idx];
+            let f32_shortest = v.to_string();
+            let as_f64: f64 = f32_shortest
+                .parse()
+                .expect("f32 Display always round-trips as f64");
+            json_f64(as_f64)
+        } else {
+            Value::String(FLOAT_SPECIAL_TABLE[idx - FLOAT_F32_FINITE_TABLE.len()].to_owned())
         }
     }
 
@@ -175,7 +207,9 @@ impl<'a> Walker<'a> {
         let members: Vec<JsonType> = union.types.iter().copied().collect();
         let chosen = members[source.draw_choice(members.len())];
         Ok(match chosen {
-            JsonType::Number => self.draw_float(source),
+            // Opaques declared as `Number` give no width — assume the wider
+            // f64 contract.
+            JsonType::Number => self.draw_float(source, FLOAT_F64_FINITE_TABLE),
             JsonType::Boolean => pick_bool(source),
             JsonType::String => pick_string(source),
             JsonType::Null => Value::Null,
@@ -413,9 +447,14 @@ impl<'a> Walker<'a> {
                 let mut map = Map::new();
                 map.insert(attrs.tag_field_name(), Value::String(case_name.to_owned()));
                 if let Some(typ) = payload_type {
-                    // Inline the payload's record fields next to the tag if it's a
-                    // record; otherwise fall back to adjacent encoding.
-                    if self.ir.record_type(&typ).is_some() {
+                    // A per-variant `#[json(content = "...")]` override pins
+                    // the encoding to adjacent (use the content field) even
+                    // when the payload is a record. Without that override, we
+                    // inline a record payload's fields next to the tag and
+                    // fall back to adjacent encoding for non-records. This
+                    // matches the codegen's behaviour in
+                    // `sidex-gen-rs/src/rstyir/serde/variant_type/ser.rs`.
+                    if case_attrs.content.is_none() && self.ir.record_type(&typ).is_some() {
                         self.inline_record_into(&typ, source, &mut map)?;
                     } else {
                         let content = self.gen_value(&typ, source)?;
@@ -495,15 +534,15 @@ const I64_TABLE: &[i64] = &[
 ];
 
 /// JS-safe subset of `I64_TABLE`. Used when `integers_as_strings` is off so
-/// every target — including JS, which can't represent past 2^53 — round-trips
-/// values without losing precision. `±2^53` itself is still exactly
-/// representable in `f64`; the cliff begins at `2^53 + 1`.
+/// every target — including JS, which can't represent past 2^53-1 — round-trips
+/// values without losing precision. JS's `Number.MAX_SAFE_INTEGER` is `2^53 -
+/// 1` (the largest `N` such that both `N` and `N+1` round-trip through f64);
+/// `±2^53` itself collides with `±(2^53 + 1)` after a JS read-back, so the
+/// safe range stops one step short.
 const I64_SAFE_TABLE: &[i64] = &[
     0,
     1,
     -1,
-    1 << 53,
-    -(1 << 53),
     (1 << 53) - 1,
     -((1 << 53) - 1),
     1 << 32,
@@ -529,7 +568,7 @@ const U64_TABLE: &[u64] = &[
 /// JS-safe subset of `U64_TABLE`.
 const U64_SAFE_TABLE: &[u64] = &[0, 1, (1 << 53) - 1, u32::MAX as u64, (u32::MAX as u64) + 1];
 
-const FLOAT_FINITE_TABLE: &[f64] = &[
+const FLOAT_F64_FINITE_TABLE: &[f64] = &[
     0.0,
     1.0,
     -1.0,
@@ -538,6 +577,24 @@ const FLOAT_FINITE_TABLE: &[f64] = &[
     f64::MIN,
     f64::MIN_POSITIVE,
     f64::EPSILON,
+    2.0,
+    -2.0,
+    0.5,
+    -0.5,
+];
+
+/// Finite values exactly representable in `f32` (a strict subset of the values
+/// `f64` can exactly represent), so a value drawn here round-trips through both
+/// `f32` and `f64` fields without precision loss.
+const FLOAT_F32_FINITE_TABLE: &[f32] = &[
+    0.0,
+    1.0,
+    -1.0,
+    -0.0,
+    f32::MAX,
+    f32::MIN,
+    f32::MIN_POSITIVE,
+    f32::EPSILON,
     2.0,
     -2.0,
     0.5,
