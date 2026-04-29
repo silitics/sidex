@@ -10,6 +10,18 @@ run = 'cargo run --bin sidex -- "$@"'
 description = "Format all files using Rustfmt nightly."
 run = "cargo +nightly fmt"
 
+[tasks.check]
+description = "Run all CI checks (formatting + clippy)."
+depends = ["check-fmt", "check-clippy"]
+
+[tasks.check-fmt]
+description = "Verify that every Rust file is formatted by Rustfmt nightly."
+run = "cargo +nightly fmt --check"
+
+[tasks.check-clippy]
+description = "Run Clippy across the workspace with warnings denied."
+run = "cargo clippy --workspace --all-targets --all-features -- -D warnings"
+
 [tasks.doc]
 description = "Generate the API documentation using Rustdoc."
 env = { RUSTDOCFLAGS = "--cfg docsrs" }
