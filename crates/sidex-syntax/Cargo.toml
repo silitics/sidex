@@ -14,3 +14,6 @@ sidex-diagnostics.workspace = true
 [dev-dependencies]
 # Required for snapshot testing.
 insta.workspace = true
+
+[lints]
+workspace = true

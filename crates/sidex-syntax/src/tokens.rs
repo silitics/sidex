@@ -234,14 +234,14 @@ impl fmt::Display for TokenKind {
             TokenKind::Identifier(i) => f.write_str(i),
             TokenKind::Comment { comment, kind } => {
                 match kind {
-                    CommentKind::Line => write!(f, "//{comment}\n"),
+                    CommentKind::Line => writeln!(f, "//{comment}"),
                     CommentKind::Block => write!(f, "/*{comment}*/"),
                 }
             }
             TokenKind::Doc { doc, kind } => {
                 match kind {
-                    DocKind::Inline => write!(f, "//!{doc}\n"),
-                    DocKind::Preceding => write!(f, "///{doc}\n"),
+                    DocKind::Inline => writeln!(f, "//!{doc}"),
+                    DocKind::Preceding => writeln!(f, "///{doc}"),
                 }
             }
             TokenKind::Whitespace => Ok(()),

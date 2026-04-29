@@ -18,3 +18,6 @@ parking_lot.workspace = true # PRIVATE
 anyhow.workspace = true # PRIVATE
 # Required for Sidex IR data structures.
 sidex-ir.workspace = true # PUBLIC
+
+[lints]
+workspace = true

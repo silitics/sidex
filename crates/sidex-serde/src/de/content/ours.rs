@@ -1,4 +1,11 @@
 //! Our own implementation of the private Serde `Content` enum.
+//!
+//! When the `serde-private-content` feature is enabled, the parent module
+//! switches to Serde's own internal `Content` machinery and everything in
+//! here is dead — rather than gating every item individually, we apply a
+//! module-wide `dead_code` allow under that feature.
+
+#![cfg_attr(feature = "serde-private-content", allow(dead_code))]
 
 use std::marker::PhantomData;
 
@@ -16,7 +23,6 @@ use super::ContentVisitor;
 
 /// An arbitrary value produced by deserialization.
 #[derive(Debug, Clone, PartialEq)]
-#[cfg_attr(feature = "serde-private-content", allow(dead_code))]
 pub enum Content<'de> {
     /// A boolean.
     Bool(bool),
@@ -361,7 +367,9 @@ impl<'de, E: serde::de::Error> Deserializer<'de> for ContentDeserializer<'de, E>
     where
         V: Visitor<'de>,
     {
-        drop(self);
+        // `self` doesn't impl `Drop`; just letting it go out of scope is
+        // equivalent to `drop` and avoids the `clippy::drop_non_drop` lint.
+        let _ = self;
         visitor.visit_unit()
     }
 }
@@ -769,13 +777,13 @@ impl<'a, 'de, E: serde::de::Error> Deserializer<'de> for ContentRefDeserializer<
             Content::Seq(seq) if !seq.is_empty() && seq.len() <= 2 => {
                 let content = seq.get(1);
                 let variant = seq
-                    .get(0)
+                    .first()
                     .expect("We just made sure that there is an element.");
                 visitor.visit_enum(ContentRefEnumAccess::new(variant, content))
             }
             Content::Map(map) if map.len() == 1 => {
                 let (variant, content) = map
-                    .get(0)
+                    .first()
                     .expect("We just made sure that there is an element.");
                 visitor.visit_enum(ContentRefEnumAccess::new(variant, Some(content)))
             }
@@ -797,7 +805,9 @@ impl<'a, 'de, E: serde::de::Error> Deserializer<'de> for ContentRefDeserializer<
     where
         V: Visitor<'de>,
     {
-        drop(self);
+        // `self` doesn't impl `Drop`; just letting it go out of scope is
+        // equivalent to `drop` and avoids the `clippy::drop_non_drop` lint.
+        let _ = self;
         visitor.visit_unit()
     }
 }

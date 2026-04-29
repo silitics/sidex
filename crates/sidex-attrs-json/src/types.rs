@@ -26,7 +26,7 @@ pub enum JsonType {
 }
 
 impl FromStr for JsonType {
-    type Err = Diagnostic;
+    type Err = Box<Diagnostic>;
 
     fn from_str(string: &str) -> Result<Self, Self::Err> {
         match string {
@@ -37,12 +37,12 @@ impl FromStr for JsonType {
             "object" => Ok(Self::Object),
             "array" => Ok(Self::Array),
             "any" => Ok(Self::Any),
-            _ => Err(Diagnostic::error(format!(
+            _ => Err(Box::new(Diagnostic::error(format!(
                 "`{string}` is not a valid JSON type."
             ))
             .with_help(
                 "A JSON type must be either `number`, `boolean`, `string`, `null`, `object`, `array`, or `any`."
-            )),
+            ))),
         }
     }
 }
@@ -55,7 +55,7 @@ pub struct JsonUnionType {
 }
 
 impl FromStr for JsonUnionType {
-    type Err = Diagnostic;
+    type Err = Box<Diagnostic>;
 
     fn from_str(string: &str) -> Result<Self, Self::Err> {
         Ok(Self {

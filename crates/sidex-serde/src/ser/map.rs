@@ -21,14 +21,14 @@ impl<K: Serialize, V: Serialize, I: Iterator<Item = (K, V)>> Serialize for Entri
     where
         S: serde::Serializer,
     {
-        let mut iterator = self
+        let iterator = self
             .iterator
             .borrow_mut()
             .take()
             .expect("Cannot serialize entry iterator more than once!");
         let (_, hint) = iterator.size_hint();
         let mut seq = serializer.serialize_seq(hint)?;
-        while let Some(entry) = iterator.next() {
+        for entry in iterator {
             seq.serialize_element(&entry)?;
         }
         seq.end()
@@ -52,14 +52,14 @@ impl<K: Serialize, V: Serialize, I: Iterator<Item = (K, V)>> Serialize for Map<K
     where
         S: serde::Serializer,
     {
-        let mut iterator = self
+        let iterator = self
             .iterator
             .borrow_mut()
             .take()
             .expect("Cannot serialize entry iterator more than once!");
         let (_, hint) = iterator.size_hint();
         let mut seq = serializer.serialize_map(hint)?;
-        while let Some((key, value)) = iterator.next() {
+        for (key, value) in iterator {
             seq.serialize_entry(&key, &value)?;
         }
         seq.end()

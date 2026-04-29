@@ -3,7 +3,6 @@
 mod generated;
 
 pub use generated::schema::*;
-use serde::Serialize;
 
 impl SchemaRef {
     pub fn new(string: String) -> Self {

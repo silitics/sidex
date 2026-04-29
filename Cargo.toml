@@ -2,6 +2,10 @@
 resolver = "2"
 members = ["crates/*"]
 
+# Each crate inherits these via `[lints] workspace = true`. Add lints here
+# rather than per-crate so the policy stays consistent across the workspace.
+[workspace.lints.clippy]
+
 [workspace.package]
 # We have no `version` here because the different crates can evolve independently.
 edition = "2024"

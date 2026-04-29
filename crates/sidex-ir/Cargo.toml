@@ -13,3 +13,6 @@ serde.workspace = true # PUBLIC
 # Used as the Rust mapping of the IR's opaque `Value` (typed-attrs payload).
 serde_json.workspace = true # PUBLIC
 sidex-serde.workspace = true
+
+[lints]
+workspace = true

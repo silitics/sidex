@@ -26,3 +26,6 @@ syn.workspace = true # PUBLIC
 # Required for deserializing the backend configuration.
 serde.workspace = true # PUBLIC
 serde_json.workspace = true
+
+[lints]
+workspace = true

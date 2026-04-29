@@ -374,9 +374,7 @@ impl Parser {
     fn lookahead_item_keyword(&self) -> Option<ItemKw> {
         let mut i = self.cursor;
         loop {
-            let Some(tok) = self.tokens.get(i) else {
-                return None;
-            };
+            let tok = self.tokens.get(i)?;
             match &tok.kind {
                 TokenKind::Whitespace
                 | TokenKind::Comment { .. }

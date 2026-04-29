@@ -10,3 +10,6 @@ homepage.workspace = true
 
 [dependencies]
 sidex-codegen-macros.workspace = true
+
+[lints]
+workspace = true

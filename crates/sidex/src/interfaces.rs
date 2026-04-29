@@ -6,11 +6,11 @@ pub trait Method {
     type Output;
 }
 
-impl<'m, M: Method> Method for &'m M {
+impl<M: Method> Method for &M {
     type Output = M::Output;
 }
 
-impl<'m, M: Method> Method for &'m mut M {
+impl<M: Method> Method for &mut M {
     type Output = M::Output;
 }
 

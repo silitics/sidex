@@ -20,3 +20,6 @@ sidex-attrs-json.workspace = true
 sidex-attrs-py.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+
+[lints]
+workspace = true

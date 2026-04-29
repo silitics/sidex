@@ -25,17 +25,13 @@ impl<'s> Cache<'s> {
     }
 }
 
-impl<'s> ariadne::Cache<SourceId> for Cache<'s> {
+impl ariadne::Cache<SourceId> for Cache<'_> {
     fn fetch(&mut self, id: &SourceId) -> Result<&ariadne::Source, Box<dyn std::fmt::Debug + '_>> {
         Ok(self.cache.entry(*id).or_insert_with(|| {
             match id {
                 Some(idx) => {
                     ariadne::Source::from(
-                        self.sources[idx.idx()]
-                            .text
-                            .as_ref()
-                            .map(String::as_str)
-                            .unwrap_or(""),
+                        self.sources[idx.idx()].text.as_deref().unwrap_or(""),
                     )
                 }
                 None => ariadne::Source::from(""),
@@ -104,8 +100,8 @@ fn to_report_kind(severity: Severity) -> ariadne::ReportKind {
 }
 
 /// Renders a diagnostic to the given *writer* using the given *cache*.
-pub(crate) fn render<'u, W: std::io::Write>(
-    cache: &mut Cache<'u>,
+pub(crate) fn render<W: std::io::Write>(
+    cache: &mut Cache<'_>,
     diagnostic: &Diagnostic,
     mut writer: W,
 ) -> std::io::Result<()> {
@@ -131,10 +127,10 @@ pub(crate) fn render<'u, W: std::io::Write>(
     if !diagnostic.errors.is_empty() {
         write!(writer, "\nAssociated Errors:")?;
         for (idx, error) in diagnostic.errors().enumerate() {
-            write!(writer, "\n   {}: {}", idx, error)?;
+            write!(writer, "\n   {idx}: {error}")?;
         }
         write!(writer, "\n\n")?;
-    };
+    }
 
     // 3️⃣ Print further useful information.
     write!(

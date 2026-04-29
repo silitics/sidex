@@ -248,10 +248,10 @@ fn has_visible_content(parts: &[Part]) -> bool {
 fn string_to_parts(s: &str) -> Vec<Part> {
     let mut parts = Vec::new();
     let mut lines = s.split('\n');
-    if let Some(first) = lines.next() {
-        if !first.is_empty() {
-            parts.push(Part::Owned(first.to_owned()));
-        }
+    if let Some(first) = lines.next()
+        && !first.is_empty()
+    {
+        parts.push(Part::Owned(first.to_owned()));
     }
     for line in lines {
         parts.push(Part::Newline);

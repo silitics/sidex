@@ -16,3 +16,6 @@ indexmap.workspace = true
 
 [build-dependencies]
 sidex-build-rs.workspace = true
+
+[lints]
+workspace = true

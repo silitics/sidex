@@ -369,14 +369,14 @@ fn delimiter_kind(c: char) -> Option<TokenKind> {
 /// source — i.e., with no whitespace, comment, or other token between them.
 fn mark_composed(tokens: &mut [Token]) {
     for i in 0..tokens.len().saturating_sub(1) {
-        if let TokenKind::Punctuation(sym) = &tokens[i].kind {
-            // Only consider directly adjacent tokens (no trivia between).
-            if tokens[i].end() == tokens[i + 1].start() {
-                if let TokenKind::Punctuation(_) = &tokens[i + 1].kind {
-                    let composed = PunctuationSymbol::new(sym.kind, true);
-                    tokens[i].kind = TokenKind::Punctuation(composed);
-                }
-            }
+        // Only consider directly adjacent tokens (no trivia between) where
+        // both sides are punctuation.
+        if let TokenKind::Punctuation(sym) = &tokens[i].kind
+            && tokens[i].end() == tokens[i + 1].start()
+            && let TokenKind::Punctuation(_) = &tokens[i + 1].kind
+        {
+            let composed = PunctuationSymbol::new(sym.kind, true);
+            tokens[i].kind = TokenKind::Punctuation(composed);
         }
     }
 }

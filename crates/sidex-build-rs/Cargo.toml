@@ -12,3 +12,6 @@ sidex-core.workspace = true
 sidex-gen.workspace = true
 sidex-gen-rs.workspace = true
 serde_json.workspace = true
+
+[lints]
+workspace = true

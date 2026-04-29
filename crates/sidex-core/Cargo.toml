@@ -31,3 +31,6 @@ rayon.workspace = true # PRIVATE
 [dev-dependencies]
 # Required for snapshot testing.
 insta.workspace = true
+
+[lints]
+workspace = true

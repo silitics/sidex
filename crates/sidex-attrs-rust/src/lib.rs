@@ -32,11 +32,9 @@ where
     T: serde::de::DeserializeOwned,
 {
     match typed_attrs.get(PLUGIN) {
-        Some(value) => {
-            serde_json::from_value(value.clone())
-                .map(Some)
-                .map_err(|err| Diagnostic::error(format!("Invalid `rust` attributes: {err}")))
-        }
+        Some(value) => serde_json::from_value(value.clone()).map(Some).map_err(|err| {
+            Box::new(Diagnostic::error(format!("Invalid `rust` attributes: {err}")))
+        }),
         None => Ok(None),
     }
 }
@@ -110,9 +108,9 @@ pub fn field_attrs(field: &ir::Field) -> Result<FieldAttrs> {
         (None, true) => Visibility::Private,
         (None, false) => Visibility::Pub,
         (Some(_), true) => {
-            return Err(Diagnostic::error(
+            return Err(Box::new(Diagnostic::error(
                 "`#[rust(pub)]` and `#[rust(private)]` cannot both apply to the same field.",
-            ));
+            )));
         }
     };
     let mut wrappers = Vec::new();

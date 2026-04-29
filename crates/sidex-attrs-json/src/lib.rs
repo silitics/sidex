@@ -33,11 +33,9 @@ where
     T: serde::de::DeserializeOwned,
 {
     match typed_attrs.get(PLUGIN) {
-        Some(value) => {
-            serde_json::from_value(value.clone())
-                .map(Some)
-                .map_err(|err| Diagnostic::error(format!("Invalid `json` attributes: {err}")))
-        }
+        Some(value) => serde_json::from_value(value.clone()).map(Some).map_err(|err| {
+            Box::new(Diagnostic::error(format!("Invalid `json` attributes: {err}")))
+        }),
         None => Ok(None),
     }
 }
@@ -240,10 +238,10 @@ fn parse_tagged(value: Option<String>) -> Result<Option<JsonTaggedAttr>> {
         "internally" => JsonTaggedAttr::Internally,
         "implicitly" => JsonTaggedAttr::Implicitly,
         _ => {
-            return Err(Diagnostic::error(format!(
+            return Err(Box::new(Diagnostic::error(format!(
                 "Unknown `tagged` value `{value}` — expected one of: \
                  adjacently, externally, internally, implicitly."
-            )));
+            ))));
         }
     };
     Ok(Some(parsed))

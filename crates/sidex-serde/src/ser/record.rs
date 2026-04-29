@@ -145,10 +145,7 @@ impl<'map, S: SerializeMap> Serializer for InlineSerializer<'map, S> {
         Ok(())
     }
 
-    fn serialize_some<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_some<T: ?Sized + Serialize>(self, value: &T) -> Result<Self::Ok, Self::Error> {
         value.serialize(self)
     }
 
@@ -169,27 +166,21 @@ impl<'map, S: SerializeMap> Serializer for InlineSerializer<'map, S> {
         bad_type!("unit variant")
     }
 
-    fn serialize_newtype_struct<T: ?Sized>(
+    fn serialize_newtype_struct<T: ?Sized + Serialize>(
         self,
         _: &'static str,
         value: &T,
-    ) -> Result<Self::Ok, Self::Error>
-    where
-        T: Serialize,
-    {
+    ) -> Result<Self::Ok, Self::Error> {
         value.serialize(self)
     }
 
-    fn serialize_newtype_variant<T: ?Sized>(
+    fn serialize_newtype_variant<T: ?Sized + Serialize>(
         self,
         _: &'static str,
         _: u32,
         _: &'static str,
         _: &T,
-    ) -> Result<Self::Ok, Self::Error>
-    where
-        T: Serialize,
-    {
+    ) -> Result<Self::Ok, Self::Error> {
         bad_type!("newtype variant")
     }
 
@@ -250,29 +241,19 @@ impl<'map, S: SerializeMap> SerializeMap for InlineSerializer<'map, S> {
     type Ok = ();
     type Error = S::Error;
 
-    fn serialize_key<T: ?Sized>(&mut self, key: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_key<T: ?Sized + Serialize>(&mut self, key: &T) -> Result<(), Self::Error> {
         self.map_serializer.serialize_key(key)
     }
 
-    fn serialize_value<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    fn serialize_value<T: ?Sized + Serialize>(&mut self, value: &T) -> Result<(), Self::Error> {
         self.map_serializer.serialize_value(value)
     }
 
-    fn serialize_entry<K: ?Sized, V: ?Sized>(
+    fn serialize_entry<K: ?Sized + Serialize, V: ?Sized + Serialize>(
         &mut self,
         key: &K,
         value: &V,
-    ) -> Result<(), Self::Error>
-    where
-        K: Serialize,
-        V: Serialize,
-    {
+    ) -> Result<(), Self::Error> {
         self.map_serializer.serialize_entry(key, value)
     }
 
@@ -285,14 +266,11 @@ impl<'map, S: SerializeMap> SerializeStruct for InlineSerializer<'map, S> {
     type Ok = ();
     type Error = S::Error;
 
-    fn serialize_field<T: ?Sized>(
+    fn serialize_field<T: ?Sized + Serialize>(
         &mut self,
         key: &'static str,
         value: &T,
-    ) -> Result<(), Self::Error>
-    where
-        T: Serialize,
-    {
+    ) -> Result<(), Self::Error> {
         self.map_serializer.serialize_entry(key, value)
     }
 

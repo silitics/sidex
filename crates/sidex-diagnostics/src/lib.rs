@@ -298,6 +298,9 @@ impl Diagnostic {
 
     /// Iterator over the errors attached to the diagnostic.
     pub fn errors(&self) -> impl Iterator<Item = &dyn std::error::Error> {
+        // `Box::as_ref` would resolve via the wrong trait impl here and
+        // confuse lifetime inference; the explicit closure is clearest.
+        #[allow(clippy::redundant_closure_for_method_calls)]
         self.errors.iter().map(|error| error.as_ref())
     }
 
@@ -382,6 +385,18 @@ impl<E: 'static + Send + Sync + std::error::Error> From<E> for Diagnostic {
     }
 }
 
+// `Result<T>` boxes the `Diagnostic`, so `?` propagation from a fallible
+// std/serde/etc. call needs `From<E> for Box<Diagnostic>`. Without this the
+// compiler would have to chain `From<E> for Diagnostic` then
+// `From<Diagnostic> for Box<Diagnostic>` and the `?` operator only does
+// one conversion.
+impl<E: 'static + Send + Sync + std::error::Error> From<E> for Box<Diagnostic> {
+    #[track_caller]
+    fn from(error: E) -> Self {
+        Box::new(Diagnostic::from(error))
+    }
+}
+
 /// A *diagnostic label* with a source span and a message.
 #[derive(Debug)]
 pub struct Label {
@@ -414,5 +429,11 @@ impl Label {
     }
 }
 
-/// A result type with [`Diagnostic`] as error type.
-pub type Result<T> = std::result::Result<T, Diagnostic>;
+/// A result type with a boxed [`Diagnostic`] as error type.
+///
+/// `Diagnostic` carries spans, labels, help, and associated errors — about
+/// 184 bytes of intentionally-rich context. Returning it inline would put a
+/// fat error type in every `Result` across the workspace and force
+/// `clippy::result_large_err` to fire everywhere; boxing keeps the happy
+/// path's `Result` two pointers wide.
+pub type Result<T> = std::result::Result<T, Box<Diagnostic>>;

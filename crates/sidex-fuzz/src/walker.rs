@@ -350,9 +350,9 @@ impl<'a> Walker<'a> {
     ) -> Result<()> {
         let resolved = self.ir.resolve_aliases(typ);
         let ir::TypeKind::Instance(instance) = &resolved.kind else {
-            return Err(Diagnostic::error(
+            return Err(Box::new(Diagnostic::error(
                 "cannot inline a type variable as a field",
-            ));
+            )));
         };
         let def = &self.ir[instance.def];
         match &def.kind {
@@ -364,12 +364,10 @@ impl<'a> Walker<'a> {
                 let inner = self.ir.apply_subst(&wrapper.wrapped, &instance.subst);
                 self.inline_record_into(&inner, source, out)
             }
-            _ => {
-                Err(Diagnostic::error(format!(
-                    "cannot inline non-record type `{}`",
-                    def.name.as_str()
-                )))
-            }
+            _ => Err(Box::new(Diagnostic::error(format!(
+                "cannot inline non-record type `{}`",
+                def.name.as_str()
+            )))),
         }
     }
 
@@ -381,10 +379,10 @@ impl<'a> Walker<'a> {
         source: &mut Source,
     ) -> Result<Value> {
         if variant.variants.is_empty() {
-            return Err(Diagnostic::error(format!(
+            return Err(Box::new(Diagnostic::error(format!(
                 "variant type `{}` has no cases",
                 def.name.as_str()
-            )));
+            ))));
         }
         let attrs = variant_type_attrs(def)?;
         // At depth limit, prefer a unit case if any exists; otherwise fall through.

@@ -29,3 +29,6 @@ serde-private-content = []
 serde_json = ["dep:serde_json"]
 indexmap = ["dep:indexmap"]
 default = ["serde_json", "indexmap"]
+
+[lints]
+workspace = true

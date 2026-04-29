@@ -12,3 +12,6 @@ indexmap.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sidex-serde.workspace = true
+
+[lints]
+workspace = true
