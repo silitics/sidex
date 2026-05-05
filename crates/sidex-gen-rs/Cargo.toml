@@ -11,6 +11,7 @@ homepage.workspace = true
 [dev-dependencies]
 sidex-core.workspace = true
 sidex-diagnostics.workspace = true
+syn = { workspace = true, features = ["full"] }
 
 [dependencies]
 # Required for code generation.
@@ -19,6 +20,9 @@ sidex-gen.workspace = true # PUBLIC
 sidex-attrs-rust.workspace = true # PUBLIC
 # Required for parsing `json` attributes.
 sidex-attrs-json.workspace = true # PUBLIC
+# Required for parsing `validate` attributes and lowering rules.
+sidex-attrs-validate.workspace = true # PUBLIC
+sidex-validate-expr.workspace = true # PUBLIC
 # Required for generating Rust code.
 proc-macro2.workspace = true # PUBLIC
 quote.workspace = true # PUBLIC

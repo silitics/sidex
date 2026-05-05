@@ -21,6 +21,11 @@ sidex-codegen.workspace = true # PUBLIC
 sidex-attrs-rust.workspace = true # PUBLIC
 # Required for parsing `json` attributes.
 sidex-attrs-json.workspace = true # PUBLIC
+# Required for parsing `validate` attributes.
+sidex-attrs-validate.workspace = true # PUBLIC
+sidex-validate-expr.workspace = true # PUBLIC
+# Required for `sidex-ir` access in plugin lowering.
+sidex-ir.workspace = true # PUBLIC
 # Required for deserializing the backend configuration.
 serde.workspace = true # PUBLIC
 serde_json.workspace = true

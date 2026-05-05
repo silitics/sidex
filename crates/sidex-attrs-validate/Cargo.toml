@@ -1,0 +1,20 @@
+[package]
+name = "sidex-attrs-validate"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sidex-diagnostics.workspace = true
+sidex-gen.workspace = true
+sidex-ir.workspace = true
+sidex-serde.workspace = true
+sidex-validate-expr.workspace = true
+
+[lints]
+workspace = true

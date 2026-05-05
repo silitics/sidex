@@ -9,6 +9,7 @@ use crate::context::BundleCtx;
 use crate::context::SchemaCtx;
 
 pub mod types;
+pub mod validate;
 
 pub trait Plugin {
     fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<Code>;
@@ -27,5 +28,6 @@ pub trait Plugin {
 pub fn plugins() -> HashMap<String, Arc<dyn 'static + Plugin + Sync>> {
     let mut plugins: HashMap<String, Arc<dyn 'static + Plugin + Sync>> = HashMap::new();
     plugins.insert("types".to_owned(), Arc::new(types::Types));
+    plugins.insert("validate".to_owned(), Arc::new(validate::Validate));
     plugins
 }

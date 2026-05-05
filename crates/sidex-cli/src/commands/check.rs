@@ -20,7 +20,7 @@ pub struct CheckArgs {
 }
 
 pub fn exec(args: &CheckArgs) -> Result<()> {
-    let (_unit, bundle_idx, transformer) =
+    let (unit, bundle_idx, transformer) =
         load_unit_and_bundle(args.bundle_dir.as_ref().map(AsRef::as_ref))?;
 
     let findings = lints::collect_unused_imports(&transformer, bundle_idx);
@@ -30,7 +30,14 @@ pub fn exec(args: &CheckArgs) -> Result<()> {
     }
 
     let ctx = DiagnosticCtx::new();
-    ctx.exec(|| lints::lint_unused_imports(&transformer, bundle_idx));
+    ctx.exec(|| {
+        lints::lint_unused_imports(&transformer, bundle_idx);
+        // Validation extension: parse + recognize every `#[validate(...)]`
+        // rule across the IR. Surfaces invalid regex patterns and parse
+        // errors here so users see them at lint time, not at first call
+        // of the generated validator.
+        sidex_attrs_validate::check(&unit);
+    });
     let report = ctx.report();
     report.eprint(&transformer.sources);
 

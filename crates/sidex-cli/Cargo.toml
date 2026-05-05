@@ -22,6 +22,7 @@ sidex-gen-ts.workspace = true
 sidex-gen-json-schema.workspace = true
 sidex-gen-py.workspace = true
 sidex-diagnostics.workspace = true
+sidex-attrs-validate.workspace = true
 sidex-fmt.workspace = true
 sidex-fuzz.workspace = true
 rand.workspace = true

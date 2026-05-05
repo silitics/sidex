@@ -339,6 +339,12 @@ variant AttrKind {
     List: AttrList,
     /// An assign attribute of the form `<PATH> = <VALUE>`.
     Assign: AttrAssign,
+    /// An anonymous (positional) value used as a list argument — e.g. the
+    /// `{ … }` body in `#[validate({ 0 <= _ <= 100 })]`. Carries the value
+    /// directly, with no path. The typed-attrs parser binds these to a
+    /// designated schema field (the first field whose declared type is
+    /// the [`core::attrs::Tokens`] marker, in source order).
+    Value: AttrValue,
 }
 
 /// A list attribute of the form `<PATH> ( <ARGS> )`.
@@ -368,4 +374,24 @@ variant AttrValue {
     String: string,
     /// A `::`-separated path.
     Path: string,
+    /// A `{ … }`-form value carrying source verbatim.
+    ///
+    /// Plugins that opt into this form (via a typed-attrs schema field of
+    /// type `core::attrs::Tokens`) capture the source text and parse it
+    /// with their own grammar — e.g. the validation extension's predicate
+    /// expressions.
+    Tokens: TokensValue,
+}
+
+/// A `{ … }`-form attribute value.
+///
+/// Carries the verbatim source text between the `{` and `}` (both excluded)
+/// along with the span covering that text. Plugin codegens parse the text
+/// with their own grammar.
+#[rust(attr(non_exhaustive))]
+record TokensValue {
+    /// Verbatim source between the surrounding `{` and `}`, both excluded.
+    text: string,
+    /// Span of [`text`] within the originating source.
+    span?: Span,
 }

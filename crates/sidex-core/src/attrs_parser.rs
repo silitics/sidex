@@ -34,19 +34,20 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
     // fields whose type is the compiler-special `TypeRef` opaque so the
     // parser can resolve their source path into a typed reference.
     let type_ref_def = find_type_ref_def(ir);
+    // The DefRef of `core::attrs::Tokens` (if loaded). Used to detect fields
+    // whose type is the compiler-special `Tokens` opaque so the parser can
+    // capture their `{ ... }`-form source verbatim.
+    let tokens_def = find_tokens_def(ir);
+    let markers = SchemaMarkers {
+        type_ref: type_ref_def,
+        tokens: tokens_def,
+    };
 
     // Schema-level attrs.
     for schema_idx in 0..ir.schemas.len() {
         let attrs = ir.schemas[schema_idx].attrs.clone();
         let enclosing = ir::SchemaIdx::from(schema_idx);
-        let typed = parse_node_attrs(
-            &attrs,
-            AttrTarget::Schema,
-            registry,
-            ir,
-            enclosing,
-            type_ref_def,
-        );
+        let typed = parse_node_attrs(&attrs, AttrTarget::Schema, registry, ir, enclosing, markers);
         ir.schemas[schema_idx].typed_attrs = typed;
     }
     // Def / Field / Variant attrs.
@@ -61,21 +62,15 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
             ir::DefKind::WrapperType(_) => AttrTarget::Wrapper,
         };
         // Both the kind-specific target and the generic Def target apply.
-        let mut def_typed = parse_node_attrs(
-            &def_attrs,
-            def_target,
-            registry,
-            ir,
-            enclosing,
-            type_ref_def,
-        );
+        let mut def_typed =
+            parse_node_attrs(&def_attrs, def_target, registry, ir, enclosing, markers);
         let generic = parse_node_attrs(
             &def_attrs,
             AttrTarget::Def,
             registry,
             ir,
             enclosing,
-            type_ref_def,
+            markers,
         );
         for (plugin, value) in generic {
             def_typed.entry(plugin).or_insert(value);
@@ -92,7 +87,7 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
                     registry,
                     ir,
                     enclosing,
-                    type_ref_def,
+                    markers,
                 );
                 new_fields[field_idx].typed_attrs = typed;
             }
@@ -108,7 +103,7 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
                     registry,
                     ir,
                     enclosing,
-                    type_ref_def,
+                    markers,
                 );
                 new_variants[var_idx].typed_attrs = typed;
             }
@@ -118,10 +113,29 @@ pub fn populate_typed_attrs(ir: &mut ir::Ir, registry: &PluginRegistry) {
     }
 }
 
+/// Cached references to compiler-special opaque defs that the typed-attrs
+/// parser handles in a non-generic way (`core::attrs::TypeRef`,
+/// `core::attrs::Tokens`).
+#[derive(Clone, Copy)]
+pub(crate) struct SchemaMarkers {
+    pub(crate) type_ref: Option<ir::DefRef>,
+    pub(crate) tokens: Option<ir::DefRef>,
+}
+
 /// Locate the `core::attrs::TypeRef` def in the loaded bundles, or return
 /// `None` if the attrs schema is not loaded (which we treat as "no TypeRef
 /// resolution available").
 fn find_type_ref_def(ir: &ir::Ir) -> Option<ir::DefRef> {
+    find_core_attrs_def(ir, "TypeRef")
+}
+
+/// Locate the `core::attrs::Tokens` def in the loaded bundles, or return
+/// `None` if the attrs schema is not loaded.
+fn find_tokens_def(ir: &ir::Ir) -> Option<ir::DefRef> {
+    find_core_attrs_def(ir, "Tokens")
+}
+
+fn find_core_attrs_def(ir: &ir::Ir, name: &str) -> Option<ir::DefRef> {
     for (bundle_idx, bundle) in ir.bundles.iter().enumerate() {
         if bundle.metadata.name != "core" {
             continue;
@@ -132,7 +146,7 @@ fn find_type_ref_def(ir: &ir::Ir) -> Option<ir::DefRef> {
                 continue;
             }
             for (def_idx, def) in ir.defs_of(schema_idx) {
-                if def.name.as_str() == "TypeRef" {
+                if def.name.as_str() == name {
                     return Some(ir::DefRef::new(bundle_idx, schema_idx, def_idx));
                 }
             }
@@ -196,6 +210,50 @@ fn field_is_type_ref(field: &ir::Field, ir: &ir::Ir, type_ref_def: Option<ir::De
     )
 }
 
+/// Returns `true` if `field`'s type resolves to `core::attrs::Tokens`.
+fn field_is_tokens(field: &ir::Field, ir: &ir::Ir, tokens_def: Option<ir::DefRef>) -> bool {
+    let Some(tokens) = tokens_def else {
+        return false;
+    };
+    matches!(
+        ir.type_def_ref(&field.typ),
+        Some(def) if def == tokens
+    )
+}
+
+/// Returns `true` if `field`'s type is `[core::attrs::Tokens]` (a sequence
+/// of `Tokens`-typed values).
+fn field_is_tokens_sequence(
+    field: &ir::Field,
+    ir: &ir::Ir,
+    tokens_def: Option<ir::DefRef>,
+) -> bool {
+    let Some(tokens) = tokens_def else {
+        return false;
+    };
+    let resolved = ir.resolve_aliases(&field.typ);
+    let ir::TypeKind::Instance(instance) = &resolved.kind else {
+        return false;
+    };
+    if !is_sequence_def(ir, instance.def) {
+        return false;
+    }
+    let Some(inner) = instance.subst.first() else {
+        return false;
+    };
+    matches!(
+        ir.type_def_ref(inner),
+        Some(def) if def == tokens
+    )
+}
+
+fn is_sequence_def(ir: &ir::Ir, def_ref: ir::DefRef) -> bool {
+    let bundle = &ir[def_ref.bundle];
+    let schema = &ir[def_ref.schema];
+    let def = &ir[def_ref];
+    bundle.metadata.name == "core" && schema.name == "builtins" && def.name.as_str() == "Sequence"
+}
+
 /// Parse the typed attributes for one node (a slice of source attrs at a
 /// given target position) into a per-plugin map.
 fn parse_node_attrs(
@@ -204,7 +262,7 @@ fn parse_node_attrs(
     registry: &PluginRegistry,
     ir: &ir::Ir,
     enclosing_schema: ir::SchemaIdx,
-    type_ref_def: Option<ir::DefRef>,
+    markers: SchemaMarkers,
 ) -> HashMap<String, Value> {
     if attrs.is_empty() {
         return HashMap::new();
@@ -226,20 +284,19 @@ fn parse_node_attrs(
 
     let mut typed = HashMap::new();
     for (plugin, plugin_attrs) in by_plugin {
-        let Some(schema_ref) = registry.get(plugin, target) else {
+        let Some(entry) = registry.get_entry(plugin, target) else {
             // Unknown plugin for this target — leave raw attrs as the only
             // representation. This is intentionally silent; tools like
             // `sidex check` could opt in to a stricter mode later.
             continue;
         };
-        let schema_def = &ir[schema_ref];
-        match parse_against_schema(
-            &plugin_attrs,
-            schema_def,
-            ir,
-            enclosing_schema,
-            type_ref_def,
-        ) {
+        let schema_def = &ir[entry.def];
+        let result = if entry.repeated {
+            parse_against_schema_repeated(&plugin_attrs, schema_def, ir, enclosing_schema, markers)
+        } else {
+            parse_against_schema(&plugin_attrs, schema_def, ir, enclosing_schema, markers)
+        };
+        match result {
             Ok(value) => {
                 typed.insert(plugin.to_owned(), value);
             }
@@ -251,12 +308,30 @@ fn parse_node_attrs(
     typed
 }
 
-/// Return the outer plugin id of an attribute, or `None` for bare assigns.
+/// Parse plugin attributes in *repeated* mode: each source attribute parses
+/// independently into one record, all results appended to a JSON array.
+fn parse_against_schema_repeated(
+    attrs: &[&ir::Attr],
+    def: &ir::Def,
+    ir: &ir::Ir,
+    enclosing_schema: ir::SchemaIdx,
+    markers: SchemaMarkers,
+) -> Result<Value, Box<Diagnostic>> {
+    let mut items = Vec::with_capacity(attrs.len());
+    for attr in attrs {
+        let one = parse_against_schema(&[attr], def, ir, enclosing_schema, markers)?;
+        items.push(one);
+    }
+    Ok(Value::Array(items))
+}
+
+/// Return the outer plugin id of an attribute, or `None` for bare assigns
+/// or anonymous-value attributes (which can't be top-level plugin attrs).
 fn outer_plugin(attr: &ir::Attr) -> Option<&str> {
     match &attr.kind {
         ir::AttrKind::Path(p) => Some(p.as_str()),
         ir::AttrKind::List(l) => Some(l.path.as_str()),
-        ir::AttrKind::Assign(_) => None,
+        ir::AttrKind::Assign(_) | ir::AttrKind::Value(_) => None,
     }
 }
 
@@ -267,11 +342,11 @@ fn parse_against_schema(
     def: &ir::Def,
     ir: &ir::Ir,
     enclosing_schema: ir::SchemaIdx,
-    type_ref_def: Option<ir::DefRef>,
+    markers: SchemaMarkers,
 ) -> Result<Value, Box<Diagnostic>> {
     match &def.kind {
         ir::DefKind::RecordType(record) => {
-            parse_record(attrs, def, record, ir, enclosing_schema, type_ref_def)
+            parse_record(attrs, def, record, ir, enclosing_schema, markers)
         }
         // TODO(typed-attrs): variant / opaque / alias / wrapper schemas.
         _ => Err(Box::new(Diagnostic::error(format!(
@@ -288,7 +363,7 @@ fn parse_record(
     record: &ir::RecordTypeDef,
     ir: &ir::Ir,
     enclosing_schema: ir::SchemaIdx,
-    type_ref_def: Option<ir::DefRef>,
+    markers: SchemaMarkers,
 ) -> Result<Value, Box<Diagnostic>> {
     let mut object = serde_json::Map::new();
     let all_optional = record.fields.iter().all(|f| f.is_optional);
@@ -325,9 +400,54 @@ fn parse_record(
                     .with_span(plugin_attr.span.clone()),
                 ));
             }
+            ir::AttrKind::Value(_) => {
+                return Err(Box::new(
+                    Diagnostic::error(
+                        "Top-level plugin attribute must be a list, not an anonymous value.",
+                    )
+                    .with_span(plugin_attr.span.clone()),
+                ));
+            }
         };
 
         for arg in args {
+            // Anonymous-value (positional) args bind to the first schema
+            // field of type `core::attrs::Tokens`. This is the convention
+            // for `#[validate({ ... }, message = "...")]` and similar
+            // expression-body plugins; named args still take precedence.
+            if let ir::AttrKind::Value(value) = &arg.kind {
+                let Some(field) = record
+                    .fields
+                    .iter()
+                    .find(|f| field_is_tokens(f, ir, markers.tokens))
+                else {
+                    return Err(Box::new(
+                        Diagnostic::error(format!(
+                            "`{}` does not accept a positional `{{ … }}` value — \
+                             schema `{}` has no `Tokens`-typed field.",
+                            outer_plugin(plugin_attr).unwrap_or("?"),
+                            def.name.as_str(),
+                        ))
+                        .with_span(arg.span.clone()),
+                    ));
+                };
+                let ir::AttrValue::Tokens(tokens) = value else {
+                    return Err(Box::new(
+                        Diagnostic::error(format!(
+                            "Field `{}` expects a `{{ … }}`-form value, got a {}.",
+                            field.name.as_str(),
+                            attr_value_kind_name(value),
+                        ))
+                        .with_span(arg.span.clone()),
+                    ));
+                };
+                insert_or_extend(
+                    &mut object,
+                    field.name.as_str(),
+                    tokens_value_to_json(tokens),
+                );
+                continue;
+            }
             let Some(name) = arg_name(arg) else {
                 return Err(Box::new(
                     Diagnostic::error("Attribute argument must have a name.")
@@ -344,7 +464,7 @@ fn parse_record(
                 .emit();
                 continue;
             };
-            let value = parse_field_value(arg, field, ir, enclosing_schema, type_ref_def)?;
+            let value = parse_field_value(arg, field, ir, enclosing_schema, markers)?;
             insert_or_extend(&mut object, field.name.as_str(), value);
         }
     }
@@ -353,11 +473,13 @@ fn parse_record(
 }
 
 /// Extract the name of an attribute argument, regardless of kind.
+/// Anonymous-value (`AttrKind::Value`) args have no name.
 fn arg_name(arg: &ir::Attr) -> Option<&str> {
     match &arg.kind {
         ir::AttrKind::Path(p) => Some(p.as_str()),
         ir::AttrKind::List(l) => Some(l.path.as_str()),
         ir::AttrKind::Assign(a) => Some(a.path.as_str()),
+        ir::AttrKind::Value(_) => None,
     }
 }
 
@@ -379,10 +501,16 @@ fn parse_field_value(
     field: &ir::Field,
     ir: &ir::Ir,
     enclosing_schema: ir::SchemaIdx,
-    type_ref_def: Option<ir::DefRef>,
+    markers: SchemaMarkers,
 ) -> Result<Value, Box<Diagnostic>> {
-    if field_is_type_ref(field, ir, type_ref_def) {
+    if field_is_type_ref(field, ir, markers.type_ref) {
         return parse_type_ref_field(arg, field, ir, enclosing_schema);
+    }
+    if field_is_tokens(field, ir, markers.tokens) {
+        return parse_tokens_field(arg, field);
+    }
+    if field_is_tokens_sequence(field, ir, markers.tokens) {
+        return parse_tokens_sequence_field(arg, field);
     }
     if let Some((nested_def, nested_record)) = field_record_schema(field, ir) {
         return parse_nested_record_field(
@@ -391,7 +519,7 @@ fn parse_field_value(
             nested_record,
             ir,
             enclosing_schema,
-            type_ref_def,
+            markers,
         );
     }
     if let Some((variant_def, variant)) = field_variant_schema(field, ir) {
@@ -412,6 +540,7 @@ fn parse_field_value(
                 .with_span(arg.span.clone()),
             ))
         }
+        ir::AttrKind::Value(value) => Ok(attr_value_to_json(value)),
     }
 }
 
@@ -470,6 +599,63 @@ fn parse_variant_field(
     Ok(Value::String(case.name.as_str().to_owned()))
 }
 
+/// Parse an attribute argument that targets a field of type
+/// `core::attrs::Tokens`. The source must be `name = { ... }`, producing a
+/// JSON object `{ "text": "...", "span": { ... } }`.
+fn parse_tokens_field(arg: &ir::Attr, field: &ir::Field) -> Result<Value, Box<Diagnostic>> {
+    let tokens = expect_tokens_assign(arg, field)?;
+    Ok(tokens_value_to_json(tokens))
+}
+
+/// Parse an attribute argument that targets a field of type
+/// `[core::attrs::Tokens]`. Each `name = { ... }` occurrence appends to the
+/// resulting JSON array; multiple `#[plugin(name = { ... }, name = { ... })]`
+/// instances accumulate.
+fn parse_tokens_sequence_field(
+    arg: &ir::Attr,
+    field: &ir::Field,
+) -> Result<Value, Box<Diagnostic>> {
+    let tokens = expect_tokens_assign(arg, field)?;
+    Ok(Value::Array(vec![tokens_value_to_json(tokens)]))
+}
+
+fn expect_tokens_assign<'a>(
+    arg: &'a ir::Attr,
+    field: &ir::Field,
+) -> Result<&'a ir::TokensValue, Box<Diagnostic>> {
+    let ir::AttrKind::Assign(assign) = &arg.kind else {
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Field `{}` expects a `{{ ... }}`-form value (e.g., `{} = {{ ... }}`).",
+                field.name.as_str(),
+                field.name.as_str(),
+            ))
+            .with_span(arg.span.clone()),
+        ));
+    };
+    let ir::AttrValue::Tokens(tokens) = &assign.value else {
+        return Err(Box::new(
+            Diagnostic::error(format!(
+                "Field `{}` expects a `{{ ... }}`-form value, got a {}.",
+                field.name.as_str(),
+                attr_value_kind_name(&assign.value),
+            ))
+            .with_span(arg.span.clone()),
+        ));
+    };
+    Ok(tokens)
+}
+
+fn attr_value_kind_name(value: &ir::AttrValue) -> &'static str {
+    match value {
+        ir::AttrValue::Bool(_) => "boolean",
+        ir::AttrValue::Number(_) => "number",
+        ir::AttrValue::String(_) => "string",
+        ir::AttrValue::Path(_) => "path",
+        ir::AttrValue::Tokens(_) => "tokens",
+    }
+}
+
 fn parse_type_ref_field(
     arg: &ir::Attr,
     field: &ir::Field,
@@ -511,18 +697,14 @@ fn parse_nested_record_field<'a>(
     record: &'a ir::RecordTypeDef,
     ir: &ir::Ir,
     enclosing_schema: ir::SchemaIdx,
-    type_ref_def: Option<ir::DefRef>,
+    markers: SchemaMarkers,
 ) -> Result<Value, Box<Diagnostic>> {
     match &arg.kind {
         // Bare-path: parse against an empty arg list; valid only if every
         // field in the nested record is optional.
-        ir::AttrKind::Path(_) => {
-            parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def)
-        }
+        ir::AttrKind::Path(_) => parse_record(&[arg], def, record, ir, enclosing_schema, markers),
         // List form: recurse into the record's fields.
-        ir::AttrKind::List(_) => {
-            parse_record(&[arg], def, record, ir, enclosing_schema, type_ref_def)
-        }
+        ir::AttrKind::List(_) => parse_record(&[arg], def, record, ir, enclosing_schema, markers),
         ir::AttrKind::Assign(_) => {
             Err(Box::new(
                 Diagnostic::error(format!(
@@ -534,6 +716,12 @@ fn parse_nested_record_field<'a>(
                 .with_span(arg.span.clone()),
             ))
         }
+        ir::AttrKind::Value(_) => Err(Box::new(
+            Diagnostic::error(
+                "Anonymous `{ … }` values aren't valid for record-typed schema fields.",
+            )
+            .with_span(arg.span.clone()),
+        )),
     }
 }
 
@@ -659,6 +847,7 @@ fn attr_to_string(attr: &ir::Attr) -> Result<String, Box<Diagnostic>> {
                 attr_value_to_compact_string(&assign.value)
             ))
         }
+        ir::AttrKind::Value(value) => Ok(attr_value_to_compact_string(value)),
     }
 }
 
@@ -668,6 +857,7 @@ fn attr_value_to_compact_string(value: &ir::AttrValue) -> String {
         ir::AttrValue::Number(n) => n.clone(),
         ir::AttrValue::String(s) => format!("\"{s}\""),
         ir::AttrValue::Path(p) => p.clone(),
+        ir::AttrValue::Tokens(tokens) => format!("{{{}}}", tokens.text),
     }
 }
 
@@ -710,7 +900,25 @@ fn attr_value_to_json(value: &ir::AttrValue) -> Value {
         }
         ir::AttrValue::String(s) => Value::String(s.clone()),
         ir::AttrValue::Path(p) => Value::String(p.clone()),
+        ir::AttrValue::Tokens(tokens) => tokens_value_to_json(tokens),
     }
+}
+
+/// Encode a [`TokensValue`] as the JSON shape consumed by plugin extractors:
+/// `{ "text": "...", "span": { ... } }`. Used both when populating
+/// `typed_attrs[plugin]` for `core::attrs::Tokens`-typed schema fields and
+/// when generically lowering an `AttrValue::Tokens` into JSON.
+fn tokens_value_to_json(tokens: &ir::TokensValue) -> Value {
+    let mut map = ::serde_json::Map::new();
+    map.insert("text".to_owned(), Value::String(tokens.text.clone()));
+    if let Some(span) = &tokens.span {
+        let mut span_map = ::serde_json::Map::new();
+        span_map.insert("src".to_owned(), Value::Number(span.src.idx().into()));
+        span_map.insert("start".to_owned(), Value::Number(span.start.into()));
+        span_map.insert("end".to_owned(), Value::Number(span.end.into()));
+        map.insert("span".to_owned(), Value::Object(span_map));
+    }
+    Value::Object(map)
 }
 
 #[cfg(test)]
@@ -1015,6 +1223,209 @@ mod tests {
             demo["attr"],
             serde_json::json!(["non_exhaustive", "serde(transparent)"])
         );
+    }
+
+    /// `core::attrs::Tokens`-typed fields capture the verbatim source between
+    /// the `{` and `}` plus a span. Multiple occurrences of a `[Tokens]`
+    /// field accumulate into a JSON array, so plugins can collect repeated
+    /// expression-form attributes without a custom merge mode.
+    #[test]
+    fn tokens_field_captures_brace_value() {
+        let src = r#"
+            import ::core::attrs::*
+
+            #[attrs(plugin = "validate", target = field)]
+            record FieldRule {
+                expr?: Tokens,
+                message?: string,
+            }
+
+            record Target {
+                #[validate(expr = { 0 <= _ <= 100 }, message = "Out of range.")]
+                age: i32,
+            }
+        "#;
+        let ir = build_ir(src);
+        let target_def = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Target")
+            .expect("Target def not found");
+        let ir::DefKind::RecordType(record) = &target_def.kind else {
+            panic!("Target is not a record");
+        };
+        let age = record
+            .fields
+            .iter()
+            .find(|f| f.name.as_str() == "age")
+            .expect("age field not found");
+        let validate = age
+            .typed_attrs
+            .get("validate")
+            .expect("typed_attrs[validate] populated");
+        assert_eq!(validate["expr"]["text"], serde_json::json!("0 <= _ <= 100"));
+        // The span is present and points into the originating source.
+        assert!(
+            validate["expr"]["span"].is_object(),
+            "tokens value should carry a span"
+        );
+        assert_eq!(validate["message"], serde_json::json!("Out of range."));
+    }
+
+    /// Repeated `#[validate(expr = { … })]` instances accumulate into a JSON
+    /// array on a `[Tokens]`-typed field. This is the shape the validate
+    /// plugin's typed-attrs schema will use to collect rules.
+    #[test]
+    fn tokens_sequence_field_accumulates() {
+        let src = r#"
+            import ::core::attrs::*
+
+            #[attrs(plugin = "validate", target = field)]
+            record FieldAttrs {
+                #[default]
+                rules: [Tokens],
+            }
+
+            record Target {
+                #[validate(rules = { 1 <= _.length })]
+                #[validate(rules = { matches(_, "^[A-Z]+$") })]
+                code: string,
+            }
+        "#;
+        let ir = build_ir(src);
+        let target_def = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Target")
+            .expect("Target def not found");
+        let ir::DefKind::RecordType(record) = &target_def.kind else {
+            panic!("Target is not a record");
+        };
+        let code = record
+            .fields
+            .iter()
+            .find(|f| f.name.as_str() == "code")
+            .expect("code field not found");
+        let rules = code
+            .typed_attrs
+            .get("validate")
+            .and_then(|v| v.get("rules"))
+            .expect("rules array populated")
+            .as_array()
+            .expect("rules is a JSON array");
+        assert_eq!(rules.len(), 2);
+        // Phase 0 reconstructs body text from significant tokens via Display,
+        // which is whitespace-collapsed but lex-equivalent. Plugins re-lex
+        // the body either way; a future improvement is to slice the
+        // originating source verbatim for nicer human-facing error messages.
+        assert_eq!(rules[0]["text"], serde_json::json!("1 <= _ . length"));
+        assert_eq!(
+            rules[1]["text"],
+            serde_json::json!("matches ( _ , \"^[A-Z]+$\" )")
+        );
+    }
+
+    /// Positional `{ … }` arguments bind to the first schema field of
+    /// type `core::attrs::Tokens`. Lets users write
+    /// `#[validate({ 0 <= _ <= 100 })]` instead of the more verbose
+    /// `#[validate(expr = { 0 <= _ <= 100 })]`.
+    #[test]
+    fn positional_tokens_arg_binds_to_first_tokens_field() {
+        let src = r#"
+            import ::core::attrs::*
+
+            #[attrs(plugin = "validate", target = field, repeated)]
+            record FieldRule {
+                expr: Tokens,
+                message?: string,
+                code?: string,
+            }
+
+            record Target {
+                #[validate({ 0 <= _ <= 100 }, message = "Out of range.")]
+                #[validate({ _ != 42 }, code = "no_42")]
+                age: i32,
+            }
+        "#;
+        let ir = build_ir(src);
+        let target_def = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Target")
+            .expect("Target def not found");
+        let ir::DefKind::RecordType(record) = &target_def.kind else {
+            panic!("Target is not a record");
+        };
+        let age = record
+            .fields
+            .iter()
+            .find(|f| f.name.as_str() == "age")
+            .expect("age field not found");
+        let rules = age
+            .typed_attrs
+            .get("validate")
+            .expect("typed_attrs[validate] populated")
+            .as_array()
+            .expect("repeated mode produces a JSON array");
+        assert_eq!(rules.len(), 2);
+        assert_eq!(rules[0]["expr"]["text"], serde_json::json!("0 <= _ <= 100"));
+        assert_eq!(rules[0]["message"], serde_json::json!("Out of range."));
+        assert_eq!(rules[1]["expr"]["text"], serde_json::json!("_ != 42"));
+        assert_eq!(rules[1]["code"], serde_json::json!("no_42"));
+    }
+
+    /// `#[attrs(plugin = "...", target = "...", repeated)]`-marked schemas
+    /// produce a JSON array on `typed_attrs[plugin]`, one element per source
+    /// `#[plugin(...)]` instance, instead of merging fields into one record.
+    /// This is the canonical shape for plugins where each attribute is a
+    /// discrete unit (e.g. one validation rule per `#[validate(...)]`).
+    #[test]
+    fn repeated_mode_collects_one_record_per_attribute() {
+        let src = r#"
+            import ::core::attrs::*
+
+            #[attrs(plugin = "validate", target = field, repeated)]
+            record FieldRule {
+                expr?: Tokens,
+                message?: string,
+                code?: string,
+            }
+
+            record Target {
+                #[validate(expr = { 1 <= _.length }, message = "Required.")]
+                #[validate(expr = { matches(_, "...") }, message = "Bad format.", code = "format:slug")]
+                slug: string,
+            }
+        "#;
+        let ir = build_ir(src);
+        let target_def = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "Target")
+            .expect("Target def not found");
+        let ir::DefKind::RecordType(record) = &target_def.kind else {
+            panic!("Target is not a record");
+        };
+        let slug = record
+            .fields
+            .iter()
+            .find(|f| f.name.as_str() == "slug")
+            .expect("slug field not found");
+        let rules = slug
+            .typed_attrs
+            .get("validate")
+            .expect("typed_attrs[validate] populated")
+            .as_array()
+            .expect("repeated mode produces a JSON array");
+        assert_eq!(rules.len(), 2);
+        assert_eq!(
+            rules[0]["expr"]["text"],
+            serde_json::json!("1 <= _ . length")
+        );
+        assert_eq!(rules[0]["message"], serde_json::json!("Required."));
+        assert_eq!(rules[0].get("code"), None);
+        assert_eq!(rules[1]["message"], serde_json::json!("Bad format."));
+        assert_eq!(rules[1]["code"], serde_json::json!("format:slug"));
     }
 
     #[test]

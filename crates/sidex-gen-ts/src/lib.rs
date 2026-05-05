@@ -39,6 +39,14 @@ impl Generator for TsGenerator {
             .unwrap()
             .unwrap_or_default();
 
+        let mut generator = self.clone();
+        let all_plugins = plugins::plugins();
+        for plugin_name in &cfg.plugins {
+            if let Some(plugin) = all_plugins.get(plugin_name) {
+                generator.plugins.push(plugin.clone());
+            }
+        }
+
         let bundle_ctx = BundleCtx {
             cfg: &cfg,
             unit: job.unit,
@@ -46,7 +54,7 @@ impl Generator for TsGenerator {
             bundle: &job.unit[job.bundle],
         };
 
-        let index_parts: Vec<Code> = self
+        let index_parts: Vec<Code> = generator
             .plugins
             .iter()
             .map(|plugin| plugin.visit_bundle(&bundle_ctx))
@@ -60,7 +68,7 @@ impl Generator for TsGenerator {
                 schema_idx,
                 schema,
             };
-            let preambles: Vec<Code> = self
+            let preambles: Vec<Code> = generator
                 .plugins
                 .iter()
                 .map(|plugin| plugin.visit_schema(&schema_ctx))
@@ -70,7 +78,7 @@ impl Generator for TsGenerator {
                 .unit
                 .defs_of(schema_idx)
                 .map(|(_, def)| {
-                    let parts = self
+                    let parts = generator
                         .plugins
                         .iter()
                         .map(|plugin| plugin.visit_def(&schema_ctx, def))

@@ -1,0 +1,5 @@
+[bundle]
+name = "rs_validate_fixture"
+version = "0.0.0"
+description = "Fixture types covering each recognized validation shape."
+authors = ["Silitics GmbH <info@silitics.com>"]

@@ -8514,6 +8514,8 @@ pub mod ir {
         List(AttrList),
         #[doc = "An assign attribute of the form `<PATH> = <VALUE>`.\n"]
         Assign(AttrAssign),
+        #[doc = "An anonymous (positional) value used as a list argument — e.g. the\n`{ … }` body in `#[validate({ 0 <= _ <= 100 })]`. Carries the value\ndirectly, with no path. The typed-attrs parser binds these to a\ndesignated schema field (the first field whose declared type is\nthe [`core::attrs::Tokens`] marker, in source order).\n"]
+        Value(AttrValue),
     }
     #[automatically_derived]
     impl __sidex_serde::SidexType for AttrKind {
@@ -8559,6 +8561,17 @@ pub mod ir {
                         ),
                     )
                 }
+                Self::Value(__value) => {
+                    __serializer.serialize_adjacently_tagged(
+                        "tag",
+                        "content",
+                        "Value",
+                        3u32,
+                        &__sidex_serde::SerializeAsWrap::<AttrValue, __sidex_serde::AsSelf>::new(
+                            __value,
+                        ),
+                    )
+                }
             }
         }
     }
@@ -8568,16 +8581,17 @@ pub mod ir {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["Path", "List", "Assign"];
+            const __IDENTIFIERS: &'static [&'static str] = &["Path", "List", "Assign", "Value"];
             #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"Path\", \"List\", \"Assign\"]";
+                "an identifier in [\"Path\", \"List\", \"Assign\", \"Value\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
                 __Identifier0,
                 __Identifier1,
                 __Identifier2,
+                __Identifier3,
             }
             #[doc(hidden)]
             struct __IdentifierVisitor;
@@ -8597,6 +8611,7 @@ pub mod ir {
                         0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Unsigned(__variant),
@@ -8613,6 +8628,7 @@ pub mod ir {
                         "Path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         "List" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         "Assign" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        "Value" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
@@ -8632,6 +8648,7 @@ pub mod ir {
                         b"Path" => ::core::result::Result::Ok(__Identifier::__Identifier0),
                         b"List" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         b"Assign" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        b"Value" => ::core::result::Result::Ok(__Identifier::__Identifier3),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Bytes(__variant),
@@ -8654,13 +8671,13 @@ pub mod ir {
                 }
             }
             #[doc(hidden)]
-            const __VARIANTS: &'static [&'static str] = &["Path", "List", "Assign"];
+            const __VARIANTS: &'static [&'static str] = &["Path", "List", "Assign", "Value"];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
                     __Identifier,
                     __D,
                 >(__deserializer, "tag")?;
-                match __tagged . tag { __Identifier :: __Identifier0 => { :: core :: result :: Result :: Ok (AttrKind :: Path (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("path") ? . into_inner ())) } , __Identifier :: __Identifier1 => { :: core :: result :: Result :: Ok (AttrKind :: List (__tagged . deserialize_internally_tagged :: < __sidex_serde :: DeserializeAsWrap < AttrList < > , __sidex_serde :: AsSelf > , __D :: Error , > () ? . into_inner ())) } , __Identifier :: __Identifier2 => { :: core :: result :: Result :: Ok (AttrKind :: Assign (__tagged . deserialize_internally_tagged :: < __sidex_serde :: DeserializeAsWrap < AttrAssign < > , __sidex_serde :: AsSelf > , __D :: Error , > () ? . into_inner ())) } , }
+                match __tagged . tag { __Identifier :: __Identifier0 => { :: core :: result :: Result :: Ok (AttrKind :: Path (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("path") ? . into_inner ())) } , __Identifier :: __Identifier1 => { :: core :: result :: Result :: Ok (AttrKind :: List (__tagged . deserialize_internally_tagged :: < __sidex_serde :: DeserializeAsWrap < AttrList < > , __sidex_serde :: AsSelf > , __D :: Error , > () ? . into_inner ())) } , __Identifier :: __Identifier2 => { :: core :: result :: Result :: Ok (AttrKind :: Assign (__tagged . deserialize_internally_tagged :: < __sidex_serde :: DeserializeAsWrap < AttrAssign < > , __sidex_serde :: AsSelf > , __D :: Error , > () ? . into_inner ())) } , __Identifier :: __Identifier3 => { :: core :: result :: Result :: Ok (AttrKind :: Value (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < AttrValue < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , }
             } else {
                 #[doc(hidden)]
                 struct __Visitor {
@@ -8728,6 +8745,15 @@ pub mod ir {
                                     >,
                                 >(__variant)?;
                                 ::core::result::Result::Ok(AttrKind::Assign(__value.into_inner()))
+                            }
+                            (__Identifier::__Identifier3, __variant) => {
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
+                                    __sidex_serde::DeserializeAsWrap<
+                                        AttrValue,
+                                        __sidex_serde::AsSelf,
+                                    >,
+                                >(__variant)?;
+                                ::core::result::Result::Ok(AttrKind::Value(__value.into_inner()))
                             }
                         }
                     }
@@ -9312,6 +9338,8 @@ pub mod ir {
         String(::std::string::String),
         #[doc = "A `::`-separated path.\n"]
         Path(::std::string::String),
+        #[doc = "A `{ … }`-form value carrying source verbatim.\n\nPlugins that opt into this form (via a typed-attrs schema field of\ntype `core::attrs::Tokens`) capture the source text and parse it\nwith their own grammar — e.g. the validation extension's predicate\nexpressions.\n"]
+        Tokens(TokensValue),
     }
     #[automatically_derived]
     impl __sidex_serde::SidexType for AttrValue {
@@ -9373,6 +9401,16 @@ pub mod ir {
                         >::new(__value),
                     )
                 }
+                Self::Tokens(__value) => {
+                    __serializer.serialize_internally_tagged(
+                        "tag",
+                        "Tokens",
+                        4u32,
+                        &__sidex_serde::SerializeAsWrap::<TokensValue, __sidex_serde::AsSelf>::new(
+                            __value,
+                        ),
+                    )
+                }
             }
         }
     }
@@ -9382,10 +9420,11 @@ pub mod ir {
             __deserializer: __D,
         ) -> ::std::result::Result<Self, __D::Error> {
             #[doc(hidden)]
-            const __IDENTIFIERS: &'static [&'static str] = &["Bool", "Number", "String", "Path"];
+            const __IDENTIFIERS: &'static [&'static str] =
+                &["Bool", "Number", "String", "Path", "Tokens"];
             #[doc(hidden)]
             const __EXPECTING_IDENTIFIERS: &'static str =
-                "an identifier in [\"Bool\", \"Number\", \"String\", \"Path\"]";
+                "an identifier in [\"Bool\", \"Number\", \"String\", \"Path\", \"Tokens\"]";
             #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
             #[doc(hidden)]
             enum __Identifier {
@@ -9393,6 +9432,7 @@ pub mod ir {
                 __Identifier1,
                 __Identifier2,
                 __Identifier3,
+                __Identifier4,
             }
             #[doc(hidden)]
             struct __IdentifierVisitor;
@@ -9413,6 +9453,7 @@ pub mod ir {
                         1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                        4u64 => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Unsigned(__variant),
@@ -9430,6 +9471,7 @@ pub mod ir {
                         "Number" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         "String" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         "Path" => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                        "Tokens" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::unknown_variant(
                                 __variant,
@@ -9450,6 +9492,7 @@ pub mod ir {
                         b"Number" => ::core::result::Result::Ok(__Identifier::__Identifier1),
                         b"String" => ::core::result::Result::Ok(__Identifier::__Identifier2),
                         b"Path" => ::core::result::Result::Ok(__Identifier::__Identifier3),
+                        b"Tokens" => ::core::result::Result::Ok(__Identifier::__Identifier4),
                         __variant => {
                             ::core::result::Result::Err(__serde::de::Error::invalid_value(
                                 __serde::de::Unexpected::Bytes(__variant),
@@ -9472,13 +9515,14 @@ pub mod ir {
                 }
             }
             #[doc(hidden)]
-            const __VARIANTS: &'static [&'static str] = &["Bool", "Number", "String", "Path"];
+            const __VARIANTS: &'static [&'static str] =
+                &["Bool", "Number", "String", "Path", "Tokens"];
             if __serde::Deserializer::is_human_readable(&__deserializer) {
                 let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
                     __Identifier,
                     __D,
                 >(__deserializer, "tag")?;
-                match __tagged . tag { __Identifier :: __Identifier0 => { :: core :: result :: Result :: Ok (AttrValue :: Bool (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < bool < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier1 => { :: core :: result :: Result :: Ok (AttrValue :: Number (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier2 => { :: core :: result :: Result :: Ok (AttrValue :: String (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier3 => { :: core :: result :: Result :: Ok (AttrValue :: Path (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , }
+                match __tagged . tag { __Identifier :: __Identifier0 => { :: core :: result :: Result :: Ok (AttrValue :: Bool (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < bool < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier1 => { :: core :: result :: Result :: Ok (AttrValue :: Number (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier2 => { :: core :: result :: Result :: Ok (AttrValue :: String (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier3 => { :: core :: result :: Result :: Ok (AttrValue :: Path (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < :: std :: string :: String < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier4 => { :: core :: result :: Result :: Ok (AttrValue :: Tokens (__tagged . deserialize_internally_tagged :: < __sidex_serde :: DeserializeAsWrap < TokensValue < > , __sidex_serde :: AsSelf > , __D :: Error , > () ? . into_inner ())) } , }
             } else {
                 #[doc(hidden)]
                 struct __Visitor {
@@ -9553,6 +9597,15 @@ pub mod ir {
                                 >(__variant)?;
                                 ::core::result::Result::Ok(AttrValue::Path(__value.into_inner()))
                             }
+                            (__Identifier::__Identifier4, __variant) => {
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
+                                    __sidex_serde::DeserializeAsWrap<
+                                        TokensValue,
+                                        __sidex_serde::AsSelf,
+                                    >,
+                                >(__variant)?;
+                                ::core::result::Result::Ok(AttrValue::Tokens(__value.into_inner()))
+                            }
                         }
                     }
                 }
@@ -9565,6 +9618,287 @@ pub mod ir {
                     },
                 )
             }
+        }
+    }
+    #[doc = "A `{ … }`-form attribute value.\n\nCarries the verbatim source text between the `{` and `}` (both excluded)\nalong with the span covering that text. Plugin codegens parse the text\nwith their own grammar.\n"]
+    #[derive(Clone, Debug)]
+    #[non_exhaustive]
+    pub struct TokensValue {
+        #[doc = "Verbatim source between the surrounding `{` and `}`, both excluded.\n"]
+        pub text: ::std::string::String,
+        #[doc = "Span of [`text`] within the originating source.\n"]
+        pub span: ::std::option::Option<Span>,
+    }
+    impl TokensValue {
+        #[doc = "Creates a new [`TokensValue`]."]
+        pub fn new(text: ::std::string::String) -> Self {
+            Self {
+                text,
+                span: ::std::default::Default::default(),
+            }
+        }
+        #[doc = "Sets the value of `text`."]
+        pub fn set_text(&mut self, text: ::std::string::String) -> &mut Self {
+            self.text = text;
+            self
+        }
+        #[doc = "Sets the value of `text`."]
+        pub fn with_text(mut self, text: ::std::string::String) -> Self {
+            self.text = text;
+            self
+        }
+        #[doc = "Sets the value of `span`."]
+        pub fn set_span(&mut self, span: ::std::option::Option<Span>) -> &mut Self {
+            self.span = span;
+            self
+        }
+        #[doc = "Sets the value of `span`."]
+        pub fn with_span(mut self, span: ::std::option::Option<Span>) -> Self {
+            self.span = span;
+            self
+        }
+    }
+    #[automatically_derived]
+    impl __sidex_serde::SidexType for TokensValue {
+        type Encoding = __sidex_serde::AsSelf;
+    }
+    #[automatically_derived]
+    impl __serde::Serialize for TokensValue {
+        fn serialize<__S: __serde::Serializer>(
+            &self,
+            __serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
+            let mut __record =
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "TokensValue", 2usize)?;
+            __record . serialize_field ("text" , & __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (& self . text) ,) ? ;
+            {
+                let __wrapped = ::core::option::Option::map(
+                    ::core::option::Option::as_ref(&self.span),
+                    |__v| __sidex_serde::SerializeAsWrap::<Span, __sidex_serde::AsSelf>::new(__v),
+                );
+                __record
+                    .serialize_optional_field("span", ::core::option::Option::as_ref(&__wrapped))?;
+            }
+            __record.end()
+        }
+    }
+    #[automatically_derived]
+    impl<'de> __serde::Deserialize<'de> for TokensValue {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
+            __deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
+            struct __Visitor {
+                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+            }
+            impl<'de> __serde::de::Visitor<'de> for __Visitor {
+                type Value = TokensValue;
+                fn expecting(
+                    &self,
+                    __formatter: &mut ::core::fmt::Formatter,
+                ) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(__formatter, "record TokensValue")
+                }
+                #[inline]
+                fn visit_seq<__A>(
+                    self,
+                    mut __seq: __A,
+                ) -> ::core::result::Result<Self::Value, __A::Error>
+                where
+                    __A: __serde::de::SeqAccess<'de>,
+                {
+                    let __field0 = match __serde::de::SeqAccess::next_element::<
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::string::String,
+                            __sidex_serde::AsSelf,
+                        >,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
+                            );
+                        }
+                    };
+                    let __field1 = match __serde::de::SeqAccess::next_element::<
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::option::Option<Span>,
+                            ::std::option::Option<__sidex_serde::AsSelf>,
+                        >,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
+                            );
+                        }
+                    };
+                    ::core::result::Result::Ok(TokensValue {
+                        text: __field0,
+                        span: __field1,
+                    })
+                }
+                #[inline]
+                fn visit_map<__A>(
+                    self,
+                    mut __map: __A,
+                ) -> ::core::result::Result<Self::Value, __A::Error>
+                where
+                    __A: __serde::de::MapAccess<'de>,
+                {
+                    #[doc(hidden)]
+                    const __IDENTIFIERS: &'static [&'static str] = &["text", "span"];
+                    #[doc(hidden)]
+                    const __EXPECTING_IDENTIFIERS: &'static str =
+                        "an identifier in [\"text\", \"span\"]";
+                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+                    #[doc(hidden)]
+                    enum __Identifier {
+                        __Identifier0,
+                        __Identifier1,
+                        __Unknown,
+                    }
+                    #[doc(hidden)]
+                    struct __IdentifierVisitor;
+                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                        type Value = __Identifier;
+                        fn expecting(
+                            &self,
+                            __formatter: &mut ::core::fmt::Formatter,
+                        ) -> ::core::fmt::Result {
+                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                        }
+                        fn visit_u64<__E>(
+                            self,
+                            __value: u64,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_str<__E>(
+                            self,
+                            __value: &str,
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                "text" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                        fn visit_bytes<__E>(
+                            self,
+                            __value: &[u8],
+                        ) -> ::core::result::Result<Self::Value, __E>
+                        where
+                            __E: __serde::de::Error,
+                        {
+                            match __value {
+                                b"text" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
+                            }
+                        }
+                    }
+                    impl<'de> __serde::Deserialize<'de> for __Identifier {
+                        #[inline]
+                        fn deserialize<__D>(
+                            __deserializer: __D,
+                        ) -> ::core::result::Result<Self, __D::Error>
+                        where
+                            __D: __serde::Deserializer<'de>,
+                        {
+                            __serde::Deserializer::deserialize_identifier(
+                                __deserializer,
+                                __IdentifierVisitor,
+                            )
+                        }
+                    }
+                    let mut __field0: ::core::option::Option<::std::string::String> =
+                        ::core::option::Option::None;
+                    let mut __field1: ::core::option::Option<::std::option::Option<Span>> =
+                        ::core::option::Option::None;
+                    while let ::core::option::Option::Some(__key) =
+                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
+                    {
+                        match __key {
+                            __Identifier::__Identifier0 => {
+                                if ::core::option::Option::is_some(&__field0) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("text"),
+                                    );
+                                }
+                                __field0 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::string::String,
+                                            __sidex_serde::AsSelf,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
+                                );
+                            }
+                            __Identifier::__Identifier1 => {
+                                if ::core::option::Option::is_some(&__field1) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field("span"),
+                                    );
+                                }
+                                __field1 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::option::Option<Span>,
+                                            ::std::option::Option<__sidex_serde::AsSelf>,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
+                                );
+                            }
+                            _ => {
+                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
+                                    &mut __map,
+                                )?;
+                            }
+                        }
+                    }
+                    let __field0 = match __field0 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("text"),
+                            );
+                        }
+                    };
+                    let __field1 = match __field1 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
+                    ::core::result::Result::Ok(TokensValue {
+                        text: __field0,
+                        span: __field1,
+                    })
+                }
+            }
+            #[doc(hidden)]
+            const __FIELDS: &'static [&'static str] = &["text", "span"];
+            __serde::Deserializer::deserialize_struct(
+                __deserializer,
+                "TokensValue",
+                __FIELDS,
+                __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData,
+                },
+            )
         }
     }
 }

@@ -1,0 +1,5 @@
+[bundle]
+name = "ts_validate_fixture"
+version = "0.0.0"
+description = "Fixture types for the TS validate plugin."
+authors = ["Silitics GmbH <info@silitics.com>"]

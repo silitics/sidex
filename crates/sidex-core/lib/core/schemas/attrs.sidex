@@ -20,6 +20,23 @@
 ///     deny_unknown_fields?: bool,
 /// }
 /// ```
+///
+/// # Repeated mode
+///
+/// Setting `repeated` makes every source `#[plugin(...)]` parse into an
+/// independent record appended to `typed_attrs[plugin]: [Value]`, rather
+/// than merging field-by-field into a single record. Useful for plugins
+/// where each attribute represents one logical unit, e.g. one validation
+/// rule per `#[validate(...)]`:
+///
+/// ```sidex
+/// #[attrs(plugin = "validate", target = "field", repeated)]
+/// record FieldRule {
+///     expr: Tokens,
+///     message?: string,
+///     code?: string,
+/// }
+/// ```
 record Attrs {
     /// Plugin identifier — matches the outer path of the source attribute
     /// (e.g., `"json"` matches `#[json(...)]`).
@@ -27,6 +44,10 @@ record Attrs {
     /// IR position this schema applies to. The compiler routes source
     /// attributes to schemas by `(plugin, target)`.
     target: AttrTarget,
+    /// When set, every source `#[plugin(...)]` parses into an independent
+    /// record appended to `typed_attrs[plugin]: [Value]` rather than
+    /// merging field-by-field.
+    repeated?: bool,
 }
 
 /// IR positions that can carry attributes.
@@ -76,3 +97,17 @@ record AttrName {
 /// where the codegen consuming the IR sees `response` as a fully-qualified
 /// reference into the IR's `defs` arena.
 opaque TypeRef
+
+/// A captured `{ … }`-form attribute value.
+///
+/// When a plugin's attribute schema declares a field of type `Tokens`, the
+/// compiler captures the verbatim source text between the braces along
+/// with its span and stores the result on the IR node's `typed_attrs` as a
+/// JSON object `{ "text": "...", "span": { ... } }`. The plugin parses the
+/// text with its own grammar — e.g. the validation extension's predicate
+/// expressions:
+///
+/// ```ignore
+/// #[validate({ 0 <= _ <= 100 }, message = "Out of range.")]
+/// ```
+opaque Tokens

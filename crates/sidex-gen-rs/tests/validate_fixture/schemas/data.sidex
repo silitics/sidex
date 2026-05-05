@@ -1,0 +1,22 @@
+//! Cases that exercise each recognizer shape and the runtime helpers.
+
+record User {
+    #[validate({ 1 <= _.length <= 254 })]
+    #[validate({ matches(_, "^[^@]+@[^@]+$") }, message = "Bad email.", code = "format:email")]
+    email: string,
+
+    #[validate({ 0 <= _ <= 150 })]
+    age: u32,
+
+    #[validate({ 1 <= _.length })]
+    nickname?: string,
+}
+
+#[validate({ 1 <= _.length <= 64 })]
+wrapper Slug: string
+
+#[validate({ _.min <= _.max })]
+record Range {
+    min: i32,
+    max: i32,
+}

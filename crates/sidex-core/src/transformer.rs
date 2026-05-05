@@ -394,7 +394,7 @@ impl<'t, 'm> Resolver<'t, 'm> {
 
 /// Convert an AST attribute value (`Attr` on the rhs of an Assign) into a
 /// typed `ir::AttrValue`. Best-effort: anything that doesn't fit one of the
-/// four `AttrValue` cases is dropped.
+/// `AttrValue` cases is dropped.
 fn ast_attr_to_value(attr: &ast::Attr) -> Option<ir::AttrValue> {
     match &attr.kind {
         ast::AttrKind::Path(path) => Some(ir::AttrValue::Path(path.to_string())),
@@ -415,8 +415,54 @@ fn ast_attr_to_value(attr: &ast::Attr) -> Option<ir::AttrValue> {
                 _ => None,
             }
         }
+        ast::AttrKind::Tokens(tokens) => {
+            // A `{ ... }`-form value: balanced brace group captured verbatim.
+            // Inner text is reconstructed from significant tokens via Display
+            // (whitespace-collapsed but lex-equivalent); the span covers the
+            // first-to-last inner token in the originating source.
+            tokens_brace_group_value(tokens).map(ir::AttrValue::Tokens)
+        }
         _ => None,
     }
+}
+
+/// Recognize a balanced `{ ... }` token group and lift it into a
+/// [`ir::TokensValue`]. Returns `None` when the stream isn't brace-delimited.
+fn tokens_brace_group_value(stream: &ast::TokenStream) -> Option<ir::TokensValue> {
+    if stream.len() < 2 {
+        return None;
+    }
+    let is_open_brace = matches!(
+        &stream[0].kind,
+        tokens::TokenKind::Delimiter(tokens::DelimiterSymbol::Open(tokens::DelimiterKind::Brace))
+    );
+    let is_close_brace = matches!(
+        &stream[stream.len() - 1].kind,
+        tokens::TokenKind::Delimiter(tokens::DelimiterSymbol::Close(tokens::DelimiterKind::Brace))
+    );
+    if !(is_open_brace && is_close_brace) {
+        return None;
+    }
+    let inner = &stream[1..stream.len() - 1];
+    let span = inner
+        .first()
+        .zip(inner.last())
+        .map(|(first, last)| ir::Span::new(first.span().src, first.span().start, last.span().end));
+    // Reconstruct text from significant tokens. This is whitespace-collapsed
+    // but lex-equivalent — the consuming plugin re-lexes the body anyway.
+    let mut text = String::new();
+    for token in inner {
+        use std::fmt::Write as _;
+        write!(text, "{}", token).expect("write to String never fails");
+        if token.is_separated() {
+            text.push(' ');
+        }
+    }
+    let mut value = ir::TokensValue::new(text.trim().to_owned());
+    if let Some(span) = span {
+        value.span = Some(span);
+    }
+    Some(value)
 }
 
 fn transform_attr(attr: &ast::Attr) -> Option<ir::Attr> {
@@ -435,10 +481,44 @@ fn transform_attr(attr: &ast::Attr) -> Option<ir::Attr> {
                 value,
             })
         }
-        // Unstructured token streams are no longer representable in the IR.
-        ast::AttrKind::Tokens(_) => return None,
+        // Token streams as positional list args: brace groups lift into
+        // `AttrKind::Value(AttrValue::Tokens(...))` so the typed-attrs
+        // parser can bind them positionally to a `core::attrs::Tokens`-
+        // typed schema field. Single-token literals (the legacy
+        // `derive("Clone")`-style positional) lift the same way for
+        // forward compatibility, even though no current plugin reads
+        // them positionally.
+        ast::AttrKind::Tokens(stream) => {
+            if let Some(value) = tokens_brace_group_value(stream) {
+                ir::AttrKind::Value(ir::AttrValue::Tokens(value))
+            } else if let Some(value) = single_literal_token_value(stream) {
+                ir::AttrKind::Value(value)
+            } else {
+                return None;
+            }
+        }
     };
     Some(ir::Attr::new(kind))
+}
+
+/// Recognize a single-token literal stream (`Clone`, `42`, `"text"`) and
+/// extract the same `AttrValue` shape `ast_attr_to_value` produces.
+/// Used when a positional list arg is a bare literal — currently rare,
+/// but keeps the lowering symmetric so callers can write either named
+/// (`derive = "Clone"`) or positional (`derive("Clone")`) forms.
+fn single_literal_token_value(stream: &ast::TokenStream) -> Option<ir::AttrValue> {
+    if stream.len() != 1 {
+        return None;
+    }
+    match &stream[0].kind {
+        tokens::TokenKind::Literal(lit) => match lit {
+            tokens::Literal::String(s) => Some(ir::AttrValue::String(s.as_ref().clone())),
+            tokens::Literal::Numeric { .. } => Some(ir::AttrValue::Number(stream[0].to_string())),
+            tokens::Literal::Boolean(b) => Some(ir::AttrValue::Bool(*b)),
+        },
+        tokens::TokenKind::Identifier(s) => Some(ir::AttrValue::Path(s.to_string())),
+        _ => None,
+    }
 }
 
 fn transform_attrs(attrs: &[ast::Attr]) -> Vec<ir::Attr> {

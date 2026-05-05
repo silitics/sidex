@@ -342,6 +342,14 @@ impl AttrValue {
             _ => None,
         }
     }
+
+    /// Returns the contained tokens body if this is a [`AttrValue::Tokens`].
+    pub fn as_tokens(&self) -> Option<&TokensValue> {
+        match self {
+            AttrValue::Tokens(tokens) => Some(tokens),
+            _ => None,
+        }
+    }
 }
 
 // --- Display for attributes ---------------------------------------------
@@ -366,6 +374,7 @@ impl std::fmt::Display for Attr {
                 f.write_str(" = ")?;
                 std::fmt::Display::fmt(&assign.value, f)
             }
+            AttrKind::Value(value) => std::fmt::Display::fmt(value, f),
         }
     }
 }
@@ -377,6 +386,7 @@ impl std::fmt::Display for AttrValue {
             AttrValue::Number(n) => f.write_str(n),
             AttrValue::String(s) => write!(f, "{:?}", s),
             AttrValue::Path(p) => f.write_str(p),
+            AttrValue::Tokens(tokens) => write!(f, "{{{}}}", tokens.text),
         }
     }
 }

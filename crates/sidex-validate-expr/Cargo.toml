@@ -1,0 +1,17 @@
+[package]
+name = "sidex-validate-expr"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+description = "Expression grammar + recognizer for Sidex's validation extension."
+
+[dependencies]
+sidex-diagnostics.workspace = true
+regex.workspace = true
+
+[lints]
+workspace = true

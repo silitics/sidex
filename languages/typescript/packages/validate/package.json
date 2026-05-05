@@ -1,0 +1,22 @@
+{
+  "name": "@sidex/validate",
+  "author": "Silitics GmbH <info@silitics.com>",
+  "license": "(MIT or Apache-2.0)",
+  "version": "0.0.1",
+  "description": "Runtime support for Sidex's validation extension.",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  }
+}

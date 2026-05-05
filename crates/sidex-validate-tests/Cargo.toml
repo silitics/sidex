@@ -1,0 +1,27 @@
+[package]
+name = "sidex-validate-tests"
+version = "0.0.0"
+publish = false
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+description = "End-to-end runtime tests for the validate plugin's generated Rust code."
+
+[lib]
+path = "src/lib.rs"
+
+[build-dependencies]
+sidex-build-rs.workspace = true
+
+[dependencies]
+sidex.workspace = true
+sidex-validate.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sidex-serde.workspace = true
+
+[lints]
+workspace = true

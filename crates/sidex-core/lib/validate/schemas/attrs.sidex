@@ -1,0 +1,67 @@
+//! Typed attributes for the validation extension.
+//!
+//! Each `#[validate({ … }, message = "…", code = "…")]` is one rule.
+//! The plugin runs in *repeated* mode: every source attribute parses into
+//! an independent record appended to `typed_attrs["validate"]: [Value]`.
+//!
+//! Plugin codegens — Rust (`sidex-gen-rs`) and TypeScript (`sidex-gen-ts`) —
+//! consume that array and emit per-rule validators that build a
+//! `ValidationReport` of `(path, code, message)` errors.
+
+import ::core::attrs::*
+
+/// One validation rule attached to a field.
+///
+/// Source form:
+///
+/// ```sidex
+/// #[validate({ 0 <= _ <= 100 })]
+/// #[validate({ 1 <= _.length }, message = "Required.")]
+/// #[validate({ matches(_, "...") }, message = "...", code = "format:phone")]
+/// ```
+#[attrs(plugin = "validate", target = field, repeated)]
+#[json(rename_all = "snake_case")]
+record FieldRule {
+    /// The rule expression captured verbatim. Plugins parse this body with
+    /// the validation expression grammar.
+    expr: Tokens,
+    /// Optional human-readable message. When unset, the runtime picks a
+    /// default keyed on the resolved error code (e.g. `"Value must be at
+    /// least 1 character."` for `min_length`).
+    message?: string,
+    /// Override the error code emitted by recognized shapes (e.g. surface
+    /// a `regex` rule as `"format:phone"`).
+    code?: string,
+}
+
+/// One validation rule attached to a record. The expression sees the whole
+/// record as `_`, with field accessors (`_.<field>`) for cross-field rules.
+#[attrs(plugin = "validate", target = record, repeated)]
+#[json(rename_all = "snake_case")]
+record RecordRule {
+    expr: Tokens,
+    message?: string,
+    code?: string,
+}
+
+/// One validation rule attached to a wrapper. The expression sees the
+/// wrapped value as `_`. Codegens may emit `try_new` constructors that
+/// run validation up front when the wrapper has rules.
+#[attrs(plugin = "validate", target = wrapper, repeated)]
+#[json(rename_all = "snake_case")]
+record WrapperRule {
+    expr: Tokens,
+    message?: string,
+    code?: string,
+}
+
+/// One validation rule attached to an opaque type. The expression sees the
+/// opaque value as `_`. Useful for primitive opaques whose representation
+/// is a string or number with target-specific semantics.
+#[attrs(plugin = "validate", target = opaque, repeated)]
+#[json(rename_all = "snake_case")]
+record OpaqueRule {
+    expr: Tokens,
+    message?: string,
+    code?: string,
+}

@@ -1,0 +1,9 @@
+[bundle]
+name = "validate_tests"
+version = "0.0.0"
+description = "End-to-end runtime fixture for the validate extension."
+authors = ["Silitics GmbH <info@silitics.com>"]
+
+[backend.rust]
+derive = ["Clone", "Debug"]
+plugins = ["validate"]

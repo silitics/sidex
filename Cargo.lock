@@ -735,6 +735,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "regex"
+version = "1.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23d7fd106d8c02486a8d64e778353d1cffe08ce79ac2e82f540c86d0facf6912"
+dependencies = [
+ "aho-corasick",
+ "memchr",
+ "regex-automata",
+ "regex-syntax",
+]
+
+[[package]]
 name = "regex-automata"
 version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -892,6 +904,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-attrs-validate"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sidex-diagnostics",
+ "sidex-gen",
+ "sidex-ir",
+ "sidex-serde",
+ "sidex-validate-expr",
+]
+
+[[package]]
 name = "sidex-build-rs"
 version = "0.1.0"
 dependencies = [
@@ -911,6 +936,7 @@ dependencies = [
  "rand",
  "rand_chacha",
  "serde_json",
+ "sidex-attrs-validate",
  "sidex-core",
  "sidex-diagnostics",
  "sidex-fmt",
@@ -1055,9 +1081,11 @@ dependencies = [
  "serde_json",
  "sidex-attrs-json",
  "sidex-attrs-rust",
+ "sidex-attrs-validate",
  "sidex-core",
  "sidex-diagnostics",
  "sidex-gen",
+ "sidex-validate-expr",
  "syn",
 ]
 
@@ -1069,10 +1097,13 @@ dependencies = [
  "serde_json",
  "sidex-attrs-json",
  "sidex-attrs-rust",
+ "sidex-attrs-validate",
  "sidex-codegen",
  "sidex-core",
  "sidex-diagnostics",
  "sidex-gen",
+ "sidex-ir",
+ "sidex-validate-expr",
  "tempfile",
 ]
 
@@ -1134,6 +1165,33 @@ dependencies = [
  "sidex-build-rs",
  "sidex-serde",
  "sidex-types-json-schema",
+]
+
+[[package]]
+name = "sidex-validate"
+version = "0.1.0"
+dependencies = [
+ "regex",
+]
+
+[[package]]
+name = "sidex-validate-expr"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "sidex-diagnostics",
+]
+
+[[package]]
+name = "sidex-validate-tests"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sidex",
+ "sidex-build-rs",
+ "sidex-serde",
+ "sidex-validate",
 ]
 
 [[package]]

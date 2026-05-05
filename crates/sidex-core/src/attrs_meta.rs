@@ -51,6 +51,10 @@ impl AttrTarget {
 pub struct AttrsMeta {
     pub plugin: String,
     pub target: AttrTarget,
+    /// Whether the plugin uses *repeated* mode. In repeated mode each source
+    /// `#[plugin(...)]` parses into an independent record appended to
+    /// `typed_attrs[plugin]: [Value]` rather than merging field-by-field.
+    pub repeated: bool,
 }
 
 /// Extract the `#[attrs(...)]` meta-attribute from a list of attributes.
@@ -69,26 +73,41 @@ pub fn extract_attrs_meta(attrs: &[ir::Attr]) -> Option<AttrsMeta> {
         }
         let mut plugin: Option<String> = None;
         let mut target: Option<AttrTarget> = None;
+        let mut repeated = false;
         for arg in &list.args {
-            let ir::AttrKind::Assign(assign) = &arg.kind else {
-                continue;
-            };
-            match assign.path.as_str() {
-                "plugin" => {
-                    if let ir::AttrValue::String(s) = &assign.value {
-                        plugin = Some(s.clone());
-                    }
+            match &arg.kind {
+                ir::AttrKind::Path(p) if p == "repeated" => {
+                    repeated = true;
                 }
-                "target" => {
-                    if let ir::AttrValue::Path(p) = &assign.value {
-                        target = AttrTarget::from_path(p);
+                ir::AttrKind::Assign(assign) => {
+                    match assign.path.as_str() {
+                        "plugin" => {
+                            if let ir::AttrValue::String(s) = &assign.value {
+                                plugin = Some(s.clone());
+                            }
+                        }
+                        "target" => {
+                            if let ir::AttrValue::Path(p) = &assign.value {
+                                target = AttrTarget::from_path(p);
+                            }
+                        }
+                        "repeated" => {
+                            if let ir::AttrValue::Bool(b) = &assign.value {
+                                repeated = *b;
+                            }
+                        }
+                        _ => {}
                     }
                 }
                 _ => {}
             }
         }
         if let (Some(plugin), Some(target)) = (plugin, target) {
-            return Some(AttrsMeta { plugin, target });
+            return Some(AttrsMeta {
+                plugin,
+                target,
+                repeated,
+            });
         }
     }
     None
@@ -101,26 +120,47 @@ pub fn extract_attrs_meta(attrs: &[ir::Attr]) -> Option<AttrsMeta> {
 /// attributes.
 #[derive(Debug, Default, Clone)]
 pub struct PluginRegistry {
-    schemas: HashMap<(String, AttrTarget), ir::DefRef>,
+    schemas: HashMap<(String, AttrTarget), PluginEntry>,
+}
+
+/// Per-plugin registry entry: the schema def together with the meta-flags
+/// extracted from `#[attrs(...)]` (currently just `repeated`).
+#[derive(Debug, Clone, Copy)]
+pub struct PluginEntry {
+    pub def: ir::DefRef,
+    pub repeated: bool,
 }
 
 impl PluginRegistry {
     /// Build a registry by walking every def in `ir` for `#[attrs(...)]`.
     pub fn build(ir: &ir::Ir) -> Self {
-        let mut schemas: HashMap<(String, AttrTarget), ir::DefRef> = HashMap::new();
+        let mut schemas: HashMap<(String, AttrTarget), PluginEntry> = HashMap::new();
         for (idx, def) in ir.defs.iter().enumerate() {
             let Some(meta) = extract_attrs_meta(&def.attrs) else {
                 continue;
             };
             let schema = &ir.schemas[def.schema.idx()];
             let def_ref = ir::DefRef::new(schema.bundle, def.schema, ir::DefIdx::from(idx));
-            schemas.insert((meta.plugin, meta.target), def_ref);
+            schemas.insert(
+                (meta.plugin, meta.target),
+                PluginEntry {
+                    def: def_ref,
+                    repeated: meta.repeated,
+                },
+            );
         }
         Self { schemas }
     }
 
     /// Look up the schema def for a `(plugin, target)` pair.
     pub fn get(&self, plugin: &str, target: AttrTarget) -> Option<ir::DefRef> {
+        self.schemas
+            .get(&(plugin.to_owned(), target))
+            .map(|entry| entry.def)
+    }
+
+    /// Look up the full registry entry — schema def plus meta flags.
+    pub fn get_entry(&self, plugin: &str, target: AttrTarget) -> Option<PluginEntry> {
         self.schemas.get(&(plugin.to_owned(), target)).copied()
     }
 
@@ -128,7 +168,7 @@ impl PluginRegistry {
     pub fn iter(&self) -> impl Iterator<Item = (&str, AttrTarget, ir::DefRef)> {
         self.schemas
             .iter()
-            .map(|((plugin, target), def_ref)| (plugin.as_str(), *target, *def_ref))
+            .map(|((plugin, target), entry)| (plugin.as_str(), *target, entry.def))
     }
 
     /// Number of registered plugin schemas.

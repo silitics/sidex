@@ -1,0 +1,20 @@
+//! Fixture types for runtime validation tests.
+
+record User {
+    #[validate({ 1 <= _.length <= 254 }, message = "Email length is out of range.")]
+    email: string,
+
+    #[validate({ 0 <= _ <= 150 })]
+    age: u32,
+
+    #[validate({ 1 <= _.length })]
+    nickname?: string,
+}
+
+#[validate({ 1 <= _.length <= 64 }, message = "Slug length must be 1..64.")]
+wrapper Slug: string
+
+record CodeOnly {
+    #[validate({ matches(_, "^[A-Z]{2}-[0-9]{4}$") }, code = "format:order")]
+    code: string,
+}
