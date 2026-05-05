@@ -370,9 +370,7 @@ console.log(JSON.stringify(reports));
     );
     assert_eq!(codes_for("field_email_ok"), Vec::<(String, String)>::new());
     assert!(
-        codes_for("field_age_oor")
-            .iter()
-            .any(|(_, c)| c == "max"),
+        codes_for("field_age_oor").iter().any(|(_, c)| c == "max"),
         "expected per-field age max, got {:?}",
         codes_for("field_age_oor"),
     );

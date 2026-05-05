@@ -716,12 +716,14 @@ fn parse_nested_record_field<'a>(
                 .with_span(arg.span.clone()),
             ))
         }
-        ir::AttrKind::Value(_) => Err(Box::new(
-            Diagnostic::error(
-                "Anonymous `{ … }` values aren't valid for record-typed schema fields.",
-            )
-            .with_span(arg.span.clone()),
-        )),
+        ir::AttrKind::Value(_) => {
+            Err(Box::new(
+                Diagnostic::error(
+                    "Anonymous `{ … }` values aren't valid for record-typed schema fields.",
+                )
+                .with_span(arg.span.clone()),
+            ))
+        }
     }
 }
 

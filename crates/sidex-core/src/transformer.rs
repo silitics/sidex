@@ -511,11 +511,15 @@ fn single_literal_token_value(stream: &ast::TokenStream) -> Option<ir::AttrValue
         return None;
     }
     match &stream[0].kind {
-        tokens::TokenKind::Literal(lit) => match lit {
-            tokens::Literal::String(s) => Some(ir::AttrValue::String(s.as_ref().clone())),
-            tokens::Literal::Numeric { .. } => Some(ir::AttrValue::Number(stream[0].to_string())),
-            tokens::Literal::Boolean(b) => Some(ir::AttrValue::Bool(*b)),
-        },
+        tokens::TokenKind::Literal(lit) => {
+            match lit {
+                tokens::Literal::String(s) => Some(ir::AttrValue::String(s.as_ref().clone())),
+                tokens::Literal::Numeric { .. } => {
+                    Some(ir::AttrValue::Number(stream[0].to_string()))
+                }
+                tokens::Literal::Boolean(b) => Some(ir::AttrValue::Bool(*b)),
+            }
+        }
         tokens::TokenKind::Identifier(s) => Some(ir::AttrValue::Path(s.to_string())),
         _ => None,
     }

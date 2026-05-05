@@ -64,16 +64,18 @@ pub fn recognize(expr: &Expr, source: &str, target: Target) -> RecognizeOutput {
     let mut errors = Vec::new();
     let rules = match expr {
         Expr::Compare { operands, ops } => recognize_compare_chain(operands, ops, source, target),
-        Expr::Call { name, args } => match recognize_call(name, args, &mut errors) {
-            Some(rule) => vec![rule],
-            None => {
-                if errors.is_empty() {
-                    vec![predicate_fallback(source)]
-                } else {
-                    Vec::new()
+        Expr::Call { name, args } => {
+            match recognize_call(name, args, &mut errors) {
+                Some(rule) => vec![rule],
+                None => {
+                    if errors.is_empty() {
+                        vec![predicate_fallback(source)]
+                    } else {
+                        Vec::new()
+                    }
                 }
             }
-        },
+        }
         _ => vec![predicate_fallback(source)],
     };
     RecognizeOutput { rules, errors }
