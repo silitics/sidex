@@ -24,6 +24,8 @@ sidex-attrs-json.workspace = true # PUBLIC
 # Required for parsing `validate` attributes.
 sidex-attrs-validate.workspace = true # PUBLIC
 sidex-validate-expr.workspace = true # PUBLIC
+# Required for parsing `deprecated` / `unstable` / `since` attributes.
+sidex-attrs-api.workspace = true # PUBLIC
 # Required for `sidex-ir` access in plugin lowering.
 sidex-ir.workspace = true # PUBLIC
 # Required for deserializing the backend configuration.

@@ -1,0 +1,4 @@
+[bundle]
+name = "api_stability"
+version = "1.6.0"
+description = "Demonstrates the `#[deprecated]`, `#[unstable]`, and `#[since]` attributes."

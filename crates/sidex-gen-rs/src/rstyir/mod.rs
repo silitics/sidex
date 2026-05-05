@@ -6,6 +6,11 @@ use proc_macro2::Ident;
 use proc_macro2::TokenStream;
 use quote::format_ident;
 use quote::quote;
+use sidex_attrs_api::Stability;
+use sidex_attrs_api::render_doc_prelude;
+use sidex_attrs_api::stability_of_def;
+use sidex_attrs_api::stability_of_field;
+use sidex_attrs_api::stability_of_variant;
 use sidex_attrs_json::JsonFieldAttrs;
 use sidex_attrs_json::JsonRecordTypeAttrs;
 use sidex_attrs_json::JsonVariantAttrs;
@@ -70,10 +75,12 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
                      docs,
                      visibility,
                      ty,
+                     meta,
                      ..
                  }| {
                     quote! {
                        #[doc = #docs]
+                       #meta
                        #visibility #ident: #ty,
                     }
                 },
@@ -92,16 +99,22 @@ pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
                 .iter()
                 .map(
                     |RsVariant {
-                         ident, docs, ty, ..
+                         ident,
+                         docs,
+                         ty,
+                         meta,
+                         ..
                      }| {
                         if let Some(ty) = &ty {
                             quote! {
                                 #[doc = #docs]
+                                #meta
                                 #ident(#ty),
                             }
                         } else {
                             quote! {
                                 #[doc = #docs]
+                                #meta
                                 #ident,
                             }
                         }
@@ -125,12 +138,14 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
         .iter()
         .map(|var| format_ident!("{}", var.name.as_str()))
         .collect();
-    let docs = def
-        .docs
-        .as_ref()
-        .map(|docs| docs.as_str())
-        .unwrap_or_default()
-        .to_owned();
+    let stability = stability_of_def(def);
+    let docs = with_stability_prelude(
+        &stability,
+        def.docs
+            .as_ref()
+            .map(|docs| docs.as_str())
+            .unwrap_or_default(),
+    );
     let attrs = rust_type_attrs(def)?;
     let mut derive = ctx
         .bundle_ctx
@@ -157,9 +172,11 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
     } else {
         &attrs.attrs
     };
+    let stability_attr = stability_attr_tokens(&stability);
     let meta = quote! {
         #(#[derive(#derive)])*
         #(#[#attr_iter])*
+        #stability_attr
     };
     let kind = match &def.kind {
         DefKind::WrapperType(wrapper_type_def) => {
@@ -205,12 +222,16 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         "{}",
                         attrs.name.as_deref().unwrap_or_else(|| field.name.as_str())
                     );
-                    let docs = field
-                        .docs
-                        .as_ref()
-                        .map(|docs| docs.as_str())
-                        .unwrap_or_default()
-                        .to_owned();
+                    let field_stability = stability_of_field(field);
+                    let docs = with_stability_prelude(
+                        &field_stability,
+                        field
+                            .docs
+                            .as_ref()
+                            .map(|docs| docs.as_str())
+                            .unwrap_or_default(),
+                    );
+                    let field_meta = stability_attr_tokens(&field_stability);
                     let mut inner_ty = ctx.resolve_type_old(def, &field.typ, false);
                     let mut inner_encoding = ctx.resolve_encoding(def, &field.typ);
                     for wrapper in attrs.wrappers {
@@ -232,6 +253,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         name: field.name.name.clone(),
                         ident: name,
                         docs,
+                        meta: field_meta,
                         visibility: attrs.visibility,
                         is_optional: field.is_optional,
                         json_name: ty_json_attrs.field_name(field, &json_attrs),
@@ -256,12 +278,16 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                 .iter()
                 .map(|variant| {
                     let name = format_ident!("{}", &variant.name.as_str());
-                    let docs = variant
-                        .docs
-                        .as_ref()
-                        .map(|docs| docs.as_str())
-                        .unwrap_or_default()
-                        .to_owned();
+                    let variant_stability = stability_of_variant(variant);
+                    let docs = with_stability_prelude(
+                        &variant_stability,
+                        variant
+                            .docs
+                            .as_ref()
+                            .map(|docs| docs.as_str())
+                            .unwrap_or_default(),
+                    );
+                    let variant_meta = stability_attr_tokens(&variant_stability);
                     let ty = variant
                         .typ
                         .as_ref()
@@ -274,6 +300,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     Ok(RsVariant {
                         name: variant.name.name.clone(),
                         docs,
+                        meta: variant_meta,
                         ident: name,
                         json_name: ty_json_attrs.variant_name(variant, &json_attrs),
                         json_attrs,
@@ -422,6 +449,9 @@ pub struct RsField {
     pub name: String,
     pub ident: Ident,
     pub docs: String,
+    /// Per-field outer attributes — currently used for `#[deprecated(...)]`
+    /// derived from `#[deprecated(...)]` on the source field.
+    pub meta: TokenStream,
     pub visibility: Visibility,
     pub is_optional: bool,
     pub json_attrs: JsonFieldAttrs,
@@ -451,10 +481,33 @@ pub struct RsVariant {
     pub name: String,
     pub ident: Ident,
     pub docs: String,
+    /// Per-variant outer attributes — currently used for `#[deprecated(...)]`.
+    pub meta: TokenStream,
     pub json_attrs: JsonVariantAttrs,
     pub json_name: String,
     pub is_record: bool,
     pub ty: Option<RsTypePath>,
     /// Marker mirroring `ty`. `None` iff `ty` is `None`.
     pub encoding: Option<TokenStream>,
+}
+
+fn with_stability_prelude(stability: &Stability, body: &str) -> String {
+    let prelude = render_doc_prelude(stability);
+    if prelude.is_empty() {
+        body.to_owned()
+    } else {
+        format!("{prelude}{body}")
+    }
+}
+
+fn stability_attr_tokens(stability: &Stability) -> TokenStream {
+    let Some(dep) = &stability.deprecated else {
+        return TokenStream::new();
+    };
+    match (&dep.since, &dep.note) {
+        (Some(since), Some(note)) => quote! { #[deprecated(since = #since, note = #note)] },
+        (Some(since), None) => quote! { #[deprecated(since = #since)] },
+        (None, Some(note)) => quote! { #[deprecated(note = #note)] },
+        (None, None) => quote! { #[deprecated] },
+    }
 }

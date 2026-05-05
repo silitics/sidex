@@ -23,6 +23,8 @@ sidex-attrs-json.workspace = true # PUBLIC
 # Required for parsing `validate` attributes and lowering rules.
 sidex-attrs-validate.workspace = true # PUBLIC
 sidex-validate-expr.workspace = true # PUBLIC
+# Required for parsing `deprecated` / `unstable` / `since` attributes.
+sidex-attrs-api.workspace = true # PUBLIC
 # Required for generating Rust code.
 proc-macro2.workspace = true # PUBLIC
 quote.workspace = true # PUBLIC

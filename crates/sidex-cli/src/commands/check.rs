@@ -37,6 +37,9 @@ pub fn exec(args: &CheckArgs) -> Result<()> {
         // errors here so users see them at lint time, not at first call
         // of the generated validator.
         sidex_attrs_validate::check(&unit);
+        // API stability extension: cascading deprecation/unstable usage,
+        // monotonicity of `#[since]`, and overdue `remove_in` deadlines.
+        sidex_attrs_api::check(&unit);
     });
     let report = ctx.report();
     report.eprint(&transformer.sources);

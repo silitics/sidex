@@ -6,6 +6,8 @@ use builder::VariantTypeSchemaBuilder;
 use indexmap::IndexMap;
 use serde::Deserialize;
 use serde::Serialize;
+use sidex_attrs_api::render_doc_prelude;
+use sidex_attrs_api::stability_of_def;
 use sidex_attrs_json::field_attrs;
 use sidex_attrs_json::opaque_type_attrs;
 use sidex_attrs_json::record_type_attrs;
@@ -287,15 +289,29 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 } else {
                     // inline_schema.set_extension("x-idl-type-ref", &def_name);
                     // def_schema.set_extension("x-idl-type-def", &def_name);
+                    let stability = stability_of_def(typ_def);
+                    let prelude = render_doc_prelude(&stability);
+                    let body = typ_def
+                        .docs
+                        .as_ref()
+                        .map(|docs| docs.as_str().trim())
+                        .unwrap_or_default();
+                    let description = if prelude.is_empty() {
+                        if body.is_empty() {
+                            None
+                        } else {
+                            Some(body.to_owned())
+                        }
+                    } else if body.is_empty() {
+                        Some(prelude.trim_end().to_owned())
+                    } else {
+                        Some(format!("{prelude}{body}"))
+                    };
                     def_schema.set_metadata(Some(Box::new(
                         Metadata::new()
                             // .with_title(Some(typ_def.name.as_str().to_owned()))
-                            .with_description(
-                                typ_def
-                                    .docs
-                                    .as_ref()
-                                    .map(|docs| docs.as_str().trim().to_owned()),
-                            ),
+                            .with_description(description)
+                            .with_deprecated(stability.deprecated.as_ref().map(|_| true)),
                     )));
                     if self.config.emit_ids {
                         def_schema.set_id(Some(def_name.clone()));

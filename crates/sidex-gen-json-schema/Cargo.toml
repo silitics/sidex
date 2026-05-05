@@ -13,6 +13,7 @@ sidex-serde.workspace = true
 indexmap.workspace = true
 serde_json.workspace = true
 sidex-gen.workspace = true
+sidex-attrs-api.workspace = true
 sidex-attrs-json.workspace = true
 sidex-types-json-schema.workspace = true
 

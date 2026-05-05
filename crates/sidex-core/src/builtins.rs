@@ -67,6 +67,9 @@ pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> 
     let validate_manifest = bundle::try_parse_manifest(read_lib_file!("validate", "sidex.toml"))
         .expect("Manifest of validate-attrs bundle should be valid.");
     let validate_schemas = lib_bundle_schemas!(transformer, "validate", ["attrs"]);
+    let api_manifest = bundle::try_parse_manifest(read_lib_file!("api", "sidex.toml"))
+        .expect("Manifest of api-attrs bundle should be valid.");
+    let api_schemas = lib_bundle_schemas!(transformer, "api", ["attrs"]);
     vec![
         BundleSource {
             manifest: py_manifest,
@@ -86,6 +89,11 @@ pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> 
         BundleSource {
             manifest: validate_manifest,
             schemas: validate_schemas,
+            path: None,
+        },
+        BundleSource {
+            manifest: api_manifest,
+            schemas: api_schemas,
             path: None,
         },
     ]

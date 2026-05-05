@@ -4,6 +4,10 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 use serde::Serialize;
+use sidex_attrs_api::Stability;
+use sidex_attrs_api::render_doc_prelude;
+use sidex_attrs_api::stability_of_def;
+use sidex_attrs_api::stability_of_field;
 use sidex_attrs_json::JsonRecordTypeAttrs;
 use sidex_attrs_json::JsonTaggedAttr;
 use sidex_attrs_json::JsonVariantAttrs;
@@ -553,14 +557,20 @@ fn generate_record_field(
     let field_type = ctx.resolve_type(def, &field.typ);
     let needs_alias = py_name != json_name;
 
-    let description = field.docs.as_ref().and_then(|docs| {
-        let text = docs.text.trim();
+    let field_stability = stability_of_field(field);
+    let description = {
+        let body = field
+            .docs
+            .as_ref()
+            .map(|d| d.text.as_str())
+            .unwrap_or_default();
+        let text = combined_doc_text(&field_stability, body);
         if text.is_empty() {
             None
         } else {
-            Some(escape_string_literal(text))
+            Some(escape_string_literal(&text))
         }
-    });
+    };
 
     let mut field_args = Vec::new();
     if field.is_optional {
@@ -973,10 +983,13 @@ fn field_payload_method(field_py: &str, type_expr: &str) -> Code {
 }
 
 fn doc_comment_lines(def: &ir::Def) -> Vec<Code> {
-    let Some(docs) = &def.docs else {
-        return Vec::new();
-    };
-    let text = docs.text.trim();
+    let stability = stability_of_def(def);
+    let body = def
+        .docs
+        .as_ref()
+        .map(|d| d.text.as_str())
+        .unwrap_or_default();
+    let text = combined_doc_text(&stability, body);
     if text.is_empty() {
         return Vec::new();
     }
@@ -984,15 +997,30 @@ fn doc_comment_lines(def: &ir::Def) -> Vec<Code> {
 }
 
 fn docstring(def: &ir::Def) -> Code {
-    let Some(docs) = &def.docs else {
-        return Code::new();
-    };
-    let text = docs.text.trim();
+    let stability = stability_of_def(def);
+    let body = def
+        .docs
+        .as_ref()
+        .map(|d| d.text.as_str())
+        .unwrap_or_default();
+    let text = combined_doc_text(&stability, body);
     if text.is_empty() {
         return Code::new();
     }
-    let escaped = escape_docstring(text);
+    let escaped = escape_docstring(&text);
     Code::from(format!("\"\"\"{escaped}\"\"\""))
+}
+
+fn combined_doc_text(stability: &Stability, body: &str) -> String {
+    let prelude = render_doc_prelude(stability);
+    let body = body.trim();
+    if prelude.is_empty() {
+        body.to_owned()
+    } else if body.is_empty() {
+        prelude.trim_end().to_owned()
+    } else {
+        format!("{prelude}{body}")
+    }
 }
 
 fn generic_params(def: &ir::Def) -> String {

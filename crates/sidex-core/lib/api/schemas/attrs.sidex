@@ -1,0 +1,158 @@
+//! Typed attributes for API stability and lifecycle.
+//!
+//! Three plugins describe a definition's lifecycle:
+//!
+//! - `#[deprecated(...)]` — the item is deprecated; use something else.
+//! - `#[unstable(...)]`   — the item's contract may change between versions.
+//! - `#[since(...)]`      — the version in which the item was introduced.
+//!
+//! Each plugin applies to a definition (record / variant / wrapper / opaque /
+//! alias), a record field, a variant case, and a schema. Codegens propagate
+//! the result to the target language (Rust `#[deprecated]`, TSDoc `@deprecated`
+//! / `@experimental` / `@since`, PEP 702 `@typing.deprecated`, JSON-Schema
+//! `deprecated` keyword) and prepend a stability prelude to the rendered doc
+//! comment.
+
+import ::core::attrs::*
+
+// ---- #[deprecated] -------------------------------------------------------
+
+/// `#[deprecated]` on a top-level definition.
+///
+/// Source forms:
+///
+/// ```sidex
+/// #[deprecated]
+/// #[deprecated(since = "2.3.0", note = "Use `NewThing`.")]
+/// #[deprecated(since = "2.3.0", remove_in = "4.0.0", note = "Use `NewThing`.")]
+/// ```
+///
+/// `since` and `remove_in` are free-form version strings (SemVer by
+/// convention); `note` is human-readable migration guidance.
+#[attrs(plugin = "deprecated", target = def)]
+#[json(rename_all = "snake_case")]
+record DefDeprecated {
+    /// Version in which the item was deprecated.
+    since?: string,
+    /// Migration guidance — what to use instead.
+    note?: string,
+    /// Version in which the item is scheduled to be removed. While the
+    /// current bundle version is below `remove_in`, tooling emits a
+    /// deprecation warning; once the bundle version reaches `remove_in`
+    /// and the item is still present, the warning is escalated to an error.
+    remove_in?: string,
+}
+
+/// `#[deprecated]` on a record field.
+#[attrs(plugin = "deprecated", target = field)]
+#[json(rename_all = "snake_case")]
+record FieldDeprecated {
+    since?: string,
+    note?: string,
+    remove_in?: string,
+}
+
+/// `#[deprecated]` on a variant case.
+#[attrs(plugin = "deprecated", target = variant_case)]
+#[json(rename_all = "snake_case")]
+record VariantDeprecated {
+    since?: string,
+    note?: string,
+    remove_in?: string,
+}
+
+/// `#[deprecated]` at the top of a schema file.
+#[attrs(plugin = "deprecated", target = schema)]
+#[json(rename_all = "snake_case")]
+record SchemaDeprecated {
+    since?: string,
+    note?: string,
+    remove_in?: string,
+}
+
+// ---- #[unstable] ---------------------------------------------------------
+
+/// `#[unstable]` on a top-level definition.
+///
+/// Source forms:
+///
+/// ```sidex
+/// #[unstable]
+/// #[unstable(feature = "tags", note = "Field set still in flux.",
+///            issue = "https://github.com/silitics/sidex/issues/42")]
+/// ```
+#[attrs(plugin = "unstable", target = def)]
+#[json(rename_all = "snake_case")]
+record DefUnstable {
+    /// Optional feature-gate identifier. Lets a bundle expose multiple
+    /// unstable surfaces independently; consumers can opt in granularly.
+    feature?: string,
+    /// Human-readable rationale — what's still in flux and why.
+    note?: string,
+    /// Optional URL to a tracking issue / RFC.
+    issue?: string,
+}
+
+/// `#[unstable]` on a record field.
+#[attrs(plugin = "unstable", target = field)]
+#[json(rename_all = "snake_case")]
+record FieldUnstable {
+    feature?: string,
+    note?: string,
+    issue?: string,
+}
+
+/// `#[unstable]` on a variant case.
+#[attrs(plugin = "unstable", target = variant_case)]
+#[json(rename_all = "snake_case")]
+record VariantUnstable {
+    feature?: string,
+    note?: string,
+    issue?: string,
+}
+
+/// `#[unstable]` at the top of a schema file.
+#[attrs(plugin = "unstable", target = schema)]
+#[json(rename_all = "snake_case")]
+record SchemaUnstable {
+    feature?: string,
+    note?: string,
+    issue?: string,
+}
+
+// ---- #[since] ------------------------------------------------------------
+
+/// `#[since]` on a top-level definition.
+///
+/// Source form:
+///
+/// ```sidex
+/// #[since(version = "1.4.0")]
+/// ```
+///
+/// `version` is per-item: `since` on a field means "this field appeared in
+/// version X" and is independent of the enclosing def's `since`.
+#[attrs(plugin = "since", target = def)]
+record DefSince {
+    /// Version in which the item was introduced. Free-form; SemVer by
+    /// convention.
+    version: string,
+}
+
+/// `#[since]` on a record field.
+#[attrs(plugin = "since", target = field)]
+record FieldSince {
+    version: string,
+}
+
+/// `#[since]` on a variant case.
+#[attrs(plugin = "since", target = variant_case)]
+record VariantSince {
+    version: string,
+}
+
+/// `#[since]` at the top of a schema file.
+#[attrs(plugin = "since", target = schema)]
+record SchemaSince {
+    version: string,
+}

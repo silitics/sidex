@@ -20,6 +20,7 @@ sidex = { path = "crates/sidex", version = "0.1" }
 sidex-attrs-json = { path = "crates/sidex-attrs-json", version = "0.1" }
 sidex-attrs-py = { path = "crates/sidex-attrs-py", version = "0.1" }
 sidex-attrs-rust = { path = "crates/sidex-attrs-rust", version = "0.1" }
+sidex-attrs-api = { path = "crates/sidex-attrs-api", version = "0.1" }
 sidex-attrs-validate = { path = "crates/sidex-attrs-validate", version = "0.1" }
 sidex-validate = { path = "crates/sidex-validate", version = "0.1" }
 sidex-validate-expr = { path = "crates/sidex-validate-expr", version = "0.1" }
@@ -59,6 +60,7 @@ once_cell = "1.13"
 parking_lot = "0.12"
 proc-macro2 = "1"
 regex = "1"
+semver = "1"
 quote = "1"
 rand = "0.8"
 rand_chacha = "0.3"

@@ -1,3 +1,6 @@
+use sidex_attrs_api::Stability;
+use sidex_attrs_api::stability_of_def;
+use sidex_attrs_api::stability_of_field;
 use sidex_attrs_json::JsonTaggedAttr;
 use sidex_attrs_json::field_attrs as json_field_attrs;
 use sidex_attrs_json::opaque_type_attrs as json_opaque_type_attrs;
@@ -43,17 +46,24 @@ impl Plugin for Types {
                 if typ.fields.is_empty() {
                     TypeExpr(Code::from("Record<string, never>"))
                 } else {
+                    let mut field_jsdocs: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     let mut field_names: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     let mut field_opts: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     let mut field_types: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     for field in &typ.fields {
                         let json_attrs = json_field_attrs(field)?;
                         let field_name = ty_json_attrs.field_name(field, &json_attrs);
+                        let stability = stability_of_field(field);
+                        let field_docs =
+                            field.docs.as_ref().map(|d| d.as_str()).unwrap_or_default();
+                        field_jsdocs.push(Code::from(render_jsdoc(field_docs, &stability)));
                         field_names.push(Code::from(ts_string_literal(&field_name)));
                         field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
                         field_types.push(ctx.resolve_type(def, &field.typ).0);
                     }
-                    TypeExpr(quote!("{ @(@field_names@field_opts: @field_types), + }"))
+                    TypeExpr(quote!(
+                        "{ @(@field_jsdocs@field_names@field_opts: @field_types), + }"
+                    ))
                 }
             }
             ir::DefKind::VariantType(typ) => {
@@ -131,7 +141,13 @@ impl Plugin for Types {
             quote!("<@(@vars), +>")
         };
 
-        Ok(quote!("export type @name@vars_clause = @type_expr;"))
+        let def_stability = stability_of_def(def);
+        let def_docs = def.docs.as_ref().map(|d| d.as_str()).unwrap_or_default();
+        let def_jsdoc = Code::from(render_jsdoc(def_docs, &def_stability));
+
+        Ok(quote!(
+            "@def_jsdoc export type @name@vars_clause = @type_expr;"
+        ))
     }
 
     fn visit_schema(&self, ctx: &SchemaCtx) -> diagnostics::Result<Code> {
@@ -192,4 +208,78 @@ impl Plugin for Types {
 
 fn ts_string_literal(s: &str) -> String {
     format!("\"{}\"", s.replace('\\', "\\\\").replace('"', "\\\""))
+}
+
+/// Render a JSDoc block combining the user's doc text and a stability badge.
+/// Returns `""` when there's nothing to emit. The block ends with a newline
+/// so the next token (`export type ...` or a record-field name) starts on
+/// its own line — important for tsserver to attach the doc to the right
+/// declaration.
+fn render_jsdoc(docs: &str, stability: &Stability) -> String {
+    let mut tags: Vec<String> = Vec::new();
+    if let Some(dep) = &stability.deprecated {
+        let mut s = String::from("@deprecated");
+        let mut have_qualifier = false;
+        if let Some(since) = &dep.since {
+            s.push_str(" since ");
+            s.push_str(since);
+            have_qualifier = true;
+        }
+        if let Some(remove_in) = &dep.remove_in {
+            s.push_str(if have_qualifier {
+                "; will be removed in "
+            } else {
+                " — will be removed in "
+            });
+            s.push_str(remove_in);
+            have_qualifier = true;
+        }
+        if let Some(note) = &dep.note {
+            s.push_str(if have_qualifier { ". " } else { " — " });
+            s.push_str(note);
+        }
+        tags.push(s);
+    }
+    if let Some(u) = &stability.unstable {
+        let mut s = String::from("@experimental");
+        if let Some(feature) = &u.feature {
+            s.push_str(" (feature `");
+            s.push_str(feature);
+            s.push_str("`)");
+        }
+        if let Some(note) = &u.note {
+            s.push_str(" — ");
+            s.push_str(note);
+        }
+        if let Some(issue) = &u.issue {
+            s.push_str(" Tracking: ");
+            s.push_str(issue);
+        }
+        tags.push(s);
+    }
+    if let Some(since) = &stability.since {
+        tags.push(format!("@since {}", since.version));
+    }
+    let trimmed = docs.trim_end();
+    if trimmed.is_empty() && tags.is_empty() {
+        return String::new();
+    }
+    let mut out = String::from("/**\n");
+    if !trimmed.is_empty() {
+        for line in trimmed.lines() {
+            out.push_str(" * ");
+            out.push_str(line);
+            out.push('\n');
+        }
+        if !tags.is_empty() {
+            out.push_str(" *\n");
+        }
+    }
+    for tag in tags {
+        out.push_str(" * ");
+        out.push_str(&tag);
+        out.push('\n');
+    }
+    out.push_str(" */\n");
+    out
 }

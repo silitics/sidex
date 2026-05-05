@@ -1,0 +1,54 @@
+//! A miniature library catalogue showcasing API stability attributes.
+//!
+//! Three attributes describe an item's lifecycle:
+//!
+//! - `#[deprecated(...)]` — superseded; a `note` should explain what to use
+//!   instead. Optional `since` records when the deprecation happened, and
+//!   optional `remove_in` schedules a future removal (the `sidex check` lint
+//!   pass escalates to an error once the bundle version reaches `remove_in`).
+//! - `#[unstable(...)]` — contract may still change. Use `feature` to gate
+//!   multiple unstable surfaces independently and `issue` for a tracking link.
+//! - `#[since(version = "X")]` — the version in which the item appeared.
+
+/// A catalogued book.
+///
+/// `Book` predates API stability tracking and has no `#[since]`.
+record Book {
+    title: string,
+
+    /// Renamed to `authors` in 1.4.0.
+    #[deprecated(since = "1.4.0", note = "Use `authors` instead.")]
+    author?: string,
+
+    /// Multiple authors. Added in 1.4.0.
+    #[since(version = "1.4.0")]
+    authors?: [string],
+
+    /// Optional ISBN. Added in 1.6.0.
+    #[since(version = "1.6.0")]
+    isbn?: string,
+}
+
+/// Reading status. The `Streaming` case is gated behind an unstable feature
+/// flag because the underlying transport hasn't shipped yet.
+variant ReadingStatus {
+    Unread,
+    InProgress,
+    Finished,
+
+    /// Audio streaming is still being designed.
+    #[unstable(feature = "audio_streaming",
+               issue = "https://github.com/silitics/sidex/issues/example")]
+    Streaming,
+}
+
+/// The legacy export format.
+///
+/// Scheduled for removal: once the bundle hits 2.0.0, `sidex check` will
+/// promote this from a warning to an error.
+#[deprecated(since = "1.5.0", remove_in = "2.0.0",
+             note = "Use the JSON exporter (`json::export`) instead.")]
+record CsvExport {
+    delimiter: string,
+    include_header: bool,
+}

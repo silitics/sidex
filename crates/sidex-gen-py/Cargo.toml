@@ -16,6 +16,7 @@ tempfile = "3"
 [dependencies]
 sidex-gen.workspace = true
 sidex-codegen.workspace = true
+sidex-attrs-api.workspace = true
 sidex-attrs-json.workspace = true
 sidex-attrs-py.workspace = true
 serde.workspace = true
