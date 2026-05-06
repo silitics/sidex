@@ -1,22 +1,54 @@
 {
   "name": "@sidex/validate",
-  "author": "Silitics GmbH <info@silitics.com>",
-  "license": "(MIT or Apache-2.0)",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Runtime support for Sidex's validation extension.",
-  "files": [
-    "src",
-    "dist"
+  "author": "Silitics GmbH <info@silitics.com>",
+  "license": "MIT OR Apache-2.0",
+  "homepage": "https://oss.silitics.com/sidex",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/silitics/sidex.git",
+    "directory": "languages/typescript/packages/validate"
+  },
+  "bugs": {
+    "url": "https://github.com/silitics/sidex/issues"
+  },
+  "keywords": [
+    "sidex",
+    "validation",
+    "validate",
+    "schema",
+    "codegen"
   ],
+  "type": "module",
   "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc",
+    "clean": "rm -rf dist",
     "prepare": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "npm run clean && npm run build"
   },
-  "keywords": [],
   "devDependencies": {
-    "typescript": "^4.8.4"
+    "typescript": "^6.0.3"
   }
 }

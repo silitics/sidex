@@ -27,8 +27,8 @@ importers:
   packages/validate:
     devDependencies:
       typescript:
-        specifier: ^4.8.4
-        version: 4.9.5
+        specifier: ^6.0.3
+        version: 6.0.3
 
 packages:
 
@@ -37,6 +37,13 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
 snapshots:
 
   typescript@4.9.5: {}
+
+  typescript@6.0.3: {}
