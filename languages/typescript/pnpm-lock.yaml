@@ -24,6 +24,12 @@ importers:
         specifier: ^4.8.4
         version: 4.9.5
 
+  packages/validate:
+    devDependencies:
+      typescript:
+        specifier: ^4.8.4
+        version: 4.9.5
+
 packages:
 
   typescript@4.9.5:

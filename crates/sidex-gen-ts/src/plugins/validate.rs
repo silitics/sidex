@@ -11,6 +11,8 @@
 //! Rust plugin, so `(path, code)` tuples reported by the two backends
 //! match byte-for-byte on the same input.
 
+use sidex_attrs_json::field_attrs as json_field_attrs;
+use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
 use sidex_attrs_validate as attrs;
 use sidex_codegen::Code;
 use sidex_codegen::quote;
@@ -62,6 +64,11 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
     }
 
     let name = def.name.as_str().to_owned();
+    // Mirror the types plugin: field access on the wire / TS surface goes
+    // through the renamed name (`rename_all = "camelCase"` by default), so
+    // the validator must reach for `__instance.<wireName>` rather than the
+    // raw Sidex identifier. Per-field renames stack on top of `rename_all`.
+    let ty_json_attrs = json_record_type_attrs(def)?;
 
     // Per-field validators (standalone functions) and the corresponding
     // step inside the whole-record validator. The two share rule bodies
@@ -73,7 +80,8 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         if field_rules.is_empty() {
             continue;
         }
-        let field_name = field.name.as_str().to_owned();
+        let field_attrs = json_field_attrs(field)?;
+        let field_name = ty_json_attrs.field_name(field, &field_attrs);
         let target = target_for_type(ctx, &field.typ);
         let field_ty = ctx.resolve_type(def, &field.typ);
 
