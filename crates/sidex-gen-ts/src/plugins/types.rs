@@ -5,6 +5,7 @@ use sidex_attrs_json::JsonTaggedAttr;
 use sidex_attrs_json::field_attrs as json_field_attrs;
 use sidex_attrs_json::opaque_type_attrs as json_opaque_type_attrs;
 use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
+use sidex_attrs_json::types::JsonType;
 use sidex_attrs_json::variant_attrs as json_variant_attrs;
 use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_codegen::Code;
@@ -36,9 +37,29 @@ impl Plugin for Types {
             }
             ir::DefKind::OpaqueType(_) => {
                 let ty_json_attrs = json_opaque_type_attrs(def)?;
-                ty_json_attrs.typ.map_or_else(TypeExpr::any, |typ_attr| {
-                    TypeExpr::union(typ_attr.types_sorted().iter().map(TypeExpr::from))
-                })
+                match ty_json_attrs.typ {
+                    None => {
+                        // No JSON-side override → `unknown`. A
+                        // `Nominal<unknown, …>` brand collapses TypeScript
+                        // narrowing (the brand is preserved through `typeof`
+                        // checks, leaving the result as `never`), so emit
+                        // bare `unknown` and accept the loss of nominal
+                        // identity for "any JSON value" opaques.
+                        is_nominal = false;
+                        TypeExpr::unknown()
+                    }
+                    Some(typ_attr) => {
+                        let types = typ_attr.types_sorted();
+                        if matches!(types.as_slice(), [JsonType::Any]) {
+                            // `#[json(type = "any")]` — same reasoning as
+                            // the no-attr case above.
+                            is_nominal = false;
+                            TypeExpr::unknown()
+                        } else {
+                            TypeExpr::union(types.iter().map(TypeExpr::from))
+                        }
+                    }
+                }
             }
             ir::DefKind::RecordType(typ) => {
                 is_nominal = false;

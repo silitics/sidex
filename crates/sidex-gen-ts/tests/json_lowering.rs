@@ -56,11 +56,17 @@ fn json_mode_matches_native_mode_today() {
 // below match against the `INNER` portion within that wrapping.
 
 #[test]
-fn opaque_without_attr_is_any() {
+fn opaque_without_attr_is_bare_unknown() {
     let out = render(serde_json::json!({ "opaque_lowering": "json" }));
+    // No JSON attr → bare `unknown` (the `Nominal` brand is skipped because
+    // it would collapse TypeScript narrowing through `unknown`).
     assert!(
-        out.contains("Nominal<any,"),
-        "Uuid (no JSON attr) should wrap `any`, got:\n{out}"
+        out.contains("export type Uuid = unknown"),
+        "Uuid (no JSON attr) should be bare `unknown`, got:\n{out}"
+    );
+    assert!(
+        !out.contains("Nominal<unknown,"),
+        "no `Nominal<unknown, …>` should be emitted, got:\n{out}"
     );
 }
 
@@ -84,11 +90,13 @@ fn json_nullable_string_lowers_to_union() {
 }
 
 #[test]
-fn json_any_lowers_to_any() {
+fn json_any_lowers_to_bare_unknown() {
     let out = render(serde_json::json!({ "opaque_lowering": "json" }));
+    // `#[json(type = "any")]` also produces bare `unknown` — same reason
+    // as the no-attr case.
     assert!(
-        out.contains("Nominal<(any),"),
-        "Anything should wrap `any`, got:\n{out}"
+        out.contains("export type Anything = unknown"),
+        "Anything should be bare `unknown`, got:\n{out}"
     );
 }
 

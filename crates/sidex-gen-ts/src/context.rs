@@ -12,8 +12,11 @@ use crate::config::Config;
 pub struct TypeExpr(pub Code);
 
 impl TypeExpr {
-    pub fn any() -> Self {
-        Self(Code::from("any"))
+    /// TypeScript's `unknown` — the proper analogue of "no schema constraint"
+    /// in JSON Schema. Forces narrowing before use, unlike `any` which would
+    /// silently disable the type checker.
+    pub fn unknown() -> Self {
+        Self(Code::from("unknown"))
     }
 
     pub fn number() -> Self {
@@ -30,6 +33,12 @@ impl TypeExpr {
 
     pub fn null() -> Self {
         Self(Code::from("null"))
+    }
+
+    /// `Record<string, unknown>` — the structural counterpart to
+    /// JSON-Schema "object" with no further constraint.
+    pub fn record_of_unknown() -> Self {
+        Self(Code::from("Record<string, unknown>"))
     }
 
     pub fn string_literal(literal: &str) -> Self {
@@ -71,9 +80,9 @@ impl From<&JsonType> for TypeExpr {
             JsonType::Boolean => Self::boolean(),
             JsonType::String => Self::string(),
             JsonType::Null => Self::null(),
-            JsonType::Object => Self::any(),
-            JsonType::Array => Self::any().array(),
-            JsonType::Any => Self::any(),
+            JsonType::Object => Self::record_of_unknown(),
+            JsonType::Array => Self::unknown().array(),
+            JsonType::Any => Self::unknown(),
         }
     }
 }
