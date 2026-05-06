@@ -70,6 +70,9 @@ pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> 
     let api_manifest = bundle::try_parse_manifest(read_lib_file!("api", "sidex.toml"))
         .expect("Manifest of api-attrs bundle should be valid.");
     let api_schemas = lib_bundle_schemas!(transformer, "api", ["attrs"]);
+    let rpc_manifest = bundle::try_parse_manifest(read_lib_file!("rpc_attrs", "sidex.toml"))
+        .expect("Manifest of rpc-attrs bundle should be valid.");
+    let rpc_schemas = lib_bundle_schemas!(transformer, "rpc_attrs", ["attrs"]);
     vec![
         BundleSource {
             manifest: py_manifest,
@@ -94,6 +97,11 @@ pub fn plugin_attrs_bundles(transformer: &mut Transformer) -> Vec<BundleSource> 
         BundleSource {
             manifest: api_manifest,
             schemas: api_schemas,
+            path: None,
+        },
+        BundleSource {
+            manifest: rpc_manifest,
+            schemas: rpc_schemas,
             path: None,
         },
     ]

@@ -1,0 +1,39 @@
+//! Typed attribute for declaring an RPC-style request.
+//!
+//! Pairs an action / request record with the response type that the
+//! transport delivers on success. Bundles that want to expose request
+//! listings to their generators (Rust action enums, TypeScript clients,
+//! OpenAPI specs, …) read the `request` plugin entry from each def's
+//! `typed_attrs` and walk the resolved response reference.
+//!
+//! Source form:
+//!
+//! ```sidex
+//! #[request(name = "users.CreateUser", response = CreateUserOutput)]
+//! record CreateUserAction {
+//!     email: string,
+//!     password?: string,
+//! }
+//! ```
+//!
+//! Streaming variants (server-streaming, client-streaming, bidi) are
+//! intentionally out of scope for v1 — extra `request_stream` /
+//! `response_stream` flags can be added later without breaking the unary
+//! shape.
+
+import ::core::attrs::*
+
+/// One RPC request declaration attached to a record.
+#[attrs(plugin = "request", target = def)]
+#[json(rename_all = "snake_case")]
+record Request {
+    /// Wire-level identifier — what client and server agree on as the
+    /// stable name for this request. Free-form; senders may wrap it into
+    /// any namespacing convention (`users.CreateUser`,
+    /// `users_CreateUser`, …).
+    name: string,
+    /// Response record the request resolves to on success. Must reference
+    /// a record / variant / wrapper / opaque def reachable from the
+    /// bundle that uses this attribute.
+    response: TypeRef,
+}

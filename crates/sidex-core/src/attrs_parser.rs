@@ -155,34 +155,91 @@ fn find_core_attrs_def(ir: &ir::Ir, name: &str) -> Option<ir::DefRef> {
     None
 }
 
-/// Look up a single-segment path in the IR, searching the enclosing schema
-/// first, then `core::builtins`. Returns `None` if no match is found.
+/// Look up a `::`-separated path in the IR. Resolution order:
+///
+/// 1. Single-segment paths first match same-schema defs, then a sibling schema in the
+///    enclosing bundle, then `core::builtins`.
+/// 2. Two-segment paths `<schema>::<def>` look up `<def>` in the named sibling schema of
+///    the enclosing bundle.
+/// 3. Fully-qualified paths `::<bundle>::<schema>::<def>` resolve against the named
+///    bundle directly.
+///
+/// Returns `None` if no match is found. Imports are not consulted because
+/// the IR doesn't retain them post-build.
 fn resolve_type_ref_path(
     path: &str,
     enclosing_schema: ir::SchemaIdx,
     ir: &ir::Ir,
 ) -> Option<ir::DefRef> {
-    // Same-schema defs.
-    for (def_idx, def) in ir.defs_of(enclosing_schema) {
-        if def.name.as_str() == path {
-            let bundle = ir.schemas[enclosing_schema.idx()].bundle;
-            return Some(ir::DefRef::new(bundle, enclosing_schema, def_idx));
+    let segments: Vec<&str> = if let Some(rest) = path.strip_prefix("::") {
+        rest.split("::").collect()
+    } else {
+        path.split("::").collect()
+    };
+    let absolute = path.starts_with("::");
+    let enclosing_bundle = ir.schemas[enclosing_schema.idx()].bundle;
+
+    match segments.as_slice() {
+        [name] if !absolute => {
+            // Same-schema defs.
+            for (def_idx, def) in ir.defs_of(enclosing_schema) {
+                if def.name.as_str() == *name {
+                    return Some(ir::DefRef::new(enclosing_bundle, enclosing_schema, def_idx));
+                }
+            }
+            // Sibling schemas in the enclosing bundle (resolves cross-file
+            // references like `Empty` defined in a different schema of the
+            // same bundle, without requiring an explicit import).
+            for (schema_idx, _schema) in ir.schemas_of(enclosing_bundle) {
+                if schema_idx == enclosing_schema {
+                    continue;
+                }
+                for (def_idx, def) in ir.defs_of(schema_idx) {
+                    if def.name.as_str() == *name {
+                        return Some(ir::DefRef::new(enclosing_bundle, schema_idx, def_idx));
+                    }
+                }
+            }
+            // core::builtins fallback (covers references like `string`, `i32`, etc.).
+            find_in_bundle(ir, "core", Some("builtins"), name)
         }
+        [schema, name] if !absolute => find_in_bundle_idx(ir, enclosing_bundle, Some(schema), name),
+        [bundle, schema, name] if absolute => find_in_bundle(ir, bundle, Some(schema), name),
+        _ => None,
     }
-    // core::builtins fallback (covers references like `string`, `i32`, etc.).
+}
+
+fn find_in_bundle(
+    ir: &ir::Ir,
+    bundle_name: &str,
+    schema_name: Option<&str>,
+    def_name: &str,
+) -> Option<ir::DefRef> {
     for (bundle_idx, bundle) in ir.bundles.iter().enumerate() {
-        if bundle.metadata.name != "core" {
+        if bundle.metadata.name != bundle_name {
             continue;
         }
         let bundle_idx = ir::BundleIdx::from(bundle_idx);
-        for (schema_idx, schema) in ir.schemas_of(bundle_idx) {
-            if schema.name != "builtins" {
-                continue;
-            }
-            for (def_idx, def) in ir.defs_of(schema_idx) {
-                if def.name.as_str() == path {
-                    return Some(ir::DefRef::new(bundle_idx, schema_idx, def_idx));
-                }
+        return find_in_bundle_idx(ir, bundle_idx, schema_name, def_name);
+    }
+    None
+}
+
+fn find_in_bundle_idx(
+    ir: &ir::Ir,
+    bundle_idx: ir::BundleIdx,
+    schema_name: Option<&str>,
+    def_name: &str,
+) -> Option<ir::DefRef> {
+    for (schema_idx, schema) in ir.schemas_of(bundle_idx) {
+        if let Some(want) = schema_name
+            && schema.name != want
+        {
+            continue;
+        }
+        for (def_idx, def) in ir.defs_of(schema_idx) {
+            if def.name.as_str() == def_name {
+                return Some(ir::DefRef::new(bundle_idx, schema_idx, def_idx));
             }
         }
     }
@@ -999,6 +1056,37 @@ mod tests {
             !target_def.attrs.is_empty(),
             "raw attrs must still be retained"
         );
+    }
+
+    /// The auto-loaded `rpc_attrs` bundle ships a `#[request(name=…,
+    /// response=…)]` plugin attribute. Users get it without an explicit
+    /// import — the typed-attrs parser populates `typed_attrs["request"]`
+    /// with the wire name and the resolved response `DefRef`.
+    #[test]
+    fn auto_loaded_request_attribute_parses() {
+        let src = r#"
+            record CreateUserOutput {}
+
+            #[request(name = "users.CreateUser", response = CreateUserOutput)]
+            record CreateUserAction {}
+        "#;
+        let ir = build_ir(src);
+        let action = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "CreateUserAction")
+            .expect("CreateUserAction def not found");
+        let request = action
+            .typed_attrs
+            .get("request")
+            .expect("typed_attrs[request] populated");
+        assert_eq!(request["name"], serde_json::json!("users.CreateUser"));
+        let response_def = ir
+            .defs
+            .iter()
+            .position(|d| d.name.as_str() == "CreateUserOutput")
+            .expect("CreateUserOutput def not found");
+        assert_eq!(request["response"]["def"], serde_json::json!(response_def));
     }
 
     #[test]

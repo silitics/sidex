@@ -1,0 +1,12 @@
+[bundle]
+name = "rpc_attrs"
+version = "1"
+description = "Sidex attribute schemas for RPC-style request / response declarations."
+authors = ["Silitics GmbH <info@silitics.com>"]
+
+[backend.rust]
+derive = ["Clone", "Debug"]
+plugins = ["serde"]
+
+[backend.rust.plugin.serde]
+sidex_serde_path = "::sidex_serde"
