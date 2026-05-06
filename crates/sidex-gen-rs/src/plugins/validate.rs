@@ -147,15 +147,11 @@ impl<'a> Emitter<'a> {
         record: &ir::RecordTypeDef,
     ) -> Result<TokenStream> {
         let record_rules = attrs::record_rules(def)?;
-        let any_field_rules = record.fields.iter().any(|f| {
-            f.typed_attrs
-                .get("validate")
-                .and_then(|v| v.as_array())
-                .is_some_and(|a| !a.is_empty())
-        });
-        if record_rules.is_empty() && !any_field_rules {
-            return Ok(TokenStream::new());
-        }
+        // We always emit a `Validate` impl for records once the plugin is
+        // enabled — types without rules get a no-op body. That lets
+        // generic call sites (`fn run<T: Validate>(t: T)`) work uniformly
+        // across every record in the bundle, instead of per-type
+        // conditional impls.
 
         let ident = format_ident!("{}", def.name.as_str());
         let runtime = self.runtime;
@@ -216,10 +212,25 @@ impl<'a> Emitter<'a> {
 
         let regex_statics = self.take_regex_statics();
 
+        // Propagate generic parameters so generic records (e.g.
+        // `PermissionsWithScope<P, S>`) get a matching `impl<P, S>`. We
+        // don't add any `T: Validate` bound — the body either runs
+        // type-parameter-free rules or is a no-op.
+        let var_idents: Vec<syn::Ident> = def
+            .vars
+            .iter()
+            .map(|v| format_ident!("{}", v.name.as_str()))
+            .collect();
+        let (impl_generics, ty_generics) = if var_idents.is_empty() {
+            (TokenStream::new(), TokenStream::new())
+        } else {
+            (quote!(<#(#var_idents),*>), quote!(<#(#var_idents),*>))
+        };
+
         Ok(quote! {
             #regex_statics
 
-            impl #runtime::Validate for #ident {
+            impl #impl_generics #runtime::Validate for #ident #ty_generics {
                 fn validate_at(&self, __path: &#runtime::Path) -> #runtime::ValidationReport {
                     let mut __report = #runtime::ValidationReport::ok();
                     #(#field_steps)*

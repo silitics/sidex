@@ -20,3 +20,7 @@ record Range {
     min: i32,
     max: i32,
 }
+
+/// Record with no `#[validate]` rules — the plugin still emits a no-op
+/// `Validate` impl so generic call sites can call `.validate()` uniformly.
+record Empty {}

@@ -123,14 +123,16 @@ fn optional_field_validates_only_when_present() {
 }
 
 #[test]
-fn record_with_no_validate_attrs_emits_no_impl() {
-    let out = render();
-    // We only emit Validate impls for types that actually have rules.
-    // `Range` has a record-level rule so it gets one. There are no other
-    // unrelated types in the fixture, but assert the impl set we expect.
+fn every_record_emits_a_validate_impl() {
+    let out = normalize(&render());
+    // Once `validate` is enabled, every record in the bundle gets a
+    // `Validate` impl — types without rules get a no-op body so generic
+    // call sites (`fn run<T: Validate>(t: T)`) can rely on the bound
+    // uniformly.
     assert!(out.contains("impl :: sidex_validate :: Validate for User"));
     assert!(out.contains("impl :: sidex_validate :: Validate for Range"));
     assert!(out.contains("impl :: sidex_validate :: Validate for Slug"));
+    assert!(out.contains("impl :: sidex_validate :: Validate for Empty"));
 }
 
 /// Verify the generated code is syntactically valid Rust so a compile
