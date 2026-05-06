@@ -1167,37 +1167,89 @@ fn is_trivia(el: &SyntaxElement) -> bool {
 /// Render a slice of body elements as raw tokens (used for free-form attrs).
 fn render_attr_tokens(elements: &[&SyntaxElement], _opts: &FormatOptions) -> Doc {
     let mut out = String::new();
-    let mut last_was_separated = true;
+    let mut prev: Option<TokenKind> = None;
     for el in elements {
-        match el {
-            SyntaxElement::Token(tok) => {
-                match &tok.kind {
-                    TokenKind::Whitespace
-                    | TokenKind::Comment { .. }
-                    | TokenKind::Doc { .. }
-                    | TokenKind::Error => {}
-                    _ => {
-                        if !last_was_separated && !out.is_empty() {
-                            out.push(' ');
-                        }
-                        out.push_str(&render_token(tok));
-                        last_was_separated = matches!(
-                            tok.kind,
-                            TokenKind::Punctuation(PunctuationSymbol {
-                                is_composed: true,
-                                ..
-                            })
-                        );
-                        last_was_separated = !last_was_separated;
-                        let _ = last_was_separated;
-                        last_was_separated = !tok.is_separated();
-                    }
-                }
-            }
-            SyntaxElement::Node(_) => {}
+        let SyntaxElement::Token(tok) = el else {
+            continue;
+        };
+        if matches!(
+            tok.kind,
+            TokenKind::Whitespace
+                | TokenKind::Comment { .. }
+                | TokenKind::Doc { .. }
+                | TokenKind::Error
+        ) {
+            continue;
         }
+        if let Some(prev_kind) = &prev
+            && needs_space_between(prev_kind, &tok.kind)
+        {
+            out.push(' ');
+        }
+        out.push_str(&render_token(tok));
+        prev = Some(tok.kind.clone());
     }
     Doc::string(out)
+}
+
+/// Decide whether to insert a single space between two adjacent tokens when
+/// rendering free-form attribute token streams (the bodies of `#[validate(…)]`
+/// and similar). The rules approximate the "obvious" Rust-like spacing:
+///
+/// - No space inside composed punctuation chains (`<=`, `::`, …).
+/// - Tight `(…)` / `[…]`, padded `{ … }`.
+/// - No space around `.`.
+/// - No space before `,`, `;`, or `?`.
+/// - No space between an identifier and an opening `(` / `[` (call / index).
+/// - Otherwise insert one space.
+fn needs_space_between(prev: &TokenKind, curr: &TokenKind) -> bool {
+    if let TokenKind::Punctuation(PunctuationSymbol {
+        is_composed: true, ..
+    }) = prev
+    {
+        return false;
+    }
+    if matches!(
+        prev,
+        TokenKind::Delimiter(DelimiterSymbol::Open(
+            DelimiterKind::Parenthesis | DelimiterKind::Bracket
+        ))
+    ) {
+        return false;
+    }
+    if matches!(
+        curr,
+        TokenKind::Delimiter(DelimiterSymbol::Close(
+            DelimiterKind::Parenthesis | DelimiterKind::Bracket
+        ))
+    ) {
+        return false;
+    }
+    if matches!(prev, TokenKind::Punctuation(p) if p.kind == PunctuationKind::Dot)
+        || matches!(curr, TokenKind::Punctuation(p) if p.kind == PunctuationKind::Dot)
+    {
+        return false;
+    }
+    if matches!(
+        curr,
+        TokenKind::Punctuation(p) if matches!(
+            p.kind,
+            PunctuationKind::Comma | PunctuationKind::Semicolon | PunctuationKind::QuestionMark
+        )
+    ) {
+        return false;
+    }
+    if matches!(prev, TokenKind::Identifier(_))
+        && matches!(
+            curr,
+            TokenKind::Delimiter(DelimiterSymbol::Open(
+                DelimiterKind::Parenthesis | DelimiterKind::Bracket
+            ))
+        )
+    {
+        return false;
+    }
+    true
 }
 
 fn render_token(tok: &Token) -> String {
@@ -1220,7 +1272,7 @@ fn render_token(tok: &Token) -> String {
             }
             s
         }
-        TokenKind::Literal(Literal::String(string)) => format!("\"{}\"", string),
+        TokenKind::Literal(Literal::String(string)) => format!("\"{}\"", escape_string(string)),
         TokenKind::Punctuation(s) => s.kind.to_string(),
         TokenKind::Delimiter(d) => d.to_string(),
         TokenKind::Comment { .. }
@@ -1490,4 +1542,21 @@ fn first_identifier(node: &SyntaxNode) -> Option<String> {
         }
     }
     None
+}
+
+/// Re-escape a decoded string-literal value for emission as Sidex source.
+///
+/// The lexer recognizes only `\\` and `\"`; any other backslash sequence is
+/// rejected as an unknown escape. To keep `format` idempotent, every `\` and
+/// `"` in the decoded value must be re-escaped on the way out.
+fn escape_string(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '\\' => out.push_str("\\\\"),
+            '"' => out.push_str("\\\""),
+            other => out.push(other),
+        }
+    }
+    out
 }

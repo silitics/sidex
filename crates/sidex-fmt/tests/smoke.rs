@@ -159,6 +159,58 @@ fn idempotent_on_sidex_private_tests() {
     assert_idempotent_under(&root);
 }
 
+/// Free-form attr token streams — like the bodies of `#[validate(…)]` — used
+/// to render with spaces around every punctuation token (`_ . length`,
+/// `matches ( _ , "x" )`). The spacing rules now match obvious Rust-like
+/// conventions: tight around `.`, no space inside calls, single space after
+/// `,` and around comparison operators.
+#[test]
+fn attr_tokens_have_tight_spacing() {
+    let input = r#"
+#[validate({ 1 <= _.length <= 254 })]
+#[validate({ matches(_, "^x$") }, code = "format:x")]
+#[validate({ 0 <= _ }, message = "ok")]
+wrapper Slug: string
+"#;
+    let out = format(input).unwrap();
+    assert!(
+        out.contains("{ 1 <= _.length <= 254 }"),
+        "expected padded `{{ … }}` with tight `_.length`, got:\n{out}"
+    );
+    assert!(
+        out.contains(r#"{ matches(_, "^x$") }"#),
+        "expected tight call syntax inside padded braces, got:\n{out}"
+    );
+    let twice = format(&out).unwrap();
+    assert_eq!(out, twice, "format must be idempotent");
+}
+
+/// String literals containing `\\` or `\"` must survive a format round-trip.
+/// Regression for the formatter writing decoded values verbatim, which left
+/// `\s` / `\.` etc. in the output and tripped the lexer's "Unknown escape"
+/// diagnostic on the next parse.
+#[test]
+fn round_trips_string_escapes() {
+    let input = r#"
+#[validate({ matches(_, "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$") }, code = "format:email")]
+wrapper Email: string
+
+#[validate({ matches(_, "say \"hi\"") })]
+wrapper Quoted: string
+"#;
+    let once = format(input).unwrap();
+    let twice = format(&once).unwrap();
+    assert_eq!(once, twice, "format must be idempotent for escaped strings");
+    assert!(
+        once.contains(r#""^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$""#),
+        "expected backslash escapes preserved in output:\n{once}"
+    );
+    assert!(
+        once.contains(r#""say \"hi\"""#),
+        "expected quote escapes preserved in output:\n{once}"
+    );
+}
+
 fn assert_idempotent_under(root: &std::path::Path) {
     let mut count = 0;
     for entry in walkdir(root) {
