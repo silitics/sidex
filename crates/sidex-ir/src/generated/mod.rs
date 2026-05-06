@@ -2658,6 +2658,8 @@ pub mod ir {
         pub typed_attrs: ::std::collections::HashMap<::std::string::String, ::serde_json::Value>,
         #[doc = "The definitions of the schema.\n"]
         pub defs: ::std::vec::Vec<DefIdx>,
+        #[doc = "Names visible in the schema's namespace, keyed by the local name\neach entry is reachable as. Includes same-schema defs, imports\n(including wildcard expansions), and the implicit `core::builtins`\ndefs. Mirrors the table the resolver consults at build time so\npost-build passes (typed-attrs `TypeRef` resolution, lints) can\nlook up a name without re-parsing the imports.\n"]
+        pub imports: ::std::collections::HashMap<::std::string::String, ImportTarget>,
         #[doc = "The source of the schema.\n"]
         pub source: ::std::option::Option<SourceIdx>,
         #[doc = "The optional span of the schema.\n"]
@@ -2673,6 +2675,7 @@ pub mod ir {
                 attrs: ::std::default::Default::default(),
                 typed_attrs: ::std::default::Default::default(),
                 defs: ::std::default::Default::default(),
+                imports: ::std::default::Default::default(),
                 source: ::std::default::Default::default(),
                 span: ::std::default::Default::default(),
             }
@@ -2743,6 +2746,22 @@ pub mod ir {
             self.defs = defs;
             self
         }
+        #[doc = "Sets the value of `imports`."]
+        pub fn set_imports(
+            &mut self,
+            imports: ::std::collections::HashMap<::std::string::String, ImportTarget>,
+        ) -> &mut Self {
+            self.imports = imports;
+            self
+        }
+        #[doc = "Sets the value of `imports`."]
+        pub fn with_imports(
+            mut self,
+            imports: ::std::collections::HashMap<::std::string::String, ImportTarget>,
+        ) -> Self {
+            self.imports = imports;
+            self
+        }
         #[doc = "Sets the value of `source`."]
         pub fn set_source(&mut self, source: ::std::option::Option<SourceIdx>) -> &mut Self {
             self.source = source;
@@ -2775,7 +2794,7 @@ pub mod ir {
             __serializer: __S,
         ) -> ::std::result::Result<__S::Ok, __S::Error> {
             let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "Schema", 8usize)?;
+                __sidex_serde::ser::RecordSerializer::new(__serializer, "Schema", 9usize)?;
             __record.serialize_field(
                 "bundle",
                 &__sidex_serde::SerializeAsWrap::<BundleIdx, __sidex_serde::AsSelf>::new(
@@ -2811,6 +2830,13 @@ pub mod ir {
                     ::std::vec::Vec<DefIdx>,
                     ::std::vec::Vec<__sidex_serde::AsSelf>,
                 >::new(&self.defs),
+            )?;
+            __record.serialize_field(
+                "imports",
+                &__sidex_serde::SerializeAsWrap::<
+                    ::std::collections::HashMap<::std::string::String, ImportTarget>,
+                    ::std::collections::HashMap<__sidex_serde::AsSelf, __sidex_serde::AsSelf>,
+                >::new(&self.imports),
             )?;
             {
                 let __wrapped = ::core::option::Option::map(
@@ -2867,7 +2893,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(0usize, &"record with 9 fields"),
                             );
                         }
                     };
@@ -2881,7 +2907,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(1usize, &"record with 9 fields"),
                             );
                         }
                     };
@@ -2895,7 +2921,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(2usize, &"record with 9 fields"),
                             );
                         }
                     };
@@ -2909,7 +2935,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(3usize, &"record with 9 fields"),
                             );
                         }
                     };
@@ -2926,7 +2952,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(4usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(4usize, &"record with 9 fields"),
                             );
                         }
                     };
@@ -2940,11 +2966,28 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(5usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(5usize, &"record with 9 fields"),
                             );
                         }
                     };
                     let __field6 = match __serde::de::SeqAccess::next_element::<
+                        __sidex_serde::DeserializeAsWrap<
+                            ::std::collections::HashMap<::std::string::String, ImportTarget>,
+                            ::std::collections::HashMap<
+                                __sidex_serde::AsSelf,
+                                __sidex_serde::AsSelf,
+                            >,
+                        >,
+                    >(&mut __seq)?
+                    {
+                        ::core::option::Option::Some(__value) => __value.into_inner(),
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                __serde::de::Error::invalid_length(6usize, &"record with 9 fields"),
+                            );
+                        }
+                    };
+                    let __field7 = match __serde::de::SeqAccess::next_element::<
                         __sidex_serde::DeserializeAsWrap<
                             ::std::option::Option<SourceIdx>,
                             ::std::option::Option<__sidex_serde::AsSelf>,
@@ -2954,11 +2997,11 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(6usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(7usize, &"record with 9 fields"),
                             );
                         }
                     };
-                    let __field7 = match __serde::de::SeqAccess::next_element::<
+                    let __field8 = match __serde::de::SeqAccess::next_element::<
                         __sidex_serde::DeserializeAsWrap<
                             ::std::option::Option<Span>,
                             ::std::option::Option<__sidex_serde::AsSelf>,
@@ -2968,7 +3011,7 @@ pub mod ir {
                         ::core::option::Option::Some(__value) => __value.into_inner(),
                         ::core::option::Option::None => {
                             return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(7usize, &"record with 8 fields"),
+                                __serde::de::Error::invalid_length(8usize, &"record with 9 fields"),
                             );
                         }
                     };
@@ -2979,8 +3022,9 @@ pub mod ir {
                         attrs: __field3,
                         typed_attrs: __field4,
                         defs: __field5,
-                        source: __field6,
-                        span: __field7,
+                        imports: __field6,
+                        source: __field7,
+                        span: __field8,
                     })
                 }
                 #[inline]
@@ -2999,11 +3043,12 @@ pub mod ir {
                         "attrs",
                         "typedAttrs",
                         "defs",
+                        "imports",
                         "source",
                         "span",
                     ];
                     #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"bundle\", \"name\", \"docs\", \"attrs\", \"typedAttrs\", \"defs\", \"source\", \"span\"]";
+                    const __EXPECTING_IDENTIFIERS: &'static str = "an identifier in [\"bundle\", \"name\", \"docs\", \"attrs\", \"typedAttrs\", \"defs\", \"imports\", \"source\", \"span\"]";
                     #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
                     #[doc(hidden)]
                     enum __Identifier {
@@ -3015,6 +3060,7 @@ pub mod ir {
                         __Identifier5,
                         __Identifier6,
                         __Identifier7,
+                        __Identifier8,
                         __Unknown,
                     }
                     #[doc(hidden)]
@@ -3043,6 +3089,7 @@ pub mod ir {
                                 5u64 => ::core::result::Result::Ok(__Identifier::__Identifier5),
                                 6u64 => ::core::result::Result::Ok(__Identifier::__Identifier6),
                                 7u64 => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                8u64 => ::core::result::Result::Ok(__Identifier::__Identifier8),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -3062,8 +3109,11 @@ pub mod ir {
                                     ::core::result::Result::Ok(__Identifier::__Identifier4)
                                 }
                                 "defs" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                                "source" => ::core::result::Result::Ok(__Identifier::__Identifier6),
-                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                "imports" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier6)
+                                }
+                                "source" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                "span" => ::core::result::Result::Ok(__Identifier::__Identifier8),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -3085,10 +3135,13 @@ pub mod ir {
                                     ::core::result::Result::Ok(__Identifier::__Identifier4)
                                 }
                                 b"defs" => ::core::result::Result::Ok(__Identifier::__Identifier5),
-                                b"source" => {
+                                b"imports" => {
                                     ::core::result::Result::Ok(__Identifier::__Identifier6)
                                 }
-                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier7),
+                                b"source" => {
+                                    ::core::result::Result::Ok(__Identifier::__Identifier7)
+                                }
+                                b"span" => ::core::result::Result::Ok(__Identifier::__Identifier8),
                                 _ => ::core::result::Result::Ok(__Identifier::__Unknown),
                             }
                         }
@@ -3120,9 +3173,12 @@ pub mod ir {
                     > = ::core::option::Option::None;
                     let mut __field5: ::core::option::Option<::std::vec::Vec<DefIdx>> =
                         ::core::option::Option::None;
-                    let mut __field6: ::core::option::Option<::std::option::Option<SourceIdx>> =
+                    let mut __field6: ::core::option::Option<
+                        ::std::collections::HashMap<::std::string::String, ImportTarget>,
+                    > = ::core::option::Option::None;
+                    let mut __field7: ::core::option::Option<::std::option::Option<SourceIdx>> =
                         ::core::option::Option::None;
-                    let mut __field7: ::core::option::Option<::std::option::Option<Span>> =
+                    let mut __field8: ::core::option::Option<::std::option::Option<Span>> =
                         ::core::option::Option::None;
                     while let ::core::option::Option::Some(__key) =
                         __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
@@ -3240,11 +3296,35 @@ pub mod ir {
                                 if ::core::option::Option::is_some(&__field6) {
                                     return ::core::result::Result::Err(
                                         <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "source",
+                                            "imports",
                                         ),
                                     );
                                 }
                                 __field6 = ::core::option::Option::Some(
+                                    __serde::de::MapAccess::next_value::<
+                                        __sidex_serde::DeserializeAsWrap<
+                                            ::std::collections::HashMap<
+                                                ::std::string::String,
+                                                ImportTarget,
+                                            >,
+                                            ::std::collections::HashMap<
+                                                __sidex_serde::AsSelf,
+                                                __sidex_serde::AsSelf,
+                                            >,
+                                        >,
+                                    >(&mut __map)?
+                                    .into_inner(),
+                                );
+                            }
+                            __Identifier::__Identifier7 => {
+                                if ::core::option::Option::is_some(&__field7) {
+                                    return ::core::result::Result::Err(
+                                        <__A::Error as __serde::de::Error>::duplicate_field(
+                                            "source",
+                                        ),
+                                    );
+                                }
+                                __field7 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
                                         __sidex_serde::DeserializeAsWrap<
                                             ::std::option::Option<SourceIdx>,
@@ -3254,13 +3334,13 @@ pub mod ir {
                                     .into_inner(),
                                 );
                             }
-                            __Identifier::__Identifier7 => {
-                                if ::core::option::Option::is_some(&__field7) {
+                            __Identifier::__Identifier8 => {
+                                if ::core::option::Option::is_some(&__field8) {
                                     return ::core::result::Result::Err(
                                         <__A::Error as __serde::de::Error>::duplicate_field("span"),
                                     );
                                 }
-                                __field7 = ::core::option::Option::Some(
+                                __field8 = ::core::option::Option::Some(
                                     __serde::de::MapAccess::next_value::<
                                         __sidex_serde::DeserializeAsWrap<
                                             ::std::option::Option<Span>,
@@ -3323,9 +3403,17 @@ pub mod ir {
                     };
                     let __field6 = match __field6 {
                         ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
+                        ::core::option::Option::None => {
+                            return ::core::result::Result::Err(
+                                <__A::Error as __serde::de::Error>::missing_field("imports"),
+                            );
+                        }
                     };
                     let __field7 = match __field7 {
+                        ::core::option::Option::Some(__value) => __value,
+                        ::core::option::Option::None => ::core::option::Option::None,
+                    };
+                    let __field8 = match __field8 {
                         ::core::option::Option::Some(__value) => __value,
                         ::core::option::Option::None => ::core::option::Option::None,
                     };
@@ -3336,8 +3424,9 @@ pub mod ir {
                         attrs: __field3,
                         typed_attrs: __field4,
                         defs: __field5,
-                        source: __field6,
-                        span: __field7,
+                        imports: __field6,
+                        source: __field7,
+                        span: __field8,
                     })
                 }
             }
@@ -3349,6 +3438,7 @@ pub mod ir {
                 "attrs",
                 "typedAttrs",
                 "defs",
+                "imports",
                 "source",
                 "span",
             ];
@@ -3360,6 +3450,246 @@ pub mod ir {
                     __phantom_vars: ::core::marker::PhantomData,
                 },
             )
+        }
+    }
+    #[doc = "What a name in a schema's [`imports`] table resolves to.\n"]
+    #[derive(Clone, Debug)]
+    pub enum ImportTarget {
+        #[doc = "Another bundle, e.g. `import other_bundle`.\n"]
+        Bundle(BundleIdx),
+        #[doc = "A schema in some bundle, e.g. `import bundle::module`.\n"]
+        Schema(SchemaIdx),
+        #[doc = "A definition, e.g. `import bundle::module::Foo` or any wildcard\nexpansion that pulled `Foo` in.\n"]
+        Def(DefRef),
+    }
+    #[automatically_derived]
+    impl __sidex_serde::SidexType for ImportTarget {
+        type Encoding = __sidex_serde::AsSelf;
+    }
+    #[automatically_derived]
+    impl __serde::Serialize for ImportTarget {
+        fn serialize<__S: __serde::Serializer>(
+            &self,
+            __serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
+            let __serializer =
+                __sidex_serde::ser::VariantSerializer::new(__serializer, "ImportTarget");
+            match self {
+                Self::Bundle(__value) => {
+                    __serializer.serialize_adjacently_tagged(
+                        "tag",
+                        "content",
+                        "Bundle",
+                        0u32,
+                        &__sidex_serde::SerializeAsWrap::<BundleIdx, __sidex_serde::AsSelf>::new(
+                            __value,
+                        ),
+                    )
+                }
+                Self::Schema(__value) => {
+                    __serializer.serialize_adjacently_tagged(
+                        "tag",
+                        "content",
+                        "Schema",
+                        1u32,
+                        &__sidex_serde::SerializeAsWrap::<SchemaIdx, __sidex_serde::AsSelf>::new(
+                            __value,
+                        ),
+                    )
+                }
+                Self::Def(__value) => {
+                    __serializer.serialize_internally_tagged(
+                        "tag",
+                        "Def",
+                        2u32,
+                        &__sidex_serde::SerializeAsWrap::<DefRef, __sidex_serde::AsSelf>::new(
+                            __value,
+                        ),
+                    )
+                }
+            }
+        }
+    }
+    #[automatically_derived]
+    impl<'de> __serde::Deserialize<'de> for ImportTarget {
+        fn deserialize<__D: __serde::Deserializer<'de>>(
+            __deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
+            #[doc(hidden)]
+            const __IDENTIFIERS: &'static [&'static str] = &["Bundle", "Schema", "Def"];
+            #[doc(hidden)]
+            const __EXPECTING_IDENTIFIERS: &'static str =
+                "an identifier in [\"Bundle\", \"Schema\", \"Def\"]";
+            #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
+            #[doc(hidden)]
+            enum __Identifier {
+                __Identifier0,
+                __Identifier1,
+                __Identifier2,
+            }
+            #[doc(hidden)]
+            struct __IdentifierVisitor;
+            impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
+                type Value = __Identifier;
+                fn expecting(
+                    &self,
+                    __formatter: &mut ::core::fmt::Formatter,
+                ) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
+                }
+                fn visit_u64<__E>(self, __value: u64) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                        1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        __variant => {
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Unsigned(__variant),
+                                &__EXPECTING_IDENTIFIERS,
+                            ))
+                        }
+                    }
+                }
+                fn visit_str<__E>(self, __value: &str) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        "Bundle" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                        "Schema" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        "Def" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        __variant => {
+                            ::core::result::Result::Err(__serde::de::Error::unknown_variant(
+                                __variant,
+                                __IDENTIFIERS,
+                            ))
+                        }
+                    }
+                }
+                fn visit_bytes<__E>(
+                    self,
+                    __value: &[u8],
+                ) -> ::core::result::Result<Self::Value, __E>
+                where
+                    __E: __serde::de::Error,
+                {
+                    match __value {
+                        b"Bundle" => ::core::result::Result::Ok(__Identifier::__Identifier0),
+                        b"Schema" => ::core::result::Result::Ok(__Identifier::__Identifier1),
+                        b"Def" => ::core::result::Result::Ok(__Identifier::__Identifier2),
+                        __variant => {
+                            ::core::result::Result::Err(__serde::de::Error::invalid_value(
+                                __serde::de::Unexpected::Bytes(__variant),
+                                &__EXPECTING_IDENTIFIERS,
+                            ))
+                        }
+                    }
+                }
+            }
+            impl<'de> __serde::Deserialize<'de> for __Identifier {
+                #[inline]
+                fn deserialize<__D>(__deserializer: __D) -> ::core::result::Result<Self, __D::Error>
+                where
+                    __D: __serde::Deserializer<'de>,
+                {
+                    __serde::Deserializer::deserialize_identifier(
+                        __deserializer,
+                        __IdentifierVisitor,
+                    )
+                }
+            }
+            #[doc(hidden)]
+            const __VARIANTS: &'static [&'static str] = &["Bundle", "Schema", "Def"];
+            if __serde::Deserializer::is_human_readable(&__deserializer) {
+                let __tagged = __sidex_serde::de::tagged::deserialize_tagged_variant::<
+                    __Identifier,
+                    __D,
+                >(__deserializer, "tag")?;
+                match __tagged . tag { __Identifier :: __Identifier0 => { :: core :: result :: Result :: Ok (ImportTarget :: Bundle (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < BundleIdx < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier1 => { :: core :: result :: Result :: Ok (ImportTarget :: Schema (__tagged . deserialize_adjacently_tagged :: < __sidex_serde :: DeserializeAsWrap < SchemaIdx < > , __sidex_serde :: AsSelf > , __D :: Error , > ("content") ? . into_inner ())) } , __Identifier :: __Identifier2 => { :: core :: result :: Result :: Ok (ImportTarget :: Def (__tagged . deserialize_internally_tagged :: < __sidex_serde :: DeserializeAsWrap < DefRef < > , __sidex_serde :: AsSelf > , __D :: Error , > () ? . into_inner ())) } , }
+            } else {
+                #[doc(hidden)]
+                struct __Visitor {
+                    __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+                }
+                impl<'de> __serde::de::Visitor<'de> for __Visitor {
+                    type Value = ImportTarget;
+                    fn expecting(
+                        &self,
+                        __formatter: &mut ::core::fmt::Formatter,
+                    ) -> ::core::fmt::Result {
+                        ::core::fmt::Formatter::write_str(__formatter, "enum ImportTarget")
+                    }
+                    #[inline]
+                    fn visit_str<__E>(
+                        self,
+                        __value: &str,
+                    ) -> ::core::result::Result<Self::Value, __E>
+                    where
+                        __E: __serde::de::Error,
+                    {
+                        let __identifier = __IdentifierVisitor.visit_str(__value)?;
+                        #[allow(unreachable_patterns)]
+                        match __identifier {
+                            _ => {
+                                Err(__E::invalid_value(
+                                    __serde::de::Unexpected::Str(__value),
+                                    &self,
+                                ))
+                            }
+                        }
+                    }
+                    #[inline]
+                    fn visit_enum<__A>(
+                        self,
+                        __data: __A,
+                    ) -> ::core::result::Result<Self::Value, __A::Error>
+                    where
+                        __A: __serde::de::EnumAccess<'de>,
+                    {
+                        match __serde::de::EnumAccess::variant::<__Identifier>(__data)? {
+                            (__Identifier::__Identifier0, __variant) => {
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
+                                    __sidex_serde::DeserializeAsWrap<
+                                        BundleIdx,
+                                        __sidex_serde::AsSelf,
+                                    >,
+                                >(__variant)?;
+                                ::core::result::Result::Ok(ImportTarget::Bundle(
+                                    __value.into_inner(),
+                                ))
+                            }
+                            (__Identifier::__Identifier1, __variant) => {
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
+                                    __sidex_serde::DeserializeAsWrap<
+                                        SchemaIdx,
+                                        __sidex_serde::AsSelf,
+                                    >,
+                                >(__variant)?;
+                                ::core::result::Result::Ok(ImportTarget::Schema(
+                                    __value.into_inner(),
+                                ))
+                            }
+                            (__Identifier::__Identifier2, __variant) => {
+                                let __value = __serde::de::VariantAccess::newtype_variant::<
+                                    __sidex_serde::DeserializeAsWrap<DefRef, __sidex_serde::AsSelf>,
+                                >(__variant)?;
+                                ::core::result::Result::Ok(ImportTarget::Def(__value.into_inner()))
+                            }
+                        }
+                    }
+                }
+                __serde::Deserializer::deserialize_enum(
+                    __deserializer,
+                    "ImportTarget",
+                    __VARIANTS,
+                    __Visitor {
+                        __phantom_vars: ::core::marker::PhantomData,
+                    },
+                )
+            }
         }
     }
     #[doc = "A definition.\n"]

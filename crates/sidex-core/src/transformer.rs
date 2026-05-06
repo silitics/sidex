@@ -147,6 +147,31 @@ struct Resolver<'t, 'm> {
 }
 
 impl<'t, 'm> Resolver<'t, 'm> {
+    /// Translate the resolver's working `table` into the IR's
+    /// `ImportTarget` map. Bundle entries pass through unchanged; schema
+    /// and def entries are remapped to their globally-allocated indices.
+    /// `LookupEntry::Root` is dropped — it has no IR equivalent and the
+    /// resolver only uses it as a transient sentinel.
+    fn snapshot_imports(&self) -> HashMap<String, ir::ImportTarget> {
+        let mut out = HashMap::with_capacity(self.table.len());
+        for (name, entry) in &self.table {
+            let target = match entry {
+                LookupEntry::Bundle(bundle) => ir::ImportTarget::Bundle(*bundle),
+                LookupEntry::Schema { bundle, schema } => {
+                    ir::ImportTarget::Schema(self.schema_idx_map[&(*bundle, *schema)])
+                }
+                LookupEntry::Def {
+                    bundle,
+                    schema,
+                    def,
+                } => ir::ImportTarget::Def(self.def_ref(*bundle, *schema, *def)),
+                LookupEntry::Root => continue,
+            };
+            out.insert(name.clone(), target);
+        }
+        out
+    }
+
     fn populate_defs(&mut self) {
         let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema];
         for (name, &local) in &schema.def_by_name {
@@ -799,6 +824,12 @@ impl Transformer {
                 };
                 resolver.populate_defs();
                 resolver.populate_imports();
+
+                // Persist the resolved name table on the IR schema so
+                // post-build passes (typed-attrs `TypeRef` resolution,
+                // lints) can look a name up without re-reading imports.
+                let global_schema = schema_idx_map[&(loaded.idx, parsed.idx)];
+                ir.schemas[global_schema.idx()].imports = resolver.snapshot_imports();
 
                 for (local_def_idx, ast_def) in parsed.defs.iter().enumerate() {
                     let global_def = def_idx_map[&(loaded.idx, parsed.idx, local_def_idx)];

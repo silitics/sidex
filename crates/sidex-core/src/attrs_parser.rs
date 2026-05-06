@@ -155,95 +155,84 @@ fn find_core_attrs_def(ir: &ir::Ir, name: &str) -> Option<ir::DefRef> {
     None
 }
 
-/// Look up a `::`-separated path in the IR. Resolution order:
+/// Resolve a `::`-separated `TypeRef` path against the enclosing schema's
+/// import table — the same table the resolver consults during type
+/// checking. Resolution walks the path one segment at a time:
 ///
-/// 1. Single-segment paths first match same-schema defs, then a sibling schema in the
-///    enclosing bundle, then `core::builtins`.
-/// 2. Two-segment paths `<schema>::<def>` look up `<def>` in the named sibling schema of
-///    the enclosing bundle.
-/// 3. Fully-qualified paths `::<bundle>::<schema>::<def>` resolve against the named
-///    bundle directly.
+/// 1. The first segment looks up an entry in the enclosing schema's
+///    [`imports`](ir::Schema::imports) (which already includes same-schema defs, explicit
+///    imports, wildcard expansions, and the implicit `core::builtins`). Absolute paths
+///    (`::bundle::…`) start at the bundle table instead.
+/// 2. Subsequent segments traverse a [`Bundle`](ir::ImportTarget::Bundle) by schema name
+///    or a [`Schema`](ir::ImportTarget::Schema) by def name; the chain must terminate on
+///    a [`Def`](ir::ImportTarget::Def).
 ///
-/// Returns `None` if no match is found. Imports are not consulted because
-/// the IR doesn't retain them post-build.
+/// Returns `None` if any segment fails to resolve or the chain doesn't
+/// end on a definition.
 fn resolve_type_ref_path(
     path: &str,
     enclosing_schema: ir::SchemaIdx,
     ir: &ir::Ir,
 ) -> Option<ir::DefRef> {
-    let segments: Vec<&str> = if let Some(rest) = path.strip_prefix("::") {
-        rest.split("::").collect()
-    } else {
-        path.split("::").collect()
+    let (absolute, body) = match path.strip_prefix("::") {
+        Some(rest) => (true, rest),
+        None => (false, path),
     };
-    let absolute = path.starts_with("::");
-    let enclosing_bundle = ir.schemas[enclosing_schema.idx()].bundle;
+    let mut segments = body.split("::").peekable();
 
-    match segments.as_slice() {
-        [name] if !absolute => {
-            // Same-schema defs.
-            for (def_idx, def) in ir.defs_of(enclosing_schema) {
-                if def.name.as_str() == *name {
-                    return Some(ir::DefRef::new(enclosing_bundle, enclosing_schema, def_idx));
-                }
-            }
-            // Sibling schemas in the enclosing bundle (resolves cross-file
-            // references like `Empty` defined in a different schema of the
-            // same bundle, without requiring an explicit import).
-            for (schema_idx, _schema) in ir.schemas_of(enclosing_bundle) {
-                if schema_idx == enclosing_schema {
-                    continue;
-                }
-                for (def_idx, def) in ir.defs_of(schema_idx) {
-                    if def.name.as_str() == *name {
-                        return Some(ir::DefRef::new(enclosing_bundle, schema_idx, def_idx));
-                    }
-                }
-            }
-            // core::builtins fallback (covers references like `string`, `i32`, etc.).
-            find_in_bundle(ir, "core", Some("builtins"), name)
-        }
-        [schema, name] if !absolute => find_in_bundle_idx(ir, enclosing_bundle, Some(schema), name),
-        [bundle, schema, name] if absolute => find_in_bundle(ir, bundle, Some(schema), name),
+    let first = segments.next()?;
+    let mut current = if absolute {
+        let bundle_idx = ir
+            .bundles
+            .iter()
+            .position(|b| b.metadata.name == first)
+            .map(ir::BundleIdx::from)?;
+        ir::ImportTarget::Bundle(bundle_idx)
+    } else {
+        ir.schemas[enclosing_schema.idx()]
+            .imports
+            .get(first)?
+            .clone()
+    };
+
+    for segment in segments {
+        current = step(ir, &current, segment)?;
+    }
+
+    match current {
+        ir::ImportTarget::Def(def_ref) => Some(def_ref),
         _ => None,
     }
 }
 
-fn find_in_bundle(
-    ir: &ir::Ir,
-    bundle_name: &str,
-    schema_name: Option<&str>,
-    def_name: &str,
-) -> Option<ir::DefRef> {
-    for (bundle_idx, bundle) in ir.bundles.iter().enumerate() {
-        if bundle.metadata.name != bundle_name {
-            continue;
-        }
-        let bundle_idx = ir::BundleIdx::from(bundle_idx);
-        return find_in_bundle_idx(ir, bundle_idx, schema_name, def_name);
-    }
-    None
-}
-
-fn find_in_bundle_idx(
-    ir: &ir::Ir,
-    bundle_idx: ir::BundleIdx,
-    schema_name: Option<&str>,
-    def_name: &str,
-) -> Option<ir::DefRef> {
-    for (schema_idx, schema) in ir.schemas_of(bundle_idx) {
-        if let Some(want) = schema_name
-            && schema.name != want
-        {
-            continue;
-        }
-        for (def_idx, def) in ir.defs_of(schema_idx) {
-            if def.name.as_str() == def_name {
-                return Some(ir::DefRef::new(bundle_idx, schema_idx, def_idx));
+/// Advance one segment along a resolved path. The transition table mirrors
+/// the resolver's `resolve_segments`: a bundle resolves a child schema by
+/// name; a schema resolves a child def by name; a def is terminal.
+fn step(ir: &ir::Ir, current: &ir::ImportTarget, segment: &str) -> Option<ir::ImportTarget> {
+    match current {
+        ir::ImportTarget::Bundle(bundle_idx) => {
+            for (schema_idx, schema) in ir.schemas_of(*bundle_idx) {
+                if schema.name == segment {
+                    return Some(ir::ImportTarget::Schema(schema_idx));
+                }
             }
+            None
         }
+        ir::ImportTarget::Schema(schema_idx) => {
+            let bundle_idx = ir.schemas[schema_idx.idx()].bundle;
+            for (def_idx, def) in ir.defs_of(*schema_idx) {
+                if def.name.as_str() == segment {
+                    return Some(ir::ImportTarget::Def(ir::DefRef::new(
+                        bundle_idx,
+                        *schema_idx,
+                        def_idx,
+                    )));
+                }
+            }
+            None
+        }
+        ir::ImportTarget::Def(_) => None,
     }
-    None
 }
 
 /// Encode a `DefRef` as a JSON object with the same shape that
@@ -992,10 +981,19 @@ mod tests {
     use crate::transformer::Transformer;
 
     fn build_ir(source: &str) -> ir::Ir {
+        build_ir_multi(&[("main", source)])
+    }
+
+    /// Build an IR from one or more `(schema_name, source)` pairs in a
+    /// single bundle. Used by tests that need to exercise cross-schema
+    /// imports.
+    fn build_ir_multi(sources: &[(&str, &str)]) -> ir::Ir {
         let mut transformer = Transformer::new();
-        let source_id = transformer.insert_source(source.to_owned(), None);
         let mut schemas: HashMap<String, ir::SourceIdx> = HashMap::new();
-        schemas.insert("main".to_owned(), source_id);
+        for (name, source) in sources {
+            let source_id = transformer.insert_source((*source).to_owned(), None);
+            schemas.insert((*name).to_owned(), source_id);
+        }
         let manifest = Manifest::new(ir::Metadata::new("demo".to_owned(), "0".to_owned()));
         let bundle_idx = transformer
             .insert_bundle(BundleSource {
@@ -1055,6 +1053,95 @@ mod tests {
         assert!(
             !target_def.attrs.is_empty(),
             "raw attrs must still be retained"
+        );
+    }
+
+    /// `TypeRef` paths must resolve through explicit imports — bare names
+    /// look up the schema's import table (which mirrors what the resolver
+    /// builds at type-checking time), not via a same-bundle name search.
+    /// Cross-schema references therefore require an `import` directive,
+    /// matching how regular type expressions behave.
+    #[test]
+    fn type_ref_resolves_through_imports() {
+        let ir = build_ir_multi(&[
+            ("outputs", "record Empty {}"),
+            (
+                "users",
+                r#"
+                    import outputs::Empty
+
+                    #[request(name = "users.Delete", response = Empty)]
+                    record DeleteUserAction {}
+                "#,
+            ),
+        ]);
+        let action = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "DeleteUserAction")
+            .expect("DeleteUserAction def not found");
+        let request = action
+            .typed_attrs
+            .get("request")
+            .expect("typed_attrs[request] populated");
+        let empty_def = ir
+            .defs
+            .iter()
+            .position(|d| d.name.as_str() == "Empty")
+            .expect("Empty def not found");
+        assert_eq!(request["response"]["def"], serde_json::json!(empty_def));
+    }
+
+    /// Wildcard imports populate the table with every def in the target
+    /// schema, so `response = Foo` works after `import other::*` even
+    /// though `Foo` was never named directly.
+    #[test]
+    fn type_ref_resolves_through_wildcard_import() {
+        let ir = build_ir_multi(&[
+            ("outputs", "record Empty {}"),
+            (
+                "users",
+                r#"
+                    import outputs::*
+
+                    #[request(name = "users.Delete", response = Empty)]
+                    record DeleteUserAction {}
+                "#,
+            ),
+        ]);
+        let action = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "DeleteUserAction")
+            .expect("DeleteUserAction def not found");
+        assert!(action.typed_attrs.get("request").is_some());
+    }
+
+    /// Without an import the bare name doesn't resolve — the resolver no
+    /// longer falls back to a sibling-schema search. Users must opt in
+    /// explicitly, matching how regular type references work.
+    #[test]
+    fn type_ref_without_import_does_not_resolve() {
+        let ir = build_ir_multi(&[
+            ("outputs", "record Empty {}"),
+            (
+                "users",
+                r#"
+                    #[request(name = "users.Delete", response = Empty)]
+                    record DeleteUserAction {}
+                "#,
+            ),
+        ]);
+        let action = ir
+            .defs
+            .iter()
+            .find(|d| d.name.as_str() == "DeleteUserAction")
+            .expect("DeleteUserAction def not found");
+        // The diagnostic is captured by the test ctx; the typed_attrs
+        // simply doesn't gain a `request` entry when the path fails.
+        assert!(
+            action.typed_attrs.get("request").is_none(),
+            "expected no request entry when the response type is not in scope"
         );
     }
 

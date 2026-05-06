@@ -142,10 +142,30 @@ record Schema {
     /// The definitions of the schema.
     #[default]
     defs: [DefIdx],
+    /// Names visible in the schema's namespace, keyed by the local name
+    /// each entry is reachable as. Includes same-schema defs, imports
+    /// (including wildcard expansions), and the implicit `core::builtins`
+    /// defs. Mirrors the table the resolver consults at build time so
+    /// post-build passes (typed-attrs `TypeRef` resolution, lints) can
+    /// look up a name without re-parsing the imports.
+    #[default]
+    imports: [string: ImportTarget],
     /// The source of the schema.
     source?: SourceIdx,
     /// The optional span of the schema.
     span?: Span,
+}
+
+/// What a name in a schema's [`imports`] table resolves to.
+#[json(tagged = internally)]
+variant ImportTarget {
+    /// Another bundle, e.g. `import other_bundle`.
+    Bundle: BundleIdx,
+    /// A schema in some bundle, e.g. `import bundle::module`.
+    Schema: SchemaIdx,
+    /// A definition, e.g. `import bundle::module::Foo` or any wildcard
+    /// expansion that pulled `Foo` in.
+    Def: DefRef,
 }
 
 /// A definition.
