@@ -167,15 +167,15 @@ fn idempotent_on_sidex_private_tests() {
 #[test]
 fn attr_tokens_have_tight_spacing() {
     let input = r#"
-#[validate({ 1 <= _.length <= 254 })]
+#[validate({ 1 <= _.size <= 254 })]
 #[validate({ matches(_, "^x$") }, code = "format:x")]
 #[validate({ 0 <= _ }, message = "ok")]
 wrapper Slug: string
 "#;
     let out = format(input).unwrap();
     assert!(
-        out.contains("{ 1 <= _.length <= 254 }"),
-        "expected padded `{{ … }}` with tight `_.length`, got:\n{out}"
+        out.contains("{ 1 <= _.size <= 254 }"),
+        "expected padded `{{ … }}` with tight `_.size`, got:\n{out}"
     );
     assert!(
         out.contains(r#"{ matches(_, "^x$") }"#),

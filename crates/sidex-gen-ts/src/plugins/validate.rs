@@ -292,7 +292,10 @@ fn lower_rule_to_ts(
             let target_value = match accessor {
                 expr::Accessor::Self_ => value_var.to_owned(),
                 expr::Accessor::Field(name) => format!("({value_var} as any).{name}"),
-                expr::Accessor::CharCount | expr::Accessor::ByteCount => {
+                expr::Accessor::CharCount
+                | expr::Accessor::ByteCount
+                | expr::Accessor::ItemCount
+                | expr::Accessor::EntryCount => {
                     return Code::from("/* unsupported regex accessor */\n");
                 }
             };
@@ -319,6 +322,12 @@ fn lower_accessor_ts(accessor: &expr::Accessor, value_var: &str) -> String {
         }
         expr::Accessor::ByteCount => {
             format!("__validate.byteCount({value_var} as unknown as string)")
+        }
+        expr::Accessor::ItemCount => {
+            format!("__validate.itemCount({value_var} as unknown as readonly unknown[])")
+        }
+        expr::Accessor::EntryCount => {
+            format!("__validate.entryCount({value_var} as unknown as Record<string, unknown>)")
         }
         expr::Accessor::Field(name) => format!("({value_var} as any).{name}"),
     }
@@ -349,6 +358,8 @@ fn target_for_type(ctx: &SchemaCtx, ty: &ir::Type) -> expr::Target {
         match def.name.as_str() {
             "string" => return expr::Target::String,
             "bytes" => return expr::Target::Bytes,
+            "Sequence" => return expr::Target::Sequence,
+            "Map" => return expr::Target::Map,
             "i8" | "i16" | "i32" | "i64" | "u8" | "u16" | "u32" | "u64" | "f32" | "f64" | "idx" => {
                 return expr::Target::Number;
             }

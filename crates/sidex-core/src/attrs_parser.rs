@@ -1289,7 +1289,7 @@ mod tests {
             }
 
             record Target {
-                #[validate(rules = { 1 <= _.length })]
+                #[validate(rules = { 1 <= _.size })]
                 #[validate(rules = { matches(_, "^[A-Z]+$") })]
                 code: string,
             }
@@ -1320,7 +1320,7 @@ mod tests {
         // which is whitespace-collapsed but lex-equivalent. Plugins re-lex
         // the body either way; a future improvement is to slice the
         // originating source verbatim for nicer human-facing error messages.
-        assert_eq!(rules[0]["text"], serde_json::json!("1 <= _ . length"));
+        assert_eq!(rules[0]["text"], serde_json::json!("1 <= _ . size"));
         assert_eq!(
             rules[1]["text"],
             serde_json::json!("matches ( _ , \"^[A-Z]+$\" )")
@@ -1394,7 +1394,7 @@ mod tests {
             }
 
             record Target {
-                #[validate(expr = { 1 <= _.length }, message = "Required.")]
+                #[validate(expr = { 1 <= _.size }, message = "Required.")]
                 #[validate(expr = { matches(_, "...") }, message = "Bad format.", code = "format:slug")]
                 slug: string,
             }
@@ -1420,10 +1420,7 @@ mod tests {
             .as_array()
             .expect("repeated mode produces a JSON array");
         assert_eq!(rules.len(), 2);
-        assert_eq!(
-            rules[0]["expr"]["text"],
-            serde_json::json!("1 <= _ . length")
-        );
+        assert_eq!(rules[0]["expr"]["text"], serde_json::json!("1 <= _ . size"));
         assert_eq!(rules[0]["message"], serde_json::json!("Required."));
         assert_eq!(rules[0].get("code"), None);
         assert_eq!(rules[1]["message"], serde_json::json!("Bad format."));

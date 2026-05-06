@@ -14,17 +14,22 @@ use crate::ast::Literal;
 use crate::ast::Rule;
 
 /// Validation target — informs the recognizer about the type `_` denotes.
-/// Used to choose the right accessor for `_.length` (char count for
-/// strings, byte count for bytes — same operator surface, different
-/// runtime helpers picked by the codegen using this hint).
+/// Used to choose the right accessor for `_.size` — char count for strings,
+/// byte count for `bytes`, element count for sequences, entry count for
+/// maps. Same operator surface, different runtime helpers picked by the
+/// codegen using this hint.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Target {
-    /// `_` is a string. `_.length` → Unicode code-point count.
+    /// `_` is a string. `_.size` → Unicode code-point count.
     String,
-    /// `_` is a `bytes` value. `_.length` → byte count.
+    /// `_` is a `bytes` value. `_.size` → byte count.
     Bytes,
     /// `_` is a numeric primitive.
     Number,
+    /// `_` is a sequence (list / vec). `_.size` → element count.
+    Sequence,
+    /// `_` is a map. `_.size` → entry count.
+    Map,
     /// `_` is a record. `_.field` accesses are resolved by the codegen.
     Record,
     /// `_` is a wrapper / opaque / something else where the validate
@@ -182,10 +187,12 @@ fn recognize_call(name: &str, args: &[Expr], errors: &mut Vec<RecognizeError>) -
 fn accessor_of(expr: &Expr, target: Target) -> Option<Accessor> {
     match expr {
         Expr::Underscore => Some(Accessor::Self_),
-        Expr::Member { path } if path.len() == 1 && path[0] == "length" => {
+        Expr::Member { path } if path.len() == 1 && path[0] == "size" => {
             match target {
                 Target::String => Some(Accessor::CharCount),
                 Target::Bytes => Some(Accessor::ByteCount),
+                Target::Sequence => Some(Accessor::ItemCount),
+                Target::Map => Some(Accessor::EntryCount),
                 _ => None,
             }
         }
@@ -219,10 +226,26 @@ fn code_for(accessor: &Accessor, helper: HelperKind) -> &'static str {
         (Accessor::Self_, MaxInclusive | MaxExclusive) => "max",
         (Accessor::Self_, Eq) => "eq",
         (Accessor::Self_, Ne) => "ne",
-        (Accessor::CharCount | Accessor::ByteCount, MinInclusive | MinExclusive) => "min_length",
-        (Accessor::CharCount | Accessor::ByteCount, MaxInclusive | MaxExclusive) => "max_length",
-        (Accessor::CharCount | Accessor::ByteCount, Eq) => "eq_length",
-        (Accessor::CharCount | Accessor::ByteCount, Ne) => "ne_length",
+        // Codes are technical identifiers — uniform across all count
+        // accessors. User-facing wording lives in the `message = "..."`
+        // override, which can still talk about "length" or "size"
+        // whichever reads naturally for the field.
+        (
+            Accessor::CharCount | Accessor::ByteCount | Accessor::ItemCount | Accessor::EntryCount,
+            MinInclusive | MinExclusive,
+        ) => "min_size",
+        (
+            Accessor::CharCount | Accessor::ByteCount | Accessor::ItemCount | Accessor::EntryCount,
+            MaxInclusive | MaxExclusive,
+        ) => "max_size",
+        (
+            Accessor::CharCount | Accessor::ByteCount | Accessor::ItemCount | Accessor::EntryCount,
+            Eq,
+        ) => "eq_size",
+        (
+            Accessor::CharCount | Accessor::ByteCount | Accessor::ItemCount | Accessor::EntryCount,
+            Ne,
+        ) => "ne_size",
         // Cross-field record accessors fall back to predicate; codegen
         // shouldn't reach here, but pick a stable code anyway.
         (Accessor::Field(_), _) => "predicate",
@@ -276,8 +299,8 @@ mod tests {
     }
 
     #[test]
-    fn recognizes_length_range_on_string() {
-        let rs = rules("1 <= _.length <= 254", Target::String);
+    fn recognizes_size_range_on_string() {
+        let rs = rules("1 <= _.size <= 254", Target::String);
         assert_eq!(rs.len(), 2);
         match &rs[0] {
             Rule::Compare {
@@ -286,9 +309,9 @@ mod tests {
                 code,
                 ..
             } => {
-                assert_eq!(*code, "min_length");
+                assert_eq!(*code, "min_size");
             }
-            _ => panic!("expected min_length compare, got {:?}", rs[0]),
+            _ => panic!("expected min_size compare, got {:?}", rs[0]),
         }
         match &rs[1] {
             Rule::Compare {
@@ -297,9 +320,39 @@ mod tests {
                 code,
                 ..
             } => {
-                assert_eq!(*code, "max_length");
+                assert_eq!(*code, "max_size");
             }
-            _ => panic!("expected max_length compare, got {:?}", rs[1]),
+            _ => panic!("expected max_size compare, got {:?}", rs[1]),
+        }
+    }
+
+    #[test]
+    fn recognizes_size_on_sequence() {
+        let rs = rules("1 <= _.size", Target::Sequence);
+        assert_eq!(rs.len(), 1);
+        match &rs[0] {
+            Rule::Compare {
+                accessor: Accessor::ItemCount,
+                helper: HelperKind::MinInclusive,
+                code: "min_size",
+                ..
+            } => {}
+            _ => panic!("expected ItemCount min_size, got {:?}", rs[0]),
+        }
+    }
+
+    #[test]
+    fn recognizes_size_on_map() {
+        let rs = rules("_.size <= 100", Target::Map);
+        assert_eq!(rs.len(), 1);
+        match &rs[0] {
+            Rule::Compare {
+                accessor: Accessor::EntryCount,
+                helper: HelperKind::MaxInclusive,
+                code: "max_size",
+                ..
+            } => {}
+            _ => panic!("expected EntryCount max_size, got {:?}", rs[0]),
         }
     }
 
@@ -345,9 +398,9 @@ mod tests {
     }
 
     #[test]
-    fn length_on_non_string_is_predicate() {
-        // `_.length` on a number doesn't make sense; recognizer falls back.
-        let rs = rules("0 <= _.length", Target::Number);
+    fn size_on_non_collection_is_predicate() {
+        // `_.size` on a number doesn't make sense; recognizer falls back.
+        let rs = rules("0 <= _.size", Target::Number);
         assert!(matches!(&rs[0], Rule::Predicate { .. }));
     }
 

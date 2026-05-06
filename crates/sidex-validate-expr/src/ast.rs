@@ -96,17 +96,20 @@ pub enum HelperKind {
 
 /// What the rule operates on. All v1 accessors are pure functions of the
 /// validated value; codegens emit them as either a direct reference (`Self_`,
-/// `Field`) or a runtime call (`CharCount`, `ByteCount`).
+/// `Field`) or a runtime call (`CharCount`, `ByteCount`, `ItemCount`,
+/// `EntryCount`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Accessor {
     /// `_` itself.
     Self_,
-    /// `_.length` — Unicode code-point count for strings, byte count for
-    /// bytes. The plugin picks the right runtime helper based on the
-    /// validated type.
+    /// `_.size` on a string — Unicode code-point count.
     CharCount,
-    /// `_.bytes` — byte length (reserved; not in v1 surface).
+    /// `_.size` on `bytes` — byte count.
     ByteCount,
+    /// `_.size` on a sequence — element count.
+    ItemCount,
+    /// `_.size` on a map — entry count.
+    EntryCount,
     /// `_.<field>` — record field access. Multi-segment paths
     /// (`_.a.b.c`) collapse to a dotted string.
     Field(String),

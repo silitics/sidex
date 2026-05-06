@@ -41,7 +41,7 @@ fn render() -> String {
 }
 
 #[test]
-fn record_with_string_field_emits_length_helpers() {
+fn record_with_string_field_emits_size_helpers() {
     let out = render();
     assert!(
         out.contains("__validate.minInclusive"),
@@ -56,8 +56,8 @@ fn record_with_string_field_emits_length_helpers() {
         "expected charCount accessor"
     );
     assert!(
-        out.contains("\"min_length\""),
-        "expected min_length code, got snippet"
+        out.contains("\"min_size\""),
+        "expected min_size code, got snippet"
     );
 }
 
@@ -321,8 +321,8 @@ console.log(JSON.stringify(reports));
     assert!(
         codes_for("user_empty_email")
             .iter()
-            .any(|(p, c)| p == "/email" && c == "min_length"),
-        "expected /email min_length, got {:?}",
+            .any(|(p, c)| p == "/email" && c == "min_size"),
+        "expected /email min_size, got {:?}",
         codes_for("user_empty_email"),
     );
     assert!(
@@ -335,15 +335,15 @@ console.log(JSON.stringify(reports));
     assert!(
         codes_for("user_optional_empty")
             .iter()
-            .any(|(p, c)| p == "/nickname" && c == "min_length"),
-        "expected /nickname min_length, got {:?}",
+            .any(|(p, c)| p == "/nickname" && c == "min_size"),
+        "expected /nickname min_size, got {:?}",
         codes_for("user_optional_empty"),
     );
     assert!(
         codes_for("slug_bad_try_new")
             .iter()
-            .any(|(_, c)| c == "min_length"),
-        "expected slug tryNew to fail with min_length, got {:?}",
+            .any(|(_, c)| c == "min_size"),
+        "expected slug tryNew to fail with min_size, got {:?}",
         codes_for("slug_bad_try_new"),
     );
     assert_eq!(
@@ -364,8 +364,8 @@ console.log(JSON.stringify(reports));
     assert!(
         codes_for("field_email_too_short")
             .iter()
-            .any(|(p, c)| p == "/" && c == "min_length"),
-        "expected per-field email min_length, got {:?}",
+            .any(|(p, c)| p == "/" && c == "min_size"),
+        "expected per-field email min_size, got {:?}",
         codes_for("field_email_too_short"),
     );
     assert_eq!(codes_for("field_email_ok"), Vec::<(String, String)>::new());

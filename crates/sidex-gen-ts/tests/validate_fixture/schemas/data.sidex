@@ -1,17 +1,17 @@
 //! Cases for the TS validate plugin.
 
 record User {
-    #[validate({ 1 <= _.length <= 254 }, message = "Email length is out of range.")]
+    #[validate({ 1 <= _.size <= 254 }, message = "Email length is out of range.")]
     email: string,
 
     #[validate({ 0 <= _ <= 150 })]
     age: u32,
 
-    #[validate({ 1 <= _.length })]
+    #[validate({ 1 <= _.size })]
     nickname?: string,
 }
 
-#[validate({ 1 <= _.length <= 64 })]
+#[validate({ 1 <= _.size <= 64 })]
 wrapper Slug: string
 
 record CodeOnly {

@@ -225,10 +225,8 @@ pub fn default_message(code: &str) -> &'static str {
     match code {
         "min" => "Value is below the minimum.",
         "max" => "Value is above the maximum.",
-        "min_length" => "Value is shorter than the minimum length.",
-        "max_length" => "Value is longer than the maximum length.",
-        "min_size" => "Value has fewer elements than the minimum.",
-        "max_size" => "Value has more elements than the maximum.",
+        "min_size" => "Value is below the minimum size.",
+        "max_size" => "Value exceeds the maximum size.",
         "eq" => "Value does not match the expected value.",
         "ne" => "Value matches a forbidden value.",
         "regex" => "Value does not match the required pattern.",
@@ -342,11 +340,12 @@ pub fn ne<T: PartialEq>(
 
 // --- Accessors --------------------------------------------------------------
 
-/// Length of a string in Unicode code points (chars). Mirrors the
-/// definition the JavaScript runtime uses for `_.length` after spreading
-/// (`[...str].length`) and Python's `len(str)`. Different from the byte
-/// count and from JavaScript's native `str.length` (which counts UTF-16
-/// code units).
+/// Length of a string in Unicode code points (chars). The runtime helper
+/// `_.size` lowers to in the recognizer when validating a `string` field.
+/// Pinned across targets — JavaScript spread iteration (`[...str].length`)
+/// gives the same answer as Rust's `chars().count()`. Different from the
+/// byte count and from JavaScript's native `str.length` (which counts
+/// UTF-16 code units).
 pub fn char_count(s: &str) -> usize {
     s.chars().count()
 }

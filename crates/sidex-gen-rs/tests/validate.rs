@@ -38,10 +38,12 @@ fn normalize(s: &str) -> String {
 }
 
 #[test]
-fn record_with_string_field_emits_length_helpers() {
+fn record_with_string_field_emits_size_helpers() {
     let out = normalize(&render());
-    // `1 <= _.length <= 254` decomposes into a min_inclusive + max_inclusive
-    // call against char_count, both pointing at the `email` field path.
+    // `1 <= _.size <= 254` on a string decomposes into a min_inclusive +
+    // max_inclusive call against char_count, both pointing at the `email`
+    // field path. Codes are uniform `min_size` / `max_size` regardless of
+    // the underlying accessor.
     assert!(
         out.contains(":: sidex_validate :: min_inclusive"),
         "expected min_inclusive call, got:\n{out}"
@@ -55,12 +57,12 @@ fn record_with_string_field_emits_length_helpers() {
         "expected char_count accessor, got:\n{out}"
     );
     assert!(
-        out.contains("\"min_length\""),
-        "expected min_length code, got:\n{out}"
+        out.contains("\"min_size\""),
+        "expected min_size code, got:\n{out}"
     );
     assert!(
-        out.contains("\"max_length\""),
-        "expected max_length code, got:\n{out}"
+        out.contains("\"max_size\""),
+        "expected max_size code, got:\n{out}"
     );
 }
 
@@ -93,7 +95,7 @@ fn regex_rule_emits_static_oncelock() {
 #[test]
 fn wrapper_with_rules_emits_try_new() {
     let out = normalize(&render());
-    // `Slug` has a length-range rule; codegen emits both a `Validate` impl
+    // `Slug` has a size-range rule; codegen emits both a `Validate` impl
     // and a `try_new` constructor.
     assert!(
         out.contains("impl Slug"),
@@ -112,7 +114,7 @@ fn wrapper_with_rules_emits_try_new() {
 #[test]
 fn optional_field_validates_only_when_present() {
     let out = render();
-    // `nickname?: string` with a min_length rule generates an
+    // `nickname?: string` with a min_size rule generates an
     // `if let Some(...)` guard so absent values bypass validation.
     assert!(
         out.contains("if let :: std :: option :: Option :: Some"),

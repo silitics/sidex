@@ -16,7 +16,7 @@ import ::core::attrs::*
 ///
 /// ```sidex
 /// #[validate({ 0 <= _ <= 100 })]
-/// #[validate({ 1 <= _.length }, message = "Required.")]
+/// #[validate({ 1 <= _.size }, message = "Required.")]
 /// #[validate({ matches(_, "...") }, message = "...", code = "format:phone")]
 /// ```
 #[attrs(plugin = "validate", target = field, repeated)]

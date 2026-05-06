@@ -408,9 +408,13 @@ impl<'a> Emitter<'a> {
                         let f = format_ident!("{}", name);
                         quote!(::core::ops::Deref::deref(&#value_expr.#f))
                     }
-                    expr::Accessor::CharCount | expr::Accessor::ByteCount => {
-                        // regex on length doesn't make sense — recognizer
-                        // shouldn't produce this combo, but be defensive.
+                    expr::Accessor::CharCount
+                    | expr::Accessor::ByteCount
+                    | expr::Accessor::ItemCount
+                    | expr::Accessor::EntryCount => {
+                        // regex on a count accessor doesn't make sense — the
+                        // recognizer won't produce this combo, but be
+                        // defensive against future changes.
                         return quote! { /* unsupported regex accessor */ };
                     }
                 };
@@ -486,6 +490,12 @@ fn lower_accessor_for_compare(
                 quote!(usize),
             )
         }
+        expr::Accessor::ItemCount | expr::Accessor::EntryCount => {
+            // `Vec::len` for sequences and `HashMap::len` for maps share the
+            // same call shape; pick whichever the value's concrete type
+            // exposes via standard library conventions.
+            (quote!((&#value_expr).len()), quote!(usize))
+        }
         expr::Accessor::Field(name) => {
             // Cross-field accessors are filtered out by the recognizer
             // (they fall to predicate fallback). Defensive default.
@@ -509,8 +519,9 @@ fn lower_threshold(literal: &expr::Literal) -> TokenStream {
 
 // --- Target inference ------------------------------------------------------
 
-/// Pick the recognizer target for a field type. Drives whether `_.length`
-/// resolves to char count vs byte count vs predicate fallback.
+/// Pick the recognizer target for a field type. Drives whether `_.size`
+/// resolves to char count, byte count, item count, entry count, or
+/// predicate fallback.
 fn target_for_field_type(ctx: &SchemaCtx, field: &ir::Field) -> expr::Target {
     target_for_wrapped_type(ctx, &field.typ)
 }
@@ -527,6 +538,8 @@ fn target_for_wrapped_type(ctx: &SchemaCtx, ty: &ir::Type) -> expr::Target {
         match def.name.as_str() {
             "string" => return expr::Target::String,
             "bytes" => return expr::Target::Bytes,
+            "Sequence" => return expr::Target::Sequence,
+            "Map" => return expr::Target::Map,
             "i8" | "i16" | "i32" | "i64" | "u8" | "u16" | "u32" | "u64" | "f32" | "f64" | "idx" => {
                 return expr::Target::Number;
             }

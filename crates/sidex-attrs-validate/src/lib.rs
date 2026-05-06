@@ -163,6 +163,8 @@ fn target_for_type(ir: &ir::Ir, typ: &ir::Type) -> expr::Target {
         match def.name.as_str() {
             "string" => return expr::Target::String,
             "bytes" => return expr::Target::Bytes,
+            "Sequence" => return expr::Target::Sequence,
+            "Map" => return expr::Target::Map,
             "i8" | "i16" | "i32" | "i64" | "u8" | "u16" | "u32" | "u64" | "f32" | "f64" | "idx" => {
                 return expr::Target::Number;
             }

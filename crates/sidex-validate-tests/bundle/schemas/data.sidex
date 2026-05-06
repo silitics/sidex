@@ -1,17 +1,23 @@
 //! Fixture types for runtime validation tests.
 
 record User {
-    #[validate({ 1 <= _.length <= 254 }, message = "Email length is out of range.")]
+    #[validate({ 1 <= _.size <= 254 }, message = "Email length is out of range.")]
     email: string,
 
     #[validate({ 0 <= _ <= 150 })]
     age: u32,
 
-    #[validate({ 1 <= _.length })]
+    #[validate({ 1 <= _.size })]
     nickname?: string,
+
+    #[validate({ 1 <= _.size <= 8 }, message = "Tag count must be 1..8.")]
+    tags: [string],
+
+    #[validate({ _.size <= 32 })]
+    attributes: [string: string],
 }
 
-#[validate({ 1 <= _.length <= 64 }, message = "Slug length must be 1..64.")]
+#[validate({ 1 <= _.size <= 64 }, message = "Slug length must be 1..64.")]
 wrapper Slug: string
 
 record CodeOnly {

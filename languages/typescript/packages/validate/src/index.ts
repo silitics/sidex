@@ -143,10 +143,8 @@ export function validate(value: Validate): ValidationReport {
 const DEFAULT_MESSAGES: Record<string, string> = {
   min: "Value is below the minimum.",
   max: "Value is above the maximum.",
-  min_length: "Value is shorter than the minimum length.",
-  max_length: "Value is longer than the maximum length.",
-  min_size: "Value has fewer elements than the minimum.",
-  max_size: "Value has more elements than the maximum.",
+  min_size: "Value is below the minimum size.",
+  max_size: "Value exceeds the maximum size.",
   eq: "Value does not match the expected value.",
   ne: "Value matches a forbidden value.",
   regex: "Value does not match the required pattern.",
@@ -181,8 +179,8 @@ function reportOne(
 //     fn min_inclusive<T>(value: T, bound: T, code, message, path);
 //
 // The bound is provided by the codegen as a literal of the same type as
-// the value (numbers stay numbers; lengths come back from `charCount` /
-// `byteCount` as `number`).
+// the value (numbers stay numbers; counts come back from `charCount` /
+// `byteCount` / `itemCount` / `entryCount` as `number`).
 
 export function minInclusive<T>(
   value: T,
@@ -264,6 +262,16 @@ export function byteCount(s: string): number {
   // `TextEncoder` is available in browsers and Node since v11. Avoids
   // pulling in `Buffer` (Node-only).
   return new TextEncoder().encode(s).length
+}
+
+/** Number of elements in a sequence. */
+export function itemCount(seq: readonly unknown[]): number {
+  return seq.length
+}
+
+/** Number of entries in a map (plain object keyed by strings). */
+export function entryCount(map: Record<string, unknown>): number {
+  return Object.keys(map).length
 }
 
 // ---- Regex ----------------------------------------------------------------
