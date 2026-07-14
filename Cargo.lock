@@ -1054,6 +1054,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "sidex-gen-c"
+version = "0.1.0"
+dependencies = [
+ "sidex-gen",
+]
+
+[[package]]
 name = "sidex-gen-ir"
 version = "0.1.0"
 dependencies = [
