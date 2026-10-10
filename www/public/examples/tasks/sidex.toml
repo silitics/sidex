@@ -1,0 +1,7 @@
+[bundle]
+name = "tasks"
+version = "0.1.0"
+
+[backend.rust]
+derive = ["Debug", "Clone"]
+plugins = ["builder", "serde"]

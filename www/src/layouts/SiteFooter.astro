@@ -1,0 +1,16 @@
+---
+import { Footer, ThemeToggle } from "@silitics/astro-theme";
+import { brand, footerColumns } from "../site";
+---
+
+<Footer
+  brand={brand}
+  columns={footerColumns}
+  copyrightHTML={`© ${new Date().getUTCFullYear()} Silitics GmbH.`}
+  legalNoteHTML="Sidex is open source under MIT or Apache 2.0."
+>
+  <div slot="brand-extras" class="flex items-center gap-3">
+    <span class="text-content-subtle text-sm">Theme</span>
+    <ThemeToggle />
+  </div>
+</Footer>

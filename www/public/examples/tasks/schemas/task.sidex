@@ -1,0 +1,11 @@
+//! Tasks shared by a service, a web app, and a Python tool.
+
+/// A task to complete.
+record Task {
+    /// Short title shown in a task list.
+    title: string,
+    /// Whether the task is complete.
+    completed: bool,
+    /// Additional detail, when provided.
+    description?: string,
+}

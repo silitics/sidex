@@ -1,0 +1,15 @@
+[tools]
+node = "latest"
+pnpm = "11.20.0"
+
+[tasks.dev]
+description = "Start the Sidex docs development server."
+run = "pnpm dev"
+
+[tasks.build]
+description = "Build the static documentation and search index."
+run = "pnpm build"
+
+[tasks.check]
+description = "Check types, content, and generated links."
+run = "pnpm check && pnpm build && pnpm check:links"

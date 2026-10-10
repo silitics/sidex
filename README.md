@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./www/static/img/logo.svg" width="15%" alt="Sidex Logo">
+    <img src="./www/public/img/logo.svg" width="15%" alt="Sidex Logo">
 </p>
 <h1 align="center">
     Sidex
@@ -14,9 +14,9 @@
   <a href="https://crates.io/crates/sidex-cli"><img alt="License: MIT/Apache" src="https://img.shields.io/crates/l/sidex-cli"></a>
 </p>
 
-> 🚧 **WORK IN PROGRESS** 🚧
->
-> Sidex **is still under construction**. In particular, the functionality described here may not exist yet, may change considerably in the future, or may even be completely abandoned at a later point in time. We are actively working on the design, features, and vision of Sidex. ⚠️
+> Sidex is under active development. Public contracts may change before 1.0.
+> The documentation follows the main branch; use a matching CLI version when
+> following its examples.
 
 _Sidex_ is a format- and language-agnostic data modeling language with a focus on type safety, extensibility, and developer ergonomics. Sidex aims to simplify data exchange between different programming languages and platforms via potentially multiple interchange formats and storage backends.
 
@@ -51,6 +51,12 @@ For a persistent installation, use `npm install --global sidex-cli`,
 Prebuilt packages support Linux and macOS on x64 and ARM64. See the
 [getting started guide](https://oss.silitics.com/sidex/docs/getting-started)
 for requirements and installation from source.
+
+## Documentation
+
+The [documentation](https://oss.silitics.com/sidex/docs/) covers the language,
+code generation, JSON mapping, validation, and API lifecycle metadata.
+See [www/README.md](www/README.md) to develop and check the documentation site.
 
 ## ⚖️ Licensing
 
