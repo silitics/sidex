@@ -1,0 +1,11 @@
+BasedOnStyle: LLVM
+Language: Cpp
+ColumnLimit: 100
+UseTab: ForIndentation
+TabWidth: 8
+IndentWidth: 8
+BreakBeforeBraces: Linux
+IndentCaseLabels: false
+AllowShortFunctionsOnASingleLine: Empty
+SortIncludes: false
+PointerAlignment: Right
