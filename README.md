@@ -50,8 +50,7 @@ For a persistent installation, use `npm install --global sidex-cli`,
 
 Prebuilt packages support Linux and macOS on x64 and ARM64. See the
 [getting started guide](https://oss.silitics.com/sidex/docs/getting-started)
-for requirements and installation from source, and the
-[release guide](packaging/RELEASING.md) for publishing.
+for requirements and installation from source.
 
 ## ⚖️ Licensing
 
