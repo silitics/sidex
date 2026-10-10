@@ -2,33 +2,49 @@ name: Run Checks
 
 on:
   push:
-    branches:
-      - main
-      - ci
+    branches: [main, ci, "codex/sidex-registry-distribution"]
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   rust-run-tests:
-    name: "Rust: Run Tests"
-    runs-on: ubuntu-latest
-  
+    name: "Rust and Language Integration Tests"
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - name: Run Tests
-        run: cargo test
-  
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249
+        with:
+          toolchain: "1.99.0"
+          components: clippy
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - name: Install TypeScript for the runtime integration test
+        run: npm install --global typescript@6.0.3
+      - name: Run Rust tests
+        run: cargo test --workspace --all-features --locked
+      - name: Check Rust with Clippy
+        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          python-version: "3.12"
+      - name: Run Python integration tests
+        run: uv run --project tests/py --locked pytest -v
+
   rust-check-fmt:
     name: "Rust: Check Formatting"
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Nightly Toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249
         with:
-            toolchain: nightly
-            override: true
-            components: rustfmt
-      - name: Check Formatting
-        run: cargo fmt --all -- --check
+          toolchain: nightly-2026-07-14
+          components: rustfmt
+      - run: cargo +nightly-2026-07-14 fmt --all -- --check

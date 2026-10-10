@@ -80,7 +80,7 @@ impl Plugin for Builder {
                     })
                     .collect::<Vec<_>>();
 
-                let new_doc = format!("Creates a new [`{}`].", &def.name.as_str());
+                let new_doc = format!("Creates a new [`{}`].", def.name.as_str());
 
                 let construct = constructor_fields
                     .iter()

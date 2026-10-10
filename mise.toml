@@ -8,7 +8,7 @@ run = 'cargo run --bin sidex -- "$@"'
 
 [tasks.fmt]
 description = "Format all files using Rustfmt nightly."
-run = "cargo +nightly fmt"
+run = "cargo +nightly-2026-07-14 fmt"
 
 [tasks.check]
 description = "Run all CI checks (formatting + clippy)."
@@ -16,7 +16,7 @@ depends = ["check:fmt", "check:clippy"]
 
 [tasks."check:fmt"]
 description = "Verify that every Rust file is formatted by Rustfmt nightly."
-run = "cargo +nightly fmt --check"
+run = "cargo +nightly-2026-07-14 fmt --check"
 
 [tasks."check:clippy"]
 description = "Run Clippy across the workspace with warnings denied."
@@ -44,35 +44,35 @@ run = "uv run pytest -v"
 description = "Regenerate the IR Rust code from the meta schema."
 run = [
     "cd lib/meta && cargo run --bin sidex -- generate rust ../../crates/sidex-ir/src/generated",
-    "cargo +nightly fmt",
+    "cargo +nightly-2026-07-14 fmt",
 ]
 
 [tasks."regenerate:json-schema"]
 description = "Regenerate the JSON Schema Rust types from the schema."
 run = [
     "cd crates/sidex-types-openapi/lib/json-schema && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-types-json-schema/src/generated",
-    "cargo +nightly fmt",
+    "cargo +nightly-2026-07-14 fmt",
 ]
 
 [tasks."regenerate:py-attrs"]
 description = "Regenerate the Python plugin attribute Rust types."
 run = [
     "cd crates/sidex-core/lib/py && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-attrs-py/src/generated",
-    "cargo +nightly fmt",
+    "cargo +nightly-2026-07-14 fmt",
 ]
 
 [tasks."regenerate:json-attrs"]
 description = "Regenerate the JSON plugin attribute Rust types."
 run = [
     "cd crates/sidex-core/lib/json && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-attrs-json/src/generated",
-    "cargo +nightly fmt",
+    "cargo +nightly-2026-07-14 fmt",
 ]
 
 [tasks."regenerate:rust-attrs"]
 description = "Regenerate the Rust plugin attribute Rust types."
 run = [
     "cd crates/sidex-core/lib/rust && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-attrs-rust/src/generated",
-    "cargo +nightly fmt",
+    "cargo +nightly-2026-07-14 fmt",
 ]
 
 [tasks."reset:ir"]
