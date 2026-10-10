@@ -1,0 +1,28 @@
+---
+import { BaseLayout, Button, Container } from "@silitics/astro-theme";
+import { DocsSearch } from "@silitics/astro-docs";
+import { brand, nav, headerActions } from "../site";
+import SiteFooter from "../layouts/SiteFooter.astro";
+---
+
+<BaseLayout
+  title="Page Not Found"
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
+  canonical={new URL("/sidex/404.html", Astro.site).href}
+  noindex
+>
+  <DocsSearch slot="header-pre-actions" variant="header" />
+  <Container as="main" class="not-found">
+    <h1>Page Not Found</h1>
+    <p>
+      This page may have moved. Find the current guides and reference in the
+      documentation.
+    </p>
+    <Button href={`${import.meta.env.BASE_URL}docs/`}
+      >Browse Documentation</Button
+    >
+  </Container>
+  <SiteFooter slot="footer" />
+</BaseLayout>

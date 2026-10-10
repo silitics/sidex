@@ -1,0 +1,138 @@
+---
+import {
+  BaseLayout,
+  Button,
+  CodeBlock,
+  CodeTabs,
+  Container,
+} from "@silitics/astro-theme";
+import { DocsSearch } from "@silitics/astro-docs";
+import { brand, nav, headerActions } from "../site";
+import SiteFooter from "../layouts/SiteFooter.astro";
+import taskSchema from "../../public/examples/tasks/schemas/task.sidex?raw";
+
+const targets = [
+  { label: "Rust", slug: "rust" },
+  { label: "TypeScript", slug: "typescript" },
+  { label: "Python", slug: "python" },
+  { label: "JSON Schema", slug: "json-schema" },
+];
+---
+
+<BaseLayout
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
+  title="Data Models for Your Whole Stack"
+  description="Define data once with Sidex. Generate Rust, TypeScript, Python, and JSON Schema from a shared, extensible model."
+>
+  <DocsSearch slot="header-pre-actions" variant="header" />
+  <main>
+    <Container>
+      <section class="home-hero" aria-labelledby="hero-title">
+        <div>
+          <div class="home-kicker">DATA MODELING &amp; CODE GENERATION</div>
+          <h1 id="hero-title">One data model. Every part of your stack.</h1>
+          <p>
+            Define the data your applications share. Generate types for Rust,
+            TypeScript, and Python, plus JSON Schema for your wire format.
+          </p>
+          <div class="home-actions">
+            <Button href={`${import.meta.env.BASE_URL}docs/getting-started/`}
+              >Get Started</Button
+            >
+            <a class="home-docs-link" href={`${import.meta.env.BASE_URL}docs/`}
+              >Explore the Documentation</a
+            >
+          </div>
+        </div>
+        <CodeBlock
+          code={taskSchema}
+          lang="sidex"
+          filename="schemas/task.sidex"
+        />
+      </section>
+
+      <section class="home-section" aria-labelledby="targets-title">
+        <h2 id="targets-title">A Shared Contract, Native Types</h2>
+        <p>
+          Records, variants, generics, and distinct wrapper types express your
+          model. Attributes control its JSON representation and adapt it to each
+          language.
+        </p>
+        <div class="home-targets">
+          {
+            targets.map((target) => (
+              <a
+                href={`${import.meta.env.BASE_URL}docs/generation/${target.slug}/`}
+              >
+                {target.label}
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="home-section" aria-labelledby="paths-title">
+        <h2 id="paths-title">From Your First Schema to a Shared API</h2>
+        <div class="home-paths">
+          <div>
+            <h3>Model Your Data</h3>
+            <p>
+              Make required fields, optional values, and alternative states
+              explicit. Organize reusable types into bundles.
+            </p>
+            <a href={`${import.meta.env.BASE_URL}docs/language/types/`}
+              >Learn the Language</a
+            >
+          </div>
+          <div>
+            <h3>Agree on the Wire Format</h3>
+            <p>
+              Choose field names and variant tags, then use the same JSON
+              representation across your applications.
+            </p>
+            <a href={`${import.meta.env.BASE_URL}docs/guides/json/`}
+              >Understand JSON Mapping</a
+            >
+          </div>
+          <div>
+            <h3>Validate and Evolve</h3>
+            <p>
+              Share validation rules between Rust and TypeScript. Document
+              introductions, experimental features, and deprecations.
+            </p>
+            <a href={`${import.meta.env.BASE_URL}docs/guides/validation/`}
+              >Add Validation Rules</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="home-section" aria-labelledby="install-title">
+        <h2 id="install-title">Try Sidex in Your Terminal</h2>
+        <p>
+          Run the CLI with npm or Python tooling. Prebuilt packages include the
+          native executable for Linux and macOS on x64 and ARM64.
+        </p>
+        <div class="home-install">
+          <CodeTabs
+            label="Choose a CLI runner"
+            tabs={[
+              { label: "npm", lang: "sh", code: "npx sidex-cli --help" },
+              { label: "uv", lang: "sh", code: "uvx sidex-cli --help" },
+            ]}
+          />
+        </div>
+        <p class="home-status">
+          Sidex is under active development. These docs describe the main
+          branch. Use a matching CLI version when following examples. <a
+            href={`${import.meta.env.BASE_URL}docs/installation/`}
+            >Installation Options</a
+          >
+        </p>
+      </section>
+    </Container>
+  </main>
+  <SiteFooter slot="footer" />
+</BaseLayout>

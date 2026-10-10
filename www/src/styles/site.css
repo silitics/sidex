@@ -1,0 +1,117 @@
+@import "@silitics/astro-theme/styles.css";
+@import "@silitics/astro-docs/styles.css";
+
+.home-hero {
+  padding-block: clamp(3rem, 8vw, 7rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+.home-hero h1 {
+  font-size: clamp(2.5rem, 4.2vw, 4.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  max-width: 12ch;
+}
+.home-hero p {
+  margin-block: 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--theme-content-muted);
+  max-width: 45ch;
+}
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+.home-docs-link {
+  color: var(--theme-content-muted);
+}
+.home-kicker {
+  font-family: var(--font-mono);
+  color: var(--theme-primary);
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+.home-section {
+  padding-block: 3rem;
+  border-top: 1px solid var(--theme-divider);
+}
+.home-section h2 {
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin-bottom: 1rem;
+}
+.home-section > p {
+  color: var(--theme-content-muted);
+  max-width: 65ch;
+  line-height: 1.7;
+}
+.home-paths {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 2rem;
+  gap: 2rem;
+}
+.home-paths h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.home-paths p {
+  color: var(--theme-content-muted);
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+.home-paths a,
+.home-section > p a {
+  color: var(--theme-primary);
+  text-underline-offset: 0.2em;
+  text-decoration: underline;
+}
+.home-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-top: 1.5rem;
+}
+.home-targets a {
+  color: var(--theme-content);
+  font-family: var(--font-mono);
+}
+.home-install {
+  max-width: 42rem;
+  margin-top: 1.5rem;
+}
+.home-status {
+  font-size: 0.875rem;
+}
+.not-found {
+  padding-block: 6rem;
+}
+.not-found h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+.not-found p {
+  max-width: 50ch;
+  margin-block: 1.5rem;
+}
+@media (max-width: 900px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+  }
+  .home-hero h1 {
+    max-width: 18ch;
+  }
+}
+@media (max-width: 640px) {
+  .home-paths {
+    grid-template-columns: 1fr;
+  }
+}
