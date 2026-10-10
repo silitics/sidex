@@ -6,39 +6,125 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag to (re-)build and upload assets for"
-        required: true
+        description: Existing release tag; leave empty to test the selected ref.
+        type: string
+        default: ""
+      publish:
+        description: Publish the tagged release to npm, PyPI, and GitHub.
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  release:
-    name: "Release (${{ matrix.target }})"
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { target: x86_64-unknown-linux-musl,  os: ubuntu-latest }
-          - { target: aarch64-unknown-linux-musl, os: ubuntu-latest }
-          - { target: aarch64-apple-darwin,       os: macos-latest }
-          - { target: x86_64-apple-darwin,        os: macos-13 }
-    runs-on: ${{ matrix.os }}
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.metadata.outputs.tag }}
+      publish: ${{ steps.metadata.outputs.publish }}
+    steps:
+      - name: Resolve release request
+        id: metadata
+        env:
+          RELEASE_TAG: ${{ inputs.tag || (github.event_name == 'push' && github.ref_name) || '' }}
+          PUBLISH: ${{ github.event_name == 'push' || inputs.publish }}
+        run: |
+          if [ "$PUBLISH" = true ] && [ -z "$RELEASE_TAG" ]; then
+            echo "Publishing requires an existing release tag." >&2
+            exit 1
+          fi
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+
+  checks:
+    needs: prepare
+    uses: ./.github/workflows/run-checks.yml
+    with:
+      ref: ${{ needs.prepare.outputs.tag || github.sha }}
+      skip-distributions: true
+
+  build:
+    needs: [prepare, checks]
+    uses: ./.github/workflows/build-distributions.yml
+    with:
+      tag: ${{ needs.prepare.outputs.tag }}
+
+  publish-npm:
+    needs: [prepare, build]
+    if: needs.prepare.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - run: npm install --global npm@11.19.0
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: npm-*
+          merge-multiple: true
+          path: dist/npm
+      - name: Publish platform packages, then the launcher, using OIDC
+        run: python packaging/npm.py publish
+
+  publish-pypi:
+    needs: [prepare, build]
+    if: needs.prepare.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: python-*
+          merge-multiple: true
+          path: dist/python
+      - name: Publish wheels using OIDC
+        uses: pypa/gh-action-pypi-publish@a892a5a61159132606e93a2fa6f4358831b04d26 # v1.14.2
+        with:
+          packages-dir: dist/python
+          skip-existing: true
+
+  publish-github:
+    needs: [prepare, build, publish-npm, publish-pypi]
+    if: needs.prepare.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
-    env:
-      SIDEX_GIT_VERSION: ${{ inputs.tag || github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          fetch-tags: true
-          fetch-depth: 0
-          ref: ${{ inputs.tag || github.ref }}
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - uses: taiki-e/upload-rust-binary-action@v1
-        with:
-          bin: sidex
-          target: ${{ matrix.target }}
-          ref: refs/tags/${{ inputs.tag || github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: binary-*
+          merge-multiple: true
+          path: dist/archives
+      - name: Create release and upload native archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            args=()
+            if [[ "$VERSION" == *-* ]]; then
+              args+=(--prerelease)
+            fi
+            gh release create "$RELEASE_TAG" --verify-tag --generate-notes "${args[@]}"
+          fi
+          gh release upload "$RELEASE_TAG" dist/archives/*.tar.gz --clobber

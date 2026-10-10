@@ -1114,7 +1114,7 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "DeleteUserAction")
             .expect("DeleteUserAction def not found");
-        assert!(action.typed_attrs.get("request").is_some());
+        assert!(action.typed_attrs.contains_key("request"));
     }
 
     /// Without an import the bare name doesn't resolve — the resolver no
@@ -1140,7 +1140,7 @@ mod tests {
         // The diagnostic is captured by the test ctx; the typed_attrs
         // simply doesn't gain a `request` entry when the path fails.
         assert!(
-            action.typed_attrs.get("request").is_none(),
+            !action.typed_attrs.contains_key("request"),
             "expected no request entry when the response type is not in scope"
         );
     }

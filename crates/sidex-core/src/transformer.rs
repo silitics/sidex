@@ -516,10 +516,8 @@ fn transform_attr(attr: &ast::Attr) -> Option<ir::Attr> {
         ast::AttrKind::Tokens(stream) => {
             if let Some(value) = tokens_brace_group_value(stream) {
                 ir::AttrKind::Value(ir::AttrValue::Tokens(value))
-            } else if let Some(value) = single_literal_token_value(stream) {
-                ir::AttrKind::Value(value)
             } else {
-                return None;
+                ir::AttrKind::Value(single_literal_token_value(stream)?)
             }
         }
     };
