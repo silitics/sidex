@@ -1,0 +1,26 @@
+[build-system]
+requires = ["maturin==1.15.0"]
+build-backend = "maturin"
+
+[project]
+name = "sidex-cli"
+dynamic = ["version"]
+description = "The Sidex data modeling and code generation tool."
+readme = "packaging/README.md"
+requires-python = ">=3.10"
+license = "MIT OR Apache-2.0"
+license-files = ["LICENSE-MIT", "LICENSE-APACHE"]
+authors = [{ name = "Silitics GmbH", email = "info@silitics.com" }]
+
+[project.urls]
+Homepage = "https://oss.silitics.com/sidex"
+Repository = "https://github.com/silitics/sidex"
+Issues = "https://github.com/silitics/sidex/issues"
+
+[tool.maturin]
+manifest-path = "crates/sidex-cli/Cargo.toml"
+bindings = "bin"
+module-name = "sidex_cli"
+data = "packaging/python-data"
+strip = true
+locked = true

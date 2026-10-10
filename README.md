@@ -35,6 +35,24 @@ To learn more, [checkout Sidex's website](https://oss.silitics.com/sidex/). 🚀
 - Support for **generics**, **recursive types**, and **custom attributes**.
 - Out-of-the-box support for [Rust](https://rust-lang.org), [TypeScript](https://www.typescriptlang.org), [Python](https://www.python.org), and [JSON Schema](https://json-schema.org).
 
+## Installation
+
+Run Sidex through npm or uv:
+
+```sh
+npx sidex-cli --help
+uvx sidex-cli --help
+```
+
+For a persistent installation, use `npm install --global sidex-cli`,
+`uv tool install sidex-cli`, or `pipx install sidex-cli`. Each provides
+`sidex` and `sidex-cli`.
+
+Prebuilt packages support Linux and macOS on x64 and ARM64. See the
+[getting started guide](https://oss.silitics.com/sidex/docs/getting-started)
+for requirements and installation from source, and the
+[release guide](packaging/RELEASING.md) for publishing.
+
 ## ⚖️ Licensing
 
 Sidex is licensed under either [MIT](https://github.com/silitics/sidex/blob/main/LICENSE-MIT) or [Apache 2.0](https://github.com/silitics/sidex/blob/main/LICENSE-APACHE) at your opinion.

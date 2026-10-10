@@ -4,28 +4,44 @@ sidebar_position: 1
 
 # Getting Started 🚀
 
-Sidex is currently distributed via [Cargo](https://doc.rust-lang.org/cargo/) and [crates.io](https://crates.io/).
-To install the Sidex command line tool run:
+Run Sidex with npm or uv:
 
-```plain
+```sh
+npx sidex-cli --help
+uvx sidex-cli --help
+```
+
+To install the command persistently, choose one of:
+
+```sh
+npm install --global sidex-cli
+uv tool install sidex-cli
+pipx install sidex-cli
+```
+
+Each installation provides `sidex` and `sidex-cli`. The commands below use `sidex`.
+You can also prefix them with `npx sidex-cli` or `uvx sidex-cli` without installing
+the command persistently.
+
+Prebuilt packages support Linux and macOS on x64 and ARM64, including Alpine
+Linux with musl 1.2 or newer. glibc-based Linux requires glibc 2.17 or newer;
+macOS requires version 11 or newer. npm requires Node.js 20 or newer and optional
+dependencies enabled. The Python package requires Python 3.10 or newer.
+
+To build from source with [Cargo](https://doc.rust-lang.org/cargo/), run:
+
+```sh
 cargo install sidex-cli
 ```
 
-Instead, if you want the most recent version (possibly unstable) directly from the Git repository, run:
+For the latest development version, run:
 
-```plain
+```sh
 cargo install --git https://github.com/silitics/sidex.git sidex-cli
 ```
 
-For the **best developer experience**, also install the [VS Code extension](tools/vs-code-extension.md).
-
-:::tip
-
-As Sidex is still under construction, it is best to install it directly from Git for now.
-
-**Please [report any issues](https://github.com/silitics/sidex) you may have.**
-
-:::
+Also install the [VS Code extension](tools/vs-code-extension.md) for syntax
+highlighting and editor support.
 
 ## Creating a Sidex Bundle
 
@@ -101,7 +117,7 @@ sidex check
 To generate TypeScript type definitions in the directory `out-ts` run:
 
 ```plain
-sidex generate typescript ./out-ts/
+sidex generate ts ./out-ts/
 ```
 
 You can also generate Rust code by running:

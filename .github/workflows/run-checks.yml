@@ -2,15 +2,23 @@ name: Run Checks
 
 on:
   push:
-    branches: [main, ci, "codex/sidex-registry-distribution"]
+    branches: [main, ci]
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ""
+      skip-distributions:
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: checks-${{ github.ref }}
+  group: checks-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -19,6 +27,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249
         with:
           toolchain: "1.99.0"
@@ -35,6 +45,7 @@ jobs:
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           python-version: "3.12"
+          version: "0.12.15"
       - name: Run Python integration tests
         run: uv run --project tests/py --locked pytest -v
 
@@ -43,8 +54,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249
         with:
           toolchain: nightly-2026-07-14
           components: rustfmt
       - run: cargo +nightly-2026-07-14 fmt --all -- --check
+
+  distributions:
+    if: ${{ !inputs.skip-distributions }}
+    uses: ./.github/workflows/build-distributions.yml
