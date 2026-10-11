@@ -31,8 +31,9 @@ CI builds the site on PRs. A separate deployment job publishes the checked build
 from pushes to `main` at `https://oss.silitics.com/sidex/`. In the GitHub
 `docs` environment, configure the variable `SILITICS_SITES_ACCESS_KEY` and secret
 `SILITICS_SITES_SECRET_KEY` with a publishing key for the `silitics-public-sites`
-bucket. PR builds do not use this environment. The workflow archives the build
-under `sidex/`; the domain is served by Core1's static-site configuration.
+bucket. PR builds do not use this environment. The workflow publishes the
+contents of `dist` to `sites/oss.silitics.com/sidex/` in the bucket. Core1 syncs
+this archive independently and mounts it at `/sidex/`.
 
 ## Checks
 
