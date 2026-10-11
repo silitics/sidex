@@ -27,11 +27,12 @@ The build writes static files and a Pagefind search index to `dist`. Serve its
 contents at `/sidex/`, matching `base` in `astro.config.mjs`. To expose a pod
 preview, run `podctl http publish --title "Sidex Docs" 4323`.
 
-CI builds the site on PRs and publishes pushes to `main` at
-`https://oss.silitics.com/sidex/`. Configure the repository variable
-`SILITICS_SITES_ACCESS_KEY` and secret `SILITICS_SITES_SECRET_KEY` with a publishing
-key for the `silitics-public-sites` bucket. The workflow archives the build under
-`sidex/`; the domain is served by Core1's static-site configuration.
+CI builds the site on PRs. A separate deployment job publishes the checked build
+from pushes to `main` at `https://oss.silitics.com/sidex/`. In the GitHub
+`docs` environment, configure the variable `SILITICS_SITES_ACCESS_KEY` and secret
+`SILITICS_SITES_SECRET_KEY` with a publishing key for the `silitics-public-sites`
+bucket. PR builds do not use this environment. The workflow archives the build
+under `sidex/`; the domain is served by Core1's static-site configuration.
 
 ## Checks
 
