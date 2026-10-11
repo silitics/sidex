@@ -84,17 +84,24 @@ jobs:
           name: sidex-docs
           path: www/dist
           if-no-files-found: error
-      - name: Prepare Site Archive
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          mkdir -p site/sidex
-          cp -a dist/. site/sidex/
-      - name: Deploy Documentation
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: silitics/actions/deploy-site@6895ba660c00c49412d65c87815d0a9c30f88151
+
+  docs-deploy:
+    name: "Deploy Documentation"
+    needs: docs-check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment:
+      name: docs
+      url: https://oss.silitics.com/sidex/
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: sidex-docs
+          path: site/sidex
+      - uses: silitics/actions/deploy-site@6895ba660c00c49412d65c87815d0a9c30f88151
         with:
           domain: oss.silitics.com
-          source-dir: www/site
+          source-dir: site
           s3-access-key: ${{ vars.SILITICS_SITES_ACCESS_KEY }}
           s3-secret-key: ${{ secrets.SILITICS_SITES_SECRET_KEY }}
 
