@@ -88,6 +88,23 @@ impl<T: Clone> Seq<T> {
     pub fn clear(&mut self) {
         *self = Self::new();
     }
+
+    /// Removes consecutive elements for which `same` returns `true`.
+    pub fn dedup_by(&mut self, same: impl FnMut(&mut T, &mut T) -> bool) {
+        self.to_mut().dedup_by(same);
+    }
+
+    /// Removes consecutive elements with the same key.
+    pub fn dedup_by_key<K: PartialEq>(&mut self, key: impl FnMut(&mut T) -> K) {
+        self.to_mut().dedup_by_key(key);
+    }
+}
+
+impl<T: Clone + PartialEq> Seq<T> {
+    /// Removes consecutive repeated elements.
+    pub fn dedup(&mut self) {
+        self.to_mut().dedup();
+    }
 }
 
 impl<T> Clone for Seq<T> {
