@@ -489,3 +489,16 @@ fn null_for_optional_opaque_fields() {
     assert_eq!(labels.strict, None);
     assert_eq!(labels.nullable, Some(Label(None)));
 }
+
+record!(Extension {
+    data: Value => .optional();
+});
+
+/// Optional freeform fields treat `null` as absent, like most languages do.
+#[test]
+fn null_for_optional_value_fields() {
+    let extension: Extension = json::from_value(&parse(r#"{"data":null}"#)).unwrap();
+    assert_eq!(extension.data, None);
+    let extension: Extension = json::from_value(&parse(r#"{"data":{}}"#)).unwrap();
+    assert_eq!(extension.data, Some(Value::Map(Default::default())));
+}

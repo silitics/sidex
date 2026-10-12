@@ -21,7 +21,7 @@ record User {
 { "displayName": "Ada" }
 ```
 
-An absent optional field is omitted. Its underlying type does not automatically include `null`. Some language runtimes accept additional input forms, so use the generated JSON Schema to define the shape you require at a boundary.
+An absent optional field is omitted. Its underlying type does not automatically include `null`. Readers treat `null` for an optional field as absent, unless `null` is a value of the field's type. Optional `value` fields always treat `null` as absent, because many languages cannot tell an absent value from `null`. Use the generated JSON Schema to define the shape you require at a boundary.
 
 Change names at the record or field level:
 

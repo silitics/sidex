@@ -465,7 +465,9 @@ fn known_fields(record: &RecordShape, known: &mut Vec<&'static str>) -> bool {
 
 /// Indicates whether `null` may represent a value of the field's type.
 ///
-/// Optional fields accept `null` as absent, unless `null` is a value.
+/// Optional fields accept `null` as absent, unless `null` is a value. Freeform
+/// values include `null`, but many languages cannot tell an absent value from
+/// `null`, so optional freeform fields treat `null` as absent.
 fn admits_null(field: &FieldShape) -> bool {
     fn shape_admits_null(shape: &Shape) -> bool {
         match &shape.kind {
@@ -473,7 +475,7 @@ fn admits_null(field: &FieldShape) -> bool {
             ShapeKind::Wrapper(inner) => shape_admits_null(inner()),
             ShapeKind::Variant(variant) => variant.json == Tagging::Implicit,
             ShapeKind::Opaque(opaque) => opaque.json.admits(super::Type::Null),
-            ShapeKind::Value => true,
+            ShapeKind::Value => false,
             ShapeKind::Sequence(_) | ShapeKind::Map(..) | ShapeKind::Record(_) => false,
         }
     }
