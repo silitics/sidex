@@ -108,6 +108,18 @@ impl<T: PartialEq> PartialEq<[T]> for Seq<T> {
     }
 }
 
+impl<T: PartialEq, const N: usize> PartialEq<[T; N]> for Seq<T> {
+    fn eq(&self, other: &[T; N]) -> bool {
+        self.as_slice() == other
+    }
+}
+
+impl<T: PartialEq> PartialEq<&[T]> for Seq<T> {
+    fn eq(&self, other: &&[T]) -> bool {
+        self.as_slice() == *other
+    }
+}
+
 impl<T: Clone> From<&[T]> for Seq<T> {
     fn from(items: &[T]) -> Self {
         Self(Arc::new(items.to_vec()))
