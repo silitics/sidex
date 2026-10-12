@@ -96,26 +96,26 @@ impl<T> Borrow<[T]> for Seq<T> {
     }
 }
 
-impl<T: PartialEq> PartialEq<Vec<T>> for Seq<T> {
-    fn eq(&self, other: &Vec<T>) -> bool {
+impl<T: PartialEq<U>, U> PartialEq<Vec<U>> for Seq<T> {
+    fn eq(&self, other: &Vec<U>) -> bool {
         self.as_slice() == other.as_slice()
     }
 }
 
-impl<T: PartialEq> PartialEq<[T]> for Seq<T> {
-    fn eq(&self, other: &[T]) -> bool {
+impl<T: PartialEq<U>, U> PartialEq<[U]> for Seq<T> {
+    fn eq(&self, other: &[U]) -> bool {
         self.as_slice() == other
     }
 }
 
-impl<T: PartialEq, const N: usize> PartialEq<[T; N]> for Seq<T> {
-    fn eq(&self, other: &[T; N]) -> bool {
+impl<T: PartialEq<U>, U, const N: usize> PartialEq<[U; N]> for Seq<T> {
+    fn eq(&self, other: &[U; N]) -> bool {
         self.as_slice() == other
     }
 }
 
-impl<T: PartialEq> PartialEq<&[T]> for Seq<T> {
-    fn eq(&self, other: &&[T]) -> bool {
+impl<T: PartialEq<U>, U> PartialEq<&[U]> for Seq<T> {
+    fn eq(&self, other: &&[U]) -> bool {
         self.as_slice() == *other
     }
 }
