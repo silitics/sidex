@@ -260,6 +260,24 @@ impl From<Arc<str>> for Str {
     }
 }
 
+impl FromIterator<char> for Str {
+    fn from_iter<I: IntoIterator<Item = char>>(iter: I) -> Self {
+        String::from_iter(iter).into()
+    }
+}
+
+impl<'s> FromIterator<&'s str> for Str {
+    fn from_iter<I: IntoIterator<Item = &'s str>>(iter: I) -> Self {
+        String::from_iter(iter).into()
+    }
+}
+
+impl FromIterator<String> for Str {
+    fn from_iter<I: IntoIterator<Item = String>>(iter: I) -> Self {
+        String::from_iter(iter).into()
+    }
+}
+
 impl FromStr for Str {
     type Err = std::convert::Infallible;
 

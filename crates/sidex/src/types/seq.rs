@@ -50,6 +50,44 @@ impl<T: Clone> Seq<T> {
     pub fn push(&mut self, item: T) {
         self.to_mut().push(item);
     }
+
+    /// Removes the last element and returns it.
+    pub fn pop(&mut self) -> Option<T> {
+        self.to_mut().pop()
+    }
+
+    /// Inserts an element at the given index.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the index is greater than the length.
+    pub fn insert(&mut self, index: usize, item: T) {
+        self.to_mut().insert(index, item);
+    }
+
+    /// Removes the element at the given index and returns it.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the index is out of bounds.
+    pub fn remove(&mut self, index: usize) -> T {
+        self.to_mut().remove(index)
+    }
+
+    /// Retains the elements for which `keep` returns `true`.
+    pub fn retain(&mut self, keep: impl FnMut(&T) -> bool) {
+        self.to_mut().retain(keep);
+    }
+
+    /// Shortens the sequence to the given length.
+    pub fn truncate(&mut self, len: usize) {
+        self.to_mut().truncate(len);
+    }
+
+    /// Removes all elements.
+    pub fn clear(&mut self) {
+        *self = Self::new();
+    }
 }
 
 impl<T> Clone for Seq<T> {
