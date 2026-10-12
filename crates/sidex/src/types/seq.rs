@@ -38,6 +38,17 @@ impl<T> Seq<T> {
     pub fn as_slice(&self) -> &[T] {
         &self.0
     }
+
+    /// Returns `true` if the sequence contains an element equal to `item`.
+    ///
+    /// Unlike [`slice::contains`], the item may have a different type, for
+    /// instance, a `Seq<Str>` may be searched for a `String`.
+    pub fn contains<U: ?Sized>(&self, item: &U) -> bool
+    where
+        T: PartialEq<U>,
+    {
+        self.0.iter().any(|element| element == item)
+    }
 }
 
 impl<T: Clone> Seq<T> {

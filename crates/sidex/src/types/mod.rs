@@ -144,9 +144,9 @@ macro_rules! __impl_text {
 mod bytes;
 pub mod map;
 mod seq;
-mod standard;
 #[cfg(feature = "sqlx-08")]
 mod sqlx;
+mod standard;
 mod string;
 mod time;
 mod uuid;

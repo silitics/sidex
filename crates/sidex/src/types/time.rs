@@ -21,6 +21,11 @@ impl Timestamp {
     /// The Unix epoch, `1970-01-01T00:00:00Z`.
     pub const UNIX_EPOCH: Timestamp = Timestamp(jiff::Timestamp::UNIX_EPOCH);
 
+    /// Current instant according to the system clock.
+    pub fn now() -> Self {
+        Self(jiff::Timestamp::now())
+    }
+
     /// Creates a timestamp from whole seconds and nanoseconds since the Unix
     /// epoch, or returns `None` if the instant is out of range.
     ///
