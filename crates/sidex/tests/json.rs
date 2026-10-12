@@ -161,6 +161,29 @@ fn inline_fields() {
     );
 }
 
+/// Strict decoding rejects unknown fields, also of inline records and of
+/// variant payloads, but accepts the tag of internally tagged variants.
+#[test]
+fn strict_decoding() {
+    let error =
+        json::from_value_strict::<Fleet>(&parse(r#"{"devices":[{"id":"1","color":"red"}]}"#))
+            .unwrap_err();
+    assert_eq!(error.to_string(), "devices[0].color: unknown field `color`");
+
+    json::from_value_strict::<Located>(&parse(r#"{"name":"home","x":1,"y":2}"#)).unwrap();
+    let error = json::from_value_strict::<Located>(&parse(r#"{"name":"home","x":1,"y":2,"z":3}"#))
+        .unwrap_err();
+    assert_eq!(error.to_string(), "z: unknown field `z`");
+
+    json::from_value_strict::<Position<Internal>>(&parse(r#"{"tag":"Coordinates","x":1,"y":2}"#))
+        .unwrap();
+    let error = json::from_value_strict::<Position<Adjacent>>(&parse(
+        r#"{"tag":"Coordinates","content":{"x":1,"y":2,"z":3}}"#,
+    ))
+    .unwrap_err();
+    assert_eq!(error.to_string(), "content.z: unknown field `z`");
+}
+
 /// Map keys use the text representation of their type.
 #[test]
 fn map_keys() {

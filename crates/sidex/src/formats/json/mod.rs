@@ -145,5 +145,22 @@ pub fn to_value<T: Encode + ?Sized>(value: &T) -> Result<Value, EncodeError> {
 /// assert_eq!(numbers, [1, 2]);
 /// ```
 pub fn from_value<T: Decode>(value: &Value) -> Result<T, DecodeError> {
-    T::decode(&mut decoding::JsonDecoder::new(value))
+    T::decode(&mut decoding::JsonDecoder::new(value, false))
+}
+
+/// Reads a value like [`from_value`], but rejects fields unknown to records.
+///
+/// Use this for documents written by people, such as configuration files, where
+/// unknown fields are likely typos.
+///
+/// ```
+/// use sidex::Value;
+/// use sidex::types::Map;
+///
+/// let value = Value::from_iter([("thing", Value::from("x"))]);
+/// let map: Map<String, String> = sidex::formats::json::from_value_strict(&value).unwrap();
+/// assert_eq!(map["thing"], "x");
+/// ```
+pub fn from_value_strict<T: Decode>(value: &Value) -> Result<T, DecodeError> {
+    T::decode(&mut decoding::JsonDecoder::new(value, true))
 }
