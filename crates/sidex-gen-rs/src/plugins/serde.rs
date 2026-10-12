@@ -30,19 +30,19 @@ impl Plugin for Serde {
         Ok(quote! {
             #[automatically_derived]
             impl<#(#vars: ::sidex::Shaped + ::sidex::Encode),*> ::serde::Serialize for #ident<#(#vars),*> {
-                fn serialize<S: ::serde::Serializer>(
+                fn serialize<__S: ::serde::Serializer>(
                     &self,
-                    serializer: S,
-                ) -> ::std::result::Result<S::Ok, S::Error> {
+                    serializer: __S,
+                ) -> ::std::result::Result<__S::Ok, __S::Error> {
                     ::sidex::serde::serialize(self, serializer)
                 }
             }
 
             #[automatically_derived]
             impl<'de, #(#vars: ::sidex::Shaped + ::sidex::Decode),*> ::serde::Deserialize<'de> for #ident<#(#vars),*> {
-                fn deserialize<D: ::serde::Deserializer<'de>>(
-                    deserializer: D,
-                ) -> ::std::result::Result<Self, D::Error> {
+                fn deserialize<__D: ::serde::Deserializer<'de>>(
+                    deserializer: __D,
+                ) -> ::std::result::Result<Self, __D::Error> {
                     ::sidex::serde::deserialize(deserializer)
                 }
             }

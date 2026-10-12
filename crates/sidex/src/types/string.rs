@@ -232,6 +232,18 @@ impl From<Str> for Box<str> {
     }
 }
 
+impl From<Str> for Box<dyn std::error::Error> {
+    fn from(string: Str) -> Self {
+        String::from(string).into()
+    }
+}
+
+impl From<Str> for Box<dyn std::error::Error + Send + Sync> {
+    fn from(string: Str) -> Self {
+        String::from(string).into()
+    }
+}
+
 impl From<Str> for Arc<str> {
     /// Converts without copying if the string is shared.
     fn from(string: Str) -> Self {

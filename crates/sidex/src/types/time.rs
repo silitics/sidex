@@ -53,6 +53,13 @@ impl Timestamp {
     }
 }
 
+impl Default for Timestamp {
+    /// Returns the Unix epoch.
+    fn default() -> Self {
+        Self::UNIX_EPOCH
+    }
+}
+
 impl fmt::Display for Timestamp {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(&self.0, f)

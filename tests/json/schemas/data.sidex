@@ -106,3 +106,9 @@ record JsRoundtrip {
     seq_u: [u64],
     map_u: [string: u64],
 }
+
+/// Record whose type variables share names with those of generated code.
+record Pair<S, D> {
+    first: S,
+    second: D,
+}
