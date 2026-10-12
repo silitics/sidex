@@ -206,3 +206,106 @@ macro_rules! impl_pointer {
 impl_pointer!(Box);
 impl_pointer!(Arc);
 impl_pointer!(Rc);
+
+/// Implements the traits for a standard library type represented as a string,
+/// using its `Display` and `FromStr` implementations.
+macro_rules! impl_std_text {
+    ($($ty:ty => $path:literal,)*) => {
+        $(
+            impl Shaped for $ty {
+                const SHAPE: &'static Shape = &Shape::new(
+                    $path,
+                    ShapeKind::Opaque(
+                        crate::shape::OpaqueShape::new()
+                            .json_types(&[crate::formats::json::Type::String]),
+                    ),
+                );
+            }
+
+            impl Encode for $ty {
+                fn encode(&self) -> View<'_> {
+                    View::Value(std::borrow::Cow::Owned(crate::Value::String(
+                        self.to_string().into(),
+                    )))
+                }
+            }
+
+            impl Decode for $ty {
+                fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
+                    decoder.string()?.parse().map_err(DecodeError::new)
+                }
+            }
+        )*
+    };
+}
+
+impl_std_text! {
+    std::net::IpAddr => "::std::net::IpAddr",
+    std::net::Ipv4Addr => "::std::net::Ipv4Addr",
+    std::net::Ipv6Addr => "::std::net::Ipv6Addr",
+    std::net::SocketAddr => "::std::net::SocketAddr",
+}
+
+/// Paths are strings. Paths that are not valid Unicode are encoded lossily.
+impl Shaped for std::path::PathBuf {
+    const SHAPE: &'static Shape = &Shape::new(
+        "::std::path::PathBuf",
+        ShapeKind::Opaque(
+            crate::shape::OpaqueShape::new().json_types(&[crate::formats::json::Type::String]),
+        ),
+    );
+}
+
+impl Encode for std::path::PathBuf {
+    fn encode(&self) -> View<'_> {
+        match self.to_str() {
+            Some(path) => View::String(path),
+            None => {
+                View::Value(std::borrow::Cow::Owned(crate::Value::String(
+                    self.to_string_lossy().into(),
+                )))
+            }
+        }
+    }
+}
+
+impl Decode for std::path::PathBuf {
+    fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
+        decoder.string().map(Self::from)
+    }
+}
+
+/// Implements the traits for a non-zero integer type with the shape of the
+/// underlying integer type.
+macro_rules! impl_non_zero {
+    ($($ty:ident => $int:ident, $scalar:ident;)*) => {
+        $(
+            impl Shaped for std::num::$ty {
+                const SHAPE: &'static Shape = <$int>::SHAPE;
+            }
+
+            impl Encode for std::num::$ty {
+                fn encode(&self) -> View<'_> {
+                    View::$scalar(self.get())
+                }
+            }
+
+            impl Decode for std::num::$ty {
+                fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
+                    Self::new(decoder.$int()?).ok_or_else(|| DecodeError::new("expected a non-zero integer"))
+                }
+            }
+        )*
+    };
+}
+
+impl_non_zero! {
+    NonZeroU8 => u8, U8;
+    NonZeroU16 => u16, U16;
+    NonZeroU32 => u32, U32;
+    NonZeroU64 => u64, U64;
+    NonZeroI8 => i8, I8;
+    NonZeroI16 => i16, I16;
+    NonZeroI32 => i32, I32;
+    NonZeroI64 => i64, I64;
+}
