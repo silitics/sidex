@@ -1,0 +1,16 @@
+/// Instant at which something happened.
+alias Instant: timestamp
+
+/// Opaque identifier.
+#[json(type = "string")]
+opaque Identifier
+
+/// Value that is either a string or a number.
+#[json(type = "string|number")]
+opaque Scalar
+
+record Event {
+    at: Instant,
+    id: Identifier,
+    scalar: Scalar,
+}

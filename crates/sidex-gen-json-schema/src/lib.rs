@@ -216,6 +216,8 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 let ref_schema = self.def_ref(&def_name);
                 // There exists no definition, let's create a schema for the type.
                 let typ_def = self.unit.type_def(typ).unwrap();
+                // Unlike `typ_def`, this is the alias itself for aliases.
+                let own_def = &self.unit[instance.def];
                 // Insert `None` such that recursive usage yields a reference.
                 if instance.def.bundle != STD_BUNDLE_IDX {
                     self.defs.insert(
@@ -228,17 +230,30 @@ impl<'cx> JsonSchemaCtx<'cx> {
                         },
                     );
                 }
-                let (mut def_schema, inline_schema) = match &typ_def.kind {
-                    TypeAlias(_) => todo!(),
-                    OpaqueType(opaque_def) => {
-                        let schema = self.opaque_type_schema(instance, typ_def, opaque_def)?;
-                        (schema.clone(), schema)
+                let (mut def_schema, inline_schema) = match &own_def.kind {
+                    TypeAlias(_) => {
+                        let aliased = self.resolve(&self.unit.resolve_aliases(typ))?;
+                        (aliased.use_schema.clone(), aliased.use_schema)
                     }
-                    RecordType(record_def) => self.record_type_schema(typ_def, record_def)?,
-                    VariantType(variant_type) => self.variant_type_schema(typ_def, variant_type)?,
-                    WrapperType(wrapper_type) => {
-                        let resolved = self.resolve(&wrapper_type.wrapped)?;
-                        (resolved.use_schema.clone(), resolved.use_schema)
+                    _ => {
+                        match &typ_def.kind {
+                            TypeAlias(_) => unreachable!("aliases are resolved"),
+                            OpaqueType(opaque_def) => {
+                                let schema =
+                                    self.opaque_type_schema(instance, typ_def, opaque_def)?;
+                                (schema.clone(), schema)
+                            }
+                            RecordType(record_def) => {
+                                self.record_type_schema(typ_def, record_def)?
+                            }
+                            VariantType(variant_type) => {
+                                self.variant_type_schema(typ_def, variant_type)?
+                            }
+                            WrapperType(wrapper_type) => {
+                                let resolved = self.resolve(&wrapper_type.wrapped)?;
+                                (resolved.use_schema.clone(), resolved.use_schema)
+                            }
+                        }
                     }
                 };
 
@@ -252,9 +267,9 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 } else {
                     // inline_schema.set_extension("x-idl-type-ref", &def_name);
                     // def_schema.set_extension("x-idl-type-def", &def_name);
-                    let stability = stability_of_def(typ_def);
+                    let stability = stability_of_def(own_def);
                     let prelude = render_doc_prelude(&stability);
-                    let body = typ_def
+                    let body = own_def
                         .docs
                         .as_ref()
                         .map(|docs| docs.as_str().trim())
@@ -302,26 +317,25 @@ impl<'cx> JsonSchemaCtx<'cx> {
         let json_type_attrs = opaque_type_attrs(def)?;
         if let Some(typ) = json_type_attrs.typ {
             let types = typ.types;
-            let mut includes_any = false;
-            json_schema.set_allowed_types(Some(MaybeArray::Array(
-                types
-                    .iter()
-                    .filter_map(|typ| {
-                        Some(match typ {
-                            JsonType::Any => {
-                                includes_any = true;
-                                return None;
-                            }
-                            JsonType::Number => Type::Number,
-                            JsonType::Boolean => Type::Boolean,
-                            JsonType::String => Type::String,
-                            JsonType::Null => Type::Null,
-                            JsonType::Object => Type::Object,
-                            JsonType::Array => Type::Array,
-                        })
-                    })
-                    .collect(),
-            )));
+            let includes_any = types.contains(&JsonType::Any);
+            // The attribute's types are unordered, so emit them in a fixed order.
+            let mut allowed = [
+                (JsonType::String, Type::String),
+                (JsonType::Number, Type::Number),
+                (JsonType::Boolean, Type::Boolean),
+                (JsonType::Object, Type::Object),
+                (JsonType::Array, Type::Array),
+                (JsonType::Null, Type::Null),
+            ]
+            .into_iter()
+            .filter(|(json_type, _)| types.contains(json_type))
+            .map(|(_, typ)| typ)
+            .collect::<Vec<_>>();
+            json_schema.set_allowed_types(Some(if allowed.len() == 1 {
+                MaybeArray::Single(allowed.remove(0))
+            } else {
+                MaybeArray::Array(allowed)
+            }));
             if includes_any {
                 json_schema.set_allowed_types(None);
             }

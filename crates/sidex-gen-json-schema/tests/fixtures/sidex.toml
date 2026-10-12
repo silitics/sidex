@@ -1,0 +1,5 @@
+[bundle]
+name = "json_schema_fixture"
+version = "0.0.0"
+description = "Fixture types for testing JSON Schema generation."
+authors = ["Silitics GmbH <info@silitics.com>"]

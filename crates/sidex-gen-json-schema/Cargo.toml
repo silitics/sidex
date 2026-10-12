@@ -17,5 +17,9 @@ sidex-attrs-api.workspace = true
 sidex-attrs-json.workspace = true
 sidex-types-json-schema.workspace = true
 
+[dev-dependencies]
+sidex-core.workspace = true
+sidex-diagnostics.workspace = true
+
 [lints]
 workspace = true

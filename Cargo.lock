@@ -1432,6 +1432,8 @@ dependencies = [
  "sidex",
  "sidex-attrs-api",
  "sidex-attrs-json",
+ "sidex-core",
+ "sidex-diagnostics",
  "sidex-gen",
  "sidex-types-json-schema",
 ]
