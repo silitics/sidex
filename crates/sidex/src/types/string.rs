@@ -208,6 +208,24 @@ impl From<Str> for String {
     }
 }
 
+impl From<&Str> for String {
+    fn from(string: &Str) -> Self {
+        string.as_str().to_owned()
+    }
+}
+
+impl From<Str> for Cow<'_, str> {
+    fn from(string: Str) -> Self {
+        Cow::Owned(string.into())
+    }
+}
+
+impl<'s> From<&'s Str> for Cow<'s, str> {
+    fn from(string: &'s Str) -> Self {
+        Cow::Borrowed(string.as_str())
+    }
+}
+
 impl From<Str> for Box<str> {
     fn from(string: Str) -> Self {
         string.as_str().into()
