@@ -122,6 +122,57 @@ impl<K: Hash + Eq + Clone, V: Clone> Map<K, V> {
     pub fn retain(&mut self, mut keep: impl FnMut(&K, &mut V) -> bool) {
         Arc::make_mut(&mut self.0).retain(|key, value| keep(key, value));
     }
+
+    /// Returns the entry for `key` for in-place manipulation.
+    ///
+    /// Copies the entries if they are shared.
+    pub fn entry(&mut self, key: K) -> Entry<'_, K, V> {
+        Entry(Arc::make_mut(&mut self.0).entry(key))
+    }
+
+    /// Iterates over the keys in order, consuming the map.
+    pub fn into_keys(self) -> impl Iterator<Item = K> {
+        self.into_iter().map(|(key, _)| key)
+    }
+
+    /// Iterates over the values in order, consuming the map.
+    pub fn into_values(self) -> impl Iterator<Item = V> {
+        self.into_iter().map(|(_, value)| value)
+    }
+}
+
+/// Entry of a [`Map`], which may be vacant or occupied.
+pub struct Entry<'a, K, V>(indexmap::map::Entry<'a, K, V>);
+
+impl<'a, K, V> Entry<'a, K, V> {
+    /// Key of the entry.
+    pub fn key(&self) -> &K {
+        self.0.key()
+    }
+
+    /// Returns the value, inserting `default` if the entry is vacant.
+    pub fn or_insert(self, default: V) -> &'a mut V {
+        self.0.or_insert(default)
+    }
+
+    /// Returns the value, inserting the result of `default` if the entry is
+    /// vacant.
+    pub fn or_insert_with(self, default: impl FnOnce() -> V) -> &'a mut V {
+        self.0.or_insert_with(default)
+    }
+
+    /// Returns the value, inserting the default value if the entry is vacant.
+    pub fn or_default(self) -> &'a mut V
+    where
+        V: Default,
+    {
+        self.0.or_default()
+    }
+
+    /// Calls `f` with the value if the entry is occupied.
+    pub fn and_modify(self, f: impl FnOnce(&mut V)) -> Self {
+        Self(self.0.and_modify(f))
+    }
 }
 
 impl<K, V> Clone for Map<K, V> {
@@ -335,5 +386,17 @@ mod tests {
             [(&"b", &1), (&"a", &2), (&"c", &3)]
         );
         assert_eq!(clone.iter().collect::<Vec<_>>(), [(&"b", &4), (&"c", &3)]);
+    }
+
+    /// Entries insert missing values in place without affecting clones.
+    #[test]
+    fn entries() {
+        let mut map = Map::from([("a", 1)]);
+        let clone = map.clone();
+        *map.entry("a").or_default() += 1;
+        *map.entry("b").or_insert(5) += 1;
+        map.entry("a").and_modify(|value| *value *= 10);
+        assert_eq!(map.iter().collect::<Vec<_>>(), [(&"a", &20), (&"b", &6)]);
+        assert_eq!(clone.into_keys().collect::<Vec<_>>(), ["a"]);
     }
 }
