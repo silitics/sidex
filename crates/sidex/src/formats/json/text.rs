@@ -51,7 +51,7 @@ impl<'de> Deserialize<'de> for DeserializeValue {
     }
 }
 
-struct ValueVisitor;
+pub(crate) struct ValueVisitor;
 
 impl<'de> de::Visitor<'de> for ValueVisitor {
     type Value = Value;

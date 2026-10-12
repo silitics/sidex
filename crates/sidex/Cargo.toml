@@ -29,6 +29,13 @@ indexmap-2 = []
 jiff-02 = []
 uuid-1 = ["dep:uuid"]
 
+[dev-dependencies]
+serde_urlencoded = "0.7"
+
+[[test]]
+name = "serde"
+required-features = ["serde-1"]
+
 [[test]]
 name = "json"
 required-features = ["json"]
