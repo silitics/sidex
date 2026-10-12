@@ -355,5 +355,10 @@ export type Sequence<T> = T[]
 
 /**
  * A map, represented as an object with keys in their text representation.
+ *
+ * Maps with keys from a finite set, such as the cases of a string enum, may
+ * lack keys. Maps with arbitrary string keys have an index signature.
  */
-export type ObjectMap<K extends string, V> = { [key in K]?: V }
+export type ObjectMap<K extends string, V> = string extends K
+  ? { [key: string]: V }
+  : { [key in K]?: V }

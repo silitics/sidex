@@ -432,6 +432,33 @@ impl<'cx> JsonSchemaCtx<'cx> {
         Ok(json_schema)
     }
 
+    /// Returns the schema of a 64-bit integer field represented as a JSON
+    /// number, if `number` is set and the field has such a type.
+    fn number_schema(&self, typ: &ir::Type, number: bool) -> Option<TypeSchema> {
+        if !number {
+            return None;
+        }
+        let resolved = self.unit.resolve_aliases(typ);
+        let ir::TypeKind::Instance(instance) = &resolved.kind else {
+            return None;
+        };
+        let format = match self.qualified_path(instance).as_str() {
+            "::core::builtins::i64" => "int64",
+            "::core::builtins::u64" => "uint64",
+            _ => return None,
+        };
+        let mut schema = SchemaObject::new();
+        schema
+            .set_allowed_types(Some(Type::Integer.into()))
+            .set_format(Some(format.to_owned()));
+        Some(TypeSchema {
+            name: format.to_owned(),
+            use_schema: schema.clone(),
+            def_schema: None,
+            inline_schema: Some(schema),
+        })
+    }
+
     fn record_type_schema(
         &mut self,
         def: &ir::Def,
@@ -444,7 +471,10 @@ impl<'cx> JsonSchemaCtx<'cx> {
         for field in &record_type.fields {
             let json_field_attrs = field_attrs(field)?;
             let field_name = json_type_attrs.field_name(field, &json_field_attrs);
-            let type_schema = self.resolve(&field.typ)?;
+            let type_schema = match self.number_schema(&field.typ, json_field_attrs.number) {
+                Some(schema) => schema,
+                None => self.resolve(&field.typ)?,
+            };
             // let mut idl_field = IdlField::new(field_name.clone(), type_schema.name.clone());
             if json_field_attrs.inline {
                 builder.add_inline_field(type_schema);

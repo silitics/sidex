@@ -71,6 +71,19 @@ U64 = Annotated[
     pydantic.PlainSerializer(_decimal, return_type=str, when_used="json"),
 ]
 
+# 64-bit integers of fields represented as JSON numbers.
+I64Number = Annotated[
+    int,
+    pydantic.BeforeValidator(_integer),
+    pydantic.Field(ge=-(2**63), le=2**63 - 1),
+]
+
+U64Number = Annotated[
+    int,
+    pydantic.BeforeValidator(_integer),
+    pydantic.Field(ge=0, le=2**64 - 1),
+]
+
 F32 = Annotated[float, pydantic.PlainSerializer(_float, when_used="json")]
 
 F64 = Annotated[float, pydantic.PlainSerializer(_float, when_used="json")]

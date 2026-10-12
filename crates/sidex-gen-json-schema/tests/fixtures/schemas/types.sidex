@@ -13,4 +13,7 @@ record Event {
     at: Instant,
     id: Identifier,
     scalar: Scalar,
+    sequence: u64,
+    #[json(number)]
+    expires: u64,
 }

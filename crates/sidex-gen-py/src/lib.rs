@@ -561,7 +561,10 @@ fn generate_record_field(
     let json_attrs = json_field_attrs(field)?;
     let py_name = sanitize_py_name(&to_snake_case(field.name.as_str()));
     let json_name = ty_json.field_name(field, &json_attrs);
-    let field_type = ctx.resolve_type(def, &field.typ);
+    let field_type = match number_type(ctx, &field.typ) {
+        Some(number) if json_attrs.number => number.to_owned(),
+        _ => ctx.resolve_type(def, &field.typ),
+    };
     let needs_alias = py_name != json_name;
 
     let field_stability = stability_of_field(field);
@@ -602,6 +605,25 @@ fn generate_record_field(
     } else {
         let args = field_args.join(", ");
         Ok(quote!("@py_name: @type_str = pydantic.Field(@args)"))
+    }
+}
+
+/// Returns the type of an `i64` or `u64` field represented as a JSON number.
+fn number_type(ctx: &SchemaCtx, typ: &ir::Type) -> Option<&'static str> {
+    let unit = ctx.bundle_ctx.unit;
+    let resolved = unit.resolve_aliases(typ);
+    let ir::TypeKind::Instance(instance) = &resolved.kind else {
+        return None;
+    };
+    if unit[instance.def.bundle].metadata.name != "core"
+        || unit[instance.def.schema].name != "builtins"
+    {
+        return None;
+    }
+    match unit[instance.def].name.as_str() {
+        "i64" => Some("_sidex.I64Number"),
+        "u64" => Some("_sidex.U64Number"),
+        _ => None,
     }
 }
 

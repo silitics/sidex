@@ -107,6 +107,9 @@ pub fn impl_traits(ctx: &SchemaCtx, def: &ir::Def, ty: &RsType) -> Result<TokenS
                 if field.json_attrs.inline {
                     field_builders.extend(quote! { .json_inline() });
                 }
+                if field.json_attrs.number {
+                    field_builders.extend(quote! { .json_number() });
+                }
                 fields.push(quote! {
                     ::sidex::shape::FieldShape::new(
                         #name,

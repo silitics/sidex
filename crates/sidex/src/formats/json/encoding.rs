@@ -59,6 +59,15 @@ pub(super) fn view(view: &View<'_>, f: &mut ViewFn<'_>) -> Result<(), EncodeErro
     }
 }
 
+/// Maps a typed view like [`view`], but 64-bit integers to numbers.
+fn number(view: &View<'_>, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
+    match view {
+        View::I64(value) => f(ValueView::Int((*value).into())),
+        View::U64(value) => f(ValueView::Int((*value).into())),
+        _ => self::view(view, f),
+    }
+}
+
 fn float64(value: f64, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
     if value.is_finite() {
         f(ValueView::Float(value))
@@ -258,6 +267,8 @@ impl<'a> MappedRecord<'a> {
                     )));
                 };
                 MappedRecord::new(inner, None)?.fields(f)?;
+            } else if field.json.number {
+                number(&value, &mut |item| f(field.json.name, item))?;
             } else {
                 view(&value, &mut |item| f(field.json.name, item))?;
             }

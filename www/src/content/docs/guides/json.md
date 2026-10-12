@@ -90,13 +90,27 @@ Implicit tagging omits the tag. A payload is encoded directly and a case without
 
 ## Numbers and Bytes
 
-JSON numbers do not encode integer width. JavaScript numbers cannot exactly represent all 64-bit integers. Sidex's TypeScript runtime uses nominal numeric types, including a string representation for `I64` and a string-or-number representation for `U64`. Rust and Python have different native numeric representations.
+Integers up to 32 bits and `idx` are JSON numbers. JavaScript and many other JSON implementations cannot represent all 64-bit integers exactly, so `i64` and `u64` are decimal strings, such as `"9007199254740993"`. Readers also accept JSON numbers.
 
-Choose and test a representation across all participating applications. A TypeScript type mapping changes the static type only; it does not make Rust or Python serialize integers as strings.
+`f32` and `f64` are JSON numbers. JSON has no non-finite numbers, so these are the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
 
-The JSON sample generator exposes `--integers-as-strings` and `--floats-as-strings` for testing alternate representations. These flags affect samples; they do not reconfigure your application serializers.
+`bytes` are Base64 strings.
 
-`bytes` are represented as Base64 strings in the JSON contract. Nonfinite floating-point values need an explicitly agreed representation because JSON cannot represent them as numbers.
+Formats defined by others may require 64-bit integers to be JSON numbers. For instance, the `exp` claim of a JSON Web Token is a number. Mark such fields with `number`:
+
+```sidex
+record Claims {
+    sub: string,
+    #[json(number)]
+    exp: u64,
+}
+```
+
+```json
+{ "sub": "device-1", "exp": 1791847993 }
+```
+
+Only use `number` when the format requires it. Readers that parse JSON numbers as floating-point numbers lose precision beyond 2^53.
 
 ## Wrappers and Opaque Values
 

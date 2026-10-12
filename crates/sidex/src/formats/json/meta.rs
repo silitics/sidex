@@ -45,6 +45,8 @@ pub struct Field {
     /// Indicates whether the fields of the field's record are merged into the
     /// enclosing map.
     pub inline: bool,
+    /// Indicates whether 64-bit integers are numbers instead of strings.
+    pub number: bool,
 }
 
 impl Field {
@@ -52,6 +54,7 @@ impl Field {
         Self {
             name,
             inline: false,
+            number: false,
         }
     }
 }

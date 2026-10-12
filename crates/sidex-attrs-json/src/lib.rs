@@ -115,6 +115,8 @@ pub struct JsonFieldAttrs {
     pub rename: Option<RenameFunction>,
     /// Whether to inline the field's contents into the enclosing object.
     pub inline: bool,
+    /// Whether a 64-bit integer is a JSON number instead of a string.
+    pub number: bool,
 }
 
 /// Read the `JsonFieldAttrs` for `field` from its `typed_attrs["json"]`.
@@ -126,6 +128,7 @@ pub fn field_attrs(field: &ir::Field) -> Result<JsonFieldAttrs> {
         name: raw.name,
         rename: parse_rename(raw.rename)?,
         inline: raw.inline.unwrap_or(false),
+        number: raw.number.unwrap_or(false),
     })
 }
 

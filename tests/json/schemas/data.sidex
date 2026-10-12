@@ -107,6 +107,16 @@ record JsRoundtrip {
     map_u: [string: u64],
 }
 
+/// Represents 64-bit integers as JSON numbers, as formats defined by others
+/// such as JSON Web Tokens may require.
+record NumberFields {
+    #[json(number)]
+    expires: u64,
+    #[json(number)]
+    offset?: i64,
+    sequence: u64,
+}
+
 /// Record whose type variables share names with those of generated code.
 record Pair<S, D> {
     first: S,

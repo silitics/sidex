@@ -8,3 +8,10 @@ opaque NullableTimestamp
 
 #[json(type = "any")]
 opaque Anything
+
+/// Token claims whose expiry is a JSON number.
+record Claims {
+    #[json(number)]
+    exp: u64,
+    sequence: u64,
+}

@@ -63,3 +63,17 @@ fn opaque_types() {
         serde_json::json!(["string", "number"])
     );
 }
+
+/// 64-bit integers are strings unless their field is a JSON number.
+#[test]
+fn integers() {
+    let properties = &generate()["json_schema_fixture.types.Event"]["properties"];
+    assert_eq!(
+        properties["sequence"]["type"],
+        serde_json::json!(["string", "integer"])
+    );
+    assert_eq!(
+        properties["expires"],
+        serde_json::json!({ "type": "integer", "format": "uint64" })
+    );
+}

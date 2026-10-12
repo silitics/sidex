@@ -200,7 +200,15 @@ impl Builder {
                 self.fields(inner, properties, required);
                 continue;
             }
-            let mut property = self.schema(shape);
+            let mut property = match shape.kind {
+                ShapeKind::Scalar(Scalar::I64) if field.json.number => {
+                    object([("type", "integer".into())])
+                }
+                ShapeKind::Scalar(Scalar::U64) if field.json.number => {
+                    object([("type", "integer".into()), ("minimum", Value::Int(0))])
+                }
+                _ => self.schema(shape),
+            };
             if let Value::Map(entries) = &mut property {
                 if let Some(docs) = field.docs {
                     entries.insert("description".into(), docs.trim().into());

@@ -80,7 +80,13 @@ impl Plugin for Types {
                         field_jsdocs.push(Code::from(render_jsdoc(field_docs, &stability)));
                         field_names.push(Code::from(ts_string_literal(&field_name)));
                         field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
-                        field_types.push(ctx.resolve_type(def, &field.typ).0);
+                        field_types.push(
+                            if json_attrs.number && is_wide_integer(ctx, &field.typ) {
+                                Code::from("number")
+                            } else {
+                                ctx.resolve_type(def, &field.typ).0
+                            },
+                        );
                     }
                     TypeExpr(quote!(
                         "{ @(@field_jsdocs@field_names@field_opts: @field_types), + }"
@@ -225,6 +231,19 @@ impl Plugin for Types {
             .collect();
         Ok(quote!("@(@exports)*"))
     }
+}
+
+/// Indicates whether the type is `i64` or `u64`, whose JSON representation is
+/// a string unless their field is a JSON number.
+fn is_wide_integer(ctx: &SchemaCtx, typ: &ir::Type) -> bool {
+    let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
+    let ir::TypeKind::Instance(instance) = &resolved.kind else {
+        return false;
+    };
+    let unit = &ctx.bundle_ctx.unit;
+    unit[instance.def.bundle].metadata.name == "core"
+        && unit[instance.def.schema].name == "builtins"
+        && matches!(unit[instance.def].name.as_str(), "i64" | "u64")
 }
 
 fn ts_string_literal(s: &str) -> String {

@@ -365,6 +365,22 @@ impl FieldShape {
             ..self
         }
     }
+
+    /// Represents the field's 64-bit integer as a JSON number instead of a
+    /// string.
+    ///
+    /// Formats defined by others, such as the claims of JSON Web Tokens, may
+    /// require numbers. Many JSON implementations lose the precision of
+    /// integers beyond 2^53.
+    pub const fn json_number(self) -> Self {
+        Self {
+            json: json::Field {
+                number: true,
+                ..self.json
+            },
+            ..self
+        }
+    }
 }
 
 /// Structure of a variant.

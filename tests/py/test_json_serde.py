@@ -187,6 +187,15 @@ class TestRecordTypes:
         expected, actual = _roundtrip(TypeAdapter(data.RecordFieldNamesScreamingSnake), path)
         assert actual == expected
 
+    @pytest.mark.parametrize(
+        "name,path",
+        list(_fixture_files("NumberFields")),
+        ids=[n for n, _ in _fixture_files("NumberFields")],
+    )
+    def test_number_fields(self, data, name, path):
+        expected, actual = _roundtrip(TypeAdapter(data.NumberFields), path)
+        assert actual == expected
+
 
 class TestMaybeRef:
     """Implicitly tagged ``MaybeRef<T>`` — either a value or a ``$ref``."""

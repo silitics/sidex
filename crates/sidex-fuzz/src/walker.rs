@@ -247,7 +247,13 @@ impl<'a> Walker<'a> {
                 continue;
             }
             let name = attrs.field_name(field, &field_attrs);
-            let value = self.gen_value(&field_typ, source)?;
+            let mut value = self.gen_value(&field_typ, source)?;
+            if field_attrs.number && self.is_wide_integer(&field_typ) {
+                // The field represents its 64-bit integer as a number.
+                if let Value::String(text) = &value {
+                    value = Value::Number(text.parse().expect("integers are decimal"));
+                }
+            }
             // For optional fields under the `Undefined` repr, an absent field
             // is the canonical encoding of "no value". A `null` here would
             // round-trip ambiguously (some targets drop it, others keep it),
@@ -259,6 +265,18 @@ impl<'a> Walker<'a> {
         }
         self.depth -= 1;
         Ok(())
+    }
+
+    /// Indicates whether the type is `i64` or `u64`.
+    fn is_wide_integer(&self, typ: &ir::Type) -> bool {
+        let resolved = self.ir.resolve_aliases(typ);
+        let ir::TypeKind::Instance(instance) = &resolved.kind else {
+            return false;
+        };
+        matches!(
+            qualified_path(self.ir, instance).as_str(),
+            "::core::builtins::i64" | "::core::builtins::u64"
+        )
     }
 
     fn inline_record_into(
