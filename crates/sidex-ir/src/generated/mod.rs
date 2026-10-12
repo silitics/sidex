@@ -320,41 +320,45 @@ pub mod ir {
     }
     impl DefRef {
         #[doc = "Creates a new [`DefRef`]."]
-        pub fn new(bundle: BundleIdx, schema: SchemaIdx, def: DefIdx) -> Self {
+        pub fn new(
+            bundle: impl ::std::convert::Into<BundleIdx>,
+            schema: impl ::std::convert::Into<SchemaIdx>,
+            def: impl ::std::convert::Into<DefIdx>,
+        ) -> Self {
             Self {
-                bundle,
-                schema,
-                def,
+                bundle: bundle.into(),
+                schema: schema.into(),
+                def: def.into(),
             }
         }
         #[doc = "Sets the value of `bundle`."]
-        pub fn set_bundle(&mut self, bundle: BundleIdx) -> &mut Self {
-            self.bundle = bundle;
+        pub fn set_bundle(&mut self, bundle: impl ::std::convert::Into<BundleIdx>) -> &mut Self {
+            self.bundle = bundle.into();
             self
         }
         #[doc = "Sets the value of `bundle`."]
-        pub fn with_bundle(mut self, bundle: BundleIdx) -> Self {
-            self.bundle = bundle;
+        pub fn with_bundle(mut self, bundle: impl ::std::convert::Into<BundleIdx>) -> Self {
+            self.bundle = bundle.into();
             self
         }
         #[doc = "Sets the value of `schema`."]
-        pub fn set_schema(&mut self, schema: SchemaIdx) -> &mut Self {
-            self.schema = schema;
+        pub fn set_schema(&mut self, schema: impl ::std::convert::Into<SchemaIdx>) -> &mut Self {
+            self.schema = schema.into();
             self
         }
         #[doc = "Sets the value of `schema`."]
-        pub fn with_schema(mut self, schema: SchemaIdx) -> Self {
-            self.schema = schema;
+        pub fn with_schema(mut self, schema: impl ::std::convert::Into<SchemaIdx>) -> Self {
+            self.schema = schema.into();
             self
         }
         #[doc = "Sets the value of `def`."]
-        pub fn set_def(&mut self, def: DefIdx) -> &mut Self {
-            self.def = def;
+        pub fn set_def(&mut self, def: impl ::std::convert::Into<DefIdx>) -> &mut Self {
+            self.def = def.into();
             self
         }
         #[doc = "Sets the value of `def`."]
-        pub fn with_def(mut self, def: DefIdx) -> Self {
-            self.def = def;
+        pub fn with_def(mut self, def: impl ::std::convert::Into<DefIdx>) -> Self {
+            self.def = def.into();
             self
         }
     }
@@ -456,9 +460,9 @@ pub mod ir {
     }
     impl Ir {
         #[doc = "Creates a new [`Ir`]."]
-        pub fn new(root: BundleIdx) -> Self {
+        pub fn new(root: impl ::std::convert::Into<BundleIdx>) -> Self {
             Self {
-                root,
+                root: root.into(),
                 bundles: ::std::default::Default::default(),
                 schemas: ::std::default::Default::default(),
                 defs: ::std::default::Default::default(),
@@ -466,53 +470,74 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `bundles`."]
-        pub fn set_bundles(&mut self, bundles: ::std::vec::Vec<Bundle>) -> &mut Self {
-            self.bundles = bundles;
+        pub fn set_bundles(
+            &mut self,
+            bundles: impl ::std::convert::Into<::std::vec::Vec<Bundle>>,
+        ) -> &mut Self {
+            self.bundles = bundles.into();
             self
         }
         #[doc = "Sets the value of `bundles`."]
-        pub fn with_bundles(mut self, bundles: ::std::vec::Vec<Bundle>) -> Self {
-            self.bundles = bundles;
+        pub fn with_bundles(
+            mut self,
+            bundles: impl ::std::convert::Into<::std::vec::Vec<Bundle>>,
+        ) -> Self {
+            self.bundles = bundles.into();
             self
         }
         #[doc = "Sets the value of `schemas`."]
-        pub fn set_schemas(&mut self, schemas: ::std::vec::Vec<Schema>) -> &mut Self {
-            self.schemas = schemas;
+        pub fn set_schemas(
+            &mut self,
+            schemas: impl ::std::convert::Into<::std::vec::Vec<Schema>>,
+        ) -> &mut Self {
+            self.schemas = schemas.into();
             self
         }
         #[doc = "Sets the value of `schemas`."]
-        pub fn with_schemas(mut self, schemas: ::std::vec::Vec<Schema>) -> Self {
-            self.schemas = schemas;
+        pub fn with_schemas(
+            mut self,
+            schemas: impl ::std::convert::Into<::std::vec::Vec<Schema>>,
+        ) -> Self {
+            self.schemas = schemas.into();
             self
         }
         #[doc = "Sets the value of `defs`."]
-        pub fn set_defs(&mut self, defs: ::std::vec::Vec<Def>) -> &mut Self {
-            self.defs = defs;
+        pub fn set_defs(
+            &mut self,
+            defs: impl ::std::convert::Into<::std::vec::Vec<Def>>,
+        ) -> &mut Self {
+            self.defs = defs.into();
             self
         }
         #[doc = "Sets the value of `defs`."]
-        pub fn with_defs(mut self, defs: ::std::vec::Vec<Def>) -> Self {
-            self.defs = defs;
+        pub fn with_defs(mut self, defs: impl ::std::convert::Into<::std::vec::Vec<Def>>) -> Self {
+            self.defs = defs.into();
             self
         }
         #[doc = "Sets the value of `sources`."]
-        pub fn set_sources(&mut self, sources: ::std::vec::Vec<Source>) -> &mut Self {
-            self.sources = sources;
+        pub fn set_sources(
+            &mut self,
+            sources: impl ::std::convert::Into<::std::vec::Vec<Source>>,
+        ) -> &mut Self {
+            self.sources = sources.into();
             self
         }
         #[doc = "Sets the value of `sources`."]
-        pub fn with_sources(mut self, sources: ::std::vec::Vec<Source>) -> Self {
-            self.sources = sources;
+        pub fn with_sources(
+            mut self,
+            sources: impl ::std::convert::Into<::std::vec::Vec<Source>>,
+        ) -> Self {
+            self.sources = sources.into();
             self
         }
         #[doc = "Sets the value of `root`."]
-        pub fn set_root(&mut self, root: BundleIdx) -> &mut Self {
-            self.root = root;
+        pub fn set_root(&mut self, root: impl ::std::convert::Into<BundleIdx>) -> &mut Self {
+            self.root = root.into();
             self
         }
         #[doc = "Sets the value of `root`."]
-        pub fn with_root(mut self, root: BundleIdx) -> Self {
-            self.root = root;
+        pub fn with_root(mut self, root: impl ::std::convert::Into<BundleIdx>) -> Self {
+            self.root = root.into();
             self
         }
     }
@@ -704,41 +729,50 @@ pub mod ir {
     }
     impl Bundle {
         #[doc = "Creates a new [`Bundle`]."]
-        pub fn new(metadata: Metadata) -> Self {
+        pub fn new(metadata: impl ::std::convert::Into<Metadata>) -> Self {
             Self {
-                metadata,
+                metadata: metadata.into(),
                 schemas: ::std::default::Default::default(),
                 is_internal: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `metadata`."]
-        pub fn set_metadata(&mut self, metadata: Metadata) -> &mut Self {
-            self.metadata = metadata;
+        pub fn set_metadata(&mut self, metadata: impl ::std::convert::Into<Metadata>) -> &mut Self {
+            self.metadata = metadata.into();
             self
         }
         #[doc = "Sets the value of `metadata`."]
-        pub fn with_metadata(mut self, metadata: Metadata) -> Self {
-            self.metadata = metadata;
+        pub fn with_metadata(mut self, metadata: impl ::std::convert::Into<Metadata>) -> Self {
+            self.metadata = metadata.into();
             self
         }
         #[doc = "Sets the value of `schemas`."]
-        pub fn set_schemas(&mut self, schemas: ::std::vec::Vec<SchemaIdx>) -> &mut Self {
-            self.schemas = schemas;
+        pub fn set_schemas(
+            &mut self,
+            schemas: impl ::std::convert::Into<::std::vec::Vec<SchemaIdx>>,
+        ) -> &mut Self {
+            self.schemas = schemas.into();
             self
         }
         #[doc = "Sets the value of `schemas`."]
-        pub fn with_schemas(mut self, schemas: ::std::vec::Vec<SchemaIdx>) -> Self {
-            self.schemas = schemas;
+        pub fn with_schemas(
+            mut self,
+            schemas: impl ::std::convert::Into<::std::vec::Vec<SchemaIdx>>,
+        ) -> Self {
+            self.schemas = schemas.into();
             self
         }
         #[doc = "Sets the value of `is_internal`."]
-        pub fn set_is_internal(&mut self, is_internal: bool) -> &mut Self {
-            self.is_internal = is_internal;
+        pub fn set_is_internal(
+            &mut self,
+            is_internal: impl ::std::convert::Into<bool>,
+        ) -> &mut Self {
+            self.is_internal = is_internal.into();
             self
         }
         #[doc = "Sets the value of `is_internal`."]
-        pub fn with_is_internal(mut self, is_internal: bool) -> Self {
-            self.is_internal = is_internal;
+        pub fn with_is_internal(mut self, is_internal: impl ::std::convert::Into<bool>) -> Self {
+            self.is_internal = is_internal.into();
             self
         }
     }
@@ -873,32 +907,44 @@ pub mod ir {
     }
     impl Metadata {
         #[doc = "Creates a new [`Metadata`]."]
-        pub fn new(name: ::std::string::String, version: ::std::string::String) -> Self {
+        pub fn new(
+            name: impl ::std::convert::Into<::std::string::String>,
+            version: impl ::std::convert::Into<::std::string::String>,
+        ) -> Self {
             Self {
-                name,
-                version,
+                name: name.into(),
+                version: version.into(),
                 description: ::std::default::Default::default(),
                 authors: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
-            self.name = name;
+        pub fn set_name(
+            &mut self,
+            name: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
-            self.name = name;
+        pub fn with_name(mut self, name: impl ::std::convert::Into<::std::string::String>) -> Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `version`."]
-        pub fn set_version(&mut self, version: ::std::string::String) -> &mut Self {
-            self.version = version;
+        pub fn set_version(
+            &mut self,
+            version: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.version = version.into();
             self
         }
         #[doc = "Sets the value of `version`."]
-        pub fn with_version(mut self, version: ::std::string::String) -> Self {
-            self.version = version;
+        pub fn with_version(
+            mut self,
+            version: impl ::std::convert::Into<::std::string::String>,
+        ) -> Self {
+            self.version = version.into();
             self
         }
         #[doc = "Sets the value of `description`."]
@@ -1014,20 +1060,23 @@ pub mod ir {
     }
     impl Ident {
         #[doc = "Creates a new [`Ident`]."]
-        pub fn new(name: ::std::string::String) -> Self {
+        pub fn new(name: impl ::std::convert::Into<::std::string::String>) -> Self {
             Self {
-                name,
+                name: name.into(),
                 span: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
-            self.name = name;
+        pub fn set_name(
+            &mut self,
+            name: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
-            self.name = name;
+        pub fn with_name(mut self, name: impl ::std::convert::Into<::std::string::String>) -> Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `span`."]
@@ -1105,17 +1154,20 @@ pub mod ir {
     }
     impl Docs {
         #[doc = "Creates a new [`Docs`]."]
-        pub fn new(text: ::std::string::String) -> Self {
-            Self { text }
+        pub fn new(text: impl ::std::convert::Into<::std::string::String>) -> Self {
+            Self { text: text.into() }
         }
         #[doc = "Sets the value of `text`."]
-        pub fn set_text(&mut self, text: ::std::string::String) -> &mut Self {
-            self.text = text;
+        pub fn set_text(
+            &mut self,
+            text: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.text = text.into();
             self
         }
         #[doc = "Sets the value of `text`."]
-        pub fn with_text(mut self, text: ::std::string::String) -> Self {
-            self.text = text;
+        pub fn with_text(mut self, text: impl ::std::convert::Into<::std::string::String>) -> Self {
+            self.text = text.into();
             self
         }
     }
@@ -1278,10 +1330,13 @@ pub mod ir {
     }
     impl Schema {
         #[doc = "Creates a new [`Schema`]."]
-        pub fn new(bundle: BundleIdx, name: ::std::string::String) -> Self {
+        pub fn new(
+            bundle: impl ::std::convert::Into<BundleIdx>,
+            name: impl ::std::convert::Into<::std::string::String>,
+        ) -> Self {
             Self {
-                bundle,
-                name,
+                bundle: bundle.into(),
+                name: name.into(),
                 docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
                 typed_attrs: ::std::default::Default::default(),
@@ -1292,23 +1347,26 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `bundle`."]
-        pub fn set_bundle(&mut self, bundle: BundleIdx) -> &mut Self {
-            self.bundle = bundle;
+        pub fn set_bundle(&mut self, bundle: impl ::std::convert::Into<BundleIdx>) -> &mut Self {
+            self.bundle = bundle.into();
             self
         }
         #[doc = "Sets the value of `bundle`."]
-        pub fn with_bundle(mut self, bundle: BundleIdx) -> Self {
-            self.bundle = bundle;
+        pub fn with_bundle(mut self, bundle: impl ::std::convert::Into<BundleIdx>) -> Self {
+            self.bundle = bundle.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: ::std::string::String) -> &mut Self {
-            self.name = name;
+        pub fn set_name(
+            &mut self,
+            name: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: ::std::string::String) -> Self {
-            self.name = name;
+        pub fn with_name(mut self, name: impl ::std::convert::Into<::std::string::String>) -> Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `docs`."]
@@ -1322,55 +1380,75 @@ pub mod ir {
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn set_attrs(&mut self, attrs: ::std::vec::Vec<Attr>) -> &mut Self {
-            self.attrs = attrs;
+        pub fn set_attrs(
+            &mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> &mut Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn with_attrs(mut self, attrs: ::std::vec::Vec<Attr>) -> Self {
-            self.attrs = attrs;
+        pub fn with_attrs(
+            mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> &mut Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `defs`."]
-        pub fn set_defs(&mut self, defs: ::std::vec::Vec<DefIdx>) -> &mut Self {
-            self.defs = defs;
+        pub fn set_defs(
+            &mut self,
+            defs: impl ::std::convert::Into<::std::vec::Vec<DefIdx>>,
+        ) -> &mut Self {
+            self.defs = defs.into();
             self
         }
         #[doc = "Sets the value of `defs`."]
-        pub fn with_defs(mut self, defs: ::std::vec::Vec<DefIdx>) -> Self {
-            self.defs = defs;
+        pub fn with_defs(
+            mut self,
+            defs: impl ::std::convert::Into<::std::vec::Vec<DefIdx>>,
+        ) -> Self {
+            self.defs = defs.into();
             self
         }
         #[doc = "Sets the value of `imports`."]
         pub fn set_imports(
             &mut self,
-            imports: ::std::collections::HashMap<::std::string::String, ImportTarget>,
+            imports: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, ImportTarget>,
+            >,
         ) -> &mut Self {
-            self.imports = imports;
+            self.imports = imports.into();
             self
         }
         #[doc = "Sets the value of `imports`."]
         pub fn with_imports(
             mut self,
-            imports: ::std::collections::HashMap<::std::string::String, ImportTarget>,
+            imports: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, ImportTarget>,
+            >,
         ) -> Self {
-            self.imports = imports;
+            self.imports = imports.into();
             self
         }
         #[doc = "Sets the value of `source`."]
@@ -1642,11 +1720,15 @@ pub mod ir {
     }
     impl Def {
         #[doc = "Creates a new [`Def`]."]
-        pub fn new(schema: SchemaIdx, name: Ident, kind: DefKind) -> Self {
+        pub fn new(
+            schema: impl ::std::convert::Into<SchemaIdx>,
+            name: impl ::std::convert::Into<Ident>,
+            kind: impl ::std::convert::Into<DefKind>,
+        ) -> Self {
             Self {
-                schema,
-                name,
-                kind,
+                schema: schema.into(),
+                name: name.into(),
+                kind: kind.into(),
                 docs: ::std::default::Default::default(),
                 vars: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
@@ -1655,23 +1737,23 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `schema`."]
-        pub fn set_schema(&mut self, schema: SchemaIdx) -> &mut Self {
-            self.schema = schema;
+        pub fn set_schema(&mut self, schema: impl ::std::convert::Into<SchemaIdx>) -> &mut Self {
+            self.schema = schema.into();
             self
         }
         #[doc = "Sets the value of `schema`."]
-        pub fn with_schema(mut self, schema: SchemaIdx) -> Self {
-            self.schema = schema;
+        pub fn with_schema(mut self, schema: impl ::std::convert::Into<SchemaIdx>) -> Self {
+            self.schema = schema.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: Ident) -> &mut Self {
-            self.name = name;
+        pub fn set_name(&mut self, name: impl ::std::convert::Into<Ident>) -> &mut Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: Ident) -> Self {
-            self.name = name;
+        pub fn with_name(mut self, name: impl ::std::convert::Into<Ident>) -> Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `docs`."]
@@ -1685,49 +1767,65 @@ pub mod ir {
             self
         }
         #[doc = "Sets the value of `vars`."]
-        pub fn set_vars(&mut self, vars: ::std::vec::Vec<TypeVar>) -> &mut Self {
-            self.vars = vars;
+        pub fn set_vars(
+            &mut self,
+            vars: impl ::std::convert::Into<::std::vec::Vec<TypeVar>>,
+        ) -> &mut Self {
+            self.vars = vars.into();
             self
         }
         #[doc = "Sets the value of `vars`."]
-        pub fn with_vars(mut self, vars: ::std::vec::Vec<TypeVar>) -> Self {
-            self.vars = vars;
+        pub fn with_vars(
+            mut self,
+            vars: impl ::std::convert::Into<::std::vec::Vec<TypeVar>>,
+        ) -> Self {
+            self.vars = vars.into();
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn set_attrs(&mut self, attrs: ::std::vec::Vec<Attr>) -> &mut Self {
-            self.attrs = attrs;
+        pub fn set_attrs(
+            &mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> &mut Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn with_attrs(mut self, attrs: ::std::vec::Vec<Attr>) -> Self {
-            self.attrs = attrs;
+        pub fn with_attrs(
+            mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> &mut Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `kind`."]
-        pub fn set_kind(&mut self, kind: DefKind) -> &mut Self {
-            self.kind = kind;
+        pub fn set_kind(&mut self, kind: impl ::std::convert::Into<DefKind>) -> &mut Self {
+            self.kind = kind.into();
             self
         }
         #[doc = "Sets the value of `kind`."]
-        pub fn with_kind(mut self, kind: DefKind) -> Self {
-            self.kind = kind;
+        pub fn with_kind(mut self, kind: impl ::std::convert::Into<DefKind>) -> Self {
+            self.kind = kind.into();
             self
         }
         #[doc = "Sets the value of `span`."]
@@ -1810,17 +1908,17 @@ pub mod ir {
     }
     impl TypeVar {
         #[doc = "Creates a new [`TypeVar`]."]
-        pub fn new(name: Ident) -> Self {
-            Self { name }
+        pub fn new(name: impl ::std::convert::Into<Ident>) -> Self {
+            Self { name: name.into() }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: Ident) -> &mut Self {
-            self.name = name;
+        pub fn set_name(&mut self, name: impl ::std::convert::Into<Ident>) -> &mut Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: Ident) -> Self {
-            self.name = name;
+        pub fn with_name(mut self, name: impl ::std::convert::Into<Ident>) -> Self {
+            self.name = name.into();
             self
         }
     }
@@ -2022,17 +2120,19 @@ pub mod ir {
     }
     impl TypeAliasDef {
         #[doc = "Creates a new [`TypeAliasDef`]."]
-        pub fn new(aliased: Type) -> Self {
-            Self { aliased }
+        pub fn new(aliased: impl ::std::convert::Into<Type>) -> Self {
+            Self {
+                aliased: aliased.into(),
+            }
         }
         #[doc = "Sets the value of `aliased`."]
-        pub fn set_aliased(&mut self, aliased: Type) -> &mut Self {
-            self.aliased = aliased;
+        pub fn set_aliased(&mut self, aliased: impl ::std::convert::Into<Type>) -> &mut Self {
+            self.aliased = aliased.into();
             self
         }
         #[doc = "Sets the value of `aliased`."]
-        pub fn with_aliased(mut self, aliased: Type) -> Self {
-            self.aliased = aliased;
+        pub fn with_aliased(mut self, aliased: impl ::std::convert::Into<Type>) -> Self {
+            self.aliased = aliased.into();
             self
         }
     }
@@ -2179,13 +2279,19 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `fields`."]
-        pub fn set_fields(&mut self, fields: ::std::vec::Vec<Field>) -> &mut Self {
-            self.fields = fields;
+        pub fn set_fields(
+            &mut self,
+            fields: impl ::std::convert::Into<::std::vec::Vec<Field>>,
+        ) -> &mut Self {
+            self.fields = fields.into();
             self
         }
         #[doc = "Sets the value of `fields`."]
-        pub fn with_fields(mut self, fields: ::std::vec::Vec<Field>) -> Self {
-            self.fields = fields;
+        pub fn with_fields(
+            mut self,
+            fields: impl ::std::convert::Into<::std::vec::Vec<Field>>,
+        ) -> Self {
+            self.fields = fields.into();
             self
         }
     }
@@ -2362,10 +2468,13 @@ pub mod ir {
     }
     impl Field {
         #[doc = "Creates a new [`Field`]."]
-        pub fn new(name: Ident, typ: Type) -> Self {
+        pub fn new(
+            name: impl ::std::convert::Into<Ident>,
+            typ: impl ::std::convert::Into<Type>,
+        ) -> Self {
             Self {
-                name,
-                typ,
+                name: name.into(),
+                typ: typ.into(),
                 docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
                 typed_attrs: ::std::default::Default::default(),
@@ -2374,13 +2483,13 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: Ident) -> &mut Self {
-            self.name = name;
+        pub fn set_name(&mut self, name: impl ::std::convert::Into<Ident>) -> &mut Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: Ident) -> Self {
-            self.name = name;
+        pub fn with_name(mut self, name: impl ::std::convert::Into<Ident>) -> Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `docs`."]
@@ -2394,49 +2503,62 @@ pub mod ir {
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn set_attrs(&mut self, attrs: ::std::vec::Vec<Attr>) -> &mut Self {
-            self.attrs = attrs;
+        pub fn set_attrs(
+            &mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> &mut Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn with_attrs(mut self, attrs: ::std::vec::Vec<Attr>) -> Self {
-            self.attrs = attrs;
+        pub fn with_attrs(
+            mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> &mut Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `typ`."]
-        pub fn set_typ(&mut self, typ: Type) -> &mut Self {
-            self.typ = typ;
+        pub fn set_typ(&mut self, typ: impl ::std::convert::Into<Type>) -> &mut Self {
+            self.typ = typ.into();
             self
         }
         #[doc = "Sets the value of `typ`."]
-        pub fn with_typ(mut self, typ: Type) -> Self {
-            self.typ = typ;
+        pub fn with_typ(mut self, typ: impl ::std::convert::Into<Type>) -> Self {
+            self.typ = typ.into();
             self
         }
         #[doc = "Sets the value of `is_optional`."]
-        pub fn set_is_optional(&mut self, is_optional: bool) -> &mut Self {
-            self.is_optional = is_optional;
+        pub fn set_is_optional(
+            &mut self,
+            is_optional: impl ::std::convert::Into<bool>,
+        ) -> &mut Self {
+            self.is_optional = is_optional.into();
             self
         }
         #[doc = "Sets the value of `is_optional`."]
-        pub fn with_is_optional(mut self, is_optional: bool) -> Self {
-            self.is_optional = is_optional;
+        pub fn with_is_optional(mut self, is_optional: impl ::std::convert::Into<bool>) -> Self {
+            self.is_optional = is_optional.into();
             self
         }
         #[doc = "Sets the value of `span`."]
@@ -2530,13 +2652,19 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `variants`."]
-        pub fn set_variants(&mut self, variants: ::std::vec::Vec<Variant>) -> &mut Self {
-            self.variants = variants;
+        pub fn set_variants(
+            &mut self,
+            variants: impl ::std::convert::Into<::std::vec::Vec<Variant>>,
+        ) -> &mut Self {
+            self.variants = variants.into();
             self
         }
         #[doc = "Sets the value of `variants`."]
-        pub fn with_variants(mut self, variants: ::std::vec::Vec<Variant>) -> Self {
-            self.variants = variants;
+        pub fn with_variants(
+            mut self,
+            variants: impl ::std::convert::Into<::std::vec::Vec<Variant>>,
+        ) -> Self {
+            self.variants = variants.into();
             self
         }
     }
@@ -2704,9 +2832,9 @@ pub mod ir {
     }
     impl Variant {
         #[doc = "Creates a new [`Variant`]."]
-        pub fn new(name: Ident) -> Self {
+        pub fn new(name: impl ::std::convert::Into<Ident>) -> Self {
             Self {
-                name,
+                name: name.into(),
                 docs: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
                 typed_attrs: ::std::default::Default::default(),
@@ -2715,13 +2843,13 @@ pub mod ir {
             }
         }
         #[doc = "Sets the value of `name`."]
-        pub fn set_name(&mut self, name: Ident) -> &mut Self {
-            self.name = name;
+        pub fn set_name(&mut self, name: impl ::std::convert::Into<Ident>) -> &mut Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `name`."]
-        pub fn with_name(mut self, name: Ident) -> Self {
-            self.name = name;
+        pub fn with_name(mut self, name: impl ::std::convert::Into<Ident>) -> Self {
+            self.name = name.into();
             self
         }
         #[doc = "Sets the value of `docs`."]
@@ -2735,29 +2863,39 @@ pub mod ir {
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn set_attrs(&mut self, attrs: ::std::vec::Vec<Attr>) -> &mut Self {
-            self.attrs = attrs;
+        pub fn set_attrs(
+            &mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> &mut Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `attrs`."]
-        pub fn with_attrs(mut self, attrs: ::std::vec::Vec<Attr>) -> Self {
-            self.attrs = attrs;
+        pub fn with_attrs(
+            mut self,
+            attrs: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> Self {
+            self.attrs = attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn set_typed_attrs(
             &mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> &mut Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `typed_attrs`."]
         pub fn with_typed_attrs(
             mut self,
-            typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+            typed_attrs: impl ::std::convert::Into<
+                ::std::collections::HashMap<::std::string::String, Value>,
+            >,
         ) -> Self {
-            self.typed_attrs = typed_attrs;
+            self.typed_attrs = typed_attrs.into();
             self
         }
         #[doc = "Sets the value of `typ`."]
@@ -2850,17 +2988,19 @@ pub mod ir {
     }
     impl WrapperTypeDef {
         #[doc = "Creates a new [`WrapperTypeDef`]."]
-        pub fn new(wrapped: Type) -> Self {
-            Self { wrapped }
+        pub fn new(wrapped: impl ::std::convert::Into<Type>) -> Self {
+            Self {
+                wrapped: wrapped.into(),
+            }
         }
         #[doc = "Sets the value of `wrapped`."]
-        pub fn set_wrapped(&mut self, wrapped: Type) -> &mut Self {
-            self.wrapped = wrapped;
+        pub fn set_wrapped(&mut self, wrapped: impl ::std::convert::Into<Type>) -> &mut Self {
+            self.wrapped = wrapped.into();
             self
         }
         #[doc = "Sets the value of `wrapped`."]
-        pub fn with_wrapped(mut self, wrapped: Type) -> Self {
-            self.wrapped = wrapped;
+        pub fn with_wrapped(mut self, wrapped: impl ::std::convert::Into<Type>) -> Self {
+            self.wrapped = wrapped.into();
             self
         }
     }
@@ -2949,20 +3089,20 @@ pub mod ir {
     }
     impl Type {
         #[doc = "Creates a new [`Type`]."]
-        pub fn new(kind: TypeKind) -> Self {
+        pub fn new(kind: impl ::std::convert::Into<TypeKind>) -> Self {
             Self {
-                kind,
+                kind: kind.into(),
                 span: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `kind`."]
-        pub fn set_kind(&mut self, kind: TypeKind) -> &mut Self {
-            self.kind = kind;
+        pub fn set_kind(&mut self, kind: impl ::std::convert::Into<TypeKind>) -> &mut Self {
+            self.kind = kind.into();
             self
         }
         #[doc = "Sets the value of `kind`."]
-        pub fn with_kind(mut self, kind: TypeKind) -> Self {
-            self.kind = kind;
+        pub fn with_kind(mut self, kind: impl ::std::convert::Into<TypeKind>) -> Self {
+            self.kind = kind.into();
             self
         }
         #[doc = "Sets the value of `span`."]
@@ -3106,17 +3246,17 @@ pub mod ir {
     }
     impl TypeVarType {
         #[doc = "Creates a new [`TypeVarType`]."]
-        pub fn new(idx: TypeVarIdx) -> Self {
-            Self { idx }
+        pub fn new(idx: impl ::std::convert::Into<TypeVarIdx>) -> Self {
+            Self { idx: idx.into() }
         }
         #[doc = "Sets the value of `idx`."]
-        pub fn set_idx(&mut self, idx: TypeVarIdx) -> &mut Self {
-            self.idx = idx;
+        pub fn set_idx(&mut self, idx: impl ::std::convert::Into<TypeVarIdx>) -> &mut Self {
+            self.idx = idx.into();
             self
         }
         #[doc = "Sets the value of `idx`."]
-        pub fn with_idx(mut self, idx: TypeVarIdx) -> Self {
-            self.idx = idx;
+        pub fn with_idx(mut self, idx: impl ::std::convert::Into<TypeVarIdx>) -> Self {
+            self.idx = idx.into();
             self
         }
     }
@@ -3206,30 +3346,36 @@ pub mod ir {
     }
     impl InstanceType {
         #[doc = "Creates a new [`InstanceType`]."]
-        pub fn new(def: DefRef) -> Self {
+        pub fn new(def: impl ::std::convert::Into<DefRef>) -> Self {
             Self {
-                def,
+                def: def.into(),
                 subst: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `def`."]
-        pub fn set_def(&mut self, def: DefRef) -> &mut Self {
-            self.def = def;
+        pub fn set_def(&mut self, def: impl ::std::convert::Into<DefRef>) -> &mut Self {
+            self.def = def.into();
             self
         }
         #[doc = "Sets the value of `def`."]
-        pub fn with_def(mut self, def: DefRef) -> Self {
-            self.def = def;
+        pub fn with_def(mut self, def: impl ::std::convert::Into<DefRef>) -> Self {
+            self.def = def.into();
             self
         }
         #[doc = "Sets the value of `subst`."]
-        pub fn set_subst(&mut self, subst: ::std::vec::Vec<Type>) -> &mut Self {
-            self.subst = subst;
+        pub fn set_subst(
+            &mut self,
+            subst: impl ::std::convert::Into<::std::vec::Vec<Type>>,
+        ) -> &mut Self {
+            self.subst = subst.into();
             self
         }
         #[doc = "Sets the value of `subst`."]
-        pub fn with_subst(mut self, subst: ::std::vec::Vec<Type>) -> Self {
-            self.subst = subst;
+        pub fn with_subst(
+            mut self,
+            subst: impl ::std::convert::Into<::std::vec::Vec<Type>>,
+        ) -> Self {
+            self.subst = subst.into();
             self
         }
     }
@@ -3337,17 +3483,21 @@ pub mod ir {
     }
     impl Span {
         #[doc = "Creates a new [`Span`]."]
-        pub fn new(src: SourceIdx, start: usize, end: usize) -> Self {
-            Self { src, start, end }
+        pub fn new(src: impl ::std::convert::Into<SourceIdx>, start: usize, end: usize) -> Self {
+            Self {
+                src: src.into(),
+                start: start,
+                end: end,
+            }
         }
         #[doc = "Sets the value of `src`."]
-        pub fn set_src(&mut self, src: SourceIdx) -> &mut Self {
-            self.src = src;
+        pub fn set_src(&mut self, src: impl ::std::convert::Into<SourceIdx>) -> &mut Self {
+            self.src = src.into();
             self
         }
         #[doc = "Sets the value of `src`."]
-        pub fn with_src(mut self, src: SourceIdx) -> Self {
-            self.src = src;
+        pub fn with_src(mut self, src: impl ::std::convert::Into<SourceIdx>) -> Self {
+            self.src = src.into();
             self
         }
         #[doc = "Sets the value of `start`."]
@@ -3456,20 +3606,20 @@ pub mod ir {
     }
     impl Attr {
         #[doc = "Creates a new [`Attr`]."]
-        pub fn new(kind: AttrKind) -> Self {
+        pub fn new(kind: impl ::std::convert::Into<AttrKind>) -> Self {
             Self {
-                kind,
+                kind: kind.into(),
                 span: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `kind`."]
-        pub fn set_kind(&mut self, kind: AttrKind) -> &mut Self {
-            self.kind = kind;
+        pub fn set_kind(&mut self, kind: impl ::std::convert::Into<AttrKind>) -> &mut Self {
+            self.kind = kind.into();
             self
         }
         #[doc = "Sets the value of `kind`."]
-        pub fn with_kind(mut self, kind: AttrKind) -> Self {
-            self.kind = kind;
+        pub fn with_kind(mut self, kind: impl ::std::convert::Into<AttrKind>) -> Self {
+            self.kind = kind.into();
             self
         }
         #[doc = "Sets the value of `span`."]
@@ -3633,27 +3783,39 @@ pub mod ir {
     }
     impl AttrList {
         #[doc = "Creates a new [`AttrList`]."]
-        pub fn new(path: ::std::string::String, args: ::std::vec::Vec<Attr>) -> Self {
-            Self { path, args }
+        pub fn new(
+            path: impl ::std::convert::Into<::std::string::String>,
+            args: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> Self {
+            Self {
+                path: path.into(),
+                args: args.into(),
+            }
         }
         #[doc = "Sets the value of `path`."]
-        pub fn set_path(&mut self, path: ::std::string::String) -> &mut Self {
-            self.path = path;
+        pub fn set_path(
+            &mut self,
+            path: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.path = path.into();
             self
         }
         #[doc = "Sets the value of `path`."]
-        pub fn with_path(mut self, path: ::std::string::String) -> Self {
-            self.path = path;
+        pub fn with_path(mut self, path: impl ::std::convert::Into<::std::string::String>) -> Self {
+            self.path = path.into();
             self
         }
         #[doc = "Sets the value of `args`."]
-        pub fn set_args(&mut self, args: ::std::vec::Vec<Attr>) -> &mut Self {
-            self.args = args;
+        pub fn set_args(
+            &mut self,
+            args: impl ::std::convert::Into<::std::vec::Vec<Attr>>,
+        ) -> &mut Self {
+            self.args = args.into();
             self
         }
         #[doc = "Sets the value of `args`."]
-        pub fn with_args(mut self, args: ::std::vec::Vec<Attr>) -> Self {
-            self.args = args;
+        pub fn with_args(mut self, args: impl ::std::convert::Into<::std::vec::Vec<Attr>>) -> Self {
+            self.args = args.into();
             self
         }
     }
@@ -3734,27 +3896,36 @@ pub mod ir {
     }
     impl AttrAssign {
         #[doc = "Creates a new [`AttrAssign`]."]
-        pub fn new(path: ::std::string::String, value: AttrValue) -> Self {
-            Self { path, value }
+        pub fn new(
+            path: impl ::std::convert::Into<::std::string::String>,
+            value: impl ::std::convert::Into<AttrValue>,
+        ) -> Self {
+            Self {
+                path: path.into(),
+                value: value.into(),
+            }
         }
         #[doc = "Sets the value of `path`."]
-        pub fn set_path(&mut self, path: ::std::string::String) -> &mut Self {
-            self.path = path;
+        pub fn set_path(
+            &mut self,
+            path: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.path = path.into();
             self
         }
         #[doc = "Sets the value of `path`."]
-        pub fn with_path(mut self, path: ::std::string::String) -> Self {
-            self.path = path;
+        pub fn with_path(mut self, path: impl ::std::convert::Into<::std::string::String>) -> Self {
+            self.path = path.into();
             self
         }
         #[doc = "Sets the value of `value`."]
-        pub fn set_value(&mut self, value: AttrValue) -> &mut Self {
-            self.value = value;
+        pub fn set_value(&mut self, value: impl ::std::convert::Into<AttrValue>) -> &mut Self {
+            self.value = value.into();
             self
         }
         #[doc = "Sets the value of `value`."]
-        pub fn with_value(mut self, value: AttrValue) -> Self {
-            self.value = value;
+        pub fn with_value(mut self, value: impl ::std::convert::Into<AttrValue>) -> Self {
+            self.value = value.into();
             self
         }
     }
@@ -3906,20 +4077,23 @@ pub mod ir {
     }
     impl TokensValue {
         #[doc = "Creates a new [`TokensValue`]."]
-        pub fn new(text: ::std::string::String) -> Self {
+        pub fn new(text: impl ::std::convert::Into<::std::string::String>) -> Self {
             Self {
-                text,
+                text: text.into(),
                 span: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `text`."]
-        pub fn set_text(&mut self, text: ::std::string::String) -> &mut Self {
-            self.text = text;
+        pub fn set_text(
+            &mut self,
+            text: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.text = text.into();
             self
         }
         #[doc = "Sets the value of `text`."]
-        pub fn with_text(mut self, text: ::std::string::String) -> Self {
-            self.text = text;
+        pub fn with_text(mut self, text: impl ::std::convert::Into<::std::string::String>) -> Self {
+            self.text = text.into();
             self
         }
         #[doc = "Sets the value of `span`."]

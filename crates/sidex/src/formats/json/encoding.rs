@@ -178,6 +178,13 @@ fn key(
         View::Uuid(key) => with_display(key, f),
         View::Timestamp(key) => with_display(key, f),
         View::Date(key) => with_display(key, f),
+        View::Value(key) => {
+            match key.as_ref() {
+                Value::String(key) => f(key),
+                Value::Int(key) => with_display(key, f),
+                _ => Err(EncodeError::new("map keys must be strings or integers")),
+            }
+        }
         _ => {
             Err(EncodeError::new(
                 "map keys must be strings, integers, UUIDs, timestamps, or dates",

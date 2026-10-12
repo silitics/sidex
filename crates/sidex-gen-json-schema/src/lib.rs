@@ -503,10 +503,10 @@ impl Generator for JsonSchemaGenerator {
                                     .enumerate()
                                     .map(|(idx, _)| {
                                         ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
-                                            idx.into(),
+                                            ir::TypeVarIdx::from(idx),
                                         )))
                                     })
-                                    .collect(),
+                                    .collect::<Vec<_>>(),
                             ),
                     ));
                     ctx.resolve(&typ)?;
@@ -569,10 +569,10 @@ impl Generator for JsonSchemaGenerator {
                                     .enumerate()
                                     .map(|(idx, _)| {
                                         ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
-                                            idx.into(),
+                                            ir::TypeVarIdx::from(idx),
                                         )))
                                     })
-                                    .collect(),
+                                    .collect::<Vec<_>>(),
                             ),
                     ));
                     ctx.resolve(&typ)?;

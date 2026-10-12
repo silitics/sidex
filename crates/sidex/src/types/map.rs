@@ -170,6 +170,24 @@ impl<K: Hash + Eq, V> FromIterator<(K, V)> for Map<K, V> {
     }
 }
 
+impl<K: Hash + Eq, V, const N: usize> From<[(K, V); N]> for Map<K, V> {
+    fn from(entries: [(K, V); N]) -> Self {
+        entries.into_iter().collect()
+    }
+}
+
+impl<K: Hash + Eq, V, S> From<std::collections::HashMap<K, V, S>> for Map<K, V> {
+    fn from(entries: std::collections::HashMap<K, V, S>) -> Self {
+        entries.into_iter().collect()
+    }
+}
+
+impl<K: Hash + Eq, V> From<std::collections::BTreeMap<K, V>> for Map<K, V> {
+    fn from(entries: std::collections::BTreeMap<K, V>) -> Self {
+        entries.into_iter().collect()
+    }
+}
+
 impl<K: Hash + Eq + Clone, V: Clone> Extend<(K, V)> for Map<K, V> {
     fn extend<I: IntoIterator<Item = (K, V)>>(&mut self, iter: I) {
         Arc::make_mut(&mut self.0).extend(iter);

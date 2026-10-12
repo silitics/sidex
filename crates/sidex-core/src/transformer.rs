@@ -386,7 +386,7 @@ impl<'t, 'm> Resolver<'t, 'm> {
                                     .subst
                                     .iter()
                                     .map(|subst| self.resolve_type_expr(enclosing, subst))
-                                    .collect(),
+                                    .collect::<Vec<_>>(),
                             ),
                         ))
                     }
@@ -857,7 +857,7 @@ impl Transformer {
                                                 .with_attrs(transform_attrs(&field.attrs))
                                                 .with_is_optional(field.is_optional)
                                             })
-                                            .collect(),
+                                            .collect::<Vec<_>>(),
                                     ),
                                 )
                             }
@@ -877,7 +877,7 @@ impl Transformer {
                                                     resolver.resolve_type_expr(ast_def, t)
                                                 }))
                                             })
-                                            .collect(),
+                                            .collect::<Vec<_>>(),
                                     ),
                                 )
                             }

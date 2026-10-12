@@ -431,7 +431,7 @@ fn parse_record(
                             plugin_attr
                                 .span
                                 .clone()
-                                .unwrap_or_else(|| ir::Span::new(0.into(), 0, 0)),
+                                .unwrap_or_else(|| ir::Span::new(ir::SourceIdx::from(0), 0, 0)),
                             "expected `(...)` form",
                         )),
                     ));

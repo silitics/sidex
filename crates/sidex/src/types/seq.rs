@@ -1,5 +1,6 @@
 //! Shared sequences.
 
+use std::borrow::Borrow;
 use std::fmt;
 use std::ops::Deref;
 use std::ops::DerefMut;
@@ -80,6 +81,42 @@ impl<T: Clone> DerefMut for Seq<T> {
 impl<T: fmt::Debug> fmt::Debug for Seq<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_list().entries(self.iter()).finish()
+    }
+}
+
+impl<T> AsRef<[T]> for Seq<T> {
+    fn as_ref(&self) -> &[T] {
+        self
+    }
+}
+
+impl<T> Borrow<[T]> for Seq<T> {
+    fn borrow(&self) -> &[T] {
+        self
+    }
+}
+
+impl<T: PartialEq> PartialEq<Vec<T>> for Seq<T> {
+    fn eq(&self, other: &Vec<T>) -> bool {
+        self.as_slice() == other.as_slice()
+    }
+}
+
+impl<T: PartialEq> PartialEq<[T]> for Seq<T> {
+    fn eq(&self, other: &[T]) -> bool {
+        self.as_slice() == other
+    }
+}
+
+impl<T: Clone> From<&[T]> for Seq<T> {
+    fn from(items: &[T]) -> Self {
+        Self(Arc::new(items.to_vec()))
+    }
+}
+
+impl<T, const N: usize> From<[T; N]> for Seq<T> {
+    fn from(items: [T; N]) -> Self {
+        Self(Arc::new(items.into()))
     }
 }
 

@@ -28,6 +28,17 @@ impl Plugin for Builder {
                     let name = &info.name;
                     let typ = &info.typ;
                     let vis = &info.vis;
+                    // Parameters accept anything convertible into the field's type,
+                    // except for numbers, whose literals would be ambiguous, and
+                    // optional fields, whose `None` would be ambiguous.
+                    let (param, value) = if field.is_optional || is_number(ctx, &field.typ) {
+                        (quote! { #typ }, quote! { #name })
+                    } else {
+                        (
+                            quote! { impl ::std::convert::Into<#typ> },
+                            quote! { #name.into() },
+                        )
+                    };
                     // Methods for direct field access, mostly for convenience.
                     let set_doc = format!("Sets the value of `{}`.", name);
                     let set_method = format_ident!("set_{}", name);
@@ -35,13 +46,13 @@ impl Plugin for Builder {
                     let with_method = format_ident!("with_{}", name);
                     methods.push(quote! {
                         #[doc = #set_doc]
-                        #vis fn #set_method(&mut self, #name: #typ) -> &mut Self {
-                            self.#name = #name;
+                        #vis fn #set_method(&mut self, #name: #param) -> &mut Self {
+                            self.#name = #value;
                             self
                         }
                         #[doc = #with_doc]
-                        #vis fn #with_method(mut self, #name: #typ) -> Self {
-                            self.#name = #name;
+                        #vis fn #with_method(mut self, #name: #param) -> Self {
+                            self.#name = #value;
                             self
                         }
                     });
@@ -65,7 +76,7 @@ impl Plugin for Builder {
                     });
 
                     if !field.is_optional && !is_container && !is_default_field {
-                        constructor_fields.push(info);
+                        constructor_fields.push((info, param, value));
                     } else {
                         default_fields.push(info);
                     }
@@ -73,10 +84,9 @@ impl Plugin for Builder {
 
                 let constructor_args = constructor_fields
                     .iter()
-                    .map(|info| {
+                    .map(|(info, param, _)| {
                         let name = &info.name;
-                        let typ = &info.typ;
-                        quote! { #name: #typ }
+                        quote! { #name: #param }
                     })
                     .collect::<Vec<_>>();
 
@@ -84,9 +94,9 @@ impl Plugin for Builder {
 
                 let construct = constructor_fields
                     .iter()
-                    .map(|info| {
+                    .map(|(info, _, value)| {
                         let name = &info.name;
-                        quote! { #name }
+                        quote! { #name: #value }
                     })
                     .chain(default_fields.iter().map(|info| {
                         let name = &info.name;
@@ -130,4 +140,26 @@ impl Plugin for Builder {
             }
         }
     }
+}
+
+/// Indicates whether the type is a built-in number type.
+fn is_number(ctx: &crate::context::SchemaCtx, typ: &ir::Type) -> bool {
+    let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
+    let ir::TypeKind::Instance(instance) = &resolved.kind else {
+        return false;
+    };
+    matches!(
+        ctx.fully_qualified_type_name(instance).as_str(),
+        "::core::builtins::i8"
+            | "::core::builtins::i16"
+            | "::core::builtins::i32"
+            | "::core::builtins::i64"
+            | "::core::builtins::u8"
+            | "::core::builtins::u16"
+            | "::core::builtins::u32"
+            | "::core::builtins::u64"
+            | "::core::builtins::idx"
+            | "::core::builtins::f32"
+            | "::core::builtins::f64"
+    )
 }

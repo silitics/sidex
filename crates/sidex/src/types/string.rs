@@ -1,11 +1,14 @@
 //! Shared strings.
 
 use std::borrow::Borrow;
+use std::borrow::Cow;
 use std::cmp::Ordering;
+use std::ffi::OsStr;
 use std::fmt;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::ops::Deref;
+use std::path::Path;
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -106,6 +109,30 @@ impl PartialEq<&str> for Str {
     }
 }
 
+impl PartialEq<String> for Str {
+    fn eq(&self, other: &String) -> bool {
+        self.as_str() == other
+    }
+}
+
+impl PartialEq<Str> for str {
+    fn eq(&self, other: &Str) -> bool {
+        self == other.as_str()
+    }
+}
+
+impl PartialEq<Str> for &str {
+    fn eq(&self, other: &Str) -> bool {
+        *self == other.as_str()
+    }
+}
+
+impl PartialEq<Str> for String {
+    fn eq(&self, other: &Str) -> bool {
+        self == other.as_str()
+    }
+}
+
 impl PartialOrd for Str {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -125,6 +152,24 @@ impl Hash for Str {
     }
 }
 
+impl AsRef<[u8]> for Str {
+    fn as_ref(&self) -> &[u8] {
+        self.as_bytes()
+    }
+}
+
+impl AsRef<OsStr> for Str {
+    fn as_ref(&self) -> &OsStr {
+        self.as_str().as_ref()
+    }
+}
+
+impl AsRef<Path> for Str {
+    fn as_ref(&self) -> &Path {
+        self.as_str().as_ref()
+    }
+}
+
 impl From<&str> for Str {
     fn from(string: &str) -> Self {
         Self(Repr::Shared(string.into()))
@@ -134,6 +179,24 @@ impl From<&str> for Str {
 impl From<String> for Str {
     fn from(string: String) -> Self {
         Self(Repr::Shared(string.into()))
+    }
+}
+
+impl From<&String> for Str {
+    fn from(string: &String) -> Self {
+        string.as_str().into()
+    }
+}
+
+impl From<Box<str>> for Str {
+    fn from(string: Box<str>) -> Self {
+        Self(Repr::Shared(string.into()))
+    }
+}
+
+impl From<Cow<'_, str>> for Str {
+    fn from(string: Cow<'_, str>) -> Self {
+        string.as_ref().into()
     }
 }
 
