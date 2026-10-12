@@ -9,6 +9,7 @@ use crate::context::BundleCtx;
 use crate::context::SchemaCtx;
 
 pub mod builder;
+pub mod schemars;
 pub mod serde;
 pub mod types;
 
@@ -31,5 +32,6 @@ pub fn plugins() -> HashMap<String, Arc<dyn 'static + Plugin + Sync>> {
     plugins.insert("types".to_owned(), Arc::new(types::Types));
     plugins.insert("builder".to_owned(), Arc::new(builder::Builder));
     plugins.insert("serde".to_owned(), Arc::new(serde::Serde));
+    plugins.insert("schemars".to_owned(), Arc::new(schemars::Schemars));
     plugins
 }

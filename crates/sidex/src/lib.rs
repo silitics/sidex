@@ -117,6 +117,7 @@
 //! - `indexmap-2`, `jiff-02`, `uuid-1`: Conversions to and from types of third-party
 //!   crates (see [`types`]).
 //! - `serde_json-1`: Conversions between [`Value`] and `serde_json::Value`.
+//! - `schemars-1`: Schemas for `schemars` (see [`formats::json`]).
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

@@ -86,6 +86,9 @@ pub use self::meta::Field;
 pub use self::meta::Opaque;
 pub use self::meta::Tagging;
 pub use self::meta::Type;
+pub use self::schema::schema;
+#[cfg(feature = "schemars-1")]
+pub use self::schema::schemars_schema;
 #[cfg(feature = "json")]
 pub use self::text::from_slice;
 #[cfg(feature = "json")]
@@ -107,6 +110,7 @@ mod encoding;
 mod interop;
 mod meta;
 mod repr;
+mod schema;
 #[cfg(feature = "json")]
 pub(crate) mod text;
 

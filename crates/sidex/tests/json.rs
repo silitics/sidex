@@ -184,6 +184,23 @@ fn strict_decoding() {
     assert_eq!(error.to_string(), "content.z: unknown field `z`");
 }
 
+/// Schemas describe records with their JSON names and merged inline fields,
+/// and variants with their taggings.
+#[test]
+fn schemas() {
+    let schema = json::schema(<Located as Shaped>::SHAPE);
+    assert_eq!(
+        sidex::formats::json::to_string(&schema).unwrap(),
+        r#"{"type":"object","properties":{"name":{"type":"string"},"x":{"type":"integer","minimum":-2147483648,"maximum":2147483647},"y":{"type":"integer","minimum":-2147483648,"maximum":2147483647}},"required":["name","x","y"]}"#
+    );
+    let schema = json::schema(<Position<Internal> as Shaped>::SHAPE);
+    let alternatives = schema.get("oneOf").and_then(Value::as_seq).unwrap();
+    assert_eq!(
+        sidex::formats::json::to_string(&alternatives[1]).unwrap(),
+        r#"{"type":"object","properties":{"tag":{"const":"Named"},"content":{"type":"string"}},"required":["tag","content"]}"#
+    );
+}
+
 /// Map keys use the text representation of their type.
 #[test]
 fn map_keys() {
