@@ -28,16 +28,16 @@ impl Plugin for Builder {
                     let name = &info.name;
                     let typ = &info.typ;
                     let vis = &info.vis;
-                    // Parameters accept anything convertible into the field's type,
-                    // except for numbers, whose literals would be ambiguous, and
-                    // optional fields, whose `None` would be ambiguous.
-                    let (param, value) = if field.is_optional || is_number(ctx, &field.typ) {
-                        (quote! { #typ }, quote! { #name })
-                    } else {
+                    // Strings and bytes accept anything convertible into them, for
+                    // instance, `&str` for strings. Other parameters keep their
+                    // type, so that arguments like `iter.collect()` can be inferred.
+                    let (param, value) = if !field.is_optional && is_text(ctx, &field.typ) {
                         (
                             quote! { impl ::std::convert::Into<#typ> },
                             quote! { #name.into() },
                         )
+                    } else {
+                        (quote! { #typ }, quote! { #name })
                     };
                     // Methods for direct field access, mostly for convenience.
                     let set_doc = format!("Sets the value of `{}`.", name);
@@ -142,24 +142,14 @@ impl Plugin for Builder {
     }
 }
 
-/// Indicates whether the type is a built-in number type.
-fn is_number(ctx: &crate::context::SchemaCtx, typ: &ir::Type) -> bool {
+/// Indicates whether the type is the built-in `string` or `bytes` type.
+fn is_text(ctx: &crate::context::SchemaCtx, typ: &ir::Type) -> bool {
     let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
     let ir::TypeKind::Instance(instance) = &resolved.kind else {
         return false;
     };
     matches!(
         ctx.fully_qualified_type_name(instance).as_str(),
-        "::core::builtins::i8"
-            | "::core::builtins::i16"
-            | "::core::builtins::i32"
-            | "::core::builtins::i64"
-            | "::core::builtins::u8"
-            | "::core::builtins::u16"
-            | "::core::builtins::u32"
-            | "::core::builtins::u64"
-            | "::core::builtins::idx"
-            | "::core::builtins::f32"
-            | "::core::builtins::f64"
+        "::core::builtins::string" | "::core::builtins::bytes"
     )
 }

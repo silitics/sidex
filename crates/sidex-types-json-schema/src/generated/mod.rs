@@ -209,9 +209,9 @@ pub mod schema {
     }
     impl RootSchema {
         #[doc = "Creates a new [`RootSchema`]."]
-        pub fn new(schema: impl ::std::convert::Into<SchemaObject>) -> Self {
+        pub fn new(schema: SchemaObject) -> Self {
             Self {
-                schema: schema.into(),
+                schema: schema,
                 meta_schema: ::std::default::Default::default(),
                 defs: ::std::default::Default::default(),
             }
@@ -233,13 +233,13 @@ pub mod schema {
             self
         }
         #[doc = "Sets the value of `schema`."]
-        pub fn set_schema(&mut self, schema: impl ::std::convert::Into<SchemaObject>) -> &mut Self {
-            self.schema = schema.into();
+        pub fn set_schema(&mut self, schema: SchemaObject) -> &mut Self {
+            self.schema = schema;
             self
         }
         #[doc = "Sets the value of `schema`."]
-        pub fn with_schema(mut self, schema: impl ::std::convert::Into<SchemaObject>) -> Self {
-            self.schema = schema.into();
+        pub fn with_schema(mut self, schema: SchemaObject) -> Self {
+            self.schema = schema;
             self
         }
         #[doc = "Sets the value of `defs`."]

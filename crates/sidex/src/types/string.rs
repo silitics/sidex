@@ -4,11 +4,13 @@ use std::borrow::Borrow;
 use std::borrow::Cow;
 use std::cmp::Ordering;
 use std::ffi::OsStr;
+use std::ffi::OsString;
 use std::fmt;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::ops::Deref;
 use std::path::Path;
+use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -203,6 +205,40 @@ impl From<Cow<'_, str>> for Str {
 impl From<Str> for String {
     fn from(string: Str) -> Self {
         string.as_str().to_owned()
+    }
+}
+
+impl From<Str> for Box<str> {
+    fn from(string: Str) -> Self {
+        string.as_str().into()
+    }
+}
+
+impl From<Str> for Arc<str> {
+    /// Converts without copying if the string is shared.
+    fn from(string: Str) -> Self {
+        match string.0 {
+            Repr::Static(string) => string.into(),
+            Repr::Shared(string) => string,
+        }
+    }
+}
+
+impl From<Str> for PathBuf {
+    fn from(string: Str) -> Self {
+        string.as_str().into()
+    }
+}
+
+impl From<Str> for OsString {
+    fn from(string: Str) -> Self {
+        string.as_str().into()
+    }
+}
+
+impl From<Arc<str>> for Str {
+    fn from(string: Arc<str>) -> Self {
+        Self(Repr::Shared(string))
     }
 }
 
