@@ -101,6 +101,42 @@ macro_rules! impl_scalar {
 /// assert_eq!(sidex::formats::json::from_str::<Version>(&text).unwrap(), Version(1, 2));
 /// ```
 ///
+/// If [`Display`] does not produce the text representation, for instance,
+/// because it redacts secrets, pass a closure producing the text as the second
+/// argument:
+///
+/// ```
+/// # use std::fmt;
+/// # use std::str::FromStr;
+/// /// Secret token.
+/// struct Token(String);
+///
+/// impl Token {
+///     fn reveal(&self) -> &str {
+///         &self.0
+///     }
+/// }
+///
+/// impl fmt::Display for Token {
+///     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+///         f.write_str("<redacted>")
+///     }
+/// }
+///
+/// impl FromStr for Token {
+///     type Err = std::convert::Infallible;
+///
+///     fn from_str(text: &str) -> Result<Self, Self::Err> {
+///         Ok(Self(text.to_owned()))
+///     }
+/// }
+///
+/// sidex::types::impl_text!(Token, |token| token.reveal());
+///
+/// let text = sidex::formats::json::to_string(&Token("secret".to_owned())).unwrap();
+/// assert_eq!(text, r#""secret""#);
+/// ```
+///
 /// [`Shaped`]: crate::Shaped
 /// [`Encode`]: crate::Encode
 /// [`Decode`]: crate::Decode
@@ -114,6 +150,9 @@ pub use crate::__impl_text as impl_text;
 #[macro_export]
 macro_rules! __impl_text {
     ($ty:ty) => {
+        $crate::types::impl_text!($ty, |value| ::std::string::ToString::to_string(value));
+    };
+    ($ty:ty, |$value:ident| $to_text:expr) => {
         impl $crate::Shaped for $ty {
             const SHAPE: &'static $crate::Shape = &$crate::Shape::new(
                 ::std::concat!("::", ::std::module_path!(), "::", ::std::stringify!($ty)),
@@ -126,8 +165,9 @@ macro_rules! __impl_text {
 
         impl $crate::Encode for $ty {
             fn encode(&self) -> $crate::View<'_> {
+                let $value: &$ty = self;
                 $crate::View::Value(::std::borrow::Cow::Owned($crate::Value::String(
-                    ::std::string::ToString::to_string(self).into(),
+                    $crate::types::Str::from($to_text),
                 )))
             }
         }
