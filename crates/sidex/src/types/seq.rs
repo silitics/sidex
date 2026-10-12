@@ -153,6 +153,16 @@ impl<'s, T> IntoIterator for &'s Seq<T> {
     }
 }
 
+impl<'s, T: Clone> IntoIterator for &'s mut Seq<T> {
+    type Item = &'s mut T;
+    type IntoIter = std::slice::IterMut<'s, T>;
+
+    /// Iterates over the elements for mutation, copying them if they are shared.
+    fn into_iter(self) -> Self::IntoIter {
+        self.to_mut().iter_mut()
+    }
+}
+
 impl<T: Clone> IntoIterator for Seq<T> {
     type Item = T;
     type IntoIter = std::vec::IntoIter<T>;
