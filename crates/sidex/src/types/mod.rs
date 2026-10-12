@@ -14,12 +14,14 @@
 //! [`BTreeMap`](std::collections::BTreeMap).
 //!
 //! This crate does not expose third-party crates. Compatibility features add
-//! conversions between the types of this module and those of popular crates.
-//! Each feature is named after the crate and its major version:
+//! conversions between the types of this module and those of popular crates,
+//! or implement their traits. Each feature is named after the crate and its
+//! major version:
 //!
 //! - `indexmap-2`: [`Map`] and `indexmap::IndexMap`.
 //! - `jiff-02`: [`Timestamp`] and `jiff::Timestamp`, [`Date`] and `jiff::civil::Date`.
 //! - `uuid-1`: [`Uuid`] and `uuid::Uuid`.
+//! - `sqlx-08`: [`Str`] in SQL databases, stored like `String`.
 //!
 //! [`Shaped`]: crate::Shaped
 //! [`Encode`]: crate::Encode
@@ -143,6 +145,8 @@ mod bytes;
 pub mod map;
 mod seq;
 mod standard;
+#[cfg(feature = "sqlx-08")]
+mod sqlx;
 mod string;
 mod time;
 mod uuid;
