@@ -118,7 +118,8 @@
 //!   crates (see [`types`]).
 //! - `serde_json-1`: Conversions between [`Value`] and `serde_json::Value`.
 //! - `schemars-1`: Schemas for `schemars` (see [`formats::json`]).
-//! - `sqlx-08`: Storing strings in SQL databases with `sqlx`.
+//! - `sqlx-08`, `rusqlite-037`: Storing strings in SQL databases with `sqlx` or
+//!   `rusqlite`.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

@@ -13,6 +13,7 @@ base64.workspace = true
 indexmap.workspace = true
 jiff.workspace = true
 regex = { workspace = true, optional = true }
+rusqlite = { version = "0.37", optional = true, default-features = false }
 schemars = { version = "1", optional = true, default-features = false, features = ["std"] }
 serde = { workspace = true, optional = true }
 sqlx-core = { version = "0.8", optional = true, default-features = false }
@@ -29,11 +30,13 @@ serde-1 = ["json"]
 serde_json-1 = ["json"]
 schemars-1 = ["dep:schemars", "serde_json-1"]
 sqlx-08 = ["dep:sqlx-core"]
+rusqlite-037 = ["dep:rusqlite"]
 indexmap-2 = []
 jiff-02 = []
 uuid-1 = ["dep:uuid"]
 
 [dev-dependencies]
+rusqlite = { version = "0.37", features = ["bundled"] }
 serde_urlencoded = "0.7"
 
 [[test]]

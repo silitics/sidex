@@ -22,6 +22,7 @@
 //! - `jiff-02`: [`Timestamp`] and `jiff::Timestamp`, [`Date`] and `jiff::civil::Date`.
 //! - `uuid-1`: [`Uuid`] and `uuid::Uuid`.
 //! - `sqlx-08`: [`Str`] in SQL databases, stored like `String`.
+//! - `rusqlite-037`: [`Str`] in SQLite databases, stored like `String`.
 //!
 //! [`Shaped`]: crate::Shaped
 //! [`Encode`]: crate::Encode
@@ -146,6 +147,9 @@ pub mod map;
 mod seq;
 #[cfg(feature = "sqlx-08")]
 mod sqlx;
+
+#[cfg(feature = "rusqlite-037")]
+mod rusqlite;
 mod standard;
 mod string;
 mod time;
