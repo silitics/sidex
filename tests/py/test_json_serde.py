@@ -197,7 +197,8 @@ class TestMaybeRef:
         ids=[n for n, _ in _fixture_files("MaybeRefInteger")],
     )
     def test_integer(self, data, name, path):
-        expected, actual = _roundtrip(TypeAdapter(data.MaybeRef[int]), path)
+        # `MaybeRef<u64>`, whose integers are decimal strings.
+        expected, actual = _roundtrip(TypeAdapter(data.MaybeRef[data._sidex.U64]), path)
         assert actual == expected
 
     @pytest.mark.parametrize(

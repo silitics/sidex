@@ -1,7 +1,7 @@
 [package]
 name = "sidex-serde-tests"
 version = "0.0.0"
-description = ""
+description = "Tests the JSON representation of generated Rust types."
 publish = false
 edition.workspace = true
 authors.workspace = true
@@ -12,7 +12,7 @@ homepage.workspace = true
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true
-sidex.workspace = true
+sidex = { workspace = true, features = ["serde-1"] }
 
 [build-dependencies]
 sidex-build-rs.workspace = true

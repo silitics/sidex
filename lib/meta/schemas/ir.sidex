@@ -1,12 +1,10 @@
 /// An arbitrary, schema-validated Sidex value.
 ///
 /// Used by [`typed_attrs`] to carry the parsed result of a plugin's typed
-/// attribute schema. Each codegen target maps `Value` to its language's
-/// "any" type (e.g., `serde_json::Value` in Rust, `unknown` in TypeScript,
-/// `typing.Any` in Python). Producers and consumers communicate through
-/// JSON shape, validated at IR build time against the plugin's Sidex schema.
-#[rust(type = "::serde_json::Value")]
-opaque Value
+/// attribute schema in the JSON representation of the schema's types.
+/// Producers and consumers communicate through this representation, validated
+/// at IR build time against the plugin's Sidex schema.
+alias Value: value
 
 /// Uniquely identifies a source in an IR.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]

@@ -78,8 +78,11 @@ impl TypesConfig {
             "::core::builtins::bool" => (__sidex_types.builtins.Bool),
             "::core::builtins::unit" => (__sidex_types.builtins.Unit),
             "::core::builtins::Sequence" => (__sidex_types.builtins.Sequence),
+            "::core::builtins::uuid" => (__sidex_types.builtins.Uuid),
+            "::core::builtins::timestamp" => (__sidex_types.builtins.Timestamp),
+            "::core::builtins::date" => (__sidex_types.builtins.Date),
+            "::core::builtins::value" => (__sidex_types.builtins.Value),
             "::core::builtins::Map" => (__sidex_types.builtins.ObjectMap),
-            "::meta::ir::Value" => (unknown),
         };
     }
 }

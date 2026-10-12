@@ -9,7 +9,7 @@
 //! vendoring only the published `sidex-types-openapi` package still has
 //! everything the build script needs.
 
-use indexmap::IndexMap;
+use sidex::types::Map;
 pub use sidex_types_json_schema as schema;
 
 sidex::include_bundle!(openapi as generated);
@@ -23,13 +23,13 @@ impl Markdown {
 }
 
 impl Responses {
-    pub fn new(map: IndexMap<String, MaybeRef<Response>>) -> Self {
-        Self(map)
+    pub fn new(map: impl Into<Map<String, MaybeRef<Response>>>) -> Self {
+        Self(map.into())
     }
 }
 
 impl Paths {
-    pub fn new(map: IndexMap<String, PathItem>) -> Self {
-        Self(map)
+    pub fn new(map: impl Into<Map<String, PathItem>>) -> Self {
+        Self(map.into())
     }
 }

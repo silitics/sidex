@@ -1,223 +1,154 @@
-//! End-to-end runtime tests for the validate plugin's generated Rust code.
+//! End-to-end tests for validation rules in generated Rust code.
 //!
 //! The fixture bundle at `bundle/` is generated at build time via
-//! `sidex-build-rs`; the resulting Rust types live under
-//! [`validate_tests::data`] and provide `Validate` impls.
+//! `sidex-build-rs`. The generated types carry their rules in their shapes,
+//! which [`sidex::validation::validate`] checks.
 
 sidex::include_bundle!(pub validate_tests);
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
-    use sidex_validate::Validate;
+    use sidex::types::Map;
+    use sidex::types::Seq;
+    use sidex::validation::ValidationReport;
+    use sidex::validation::validate;
 
     use crate::validate_tests::data::*;
 
     fn ok_user() -> User {
         User {
-            email: "test@example.com".to_owned(),
+            email: "test@example.com".into(),
             age: 30,
-            nickname: Some("rusty".to_owned()),
-            tags: vec!["alpha".to_owned()],
-            attributes: HashMap::new(),
+            nickname: Some("rusty".into()),
+            tags: Seq::from(vec!["alpha".into()]),
+            attributes: Map::new(),
         }
+    }
+
+    /// Returns the report of an invalid value.
+    fn report(user: &User) -> ValidationReport {
+        validate(user).expect_err("value should be invalid")
+    }
+
+    /// Returns whether the report has an error with the given path and code.
+    fn has_error(report: &ValidationReport, path: &str, code: &str) -> bool {
+        report
+            .errors()
+            .iter()
+            .any(|error| error.path().to_string() == path && error.code() == code)
     }
 
     #[test]
     fn user_with_valid_inputs_passes() {
-        let report = ok_user().validate();
-        assert!(report.is_ok(), "expected ok, got: {report}");
+        validate(&ok_user()).unwrap();
     }
 
     #[test]
     fn user_with_invalid_email_size_emits_min_size() {
-        let user = User {
-            email: String::new(),
+        let report = report(&User {
+            email: "".into(),
             ..ok_user()
-        };
-        let report = user.validate();
-        let codes: Vec<_> = report.errors().iter().map(|e| e.code.as_ref()).collect();
-        assert!(
-            codes.contains(&"min_size"),
-            "expected min_size, got {codes:?}"
-        );
-        // The user-supplied message is threaded through verbatim.
+        });
+        assert!(has_error(&report, "email", "min_size"), "{report}");
+        // The message of the rule replaces the default message.
         assert!(
             report
                 .errors()
                 .iter()
-                .any(|e| e.message == "Email length is out of range."),
-            "expected user message in {report}"
+                .any(|error| error.message() == "Email length is out of range."),
+            "{report}"
         );
     }
 
     #[test]
     fn user_with_oversized_email_emits_max_size() {
-        let user = User {
-            email: "a".repeat(255),
+        let report = report(&User {
+            email: "a".repeat(255).into(),
             ..ok_user()
-        };
-        let report = user.validate();
-        let codes: Vec<_> = report.errors().iter().map(|e| e.code.as_ref()).collect();
-        assert!(
-            codes.contains(&"max_size"),
-            "expected max_size, got {codes:?}"
-        );
+        });
+        assert!(has_error(&report, "email", "max_size"), "{report}");
     }
 
     #[test]
     fn user_with_age_out_of_range_emits_max() {
-        let user = User {
+        let report = report(&User {
             age: 200,
             ..ok_user()
-        };
-        let report = user.validate();
-        let codes: Vec<_> = report.errors().iter().map(|e| e.code.as_ref()).collect();
-        assert!(codes.contains(&"max"), "expected max, got {codes:?}");
-        assert!(
-            report.errors().iter().any(|e| e.path.to_string() == "/age"),
-            "expected /age path"
-        );
+        });
+        assert!(has_error(&report, "age", "max"), "{report}");
     }
 
     #[test]
     fn nickname_validates_only_when_present() {
-        // None → no error from the optional rule.
-        let user = User {
+        validate(&User {
             nickname: None,
             ..ok_user()
-        };
-        let report = user.validate();
-        assert!(
-            !report
-                .errors()
-                .iter()
-                .any(|e| e.path.to_string() == "/nickname"),
-            "absent optional should not be validated, got {report}"
-        );
+        })
+        .unwrap();
 
-        // Some("") → length rule fires.
-        let user = User {
-            nickname: Some(String::new()),
+        let report = report(&User {
+            nickname: Some("".into()),
             ..ok_user()
-        };
-        let report = user.validate();
-        assert!(
-            report
-                .errors()
-                .iter()
-                .any(|e| e.path.to_string() == "/nickname" && e.code == "min_size"),
-            "present empty optional should fail min_size, got {report}"
-        );
+        });
+        assert!(has_error(&report, "nickname", "min_size"), "{report}");
     }
 
     #[test]
     fn empty_tag_list_emits_min_size() {
-        let user = User {
-            tags: Vec::new(),
+        let report = report(&User {
+            tags: Seq::new(),
             ..ok_user()
-        };
-        let report = user.validate();
-        assert!(
-            report
-                .errors()
-                .iter()
-                .any(|e| e.path.to_string() == "/tags" && e.code == "min_size"),
-            "empty list should fail min_size on /tags, got {report}"
-        );
+        });
+        assert!(has_error(&report, "tags", "min_size"), "{report}");
     }
 
     #[test]
     fn oversized_tag_list_emits_max_size() {
-        let tags = (0..16).map(|i| format!("t{i}")).collect();
-        let user = User { tags, ..ok_user() };
-        let report = user.validate();
-        assert!(
-            report
-                .errors()
-                .iter()
-                .any(|e| e.path.to_string() == "/tags" && e.code == "max_size"),
-            "oversized list should fail max_size on /tags, got {report}"
-        );
+        let tags = (0..16).map(|i| format!("t{i}").into()).collect();
+        let report = report(&User { tags, ..ok_user() });
+        assert!(has_error(&report, "tags", "max_size"), "{report}");
     }
 
     #[test]
     fn oversized_attribute_map_emits_max_size() {
-        let mut attributes = HashMap::new();
-        for i in 0..40 {
-            attributes.insert(format!("k{i}"), String::new());
-        }
-        let user = User {
+        let attributes = (0..40)
+            .map(|i| (format!("k{i}").into(), "".into()))
+            .collect();
+        let report = report(&User {
             attributes,
             ..ok_user()
-        };
-        let report = user.validate();
-        assert!(
-            report
-                .errors()
-                .iter()
-                .any(|e| e.path.to_string() == "/attributes" && e.code == "max_size"),
-            "oversized map should fail max_size on /attributes, got {report}"
-        );
+        });
+        assert!(has_error(&report, "attributes", "max_size"), "{report}");
     }
 
     #[test]
-    fn slug_try_new_rejects_oversized_input() {
-        let too_long = "a".repeat(65);
-        let result = Slug::try_new(too_long);
-        let report = result.expect_err("oversized slug should fail try_new");
-        assert!(report.errors().iter().any(|e| e.code == "max_size"));
-    }
-
-    #[test]
-    fn slug_try_new_accepts_valid_input() {
-        let slug = Slug::try_new("hello-world".to_owned()).expect("valid slug accepted");
-        assert!(slug.validate().is_ok());
+    fn wrapper_rules_apply_to_the_wrapped_value() {
+        let report = validate(&Slug("a".repeat(65).into())).unwrap_err();
+        assert!(has_error(&report, "", "max_size"), "{report}");
+        validate(&Slug("hello-world".into())).unwrap();
     }
 
     #[test]
     fn regex_with_code_override_threads_through() {
-        let bad = CodeOnly {
-            code: "lowercase".to_owned(),
-        };
-        let report = bad.validate();
-        let codes: Vec<_> = report.errors().iter().map(|e| e.code.as_ref()).collect();
-        assert!(
-            codes.contains(&"format:order"),
-            "expected format:order code override, got {codes:?}"
-        );
+        let report = validate(&CodeOnly {
+            code: "lowercase".into(),
+        })
+        .unwrap_err();
+        assert!(has_error(&report, "code", "format:order"), "{report}");
+        validate(&CodeOnly {
+            code: "AB-1234".into(),
+        })
+        .unwrap();
     }
 
     #[test]
-    fn regex_passes_for_matching_input() {
-        let ok = CodeOnly {
-            code: "AB-1234".to_owned(),
-        };
-        assert!(ok.validate().is_ok());
-    }
-
-    #[test]
-    fn report_paths_use_jsonpointer() {
-        let user = User {
-            email: String::new(),
+    fn report_has_every_violation() {
+        let report = report(&User {
+            email: "".into(),
             age: 200,
             ..ok_user()
-        };
-        let report = user.validate();
-        let paths: Vec<_> = report.errors().iter().map(|e| e.path.to_string()).collect();
-        assert!(paths.iter().any(|p| p == "/email"));
-        assert!(paths.iter().any(|p| p == "/age"));
-    }
-
-    #[test]
-    fn into_result_returns_err_for_invalid_inputs() {
-        let user = User {
-            email: String::new(),
-            ..ok_user()
-        };
-        assert!(user.validate().into_result().is_err());
-
-        assert!(ok_user().validate().into_result().is_ok());
+        });
+        assert!(has_error(&report, "email", "min_size"), "{report}");
+        assert!(has_error(&report, "age", "max"), "{report}");
     }
 }

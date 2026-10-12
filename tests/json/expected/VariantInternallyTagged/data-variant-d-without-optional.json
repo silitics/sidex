@@ -1,6 +1,6 @@
 {
     "tagFieldName": "D",
     "content": {
-        "a": 42
+        "a": "42"
     }
 }

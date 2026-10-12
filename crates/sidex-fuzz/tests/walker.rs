@@ -45,27 +45,18 @@ fn point_has_two_floats() {
     for seed in 0..10 {
         let value = sample(&ir, "fuzz_fixture::data::Point", seed);
         let obj = value.as_object().expect("Point is an object");
-        assert!(obj.get("x").and_then(Value::as_f64).is_some(), "x is f64");
-        assert!(obj.get("y").and_then(Value::as_f64).is_some(), "y is f64");
+        assert!(obj.get("x").is_some_and(is_float), "x is f64");
+        assert!(obj.get("y").is_some_and(is_float), "y is f64");
         assert_eq!(obj.len(), 2, "no extra fields");
     }
 }
 
-#[test]
-fn float_table_finite_only_by_default() {
-    // Without `floats_as_strings`, every Point coordinate is a finite number.
-    let ir = load_fixture();
-    for seed in 0..200 {
-        let value = sample(&ir, "fuzz_fixture::data::Point", seed);
-        let obj = value.as_object().unwrap();
-        for key in ["x", "y"] {
-            let f = obj.get(key).and_then(Value::as_f64).unwrap();
-            assert!(
-                f.is_finite(),
-                "default mode emits only finite floats, got {f}"
-            );
-        }
-    }
+/// Returns whether the value represents a float.
+fn is_float(value: &Value) -> bool {
+    value.is_f64()
+        || value.is_i64()
+        || value.is_u64()
+        || matches!(value.as_str(), Some("NaN" | "Infinity" | "-Infinity"))
 }
 
 #[test]
@@ -83,11 +74,10 @@ fn f32_field_wire_form_survives_f32_roundtrip() {
         let value = sample(&ir, "fuzz_fixture::data::F32Point", seed);
         let obj = value.as_object().unwrap();
         for key in ["x", "y"] {
-            let f = obj.get(key).and_then(Value::as_f64).unwrap();
-            assert!(
-                f.is_finite(),
-                "f32 field got non-finite value {f} (seed {seed}, key {key})",
-            );
+            // Non-finite floats are strings.
+            let Some(f) = obj.get(key).and_then(Value::as_f64) else {
+                continue;
+            };
             // The wire form must equal the value's f32-shortest decimal —
             // otherwise the Rust driver's deserialize-as-f32 / serialize-as-f32
             // path emits a different string and the conformance suite flags
@@ -103,18 +93,11 @@ fn f32_field_wire_form_survives_f32_roundtrip() {
 }
 
 #[test]
-fn float_table_emits_nan_and_inf_as_strings_when_enabled() {
-    // With `floats_as_strings`, ±Infinity and NaN appear as JSON strings.
+fn float_table_emits_nan_and_inf_as_strings() {
     let ir = load_fixture();
-    let typ = sidex_fuzz::lookup_type(&ir, "fuzz_fixture::data::Point").unwrap();
-    let config = sidex_fuzz::Config {
-        floats_as_strings: true,
-        ..Default::default()
-    };
     let mut seen = std::collections::HashSet::new();
     for seed in 0..500 {
-        let mut source = sidex_fuzz::Source::from_seed(seed);
-        let v = sidex_fuzz::generate(&ir, &typ, &mut source, &config).unwrap();
+        let v = sample(&ir, "fuzz_fixture::data::Point", seed);
         for key in ["x", "y"] {
             if let Some(s) = v.get(key).and_then(Value::as_str) {
                 seen.insert(s.to_owned());
@@ -222,66 +205,27 @@ fn implicitly_tagged_emits_just_payload() {
 }
 
 #[test]
-fn i64_default_mode_stays_in_safe_range() {
-    // Without `integers_as_strings`, the table is restricted to JS-safe
-    // values so all targets (including JS) round-trip without precision loss.
-    // `Number.MAX_SAFE_INTEGER` is `2^53 - 1`; `±(2^53 - 1)` is the boundary
-    // and must appear, `±(2^53)` must NOT.
+fn i64_includes_full_range() {
     let ir = load_fixture();
-    const SAFE_MAX: i64 = (1i64 << 53) - 1;
-    let mut saw_boundary = false;
-    for seed in 0..300 {
-        let value = sample(&ir, "fuzz_fixture::data::BigInts", seed);
-        let s = value.get("s").and_then(Value::as_i64).unwrap();
-        assert!(
-            s.abs() <= SAFE_MAX,
-            "default-mode i64 must stay in JS-safe range, got {s}"
-        );
-        if s == SAFE_MAX || s == -SAFE_MAX {
-            saw_boundary = true;
-        }
-    }
-    assert!(saw_boundary, "expected ±(2^53 - 1) to appear in i64 draws");
-}
-
-#[test]
-fn i64_strings_mode_includes_full_range() {
-    // With `integers_as_strings`, `i64::MAX` and friends DO appear, encoded
-    // as JSON strings rather than numbers.
-    let ir = load_fixture();
-    let typ = sidex_fuzz::lookup_type(&ir, "fuzz_fixture::data::BigInts").unwrap();
-    let config = sidex_fuzz::Config {
-        integers_as_strings: true,
-        ..Default::default()
-    };
     let mut saw_max = false;
     for seed in 0..300 {
-        let mut source = sidex_fuzz::Source::from_seed(seed);
-        let v = sidex_fuzz::generate(&ir, &typ, &mut source, &config).unwrap();
-        let s_str = v.get("s").and_then(Value::as_str).unwrap();
-        if s_str == i64::MAX.to_string() {
+        let v = sample(&ir, "fuzz_fixture::data::BigInts", seed);
+        if v.get("s").and_then(Value::as_str) == Some(&i64::MAX.to_string()) {
             saw_max = true;
         }
     }
-    assert!(saw_max, "expected i64::MAX as a string in strings mode");
+    assert!(saw_max, "expected i64::MAX as a string");
 }
 
 #[test]
-fn integers_as_strings_emits_decimal_strings() {
+fn integers_with_64_bits_are_decimal_strings() {
     let ir = load_fixture();
-    let typ = sidex_fuzz::lookup_type(&ir, "fuzz_fixture::data::BigInts").unwrap();
-    let config = sidex_fuzz::Config {
-        integers_as_strings: true,
-        ..Default::default()
-    };
     for seed in 0..50 {
-        let mut source = sidex_fuzz::Source::from_seed(seed);
-        let v = sidex_fuzz::generate(&ir, &typ, &mut source, &config).unwrap();
+        let v = sample(&ir, "fuzz_fixture::data::BigInts", seed);
         let s = v.get("s").unwrap();
         let u = v.get("u").unwrap();
         assert!(s.is_string(), "i64 field should be a string, got {s}");
         assert!(u.is_string(), "u64 field should be a string, got {u}");
-        // String must parse back as a signed/unsigned integer.
         s.as_str().unwrap().parse::<i64>().expect("decimal i64");
         u.as_str().unwrap().parse::<u64>().expect("decimal u64");
     }

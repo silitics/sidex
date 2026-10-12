@@ -20,6 +20,7 @@ use sidex_gen::diagnostics;
 use sidex_gen::diagnostics::Result;
 use sidex_gen::ir;
 
+mod codec;
 pub mod config;
 pub mod context;
 pub mod plugins;
@@ -44,6 +45,19 @@ impl RustGenerator {
         }
     }
 
+    fn add_plugins(&mut self, names: &[String]) -> diagnostics::Result<()> {
+        let all_plugins = plugins::plugins();
+        for name in names {
+            let plugin = all_plugins.get(name).ok_or_else(|| {
+                Box::new(diagnostics::Diagnostic::error(format!(
+                    "Unknown Rust plugin `{name}`."
+                )))
+            })?;
+            self.plugins.push(plugin.clone());
+        }
+        Ok(())
+    }
+
     pub fn generate_macro(
         &self,
         config: &Config,
@@ -54,12 +68,7 @@ impl RustGenerator {
 
         let mut generator = self.clone();
 
-        let all_plugins = plugins::plugins();
-        for plugin in &config.plugins {
-            generator
-                .plugins
-                .push(all_plugins.get(plugin).unwrap().clone());
-        }
+        generator.add_plugins(&config.plugins)?;
 
         config.types.populate_table_with_builtins();
 
@@ -159,12 +168,7 @@ impl Generator for RustGenerator {
 
         let mut generator = self.clone();
 
-        let all_plugins = plugins::plugins();
-        for plugin in &config.plugins {
-            generator
-                .plugins
-                .push(all_plugins.get(plugin).unwrap().clone());
-        }
+        generator.add_plugins(&config.plugins)?;
 
         config.types.populate_table_with_builtins();
 

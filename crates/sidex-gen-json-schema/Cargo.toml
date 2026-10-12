@@ -9,7 +9,7 @@ homepage.workspace = true
 
 [dependencies]
 serde.workspace = true # PUBLIC
-sidex-serde.workspace = true
+sidex.workspace = true
 indexmap.workspace = true
 serde_json.workspace = true
 sidex-gen.workspace = true

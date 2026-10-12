@@ -11,7 +11,6 @@ use crate::context::SchemaCtx;
 pub mod builder;
 pub mod serde;
 pub mod types;
-pub mod validate;
 
 pub trait Plugin {
     fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<TokenStream>;
@@ -32,6 +31,5 @@ pub fn plugins() -> HashMap<String, Arc<dyn 'static + Plugin + Sync>> {
     plugins.insert("types".to_owned(), Arc::new(types::Types));
     plugins.insert("builder".to_owned(), Arc::new(builder::Builder));
     plugins.insert("serde".to_owned(), Arc::new(serde::Serde));
-    plugins.insert("validate".to_owned(), Arc::new(validate::Validate));
     plugins
 }

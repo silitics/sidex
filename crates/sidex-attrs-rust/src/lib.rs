@@ -17,7 +17,7 @@ pub use generated::attrs as raw;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::quote;
-use serde_json::Value;
+use sidex::Value;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Result;
 use sidex_ir as ir;
@@ -29,11 +29,11 @@ const PLUGIN: &str = "rust";
 /// the node has no `rust` attrs.
 pub fn extract<T>(typed_attrs: &HashMap<String, Value>) -> Result<Option<T>>
 where
-    T: serde::de::DeserializeOwned,
+    T: sidex::Decode,
 {
     match typed_attrs.get(PLUGIN) {
         Some(value) => {
-            serde_json::from_value(value.clone())
+            sidex::formats::json::from_value(value)
                 .map(Some)
                 .map_err(|err| {
                     Box::new(Diagnostic::error(format!(

@@ -7,25 +7,24 @@
  * than throwing — multiple errors per call surface every problem at once,
  * which is what UI forms want.
  *
- * The shape of {@link ValidationError}, the helper signatures, and the
- * default-message vocabulary mirror the Rust runtime in
- * `crates/sidex-validate` exactly. A code/path tuple from a TypeScript
- * driver and a Rust driver are byte-for-byte comparable.
+ * The shape of {@link ValidationError}, the codes, the paths, and the
+ * default messages mirror `sidex::validation` in Rust. A code/path tuple from
+ * a TypeScript driver and a Rust driver are byte-for-byte comparable.
  */
 
 // ---- Path -----------------------------------------------------------------
 
-/** A JSON-pointer-style path segment. */
+/** A path segment. */
 export type PathSegment =
   | { readonly kind: "field"; readonly name: string }
   | { readonly kind: "index"; readonly index: number }
   | { readonly kind: "key"; readonly key: string }
 
 /**
- * JSON-pointer-style path identifying the location of a value within the
- * validated structure. Reported on every {@link ValidationError} so
- * frontends can map errors back to specific fields, sequence indices, or
- * map keys.
+ * Path identifying the location of a value within the validated structure,
+ * like `devices[3].timeoutMs`. Reported on every {@link ValidationError} so
+ * frontends can map errors back to specific fields, sequence indices, or map
+ * keys. Fields appear under their JSON names. The root is the empty path.
  */
 export class Path {
   private constructor(private readonly segments: readonly PathSegment[]) {}
@@ -51,17 +50,13 @@ export class Path {
   }
 
   toString(): string {
-    if (this.segments.length === 0) return "/"
     let out = ""
     for (const seg of this.segments) {
-      out += "/"
       if (seg.kind === "index") {
-        out += seg.index.toString()
+        out += `[${seg.index}]`
       } else {
-        const raw = seg.kind === "field" ? seg.name : seg.key
-        // RFC 6901: `~` → `~0`, `/` → `~1`. Escape `~` first to avoid
-        // double-encoding the resulting `~1`.
-        out += raw.replace(/~/g, "~0").replace(/\//g, "~1")
+        const name = seg.kind === "field" ? seg.name : seg.key
+        out += out === "" ? name : `.${name}`
       }
     }
     return out
@@ -143,12 +138,13 @@ export function validate(value: Validate): ValidationReport {
 const DEFAULT_MESSAGES: Record<string, string> = {
   min: "Value is below the minimum.",
   max: "Value is above the maximum.",
-  min_size: "Value is below the minimum size.",
-  max_size: "Value exceeds the maximum size.",
   eq: "Value does not match the expected value.",
   ne: "Value matches a forbidden value.",
+  min_size: "Value is below the minimum size.",
+  max_size: "Value exceeds the maximum size.",
+  eq_size: "Value does not have the expected size.",
+  ne_size: "Value has a forbidden size.",
   regex: "Value does not match the required pattern.",
-  predicate: "Value does not satisfy the predicate.",
 }
 
 export function defaultMessage(code: string): string {
@@ -170,6 +166,40 @@ function reportOne(
     code,
     message: pickMessage(message, code),
   })
+}
+
+// ---- Numbers --------------------------------------------------------------
+
+/**
+ * Converts the JSON representation of a number into a comparable value.
+ *
+ * 64-bit integers are decimal strings and become `bigint`s, so comparisons stay
+ * exact. Non-finite floats are the strings `"NaN"`, `"Infinity"`, and
+ * `"-Infinity"`. Other values are returned unchanged.
+ */
+export function numeric(value: unknown): unknown {
+  if (typeof value !== "string") return value
+  if (/^-?[0-9]+$/.test(value)) return BigInt(value)
+  switch (value) {
+    case "NaN":
+      return NaN
+    case "Infinity":
+    case "+Infinity":
+      return Infinity
+    case "-Infinity":
+      return -Infinity
+    default:
+      return value
+  }
+}
+
+/** Equality that treats `bigint`s and numbers with the same value as equal. */
+function equal(a: unknown, b: unknown): boolean {
+  if (typeof a === "bigint" || typeof b === "bigint") {
+    // Loose equality compares `bigint`s and numbers by value.
+    return a == b
+  }
+  return a === b
 }
 
 // ---- Comparison helpers ---------------------------------------------------
@@ -229,7 +259,7 @@ export function eq<T>(
   message: string | null,
   path: Path,
 ): ValidationReport {
-  return value === expected ? ValidationReport.ok() : reportOne(path, code, message)
+  return equal(value, expected) ? ValidationReport.ok() : reportOne(path, code, message)
 }
 
 export function ne<T>(
@@ -239,7 +269,45 @@ export function ne<T>(
   message: string | null,
   path: Path,
 ): ValidationReport {
-  return value !== forbidden ? ValidationReport.ok() : reportOne(path, code, message)
+  return !equal(value, forbidden) ? ValidationReport.ok() : reportOne(path, code, message)
+}
+
+/** Comparison operator of a rule. */
+export type CmpOp = "<" | "<=" | "==" | "!=" | ">=" | ">"
+
+/**
+ * Checks a chained comparison, which holds if each comparison of adjacent
+ * operands holds.
+ */
+export function holds(operands: readonly unknown[], ops: readonly CmpOp[]): boolean {
+  return ops.every((op, i) => {
+    const a = operands[i] as any
+    const b = operands[i + 1] as any
+    switch (op) {
+      case "<":
+        return a < b
+      case "<=":
+        return a <= b
+      case "==":
+        return equal(a, b)
+      case "!=":
+        return !equal(a, b)
+      case ">=":
+        return a >= b
+      case ">":
+        return a > b
+    }
+  })
+}
+
+/** Reports a violation with the given code unless the rule holds. */
+export function check(
+  holds: boolean,
+  code: string,
+  message: string | null,
+  path: Path,
+): ValidationReport {
+  return holds ? ValidationReport.ok() : reportOne(path, code, message)
 }
 
 // ---- Accessors ------------------------------------------------------------

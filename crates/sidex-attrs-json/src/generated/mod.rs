@@ -9,10 +9,6 @@ pub mod attrs {
         clippy::cargo,
         dead_code
     )]
-    #[allow(unused)]
-    use :: serde as __serde;
-    #[allow(unused)]
-    use :: sidex_serde as __sidex_serde;
     #[doc = "JSON-specific attributes that may be applied to an `opaque` definition.\n\nSource form: `#[json(type = \"string|null\", schema = \"/path\")]`.\n"]
     #[derive(Clone, Debug)]
     pub struct OpaqueTypeAttrs {
@@ -22,261 +18,65 @@ pub mod attrs {
         pub schema: ::std::option::Option<::std::string::String>,
     }
     #[automatically_derived]
-    impl __sidex_serde::SidexType for OpaqueTypeAttrs {
-        type Encoding = __sidex_serde::AsSelf;
+    impl ::sidex::Shaped for OpaqueTypeAttrs {
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::OpaqueTypeAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("typ" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("JSON union type expression (e.g. `\"string|null\"`).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attr" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("type") }] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("schema" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("JSON Schema path emitted as `$ref` for the opaque type.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to an `opaque` definition.\n\nSource form: `#[json(type = \"string|null\", schema = \"/path\")]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("opaque") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
-    impl __serde::Serialize for OpaqueTypeAttrs {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "OpaqueTypeAttrs", 2usize)?;
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.typ),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record
-                    .serialize_optional_field("typ", ::core::option::Option::as_ref(&__wrapped))?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.schema),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "schema",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            __record.end()
+    impl ::sidex::Encode for OpaqueTypeAttrs {
+        fn encode(&self) -> ::sidex::View<'_> {
+            ::sidex::View::Record(self)
         }
     }
     #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for OpaqueTypeAttrs {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            #[doc(hidden)]
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+    #[allow(deprecated)]
+    impl ::sidex::encode::RecordView for OpaqueTypeAttrs {
+        fn shape(&self) -> &'static ::sidex::Shape {
+            <Self as ::sidex::Shaped>::SHAPE
+        }
+        fn field(&self, index: usize) -> ::std::option::Option<::sidex::View<'_>> {
+            match index {
+                0usize => {
+                    self.typ
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                1usize => {
+                    self.schema
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                _ => ::std::option::Option::None,
             }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = OpaqueTypeAttrs;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record OpaqueTypeAttrs")
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::Decode for OpaqueTypeAttrs {
+        fn decode(
+            decoder: &mut dyn ::sidex::Decoder,
+        ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
+            let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_1 = ::std::option::Option::<::std::string::String>::None;
+            decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
+                match index {
+                    0usize => {
+                        __field_0 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    1usize => {
+                        __field_1 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    _ => {}
                 }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 2 fields"),
-                            );
-                        }
-                    };
-                    let __field1 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 2 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(OpaqueTypeAttrs {
-                        typ: __field0,
-                        schema: __field1,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] = &["typ", "schema"];
-                    #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"typ\", \"schema\"]";
-                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-                    #[doc(hidden)]
-                    enum __Identifier {
-                        __Identifier0,
-                        __Identifier1,
-                        __Unknown,
-                    }
-                    #[doc(hidden)]
-                    struct __IdentifierVisitor;
-                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                        type Value = __Identifier;
-                        fn expecting(
-                            &self,
-                            __formatter: &mut ::core::fmt::Formatter,
-                        ) -> ::core::fmt::Result {
-                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                        }
-                        fn visit_u64<__E>(
-                            self,
-                            __value: u64,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_str<__E>(
-                            self,
-                            __value: &str,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                "typ" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                "schema" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_bytes<__E>(
-                            self,
-                            __value: &[u8],
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                b"typ" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                b"schema" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                    }
-                    impl<'de> __serde::Deserialize<'de> for __Identifier {
-                        #[inline]
-                        fn deserialize<__D>(
-                            __deserializer: __D,
-                        ) -> ::core::result::Result<Self, __D::Error>
-                        where
-                            __D: __serde::Deserializer<'de>,
-                        {
-                            __serde::Deserializer::deserialize_identifier(
-                                __deserializer,
-                                __IdentifierVisitor,
-                            )
-                        }
-                    }
-                    let mut __field0: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("typ"),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier1 => {
-                                if ::core::option::Option::is_some(&__field1) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "schema",
-                                        ),
-                                    );
-                                }
-                                __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    ::core::result::Result::Ok(OpaqueTypeAttrs {
-                        typ: __field0,
-                        schema: __field1,
-                    })
-                }
-            }
-            #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["typ", "schema"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "OpaqueTypeAttrs",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
+                ::std::result::Result::Ok(())
+            })?;
+            ::std::result::Result::Ok(Self {
+                typ: __field_0,
+                schema: __field_1,
+            })
         }
     }
     #[doc = "JSON-specific attributes that may be applied to a `record` definition.\n\nSource form: `#[json(rename_all = \"PascalCase\")]`.\n"]
@@ -286,210 +86,53 @@ pub mod attrs {
         pub rename_all: ::std::option::Option<::std::string::String>,
     }
     #[automatically_derived]
-    impl __sidex_serde::SidexType for RecordTypeAttrs {
-        type Encoding = __sidex_serde::AsSelf;
+    impl ::sidex::Shaped for RecordTypeAttrs {
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::RecordTypeAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("rename_all" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Default rename function applied to every field name.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a `record` definition.\n\nSource form: `#[json(rename_all = \"PascalCase\")]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("record") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
-    impl __serde::Serialize for RecordTypeAttrs {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "RecordTypeAttrs", 1usize)?;
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.rename_all),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "rename_all",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            __record.end()
+    impl ::sidex::Encode for RecordTypeAttrs {
+        fn encode(&self) -> ::sidex::View<'_> {
+            ::sidex::View::Record(self)
         }
     }
     #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for RecordTypeAttrs {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            #[doc(hidden)]
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+    #[allow(deprecated)]
+    impl ::sidex::encode::RecordView for RecordTypeAttrs {
+        fn shape(&self) -> &'static ::sidex::Shape {
+            <Self as ::sidex::Shaped>::SHAPE
+        }
+        fn field(&self, index: usize) -> ::std::option::Option<::sidex::View<'_>> {
+            match index {
+                0usize => {
+                    self.rename_all
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                _ => ::std::option::Option::None,
             }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = RecordTypeAttrs;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record RecordTypeAttrs")
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::Decode for RecordTypeAttrs {
+        fn decode(
+            decoder: &mut dyn ::sidex::Decoder,
+        ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
+            let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
+            decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
+                match index {
+                    0usize => {
+                        __field_0 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    _ => {}
                 }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 1 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(RecordTypeAttrs {
-                        rename_all: __field0,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] = &["rename_all"];
-                    #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"rename_all\"]";
-                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-                    #[doc(hidden)]
-                    enum __Identifier {
-                        __Identifier0,
-                        __Unknown,
-                    }
-                    #[doc(hidden)]
-                    struct __IdentifierVisitor;
-                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                        type Value = __Identifier;
-                        fn expecting(
-                            &self,
-                            __formatter: &mut ::core::fmt::Formatter,
-                        ) -> ::core::fmt::Result {
-                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                        }
-                        fn visit_u64<__E>(
-                            self,
-                            __value: u64,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_str<__E>(
-                            self,
-                            __value: &str,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                "rename_all" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_bytes<__E>(
-                            self,
-                            __value: &[u8],
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                b"rename_all" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                    }
-                    impl<'de> __serde::Deserialize<'de> for __Identifier {
-                        #[inline]
-                        fn deserialize<__D>(
-                            __deserializer: __D,
-                        ) -> ::core::result::Result<Self, __D::Error>
-                        where
-                            __D: __serde::Deserializer<'de>,
-                        {
-                            __serde::Deserializer::deserialize_identifier(
-                                __deserializer,
-                                __IdentifierVisitor,
-                            )
-                        }
-                    }
-                    let mut __field0: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "rename_all",
-                                        ),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    ::core::result::Result::Ok(RecordTypeAttrs {
-                        rename_all: __field0,
-                    })
-                }
-            }
-            #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["rename_all"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "RecordTypeAttrs",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
+                ::std::result::Result::Ok(())
+            })?;
+            ::std::result::Result::Ok(Self {
+                rename_all: __field_0,
+            })
         }
     }
     #[doc = "JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline)]`.\n"]
@@ -503,317 +146,76 @@ pub mod attrs {
         pub inline: ::std::option::Option<bool>,
     }
     #[automatically_derived]
-    impl __sidex_serde::SidexType for FieldAttrs {
-        type Encoding = __sidex_serde::AsSelf;
+    impl ::sidex::Shaped for FieldAttrs {
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::FieldAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON key with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the field name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("inline" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether to inline the field's contents into the enclosing object.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline)]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("field") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
-    impl __serde::Serialize for FieldAttrs {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "FieldAttrs", 3usize)?;
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.name),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record
-                    .serialize_optional_field("name", ::core::option::Option::as_ref(&__wrapped))?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.rename),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "rename",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.inline),
-                    |__v| __sidex_serde::SerializeAsWrap::<bool, __sidex_serde::AsSelf>::new(__v),
-                );
-                __record.serialize_optional_field(
-                    "inline",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            __record.end()
+    impl ::sidex::Encode for FieldAttrs {
+        fn encode(&self) -> ::sidex::View<'_> {
+            ::sidex::View::Record(self)
         }
     }
     #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for FieldAttrs {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            #[doc(hidden)]
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+    #[allow(deprecated)]
+    impl ::sidex::encode::RecordView for FieldAttrs {
+        fn shape(&self) -> &'static ::sidex::Shape {
+            <Self as ::sidex::Shaped>::SHAPE
+        }
+        fn field(&self, index: usize) -> ::std::option::Option<::sidex::View<'_>> {
+            match index {
+                0usize => {
+                    self.name
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                1usize => {
+                    self.rename
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                2usize => {
+                    self.inline
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                _ => ::std::option::Option::None,
             }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = FieldAttrs;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record FieldAttrs")
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::Decode for FieldAttrs {
+        fn decode(
+            decoder: &mut dyn ::sidex::Decoder,
+        ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
+            let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_1 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_2 = ::std::option::Option::<bool>::None;
+            decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
+                match index {
+                    0usize => {
+                        __field_0 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    1usize => {
+                        __field_1 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    2usize => {
+                        __field_2 =
+                            ::std::option::Option::Some(<bool as ::sidex::Decode>::decode(decoder)?)
+                    }
+                    _ => {}
                 }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 3 fields"),
-                            );
-                        }
-                    };
-                    let __field1 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
-                            );
-                        }
-                    };
-                    let __field2 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<bool>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(FieldAttrs {
-                        name: __field0,
-                        rename: __field1,
-                        inline: __field2,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] = &["name", "rename", "inline"];
-                    #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"name\", \"rename\", \"inline\"]";
-                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-                    #[doc(hidden)]
-                    enum __Identifier {
-                        __Identifier0,
-                        __Identifier1,
-                        __Identifier2,
-                        __Unknown,
-                    }
-                    #[doc(hidden)]
-                    struct __IdentifierVisitor;
-                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                        type Value = __Identifier;
-                        fn expecting(
-                            &self,
-                            __formatter: &mut ::core::fmt::Formatter,
-                        ) -> ::core::fmt::Result {
-                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                        }
-                        fn visit_u64<__E>(
-                            self,
-                            __value: u64,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_str<__E>(
-                            self,
-                            __value: &str,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                "rename" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                "inline" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_bytes<__E>(
-                            self,
-                            __value: &[u8],
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                b"rename" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
-                                }
-                                b"inline" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                    }
-                    impl<'de> __serde::Deserialize<'de> for __Identifier {
-                        #[inline]
-                        fn deserialize<__D>(
-                            __deserializer: __D,
-                        ) -> ::core::result::Result<Self, __D::Error>
-                        where
-                            __D: __serde::Deserializer<'de>,
-                        {
-                            __serde::Deserializer::deserialize_identifier(
-                                __deserializer,
-                                __IdentifierVisitor,
-                            )
-                        }
-                    }
-                    let mut __field0: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<::std::option::Option<bool>> =
-                        ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier1 => {
-                                if ::core::option::Option::is_some(&__field1) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "rename",
-                                        ),
-                                    );
-                                }
-                                __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier2 => {
-                                if ::core::option::Option::is_some(&__field2) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "inline",
-                                        ),
-                                    );
-                                }
-                                __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<bool>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field2 = match __field2 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    ::core::result::Result::Ok(FieldAttrs {
-                        name: __field0,
-                        rename: __field1,
-                        inline: __field2,
-                    })
-                }
-            }
-            #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["name", "rename", "inline"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "FieldAttrs",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
+                ::std::result::Result::Ok(())
+            })?;
+            ::std::result::Result::Ok(Self {
+                name: __field_0,
+                rename: __field_1,
+                inline: __field_2,
+            })
         }
     }
     #[doc = "JSON-specific attributes that may be applied to a `variant` definition.\n\nSource form:\n`#[json(rename_all = \"snake_case\", tagged = internally, tag = \"kind\")]`.\n"]
@@ -829,387 +231,89 @@ pub mod attrs {
         pub content: ::std::option::Option<::std::string::String>,
     }
     #[automatically_derived]
-    impl __sidex_serde::SidexType for VariantTypeAttrs {
-        type Encoding = __sidex_serde::AsSelf;
+    impl ::sidex::Shaped for VariantTypeAttrs {
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::VariantTypeAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("rename_all" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Default rename function applied to every variant case name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("tagged" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Tagging strategy: `adjacently`, `externally`, `internally`,\nor `implicitly`.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("tag" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Field name carrying the tag value (for `adjacently` /\n`internally` tagging modes). Defaults to `\"tag\"`.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("content" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Field name carrying the variant's payload (for `adjacently`\ntagging mode). Defaults to `\"content\"`.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a `variant` definition.\n\nSource form:\n`#[json(rename_all = \"snake_case\", tagged = internally, tag = \"kind\")]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("variant") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
-    impl __serde::Serialize for VariantTypeAttrs {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __record = __sidex_serde::ser::RecordSerializer::new(
-                __serializer,
-                "VariantTypeAttrs",
-                4usize,
-            )?;
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.rename_all),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "rename_all",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.tagged),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "tagged",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.tag),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record
-                    .serialize_optional_field("tag", ::core::option::Option::as_ref(&__wrapped))?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.content),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "content",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            __record.end()
+    impl ::sidex::Encode for VariantTypeAttrs {
+        fn encode(&self) -> ::sidex::View<'_> {
+            ::sidex::View::Record(self)
         }
     }
     #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for VariantTypeAttrs {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            #[doc(hidden)]
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+    #[allow(deprecated)]
+    impl ::sidex::encode::RecordView for VariantTypeAttrs {
+        fn shape(&self) -> &'static ::sidex::Shape {
+            <Self as ::sidex::Shaped>::SHAPE
+        }
+        fn field(&self, index: usize) -> ::std::option::Option<::sidex::View<'_>> {
+            match index {
+                0usize => {
+                    self.rename_all
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                1usize => {
+                    self.tagged
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                2usize => {
+                    self.tag
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                3usize => {
+                    self.content
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                _ => ::std::option::Option::None,
             }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = VariantTypeAttrs;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record VariantTypeAttrs")
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::Decode for VariantTypeAttrs {
+        fn decode(
+            decoder: &mut dyn ::sidex::Decoder,
+        ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
+            let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_1 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_2 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_3 = ::std::option::Option::<::std::string::String>::None;
+            decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
+                match index {
+                    0usize => {
+                        __field_0 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    1usize => {
+                        __field_1 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    2usize => {
+                        __field_2 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    3usize => {
+                        __field_3 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    _ => {}
                 }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    let __field1 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    let __field2 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    let __field3 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(3usize, &"record with 4 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(VariantTypeAttrs {
-                        rename_all: __field0,
-                        tagged: __field1,
-                        tag: __field2,
-                        content: __field3,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] =
-                        &["rename_all", "tagged", "tag", "content"];
-                    #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"rename_all\", \"tagged\", \"tag\", \"content\"]";
-                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-                    #[doc(hidden)]
-                    enum __Identifier {
-                        __Identifier0,
-                        __Identifier1,
-                        __Identifier2,
-                        __Identifier3,
-                        __Unknown,
-                    }
-                    #[doc(hidden)]
-                    struct __IdentifierVisitor;
-                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                        type Value = __Identifier;
-                        fn expecting(
-                            &self,
-                            __formatter: &mut ::core::fmt::Formatter,
-                        ) -> ::core::fmt::Result {
-                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                        }
-                        fn visit_u64<__E>(
-                            self,
-                            __value: u64,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                3u64 => ::core::result::Result::Ok(__Identifier::__Identifier3),
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_str<__E>(
-                            self,
-                            __value: &str,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                "rename_all" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
-                                }
-                                "tagged" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                "tag" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                "content" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_bytes<__E>(
-                            self,
-                            __value: &[u8],
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                b"rename_all" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier0)
-                                }
-                                b"tagged" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
-                                }
-                                b"tag" => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                b"content" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier3)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                    }
-                    impl<'de> __serde::Deserialize<'de> for __Identifier {
-                        #[inline]
-                        fn deserialize<__D>(
-                            __deserializer: __D,
-                        ) -> ::core::result::Result<Self, __D::Error>
-                        where
-                            __D: __serde::Deserializer<'de>,
-                        {
-                            __serde::Deserializer::deserialize_identifier(
-                                __deserializer,
-                                __IdentifierVisitor,
-                            )
-                        }
-                    }
-                    let mut __field0: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field3: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "rename_all",
-                                        ),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier1 => {
-                                if ::core::option::Option::is_some(&__field1) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "tagged",
-                                        ),
-                                    );
-                                }
-                                __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier2 => {
-                                if ::core::option::Option::is_some(&__field2) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("tag"),
-                                    );
-                                }
-                                __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier3 => {
-                                if ::core::option::Option::is_some(&__field3) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "content",
-                                        ),
-                                    );
-                                }
-                                __field3 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field2 = match __field2 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field3 = match __field3 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    ::core::result::Result::Ok(VariantTypeAttrs {
-                        rename_all: __field0,
-                        tagged: __field1,
-                        tag: __field2,
-                        content: __field3,
-                    })
-                }
-            }
-            #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["rename_all", "tagged", "tag", "content"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "VariantTypeAttrs",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
+                ::std::result::Result::Ok(())
+            })?;
+            ::std::result::Result::Ok(Self {
+                rename_all: __field_0,
+                tagged: __field_1,
+                tag: __field_2,
+                content: __field_3,
+            })
         }
     }
     #[doc = "JSON-specific attributes that may be applied to a single variant case.\n\nSource form: `#[json(name = \"explicit\", rename = \"kebab-case\")]`.\n"]
@@ -1223,322 +327,77 @@ pub mod attrs {
         pub content: ::std::option::Option<::std::string::String>,
     }
     #[automatically_derived]
-    impl __sidex_serde::SidexType for VariantAttrs {
-        type Encoding = __sidex_serde::AsSelf;
+    impl ::sidex::Shaped for VariantAttrs {
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::VariantAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON tag value with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the case name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("content" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the per-case content field name (only meaningful with\n`adjacently` tagging).\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a single variant case.\n\nSource form: `#[json(name = \"explicit\", rename = \"kebab-case\")]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("variant_case") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
-    impl __serde::Serialize for VariantAttrs {
-        fn serialize<__S: __serde::Serializer>(
-            &self,
-            __serializer: __S,
-        ) -> ::std::result::Result<__S::Ok, __S::Error> {
-            let mut __record =
-                __sidex_serde::ser::RecordSerializer::new(__serializer, "VariantAttrs", 3usize)?;
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.name),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record
-                    .serialize_optional_field("name", ::core::option::Option::as_ref(&__wrapped))?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.rename),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "rename",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            {
-                let __wrapped = ::core::option::Option::map(
-                    ::core::option::Option::as_ref(&self.content),
-                    |__v| {
-                        __sidex_serde :: SerializeAsWrap :: < :: std :: string :: String < > , __sidex_serde :: AsSelf > :: new (__v)
-                    },
-                );
-                __record.serialize_optional_field(
-                    "content",
-                    ::core::option::Option::as_ref(&__wrapped),
-                )?;
-            }
-            __record.end()
+    impl ::sidex::Encode for VariantAttrs {
+        fn encode(&self) -> ::sidex::View<'_> {
+            ::sidex::View::Record(self)
         }
     }
     #[automatically_derived]
-    impl<'de> __serde::Deserialize<'de> for VariantAttrs {
-        fn deserialize<__D: __serde::Deserializer<'de>>(
-            __deserializer: __D,
-        ) -> ::std::result::Result<Self, __D::Error> {
-            #[doc(hidden)]
-            struct __Visitor {
-                __phantom_vars: ::core::marker::PhantomData<fn(&())>,
+    #[allow(deprecated)]
+    impl ::sidex::encode::RecordView for VariantAttrs {
+        fn shape(&self) -> &'static ::sidex::Shape {
+            <Self as ::sidex::Shaped>::SHAPE
+        }
+        fn field(&self, index: usize) -> ::std::option::Option<::sidex::View<'_>> {
+            match index {
+                0usize => {
+                    self.name
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                1usize => {
+                    self.rename
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                2usize => {
+                    self.content
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                _ => ::std::option::Option::None,
             }
-            impl<'de> __serde::de::Visitor<'de> for __Visitor {
-                type Value = VariantAttrs;
-                fn expecting(
-                    &self,
-                    __formatter: &mut ::core::fmt::Formatter,
-                ) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(__formatter, "record VariantAttrs")
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::Decode for VariantAttrs {
+        fn decode(
+            decoder: &mut dyn ::sidex::Decoder,
+        ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
+            let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_1 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_2 = ::std::option::Option::<::std::string::String>::None;
+            decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
+                match index {
+                    0usize => {
+                        __field_0 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    1usize => {
+                        __field_1 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    2usize => {
+                        __field_2 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    _ => {}
                 }
-                #[inline]
-                fn visit_seq<__A>(
-                    self,
-                    mut __seq: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::SeqAccess<'de>,
-                {
-                    let __field0 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(0usize, &"record with 3 fields"),
-                            );
-                        }
-                    };
-                    let __field1 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(1usize, &"record with 3 fields"),
-                            );
-                        }
-                    };
-                    let __field2 = match __serde::de::SeqAccess::next_element::<
-                        __sidex_serde::DeserializeAsWrap<
-                            ::std::option::Option<::std::string::String>,
-                            ::std::option::Option<__sidex_serde::AsSelf>,
-                        >,
-                    >(&mut __seq)?
-                    {
-                        ::core::option::Option::Some(__value) => __value.into_inner(),
-                        ::core::option::Option::None => {
-                            return ::core::result::Result::Err(
-                                __serde::de::Error::invalid_length(2usize, &"record with 3 fields"),
-                            );
-                        }
-                    };
-                    ::core::result::Result::Ok(VariantAttrs {
-                        name: __field0,
-                        rename: __field1,
-                        content: __field2,
-                    })
-                }
-                #[inline]
-                fn visit_map<__A>(
-                    self,
-                    mut __map: __A,
-                ) -> ::core::result::Result<Self::Value, __A::Error>
-                where
-                    __A: __serde::de::MapAccess<'de>,
-                {
-                    #[doc(hidden)]
-                    const __IDENTIFIERS: &'static [&'static str] = &["name", "rename", "content"];
-                    #[doc(hidden)]
-                    const __EXPECTING_IDENTIFIERS: &'static str =
-                        "an identifier in [\"name\", \"rename\", \"content\"]";
-                    #[derive(:: core :: clone :: Clone, :: core :: marker :: Copy)]
-                    #[doc(hidden)]
-                    enum __Identifier {
-                        __Identifier0,
-                        __Identifier1,
-                        __Identifier2,
-                        __Unknown,
-                    }
-                    #[doc(hidden)]
-                    struct __IdentifierVisitor;
-                    impl<'de> __serde::de::Visitor<'de> for __IdentifierVisitor {
-                        type Value = __Identifier;
-                        fn expecting(
-                            &self,
-                            __formatter: &mut ::core::fmt::Formatter,
-                        ) -> ::core::fmt::Result {
-                            ::core::fmt::Formatter::write_str(__formatter, __EXPECTING_IDENTIFIERS)
-                        }
-                        fn visit_u64<__E>(
-                            self,
-                            __value: u64,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                0u64 => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                1u64 => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                2u64 => ::core::result::Result::Ok(__Identifier::__Identifier2),
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_str<__E>(
-                            self,
-                            __value: &str,
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                "name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                "rename" => ::core::result::Result::Ok(__Identifier::__Identifier1),
-                                "content" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                        fn visit_bytes<__E>(
-                            self,
-                            __value: &[u8],
-                        ) -> ::core::result::Result<Self::Value, __E>
-                        where
-                            __E: __serde::de::Error,
-                        {
-                            match __value {
-                                b"name" => ::core::result::Result::Ok(__Identifier::__Identifier0),
-                                b"rename" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier1)
-                                }
-                                b"content" => {
-                                    ::core::result::Result::Ok(__Identifier::__Identifier2)
-                                }
-                                _ => ::core::result::Result::Ok(__Identifier::__Unknown),
-                            }
-                        }
-                    }
-                    impl<'de> __serde::Deserialize<'de> for __Identifier {
-                        #[inline]
-                        fn deserialize<__D>(
-                            __deserializer: __D,
-                        ) -> ::core::result::Result<Self, __D::Error>
-                        where
-                            __D: __serde::Deserializer<'de>,
-                        {
-                            __serde::Deserializer::deserialize_identifier(
-                                __deserializer,
-                                __IdentifierVisitor,
-                            )
-                        }
-                    }
-                    let mut __field0: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field1: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    let mut __field2: ::core::option::Option<
-                        ::std::option::Option<::std::string::String>,
-                    > = ::core::option::Option::None;
-                    while let ::core::option::Option::Some(__key) =
-                        __serde::de::MapAccess::next_key::<__Identifier>(&mut __map)?
-                    {
-                        match __key {
-                            __Identifier::__Identifier0 => {
-                                if ::core::option::Option::is_some(&__field0) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field("name"),
-                                    );
-                                }
-                                __field0 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier1 => {
-                                if ::core::option::Option::is_some(&__field1) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "rename",
-                                        ),
-                                    );
-                                }
-                                __field1 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            __Identifier::__Identifier2 => {
-                                if ::core::option::Option::is_some(&__field2) {
-                                    return ::core::result::Result::Err(
-                                        <__A::Error as __serde::de::Error>::duplicate_field(
-                                            "content",
-                                        ),
-                                    );
-                                }
-                                __field2 = ::core::option::Option::Some(
-                                    __serde::de::MapAccess::next_value::<
-                                        __sidex_serde::DeserializeAsWrap<
-                                            ::std::option::Option<::std::string::String>,
-                                            ::std::option::Option<__sidex_serde::AsSelf>,
-                                        >,
-                                    >(&mut __map)?
-                                    .into_inner(),
-                                );
-                            }
-                            _ => {
-                                __serde::de::MapAccess::next_value::<__serde::de::IgnoredAny>(
-                                    &mut __map,
-                                )?;
-                            }
-                        }
-                    }
-                    let __field0 = match __field0 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field1 = match __field1 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    let __field2 = match __field2 {
-                        ::core::option::Option::Some(__value) => __value,
-                        ::core::option::Option::None => ::core::option::Option::None,
-                    };
-                    ::core::result::Result::Ok(VariantAttrs {
-                        name: __field0,
-                        rename: __field1,
-                        content: __field2,
-                    })
-                }
-            }
-            #[doc(hidden)]
-            const __FIELDS: &'static [&'static str] = &["name", "rename", "content"];
-            __serde::Deserializer::deserialize_struct(
-                __deserializer,
-                "VariantAttrs",
-                __FIELDS,
-                __Visitor {
-                    __phantom_vars: ::core::marker::PhantomData,
-                },
-            )
+                ::std::result::Result::Ok(())
+            })?;
+            ::std::result::Result::Ok(Self {
+                name: __field_0,
+                rename: __field_1,
+                content: __field_2,
+            })
         }
     }
 }

@@ -6,6 +6,7 @@ use builder::VariantTypeSchemaBuilder;
 use indexmap::IndexMap;
 use serde::Deserialize;
 use serde::Serialize;
+use sidex::types::Map;
 use sidex_attrs_api::render_doc_prelude;
 use sidex_attrs_api::stability_of_def;
 use sidex_attrs_json::field_attrs;
@@ -19,54 +20,9 @@ use sidex_gen::diagnostics;
 use sidex_gen::ir::STD_BUNDLE_IDX;
 use sidex_gen::ir::TypeVarType;
 use sidex_gen::ir::{self};
-use sidex_gen::rename::RenameFunction;
 use sidex_types_json_schema::*;
 
 pub mod builder;
-
-/// Configuration options for the JSON representation.
-pub struct JsonConfig {
-    /// The default renaming function to use for field names.
-    ///
-    /// Defaults to `camelCase`.
-    pub default_field_rename: RenameFunction,
-    /// The default renaming function to use for variant names.
-    ///
-    /// Defaults to `none`.
-    pub default_variant_rename: RenameFunction,
-    /// Indicates how to deal with optional fields.
-    pub default_optional_field_repr: OptionalFieldRepr,
-    /// Indicates whether to represent `NaN` and the infinities as strings.
-    ///
-    /// Note that neither `NaN` nor the infinites can be represented as a number in JSON.
-    pub enable_floats_as_strings: bool,
-    /// Indicates whether to represent integers with more than 32 bits as strings.
-    ///
-    /// Note that JavaScript's native JSON functionality is limited to 32 bit integers.
-    pub enable_integers_as_strings: bool,
-}
-
-/// TODO: We probably want to be able to control this with a attributes.
-pub enum OptionalFieldRepr {
-    /// If there is no value, then the field is missing.
-    Undefined,
-    /// The field is always there but may be null.
-    Null,
-    /// The field may be missing or its value may be `null`.
-    Both,
-}
-
-impl Default for JsonConfig {
-    fn default() -> Self {
-        Self {
-            default_field_rename: RenameFunction::CamelCase,
-            default_variant_rename: RenameFunction::None,
-            default_optional_field_repr: OptionalFieldRepr::Undefined,
-            enable_floats_as_strings: false,
-            enable_integers_as_strings: false,
-        }
-    }
-}
 
 /// Configuration options for JSON Schema generation.
 pub struct JsonSchemaConfig {
@@ -138,6 +94,13 @@ pub struct JsonSchemaCtx<'cx> {
     pub def_prefix: String,
     pub defs: IndexMap<String, TypeSchema>,
     pub config: JsonSchemaConfig,
+}
+
+/// Restricts strings to the given pattern.
+fn set_pattern(schema: &mut SchemaObject, pattern: &str) {
+    schema.set_string_keywords(Some(Box::new(
+        StringKeywords::new().with_pattern(Some(Pattern::new(pattern.to_owned()))),
+    )));
 }
 
 fn make_schema_ref<S: AsRef<str>>(string: S) -> SchemaObject {
@@ -387,14 +350,24 @@ impl<'cx> JsonSchemaCtx<'cx> {
             "::core::builtins::unit" => {
                 json_schema.set_allowed_types(Some(Type::Null.into()));
             }
-            "::meta::ir::Value" => {
+            "::core::builtins::value" => {
                 // Anything goes — clear the inherited any-type constraints.
                 json_schema.set_allowed_types(None);
+            }
+            "::core::builtins::bool" => {
+                json_schema.set_allowed_types(Some(Type::Boolean.into()));
             }
             "::core::builtins::string" => {
                 json_schema.set_allowed_types(Some(Type::String.into()));
             }
-            "::core::builtins::idx" => {
+            "::core::builtins::bytes" => {
+                json_schema.set_allowed_types(Some(Type::String.into()));
+            }
+            "::core::builtins::i8"
+            | "::core::builtins::i16"
+            | "::core::builtins::u8"
+            | "::core::builtins::u16"
+            | "::core::builtins::idx" => {
                 json_schema.set_allowed_types(Some(Type::Integer.into()));
             }
             "::core::builtins::i32" => {
@@ -402,26 +375,43 @@ impl<'cx> JsonSchemaCtx<'cx> {
                     .set_allowed_types(Some(Type::Integer.into()))
                     .set_format(Some("int32".to_owned()));
             }
-            "::core::builtins::i64" => {
-                json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some("int64".to_owned()));
-            }
             "::core::builtins::u32" => {
                 json_schema
                     .set_allowed_types(Some(Type::Integer.into()))
                     .set_format(Some("uint32".to_owned()));
             }
+            // 64-bit integers are decimal strings. Decoders also accept integers.
+            "::core::builtins::i64" => {
+                json_schema
+                    .set_allowed_types(Some(vec![Type::String, Type::Integer].into()))
+                    .set_format(Some("int64".to_owned()));
+                set_pattern(&mut json_schema, "^-?[0-9]+$");
+            }
             "::core::builtins::u64" => {
                 json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
+                    .set_allowed_types(Some(vec![Type::String, Type::Integer].into()))
                     .set_format(Some("uint64".to_owned()));
+                set_pattern(&mut json_schema, "^[0-9]+$");
             }
-            "::core::builtins::f64" => {
-                json_schema.set_allowed_types(Some(Type::Number.into()));
+            // Non-finite floats are strings.
+            "::core::builtins::f32" | "::core::builtins::f64" => {
+                json_schema.set_allowed_types(Some(vec![Type::Number, Type::String].into()));
+                set_pattern(&mut json_schema, "^(NaN|[+-]?Infinity)$");
             }
-            "::core::builtins::bool" => {
-                json_schema.set_allowed_types(Some(Type::Boolean.into()));
+            "::core::builtins::uuid" => {
+                json_schema
+                    .set_allowed_types(Some(Type::String.into()))
+                    .set_format(Some("uuid".to_owned()));
+            }
+            "::core::builtins::timestamp" => {
+                json_schema
+                    .set_allowed_types(Some(Type::String.into()))
+                    .set_format(Some("date-time".to_owned()));
+            }
+            "::core::builtins::date" => {
+                json_schema
+                    .set_allowed_types(Some(Type::String.into()))
+                    .set_format(Some("date".to_owned()));
             }
             _ => {}
         }
@@ -535,8 +525,9 @@ impl Generator for JsonSchemaGenerator {
                         schema.clone().with_id(Some(name.clone())).into(),
                     )
                 })
-                .collect::<IndexMap<_, _>>();
-            filtered_defs.sort_keys();
+                .collect::<Vec<_>>();
+            filtered_defs.sort_by(|(a, _), (b, _)| a.cmp(b));
+            let filtered_defs = filtered_defs.into_iter().collect::<Map<_, _>>();
             let root_schema = RootSchema::new(schema.clone())
                 .with_meta_schema(Some(
                     "https://json-schema.org/draft/2020-12/schema".to_owned(),
@@ -547,7 +538,12 @@ impl Generator for JsonSchemaGenerator {
                     Some(filtered_defs)
                 });
             let schema_file = job.output.join(format!("{name}.schema.json"));
-            std::fs::write(schema_file, serde_json::to_string_pretty(&root_schema)?)?;
+            let json = sidex::formats::json::to_string_pretty(&root_schema).map_err(|error| {
+                Box::new(sidex_gen::diagnostics::Diagnostic::error(format!(
+                    "Unable to encode JSON Schema: {error}"
+                )))
+            })?;
+            std::fs::write(schema_file, json)?;
         }
 
         let config = JsonSchemaConfig {

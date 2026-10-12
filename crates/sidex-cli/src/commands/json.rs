@@ -52,17 +52,6 @@ pub struct GenerateArgs {
     /// Maximum length of generated strings and free-form object keys.
     #[clap(long)]
     pub max_string_len: Option<usize>,
-    /// Encode `NaN`/`±Infinity` as the JSON strings `"NaN"`/`"Infinity"`/
-    /// `"-Infinity"`. Mirrors `JsonConfig::enable_floats_as_strings` on the
-    /// codegens — set this when targets are built with that flag enabled.
-    #[clap(long)]
-    pub floats_as_strings: bool,
-    /// Encode `i64`/`u64`/`idx` as decimal JSON strings instead of JSON
-    /// numbers. Mirrors `JsonConfig::enable_integers_as_strings` on the
-    /// codegens — set this when targets serialize past JS's 53-bit safe
-    /// integer boundary as strings to avoid precision loss.
-    #[clap(long)]
-    pub integers_as_strings: bool,
 }
 
 pub fn exec(args: &JsonArgs) -> Result<()> {
@@ -91,8 +80,6 @@ fn exec_generate(args: &GenerateArgs) -> Result<()> {
     if let Some(s) = args.max_string_len {
         config.max_string_len = s;
     }
-    config.floats_as_strings = args.floats_as_strings;
-    config.integers_as_strings = args.integers_as_strings;
 
     // A user-supplied seed reproduces a specific sample; otherwise we derive a
     // fresh seed per sample from a CSPRNG so successive runs differ.

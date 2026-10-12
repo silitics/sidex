@@ -9,14 +9,41 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-thiserror.workspace = true
-sidex-serde.workspace = true
-futures = { workspace = true, optional = true }
-serde_json.workspace = true
-serde.workspace = true
+base64.workspace = true
+indexmap.workspace = true
+jiff.workspace = true
+regex = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+toml = { workspace = true, optional = true }
+uuid = { workspace = true, optional = true }
 
 [features]
-serde = []
+default = ["json", "validation"]
+validation = ["dep:regex"]
+json = ["dep:serde", "dep:serde_json"]
+toml = ["dep:serde", "dep:toml"]
+serde-1 = ["json"]
+serde_json-1 = ["json"]
+indexmap-2 = []
+jiff-02 = []
+uuid-1 = ["dep:uuid"]
+
+[[test]]
+name = "json"
+required-features = ["json"]
+
+[[test]]
+name = "formats"
+required-features = ["json", "toml"]
+
+[[test]]
+name = "validation"
+required-features = ["validation"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [lints]
 workspace = true

@@ -124,16 +124,7 @@ variant MaybeArray<T> {
 }
 
 /// Any JSON value.
-#[json(tagged = implicitly)]
-variant Any {
-    // Null: unit,
-    Boolean: bool,
-    Integer: i32,
-    Number: f64,
-    String: string,
-    Object: [string: Any],
-    Array: [Any],
-}
+alias Any: value
 
 /// A reference to a JSON schema.
 wrapper SchemaRef: string
@@ -237,12 +228,8 @@ record NumberKeywords {
     exclusive_minimum?: Number,
 }
 
-/// A number that is either an integer or a floating point number.
-#[json(tagged = implicitly)]
-variant Number {
-    Integer: i64,
-    Float: f64,
-}
+/// A JSON number.
+alias Number: value
 
 /// Keywords applying to strings.
 record StringKeywords {

@@ -24,7 +24,8 @@ use std::collections::HashMap;
 
 pub use check::check;
 pub use generated::attrs as raw;
-use serde_json::Value;
+use sidex::Value;
+use sidex::formats::json;
 use sidex_ir as ir;
 
 const PLUGIN_DEPRECATED: &str = "deprecated";
@@ -182,58 +183,29 @@ fn extract_deprecated(typed_attrs: &HashMap<String, Value>) -> Option<Deprecated
     let value = typed_attrs.get(PLUGIN_DEPRECATED)?;
     // The schema record is identical across targets, so a single deserialize
     // call suffices regardless of position.
-    serde_json::from_value::<DeprecatedWire>(value.clone())
-        .ok()
-        .map(|w| {
-            Deprecated {
-                since: w.since,
-                note: w.note,
-                remove_in: w.remove_in,
-            }
-        })
+    json::from_value::<raw::DefDeprecated>(value).ok().map(|w| {
+        Deprecated {
+            since: w.since,
+            note: w.note,
+            remove_in: w.remove_in,
+        }
+    })
 }
 
 fn extract_unstable(typed_attrs: &HashMap<String, Value>) -> Option<Unstable> {
     let value = typed_attrs.get(PLUGIN_UNSTABLE)?;
-    serde_json::from_value::<UnstableWire>(value.clone())
-        .ok()
-        .map(|w| {
-            Unstable {
-                feature: w.feature,
-                note: w.note,
-                issue: w.issue,
-            }
-        })
+    json::from_value::<raw::DefUnstable>(value).ok().map(|w| {
+        Unstable {
+            feature: w.feature,
+            note: w.note,
+            issue: w.issue,
+        }
+    })
 }
 
 fn extract_since(typed_attrs: &HashMap<String, Value>) -> Option<Since> {
     let value = typed_attrs.get(PLUGIN_SINCE)?;
-    serde_json::from_value::<SinceWire>(value.clone())
+    json::from_value::<raw::DefSince>(value)
         .ok()
         .map(|w| Since { version: w.version })
-}
-
-#[derive(serde::Deserialize)]
-struct DeprecatedWire {
-    #[serde(default)]
-    since: Option<String>,
-    #[serde(default)]
-    note: Option<String>,
-    #[serde(default)]
-    remove_in: Option<String>,
-}
-
-#[derive(serde::Deserialize)]
-struct UnstableWire {
-    #[serde(default)]
-    feature: Option<String>,
-    #[serde(default)]
-    note: Option<String>,
-    #[serde(default)]
-    issue: Option<String>,
-}
-
-#[derive(serde::Deserialize)]
-struct SinceWire {
-    version: String,
 }

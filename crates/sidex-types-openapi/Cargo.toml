@@ -8,8 +8,7 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-sidex.workspace = true
-sidex-serde.workspace = true
+sidex = { workspace = true, features = ["serde-1", "indexmap-2"] }
 sidex-types-json-schema.workspace = true
 serde.workspace = true
 indexmap.workspace = true
