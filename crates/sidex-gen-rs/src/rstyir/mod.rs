@@ -25,6 +25,7 @@ use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_attrs_rust::Visibility;
 use sidex_attrs_rust::field_attrs as rust_field_attrs;
 use sidex_attrs_rust::type_attrs as rust_type_attrs;
+use sidex_gen::diagnostics::Diagnostic;
 use sidex_gen::diagnostics::Result;
 use sidex_gen::ir::Def;
 use sidex_gen::ir::DefKind;
@@ -199,7 +200,12 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
             } else {
                 match &attrs.typ {
                     Some(typ) => TokenStream::from_str(&typ.path).unwrap(),
-                    None => todo!(),
+                    None => {
+                        return Err(Box::new(Diagnostic::error(format!(
+                            "opaque type `{}` needs a Rust type: add `#[rust(type = \"...\")]`",
+                            def.name.as_str()
+                        ))));
+                    }
                 }
             };
             RsTypeKind::Alias(RsTypeAlias { aliased })

@@ -431,9 +431,18 @@ impl<'a> Walker<'a> {
 }
 
 /// Converts the decimal string of a 64-bit integer into a number.
+///
+/// JavaScript loses the precision of numbers beyond 2^53, which `number`
+/// accepts. To round-trip exactly in every language, values beyond are wrapped
+/// into the safe range.
 fn into_number(value: Value) -> Value {
+    const MAX_SAFE: i128 = (1 << 53) - 1;
     match value {
-        Value::String(text) => Value::Number(text.parse().expect("integers are decimal")),
+        Value::String(text) => {
+            let value: i128 = text.parse().expect("integers are decimal");
+            let value = value % (MAX_SAFE + 1);
+            Value::Number(i64::try_from(value).expect("safe integers fit").into())
+        }
         value => value,
     }
 }
