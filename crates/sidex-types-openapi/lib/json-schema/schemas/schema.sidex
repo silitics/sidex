@@ -76,29 +76,35 @@ record SchemaObject {
     /// See [JSON Schema Validation 9](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-a-vocabulary-for-basic-meta).
     #[json(inline)]
     #[rust(box)]
-    metadata?: Metadata,
+    #[default]
+    metadata: Metadata,
     /// Keywords for combining and conditionally applying subschemas.
     /// 
     /// See [JSON Schema 10.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc).
     #[json(inline)]
     #[rust(box)]
-    subschema_keywords?: SubschemaKeywords,
+    #[default]
+    subschema_keywords: SubschemaKeywords,
     /// Keywords applying to numbers.    
     #[json(inline)]
     #[rust(box)]
-    number_keywords?: NumberKeywords,
+    #[default]
+    number_keywords: NumberKeywords,
     /// Keywords applying to strings.
     #[json(inline)]
     #[rust(box)]
-    string_keywords?: StringKeywords,
+    #[default]
+    string_keywords: StringKeywords,
     /// Keywords applying to arrays.
     #[json(inline)]
     #[rust(box)]
-    array_keywords?: ArrayKeywords,
+    #[default]
+    array_keywords: ArrayKeywords,
     /// Keywords applying to objects.
     #[json(inline)]
     #[rust(box)]
-    object_keywords?: ObjectKeywords,
+    #[default]
+    object_keywords: ObjectKeywords,
     // /// Schema extensions.
     // #[json(inline)]
     // extensions?: [string: Any],

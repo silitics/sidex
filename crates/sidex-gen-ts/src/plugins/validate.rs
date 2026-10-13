@@ -26,11 +26,16 @@ use sidex_validate_expr as expr;
 use super::Plugin;
 use crate::context::SchemaCtx;
 use crate::context::TypeExpr;
+use crate::plugins::types::ts_string_literal;
 
 pub struct Validate;
 
 impl Plugin for Validate {
-    fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
+    fn visit_def(&self, _ctx: &SchemaCtx, _def: &ir::Def) -> Result<Code> {
+        Ok(Code::new())
+    }
+
+    fn visit_def_value(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
         match &def.kind {
             ir::DefKind::RecordType(record) => emit_record(ctx, def, record),
             ir::DefKind::WrapperType(wrapper) => emit_wrapper(ctx, def, wrapper),
@@ -65,7 +70,7 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         return Ok(Code::new());
     }
 
-    let name = def.name.as_str().to_owned();
+    let vars = type_parameters(def);
     // Mirror the types plugin: field access on the wire / TS surface goes
     // through the renamed name (`rename_all = "camelCase"` by default), so
     // the validator must reach for `__instance.<wireName>` rather than the
@@ -92,6 +97,7 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         let field_name = ty_json_attrs.field_name(field, &field_attrs);
         let target = target_for_type(ctx, &field.typ);
         let field_ty = ctx.resolve_type(def, &field.typ);
+        let field_key = ts_string_literal(&field_name);
 
         // Standalone field validator: rule body operates on `__value`.
         // The field-level entry is itself an object so other plugins can
@@ -107,8 +113,8 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         );
         let validator = quote!(
             r#"
-            @field_name: {
-                validate(__value: @field_ty, __path: __validate.Path = __validate.Path.root()): __validate.ValidationReport {
+            @field_key: {
+                validate@vars(__value: @field_ty, __path: __validate.Path = __validate.Path.root()): __validate.ValidationReport {
                     const __report = __validate.ValidationReport.ok();
                     @stmts_standalone
                     return __report;
@@ -121,7 +127,7 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         // In-record step: same rule body, but the value source is
         // `__instance.<field_name>` and the path is nested under
         // `__path.field("<field_name>")`.
-        let value_var = format!("__instance.{field_name}");
+        let value_var = format!("__instance[{field_key}]");
         let stmts_inline = lower_rules_to_ts(
             &field_rules,
             &value_var,
@@ -132,8 +138,8 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         let step = if field.is_optional {
             quote!(
                 r#"
-                if (__instance.@field_name !== undefined && __instance.@field_name !== null) {
-                    const __field_path = __path.field("@field_name");
+                if (__instance[@field_key] !== undefined && __instance[@field_key] !== null) {
+                    const __field_path = __path.field(@field_key);
                     @stmts_inline
                 }
                 "#
@@ -142,7 +148,7 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
             quote!(
                 r#"
                 {
-                    const __field_path = __path.field("@field_name");
+                    const __field_path = __path.field(@field_key);
                     @stmts_inline
                 }
                 "#
@@ -162,12 +168,12 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
 
     // Within the same schema file the type alias is in scope under its
     // bare name (the types plugin emits `export type Foo = ...;`).
-    let ty_expr = TypeExpr(Code::from(name.as_str()));
+    let name = def.name.as_str();
+    let ty_expr = TypeExpr(quote!("@name@vars"));
 
     Ok(quote!(
         r#"
-        export const @name = {
-            validate(__instance: @ty_expr, __path: __validate.Path = __validate.Path.root()): __validate.ValidationReport {
+            validate@vars(__instance: @ty_expr, __path: __validate.Path = __validate.Path.root()): __validate.ValidationReport {
                 const __report = __validate.ValidationReport.ok();
                 @(@field_steps)*
                 @record_steps
@@ -176,7 +182,6 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
             fields: {
                 @(@field_validators)*
             },
-        };
         "#
     ))
 }
@@ -193,19 +198,19 @@ fn emit_wrapper(ctx: &SchemaCtx, def: &ir::Def, wrapper: &ir::WrapperTypeDef) ->
     let inner_ty = ctx.resolve_type(def, &wrapper.wrapped);
     let stmts = lower_rules_to_ts(&rules, "__value", "__path", target, &FieldTable::new());
 
-    let qualified = Code::from(name.as_str());
+    let vars = type_parameters(def);
+    let qualified = quote!("@name@vars");
     // Standalone validator that operates on `__value`.
     let try_new_stmts = lower_rules_to_ts(&rules, "__value", "__path", target, &FieldTable::new());
 
     Ok(quote!(
         r#"
-        export const @name = {
-            validate(__value: @qualified, __path: __validate.Path = __validate.Path.root()): __validate.ValidationReport {
+            validate@vars(__value: @qualified, __path: __validate.Path = __validate.Path.root()): __validate.ValidationReport {
                 const __report = __validate.ValidationReport.ok();
                 @stmts
                 return __report;
             },
-            tryNew(__value: @inner_ty): { ok: true, value: @qualified } | { ok: false, report: __validate.ValidationReport } {
+            tryNew@vars(__value: @inner_ty): { ok: true, value: @qualified } | { ok: false, report: __validate.ValidationReport } {
                 const __path = __validate.Path.root();
                 const __report = __validate.ValidationReport.ok();
                 @try_new_stmts
@@ -214,7 +219,6 @@ fn emit_wrapper(ctx: &SchemaCtx, def: &ir::Def, wrapper: &ir::WrapperTypeDef) ->
                 }
                 return { ok: false, report: __report };
             },
-        };
         "#
     ))
 }
@@ -226,9 +230,7 @@ fn emit_opaque(def: &ir::Def) -> Result<Code> {
     if rules.is_empty() {
         return Ok(Code::new());
     }
-    // Same caveat as the Rust backend: opaques lower to type aliases that
-    // can't host inherent methods. Surface this as a TypeScript comment so
-    // users know rules were declared but skipped, then fall through.
+    // Opaque rules remain metadata in both backends; wrappers enforce them.
     let name = def.name.as_str().to_owned();
     let summaries: Vec<String> = rules
         .iter()
@@ -236,7 +238,7 @@ fn emit_opaque(def: &ir::Def) -> Result<Code> {
         .collect();
     let joined = summaries.join("\n");
     Ok(Code::from(format!(
-        "// `{name}` carries `#[validate(...)]` rules but opaque codegen lowers to a type alias.\n\
+        "// `{name}` carries `#[validate(...)]` rules retained as metadata.\n\
          // Wrap the type in `wrapper` to get an enforced `tryNew`.\n\
          {joined}\n"
     )))
@@ -517,3 +519,17 @@ impl_has_rule!(
     attrs::raw::WrapperRule,
     attrs::raw::OpaqueRule
 );
+
+/// Type parameters of a generic value method and its corresponding type.
+fn type_parameters(def: &ir::Def) -> Code {
+    let vars: Vec<Code> = def
+        .vars
+        .iter()
+        .map(|var| Code::from(var.name.as_str()))
+        .collect();
+    if vars.is_empty() {
+        Code::new()
+    } else {
+        quote!("<@(@vars), +>")
+    }
+}

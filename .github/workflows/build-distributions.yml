@@ -100,7 +100,8 @@ jobs:
         run: |
           docker run --rm -v "$PWD:/io:ro" -w /io python:3.12-alpine sh -ec '
             apk add --no-cache nodejs npm
-            pip install uv==0.12.15
+            # A stalled read fails the whole download, so allow slow mirrors.
+            pip install --timeout 120 uv==0.12.15
             python packaging/test.py --target "$1" --version "$2"
           ' sh "$TARGET" "$VERSION"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

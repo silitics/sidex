@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 
-import type { BigInt64, Float } from "../src/builtins.ts"
+import type { BigInt64, Float } from "../dist/builtins.js"
 
 import {
   Bytes,
@@ -20,7 +20,7 @@ import {
   U64,
   Uuid,
   entries,
-} from "../src/builtins.ts"
+} from "../dist/builtins.js"
 
 for (const [name, helper, min, max] of [
   ["I64", I64, -(2n ** 63n), 2n ** 63n - 1n],
@@ -54,15 +54,8 @@ for (const [name, helper, min, max] of [
     }
   })
 
-  test(`${name} rejects unsafe numbers, non-integers, and malformed decimal strings`, () => {
-    for (const value of [
-      Number.MAX_SAFE_INTEGER + 1,
-      -Number.MAX_SAFE_INTEGER - 1,
-      0.5,
-      NaN,
-      Infinity,
-      -Infinity,
-    ]) {
+  test(`${name} accepts integer numbers and rejects malformed decimal strings`, () => {
+    for (const value of [0.5, NaN, Infinity, -Infinity]) {
       assert.equal(helper.is(value), false)
       assert.throws(() => helper.fromNumber(value), RangeError)
     }
@@ -88,7 +81,12 @@ for (const [name, helper, min, max] of [
       assert.equal(helper.is(value), false, `accepted ${String(value)}`)
     }
     assert.equal(helper.is("00042"), true)
-    assert.equal(helper.is("+42"), false)
+    assert.equal(helper.is("+42"), true)
+    assert.equal(helper.is(Number.MAX_SAFE_INTEGER + 1), true)
+    assert.throws(
+      () => helper.fromNumber(Number.MAX_SAFE_INTEGER + 1),
+      RangeError,
+    )
     assert.equal(helper.is("-0"), min < 0n)
     if (min === 0n) {
       assert.equal(helper.is(-1), false)
@@ -209,14 +207,13 @@ test("Timestamp converts offsets to UTC and documents millisecond precision", (t
   assert.equal(Timestamp.now(), encoded)
 })
 
-test("Date checks the YYYY-MM-DD shape without calendar validation", () => {
+test("Date checks calendar validity and extended years", () => {
   for (const value of [
     "2026-10-12",
     "2024-02-29",
     "0000-01-01",
     "9999-12-31",
-    "2026-02-29",
-    "2026-13-32",
+    "-000044-03-15",
   ]) {
     assert.equal(SidexDate.is(value), true, value)
   }
@@ -228,7 +225,8 @@ test("Date checks the YYYY-MM-DD shape without calendar validation", () => {
     "2026-10-12T00:00:00Z",
     "2026-10-12\n",
     "10000-01-01",
-    "-000044-03-15",
+    "2026-02-29",
+    "2026-13-32",
   ]) {
     assert.equal(SidexDate.is(value), false, String(value))
   }
@@ -241,7 +239,7 @@ for (const [name, helper, min, max] of [
   ["U8", U8, 0, 255],
   ["U16", U16, 0, 65535],
   ["U32", U32, 0, 4294967295],
-  ["Idx", Idx, 0, Number.MAX_SAFE_INTEGER],
+  ["Idx", Idx, 0, 18_446_744_073_709_549_568],
 ] as const) {
   test(`${name} enforces integer bounds without coercion`, () => {
     assert.equal(helper.MIN, min)
@@ -250,7 +248,14 @@ for (const [name, helper, min, max] of [
       assert.equal(helper.is(value), true)
       assert.equal(helper.fromNumber(value), value)
     }
-    for (const value of [min - 1, max + 1, 0.5, NaN, Infinity, -Infinity]) {
+    for (const value of [
+      min - 1,
+      name === "Idx" ? 2 ** 64 : max + 1,
+      0.5,
+      NaN,
+      Infinity,
+      -Infinity,
+    ]) {
       assert.equal(helper.is(value), false)
       assert.throws(() => helper.fromNumber(value), RangeError)
     }

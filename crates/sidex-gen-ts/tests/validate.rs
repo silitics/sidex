@@ -94,7 +94,7 @@ fn wrapper_with_rules_emits_try_new() {
 fn optional_field_validates_only_when_present() {
     let out = render();
     assert!(
-        out.contains("__instance.nickname !== undefined"),
+        out.contains("__instance[\"nickname\"] !== undefined"),
         "expected optional-field guard, got:\n{out}"
     );
 }
@@ -106,10 +106,10 @@ fn validators_are_under_namespaced_const() {
     // the validators module; the per-field map for User is keyed by
     // `email`, `age`, `nickname`.
     assert!(out.contains("export const User"), "expected User const");
-    assert!(out.contains("email:"), "expected email field validator");
-    assert!(out.contains("age:"), "expected age field validator");
+    assert!(out.contains("\"email\":"), "expected email field validator");
+    assert!(out.contains("\"age\":"), "expected age field validator");
     assert!(
-        out.contains("nickname:"),
+        out.contains("\"nickname\":"),
         "expected nickname field validator"
     );
 }
@@ -162,7 +162,13 @@ fn generated_code_runs_under_node() {
         .join("../../languages/typescript/packages/types/src");
     let types_dest = work.path().join("sidex_types");
     std::fs::create_dir(&types_dest).unwrap();
-    for file in ["index.ts", "builtins.ts", "nominal.ts"] {
+    for file in [
+        "index.ts",
+        "builtins.ts",
+        "nominal.ts",
+        "check.ts",
+        "temporal.ts",
+    ] {
         std::fs::copy(types_src.join(file), types_dest.join(file)).expect("copy types runtime");
     }
 

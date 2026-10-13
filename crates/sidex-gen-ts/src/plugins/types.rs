@@ -65,14 +65,19 @@ impl Plugin for Types {
                 is_nominal = false;
                 let ty_json_attrs = json_record_type_attrs(def)?;
                 if typ.fields.is_empty() {
-                    TypeExpr(Code::from("Record<string, never>"))
+                    TypeExpr(Code::from("Record<string, unknown>"))
                 } else {
+                    let mut inline_types = Vec::new();
                     let mut field_jsdocs: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     let mut field_names: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     let mut field_opts: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     let mut field_types: Vec<Code> = Vec::with_capacity(typ.fields.len());
                     for field in &typ.fields {
                         let json_attrs = json_field_attrs(field)?;
+                        if json_attrs.inline {
+                            inline_types.push(ctx.resolve_type(def, &field.typ));
+                            continue;
+                        }
                         let field_name = ty_json_attrs.field_name(field, &json_attrs);
                         let stability = stability_of_field(field);
                         let field_docs =
@@ -82,9 +87,15 @@ impl Plugin for Types {
                         field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
                         field_types.push(ctx.resolve_type(def, &field.typ).0);
                     }
-                    TypeExpr(quote!(
+                    let own = TypeExpr(quote!(
                         "{ @(@field_jsdocs@field_names@field_opts: @field_types), + }"
-                    ))
+                    ));
+                    if inline_types.is_empty() {
+                        own
+                    } else {
+                        inline_types.insert(0, own);
+                        TypeExpr::intersection(inline_types)
+                    }
                 }
             }
             ir::DefKind::VariantType(typ) => {
@@ -110,13 +121,12 @@ impl Plugin for Types {
                                 variant_ts_types.push(inner);
                             }
                             _ => {
-                                match ctx.bundle_ctx.unit.record_type(&resolved) {
-                                    Some(_)
-                                        if json_attrs.content.is_none()
-                                            && matches!(
-                                                ty_json_attrs.tagged,
-                                                JsonTaggedAttr::Internally
-                                            ) =>
+                                match super::check::is_record(ctx.bundle_ctx.unit, &resolved) {
+                                    true if json_attrs.content.is_none()
+                                        && matches!(
+                                            ty_json_attrs.tagged,
+                                            JsonTaggedAttr::Internally
+                                        ) =>
                                     {
                                         variant_ts_types.push(TypeExpr(quote!(
                                             "({ @tag_field: @variant_name } & @inner)"
@@ -126,9 +136,23 @@ impl Plugin for Types {
                                         let content_field = ts_string_literal(
                                             &ty_json_attrs.content_field_name(&json_attrs),
                                         );
-                                        variant_ts_types.push(TypeExpr(quote!(
+                                        let nested = TypeExpr(quote!(
                                             "{ @tag_field: @variant_name, @content_field: @inner }"
-                                        )));
+                                        ));
+                                        if matches!(
+                                            ty_json_attrs.tagged,
+                                            JsonTaggedAttr::Internally
+                                        ) && json_attrs.content.is_none()
+                                            && contains_var(&resolved)
+                                        {
+                                            let inline = TypeExpr(quote!(
+                                                "({ @tag_field: @variant_name } & @inner)"
+                                            ));
+                                            variant_ts_types
+                                                .push(TypeExpr::union([nested, inline]));
+                                        } else {
+                                            variant_ts_types.push(nested);
+                                        }
                                     }
                                 }
                             }
@@ -169,6 +193,10 @@ impl Plugin for Types {
         Ok(quote!(
             "@def_jsdoc export type @name@vars_clause = @type_expr;"
         ))
+    }
+
+    fn visit_def_value(&self, ctx: &SchemaCtx, def: &ir::Def) -> diagnostics::Result<Code> {
+        super::check::emit(ctx, def)
     }
 
     fn visit_schema(&self, ctx: &SchemaCtx) -> diagnostics::Result<Code> {
@@ -227,7 +255,7 @@ impl Plugin for Types {
     }
 }
 
-fn ts_string_literal(s: &str) -> String {
+pub(crate) fn ts_string_literal(s: &str) -> String {
     format!("\"{}\"", s.replace('\\', "\\\\").replace('"', "\\\""))
 }
 
@@ -303,4 +331,12 @@ fn render_jsdoc(docs: &str, stability: &Stability) -> String {
     }
     out.push_str(" */\n");
     out
+}
+
+/// Generic payloads can acquire a record shape after substitution.
+fn contains_var(typ: &ir::Type) -> bool {
+    match &typ.kind {
+        ir::TypeKind::TypeVar(_) => true,
+        ir::TypeKind::Instance(instance) => instance.subst.iter().any(contains_var),
+    }
 }

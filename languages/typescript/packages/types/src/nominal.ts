@@ -8,8 +8,9 @@ type N<P extends string> = { [SIDEX_PATH_SYMBOL]: { [key in P]: null } }
 
 /**
  * A nominal type based on `T` and identified by its Sidex path `P`.
+ * Null is preserved because it cannot carry a brand.
  */
-export type Nominal<T, P extends string> = T & N<P>
+export type Nominal<T, P extends string> = T & (N<P> | null)
 
 /**
  * The structural type of a nominal type `T`.

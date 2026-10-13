@@ -39,3 +39,24 @@ impl<T> From<Vec<T>> for MaybeArray<T> {
         MaybeArray::Array(value)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use sidex::formats::json;
+
+    use super::SchemaObject;
+
+    /// Required inline keyword groups preserve empty and populated JSON Schema objects.
+    #[test]
+    fn keyword_groups_roundtrip() {
+        for source in [
+            "{}",
+            r#"{"title":"Sample","allOf":[true],"minimum":1,"pattern":"x","items":true,"required":["x"]}"#,
+        ] {
+            let schema: SchemaObject = json::from_str(source).unwrap();
+            assert_eq!(json::to_string(&schema).unwrap(), source);
+            let schema: SchemaObject = serde_json::from_str(source).unwrap();
+            assert_eq!(serde_json::to_string(&schema).unwrap(), source);
+        }
+    }
+}

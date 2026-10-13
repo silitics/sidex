@@ -1,6 +1,7 @@
 """Pytest infrastructure for testing Sidex-generated Python code."""
 
 import importlib
+import json
 import subprocess
 import sys
 import tempfile
@@ -43,6 +44,34 @@ def _import_package(name: str, path: Path):
     sys.modules[name] = pkg
     spec.loader.exec_module(pkg)
     return pkg
+
+
+@pytest.fixture(scope="session")
+def rust_roundtrip():
+    """Read Python's output with generated Rust types and encode it again."""
+    subprocess.run(
+        [
+            "cargo",
+            "build",
+            "-p",
+            "sidex-serde-tests",
+            "--example",
+            "python_roundtrip",
+            "--locked",
+        ],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+    )
+    binary = REPO_ROOT / "target/debug/examples/python_roundtrip"
+
+    def run(typ, text):
+        result = subprocess.run(
+            [str(binary), typ], input=text, text=True, check=True, capture_output=True
+        )
+        return json.loads(result.stdout)
+
+    return run
 
 
 @pytest.fixture(scope="session")

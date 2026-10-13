@@ -1,0 +1,75 @@
+//! Inline fields shared by Python integration tests and Rust round trips.
+
+import serialization::Box
+
+record Envelope {
+    envelope_id: string,
+    #[json(inline, name = "ignored.payload")]
+    payload: Payload,
+    #[json(inline)]
+    extras: Extras,
+}
+
+record Payload {
+    value: string,
+    note?: string,
+}
+
+record Extras {
+    #[json(name = "extra.note")]
+    extra_note?: string,
+}
+
+record Nested {
+    #[json(inline)]
+    envelope: Envelope,
+    outer_note?: string,
+}
+
+record EmptyEnvelope {
+    #[json(inline)]
+    extras: Extras,
+}
+
+wrapper Wrapped: Payload
+wrapper WrappedTwice: Wrapped
+alias PayloadAlias: WrappedTwice
+alias WrappedAlias<T>: T
+
+record WrappedEnvelope {
+    #[json(inline)]
+    payload: PayloadAlias,
+}
+
+record InlineRecord<T> {
+    #[json(inline)]
+    payload: Box<T>,
+    outer_note?: string,
+}
+
+record CrossSchema {
+    #[json(inline)]
+    payload: Box<json>,
+}
+
+record RenamedEnvelope {
+    #[json(inline)]
+    payload: Payload,
+    #[json(name = "outerValue")]
+    value: string,
+}
+
+record Typed<T> { value: T }
+variant TypedCase { Value: Typed<string> }
+
+record NamedPayload { payload: string }
+variant NamedCase { Value: NamedPayload }
+
+variant Internal { Empty, Envelope: Envelope, Generic: InlineRecord<Payload> }
+variant GenericCase<V> { Empty, Value: InlineRecord<V> }
+#[json(tagged = adjacently)]
+variant Adjacent { Empty, Envelope: Envelope }
+#[json(tagged = externally)]
+variant External { Empty, Envelope: Envelope }
+#[json(tagged = implicitly)]
+variant Implicit { Envelope: Envelope }

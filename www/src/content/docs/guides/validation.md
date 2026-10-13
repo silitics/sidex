@@ -6,7 +6,7 @@ order: 1
 
 A type describes a value's structure. A validation rule adds a constraint, such as a size limit or numeric range. Sidex checks rules in Rust and TypeScript.
 
-Validators receive values whose structure is already known. They check declared constraints; they do not replace parsing or JSON Schema validation of untrusted input.
+Validators receive values whose structure is already known. In TypeScript, check incoming JSON with the generated `is` or `check` methods first.
 
 ## Declare Rules
 
@@ -92,6 +92,20 @@ if (result.ok) {
 ```
 
 Field validators are useful for forms. Their entries are objects with a `validate` method. Field keys follow JSON renaming, so a `display_name` field appears as `fields.displayName` under the default naming convention.
+
+For incoming data, check its representation before validating rules:
+
+```ts
+const input: unknown = JSON.parse(responseText);
+if (User.is(input)) {
+  const report = User.validate(input);
+  console.log(report.errors);
+} else {
+  console.log(User.check(input).errors);
+}
+```
+
+`check` reports structural errors. `validate` checks rules on a typed value and does not check structure.
 
 ## Expression Reference
 

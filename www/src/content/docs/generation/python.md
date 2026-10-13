@@ -29,15 +29,36 @@ task = Task.model_validate_json(
 assert task.title == "Write a schema"
 assert task.description is None
 
-encoded = task.model_dump_json(by_alias=True, exclude_none=True)
+encoded = task.model_dump_json(by_alias=True)
 print(encoded)
 ```
 
-Pydantic validates incoming values according to its model configuration. `by_alias=True` writes JSON field names, and `exclude_none=True` omits absent optional fields.
+Pydantic validates incoming values according to its model configuration. `by_alias=True` writes JSON field names. Generated models omit optional fields whose value is `None` by default. Required nullable fields and `null` inside JSON values, sequences, and maps are preserved. Passing `exclude_none=True` is unnecessary and also drops required fields whose value is `None`.
 
 Booleans and integers require their JSON types, and integers must fit the declared range, like in the other runtimes. Only 64-bit integers also accept decimal strings. This keeps implicitly tagged variants from interpreting `1` as a boolean or `300` as a `u8`.
 
 Python models use Python field identifiers. JSON aliases follow Sidex's naming rules, which default to camelCase. Do not assume that Python's field name is also the wire key.
+
+## Inline Fields
+
+An `#[json(inline)]` field holds a record, directly or through aliases and wrappers. Its nested Python model shares its JSON object with the enclosing record:
+
+```sidex
+record Payload { value: string, note?: string }
+record Envelope { #[json(inline)] payload: Payload }
+```
+
+With these definitions in `messages.sidex`:
+
+```python
+from task_models.messages import Envelope
+
+envelope = Envelope.model_validate_json('{"value":"x"}')
+assert envelope.payload.value == "x"
+assert envelope.model_dump_json(by_alias=True) == '{"value":"x"}'
+```
+
+Nested inline records, aliases, and wrappers of records use the same representation. Inline fields must be required, and JSON names must be unique across the flattened object. Fields within an inline record may be optional; absent values are omitted. Unknown fields are ignored by default.
 
 ## Variants and Wrappers
 
@@ -59,7 +80,7 @@ from task_models.outcomes import Outcome
 
 adapter = TypeAdapter(Outcome)
 value = adapter.validate_json('{"state":"Complete","value":"done"}')
-encoded = adapter.dump_json(value, by_alias=True, exclude_none=True)
+encoded = adapter.dump_json(value, by_alias=True)
 ```
 
 The adapter applies the wire representation specified by the schema. For wrappers, access the wrapped value through the Pydantic root model's `root` property.
@@ -68,7 +89,7 @@ The adapter applies the wire representation specified by the schema. For wrapper
 
 Generated cases with a payload provide a `payload()` method. For an internally
 tagged record case, the fields are inlined in the case model. `payload()`
-constructs a fresh instance of the original record:
+constructs a fresh instance of the original record. A record field named `payload` becomes `payload_` in a case model to keep the method available:
 
 ```sidex
 record Point {

@@ -935,6 +935,7 @@ impl Transformer {
                                                     ir::Ident::new(field.name.as_str().to_owned()),
                                                     resolver.resolve_type_expr(ast_def, &field.typ),
                                                 )
+                                                .with_span(Some(field.name.span().clone()))
                                                 .with_docs(docs_or_none(&field.docs.to_string()))
                                                 .with_attrs(transform_attrs(&field.attrs))
                                                 .with_is_optional(field.is_optional)
@@ -953,6 +954,7 @@ impl Transformer {
                                                 ir::Variant::new(ir::Ident::new(
                                                     var.name.as_str().to_owned(),
                                                 ))
+                                                .with_span(Some(var.name.span().clone()))
                                                 .with_docs(docs_or_none(&var.docs.to_string()))
                                                 .with_attrs(transform_attrs(&var.attrs))
                                                 .with_typ(var.typ.as_ref().map(|t| {
@@ -986,6 +988,7 @@ impl Transformer {
         // Phase 5: discover plugin attribute schemas and parse typed attrs.
         let registry = crate::attrs_meta::PluginRegistry::build(&ir);
         crate::attrs_parser::populate_typed_attrs(&mut ir, &registry);
+        sidex_attrs_json::check(&ir);
 
         ir
     }
@@ -1044,6 +1047,210 @@ mod tests {
             errors("import ::core::builtins::uuid::*\n"),
             ["Definitions have no members to import with `*`."]
         );
+    }
+
+    /// JSON inline fields reject nonrecords before any generator runs.
+    #[test]
+    fn rejects_nonrecord_json_inline_fields() {
+        for typ in [
+            "string",
+            "json",
+            "[string]",
+            "[string: json]",
+            "Choice",
+            "Native",
+            "Alias<string>",
+            "Wrapped<Alias<string>>",
+            "T",
+        ] {
+            let source = format!(
+                "alias Alias<T>: T\nwrapper Wrapped<T>: T\n\
+                 variant Choice {{ Case: string }}\nopaque Native\n\
+                 record Envelope<T> {{ #[json(inline)] payload: {typ} }}\n"
+            );
+            assert_eq!(
+                errors(&source),
+                ["`#[json(inline)]` requires a record type, or an alias or wrapper of a record."],
+                "{typ}"
+            );
+        }
+    }
+
+    /// Optional inline fields are rejected even when their record has no required fields.
+    #[test]
+    fn rejects_optional_json_inline_fields() {
+        for fields in ["value: string", "value?: string", ""] {
+            let source = format!(
+                "record Payload {{ {fields} }}\n\
+                 record Envelope {{ #[json(inline)] payload?: Payload }}\n"
+            );
+            assert_eq!(
+                errors(&source),
+                ["`#[json(inline)]` requires a nonoptional field."],
+                "{fields}",
+            );
+        }
+    }
+
+    /// Wire names must be unique after every naming override and recursive flattening.
+    #[test]
+    fn rejects_duplicate_json_field_names() {
+        for (source, duplicate, other) in [
+            (
+                r#"record Envelope { value: string, #[json(name = "value")] other?: string }"#,
+                "Envelope.other",
+                "Envelope.value",
+            ),
+            (
+                r#"#[json(rename_all = "lowercase")] record Envelope { value: string, VALUE: string }"#,
+                "Envelope.VALUE",
+                "Envelope.value",
+            ),
+            (
+                r#"record Envelope { value: string, #[json(rename = "lowercase")] VALUE: string }"#,
+                "Envelope.VALUE",
+                "Envelope.value",
+            ),
+            (
+                "record Payload { value: string } record Envelope { value: string, #[json(inline)] payload: Payload }",
+                "Envelope.payload.value",
+                "Envelope.value",
+            ),
+            (
+                "record Payload { value: string } record Envelope { #[json(inline)] payload: Payload, value: string }",
+                "Envelope.value",
+                "Envelope.payload.value",
+            ),
+            (
+                "record Payload { value: string } record Nested { #[json(inline)] payload: Payload } record Envelope { #[json(inline)] first: Nested, #[json(inline)] second: Nested }",
+                "Envelope.second.payload.value",
+                "Envelope.first.payload.value",
+            ),
+            (
+                r#"record Payload { #[json(name = "value")] renamed: string } record Envelope { #[json(inline)] payload: Payload, value: string }"#,
+                "Envelope.value",
+                "Envelope.payload.renamed",
+            ),
+            (
+                "record Payload<T> { value: T } alias Alias<T>: T wrapper Wrapped<T>: T record Nested<T> { #[json(inline)] payload: Wrapped<Alias<Wrapped<Payload<T>>>> } record Envelope { value: string, #[json(inline)] nested: Alias<Nested<string>> }",
+                "Envelope.nested.payload.value",
+                "Envelope.value",
+            ),
+            (
+                "record Envelope { value: string, #[json(inline)] recursive: Envelope }",
+                "Envelope.recursive.value",
+                "Envelope.value",
+            ),
+        ] {
+            assert_eq!(
+                errors(source),
+                [format!(
+                    "JSON field name `value` occurs more than once: `{duplicate}` conflicts with `{other}`."
+                )],
+                "{source}",
+            );
+        }
+    }
+
+    /// Inline fields accept substituted generics and reuse across separate objects.
+    #[test]
+    fn accepts_record_json_inline_fields() {
+        let source = r#"
+            record Payload<T> { value: T, note?: string }
+            alias Alias<T>: T
+            wrapper Wrapped<T>: T
+            record Direct<T> { #[json(inline)] direct: Payload<T> }
+            record Aliased { #[json(inline)] aliased: Alias<Payload<string>> }
+            record WrappedEnvelope<T> {
+                #[json(inline)]
+                wrapped: Wrapped<Alias<Wrapped<Payload<T>>>>,
+            }
+            record Nested<T> {
+                #[json(inline)]
+                direct: Direct<T>,
+                next?: Nested<T>,
+            }
+            record SeparateObjects { first: Direct<string>, second: Direct<string> }
+        "#;
+        assert_eq!(errors(source), Vec::<String>::new());
+    }
+
+    /// Renaming removes collisions, and inline field names do not become wire keys.
+    #[test]
+    fn accepts_distinct_json_field_names() {
+        let source = r#"
+            #[json(rename_all = "snake_case")]
+            record Payload { display_name: string }
+            record Extra { #[json(rename = "UPPERCASE")] display_name: string }
+            record Envelope {
+                display_name: string,
+                #[json(name = "value", rename = "lowercase")]
+                VALUE: string,
+                #[json(name = "other")]
+                value: string,
+                #[json(inline, name = "value")]
+                payload: Payload,
+                #[json(inline)]
+                extra: Extra,
+            }
+        "#;
+        assert_eq!(errors(source), Vec::<String>::new());
+    }
+
+    /// Internal tags reserve their key across renamed and nested generic payload fields.
+    #[test]
+    fn rejects_json_tag_collisions() {
+        for (payload, path) in [
+            ("record Payload<T> { kind: T }", "Choice::Case.kind"),
+            (
+                r#"record Payload<T> { #[json(name = "kind")] value: T }"#,
+                "Choice::Case.value",
+            ),
+            (
+                r#"#[json(rename_all = "lowercase")] record Payload<T> { KIND: T }"#,
+                "Choice::Case.KIND",
+            ),
+            (
+                "record Inner<T> { kind: T } record Payload<T> { #[json(inline)] inner: Inner<T> }",
+                "Choice::Case.inner.kind",
+            ),
+        ] {
+            let source = format!(
+                "{payload}\nalias Alias<T>: T\nwrapper Wrapped<T>: T\n\
+                 #[json(tag = \"kind\")] variant Choice<T> {{ Case: Wrapped<Alias<Payload<T>>> }}"
+            );
+            assert_eq!(
+                errors(&source),
+                [format!(
+                    "JSON field name `kind` occurs more than once: `{path}` conflicts with `Choice::Case tag`."
+                )],
+                "{payload}",
+            );
+        }
+        assert_eq!(
+            errors("record Payload { tag: string } variant Choice { Case: Payload }"),
+            [
+                "JSON field name `tag` occurs more than once: `Choice::Case.tag` conflicts with `Choice::Case tag`."
+            ],
+        );
+    }
+
+    /// Other tagging modes and separate internal cases keep payload names independent.
+    #[test]
+    fn accepts_distinct_json_tag_names() {
+        let source = r#"
+            record Payload { tag: string }
+            #[json(tagged = adjacently)]
+            variant Adjacent { Case: Payload }
+            #[json(tagged = externally)]
+            variant External { Case: Payload }
+            #[json(tagged = implicitly)]
+            variant Implicit { Case: Payload }
+            #[json(tag = "kind")]
+            variant Internal { First: Payload, Second: Payload }
+            variant Nested { #[json(content = "payload")] Case: Payload }
+        "#;
+        assert_eq!(errors(source), Vec::<String>::new());
     }
 
     #[test]
