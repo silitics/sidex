@@ -4,12 +4,12 @@ use std::collections::HashSet;
 
 use super::Tagging;
 use super::Type;
-use crate::JsonValue;
 use crate::Shape;
 use crate::shape::RecordShape;
 use crate::shape::Scalar;
 use crate::shape::ShapeKind;
 use crate::shape::VariantShape;
+use crate::types::JsonValue;
 use crate::types::Map;
 use crate::types::Str;
 
@@ -301,11 +301,11 @@ impl Builder {
 
 /// Returns the schema of a scalar.
 fn scalar_schema(scalar: Scalar) -> JsonValue {
-    let integer = |min: i128, max: i128| {
+    let integer = |min: JsonValue, max: JsonValue| {
         object([
             ("type", "integer".into()),
-            ("minimum", JsonValue::Int(min)),
-            ("maximum", JsonValue::Int(max)),
+            ("minimum", min),
+            ("maximum", max),
         ])
     };
     let string = |format: &str| object([("type", "string".into()), ("format", format.into())]);
@@ -317,21 +317,21 @@ fn scalar_schema(scalar: Scalar) -> JsonValue {
             object([
                 ("type", "integer".into()),
                 ("format", "int32".into()),
-                ("minimum", JsonValue::Int(i32::MIN.into())),
-                ("maximum", JsonValue::Int(i32::MAX.into())),
+                ("minimum", JsonValue::from(i32::MIN)),
+                ("maximum", JsonValue::from(i32::MAX)),
             ])
         }
-        Scalar::U8 => integer(0, u8::MAX.into()),
-        Scalar::U16 => integer(0, u16::MAX.into()),
+        Scalar::U8 => integer(0.into(), u8::MAX.into()),
+        Scalar::U16 => integer(0.into(), u16::MAX.into()),
         Scalar::U32 => {
             object([
                 ("type", "integer".into()),
                 ("format", "uint32".into()),
-                ("minimum", JsonValue::Int(0)),
-                ("maximum", JsonValue::Int(u32::MAX.into())),
+                ("minimum", JsonValue::from(0)),
+                ("maximum", JsonValue::from(u32::MAX)),
             ])
         }
-        Scalar::Idx => object([("type", "integer".into()), ("minimum", JsonValue::Int(0))]),
+        Scalar::Idx => object([("type", "integer".into()), ("minimum", JsonValue::from(0))]),
         // Integers, or decimal strings beyond 2^53 - 1.
         Scalar::I64 => {
             object([
@@ -350,7 +350,7 @@ fn scalar_schema(scalar: Scalar) -> JsonValue {
                     JsonValue::from(vec!["integer".into(), "string".into()]),
                 ),
                 ("format", "uint64".into()),
-                ("minimum", JsonValue::Int(0)),
+                ("minimum", JsonValue::from(0)),
                 ("pattern", "^[0-9]+$".into()),
             ])
         }

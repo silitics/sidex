@@ -17,7 +17,7 @@ pub use generated::attrs as raw;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::quote;
-use sidex::JsonValue;
+use sidex::types::JsonValue;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Result;
 use sidex_ir as ir;

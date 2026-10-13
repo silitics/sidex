@@ -320,7 +320,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
 fn opaque_json_lowering(def: &Def) -> Result<TokenStream> {
     let union = match json_opaque_type_attrs(def)?.typ {
         Some(union) => union,
-        None => return Ok(quote! { ::sidex::JsonValue }),
+        None => return Ok(quote! { ::sidex::types::JsonValue }),
     };
     Ok(match union.classify() {
         JsonShape::Single(t) => json_type_to_rs(t),
@@ -328,7 +328,7 @@ fn opaque_json_lowering(def: &Def) -> Result<TokenStream> {
             let inner = json_type_to_rs(t);
             quote! { ::std::option::Option<#inner> }
         }
-        JsonShape::Other => quote! { ::sidex::JsonValue },
+        JsonShape::Other => quote! { ::sidex::types::JsonValue },
     })
 }
 
@@ -337,12 +337,12 @@ fn json_type_to_rs(ty: JsonType) -> TokenStream {
         JsonType::String => quote! { ::sidex::types::Str },
         JsonType::Number => quote! { f64 },
         JsonType::Boolean => quote! { bool },
-        JsonType::Null => quote! { ::sidex::JsonValue },
-        JsonType::Array => quote! { ::sidex::types::Seq<::sidex::JsonValue> },
+        JsonType::Null => quote! { ::sidex::types::JsonValue },
+        JsonType::Array => quote! { ::sidex::types::Seq<::sidex::types::JsonValue> },
         JsonType::Object => {
-            quote! { ::sidex::types::Map<::sidex::types::Str, ::sidex::JsonValue> }
+            quote! { ::sidex::types::Map<::sidex::types::Str, ::sidex::types::JsonValue> }
         }
-        JsonType::Any => quote! { ::sidex::JsonValue },
+        JsonType::Any => quote! { ::sidex::types::JsonValue },
     }
 }
 

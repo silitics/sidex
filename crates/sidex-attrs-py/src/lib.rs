@@ -9,7 +9,7 @@ mod generated;
 
 pub use generated::attrs::*;
 use sidex::DecodeError;
-use sidex::JsonValue;
+use sidex::types::JsonValue;
 use sidex_ir as ir;
 
 /// Pull the typed `py` attributes off any IR node's `typed_attrs` map and

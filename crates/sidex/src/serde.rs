@@ -39,7 +39,6 @@ use crate::Decode;
 use crate::DecodeError;
 use crate::Decoder;
 use crate::Encode;
-use crate::JsonValue;
 use crate::Shape;
 use crate::Shaped;
 use crate::View;
@@ -56,6 +55,7 @@ use crate::shape::Scalar;
 use crate::shape::ShapeKind;
 use crate::types::Bytes;
 use crate::types::Date;
+use crate::types::JsonValue;
 use crate::types::Map;
 use crate::types::Seq;
 use crate::types::Str;
@@ -383,16 +383,15 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'_> {
         match self.0 {
             JsonValue::Null => visitor.visit_unit(),
             JsonValue::Bool(value) => visitor.visit_bool(*value),
-            JsonValue::Int(value) => {
-                if let Ok(value) = u64::try_from(*value) {
+            JsonValue::Number(number) => {
+                if let Some(value) = number.as_u64() {
                     visitor.visit_u64(value)
-                } else if let Ok(value) = i64::try_from(*value) {
+                } else if let Some(value) = number.as_i64() {
                     visitor.visit_i64(value)
                 } else {
-                    visitor.visit_i128(*value)
+                    visitor.visit_f64(number.as_f64())
                 }
             }
-            JsonValue::Float(value) => visitor.visit_f64(*value),
             JsonValue::String(value) => visitor.visit_str(value),
             JsonValue::Seq(items) => {
                 let mut seq = SeqDeserializer::new(items.iter().map(ValueDeserializer));

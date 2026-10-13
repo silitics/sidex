@@ -1,8 +1,9 @@
 //! Borrowed views of values for writing.
 
-use crate::JsonValue;
 use crate::encode::EncodeError;
+use crate::types::JsonValue;
 use crate::types::Map;
+use crate::types::Number;
 use crate::types::Str;
 
 /// Borrowed view of a [`JsonValue`] whose sequences and maps compute their items on
@@ -58,8 +59,18 @@ impl JsonValue {
         Ok(match view {
             ValueView::Null => JsonValue::Null,
             ValueView::Bool(value) => JsonValue::Bool(value),
-            ValueView::Int(value) => JsonValue::Int(value),
-            ValueView::Float(value) => JsonValue::Float(value),
+            ValueView::Int(value) => {
+                JsonValue::Number(Number::from_i128(value).ok_or_else(|| {
+                    EncodeError::new(format_args!("integer {value} is out of range"))
+                })?)
+            }
+            ValueView::Float(value) => {
+                JsonValue::Number(Number::from_f64(value).ok_or_else(|| {
+                    EncodeError::new(format_args!(
+                        "non-finite float {value} has no JSON representation"
+                    ))
+                })?)
+            }
             ValueView::String(value) => JsonValue::String(value.into()),
             ValueView::Seq(seq) => {
                 let mut items = Vec::with_capacity(seq.size_hint().unwrap_or(0));

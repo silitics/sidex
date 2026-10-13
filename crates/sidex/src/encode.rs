@@ -15,9 +15,9 @@
 use std::borrow::Cow;
 use std::fmt;
 
-use crate::JsonValue;
 use crate::shape::Shape;
 use crate::types::Date;
+use crate::types::JsonValue;
 use crate::types::Timestamp;
 use crate::types::Uuid;
 

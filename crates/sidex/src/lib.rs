@@ -20,13 +20,11 @@
 //! converts typed values to and from it (see [`formats`]). The JSON format is
 //! the cross-language contract of Sidex.
 //!
-//! A [`JsonValue`] is self-describing data following the JSON data
-//! model (see [`value`]). Types use values for data without a schema, and the
-//! JSON format can hold documents in values.
-//!
 //! The [`types`] module provides the Rust types of Sidex's built-in types. Its
 //! strings, sequences, maps, and bytes are cheap to clone, and its maps preserve
-//! insertion order. This crate does not expose third-party crates in its
+//! insertion order. The built-in `json` type is a [`JsonValue`], self-describing
+//! data following the JSON data model. The JSON format can also hold documents
+//! in values. This crate does not expose third-party crates in its
 //! interfaces. Compatibility features implement the traits for the types of
 //! popular crates instead.
 //!
@@ -38,7 +36,8 @@
 //! use sidex::encode::{RecordView, View};
 //! use sidex::formats::json;
 //! use sidex::shape::{FieldShape, RecordShape, ShapeKind, shape_of};
-//! use sidex::{Decode, DecodeError, Decoder, Encode, Shape, Shaped, JsonValue};
+//! use sidex::types::JsonValue;
+//! use sidex::{Decode, DecodeError, Decoder, Encode, Shape, Shaped};
 //!
 //! /// A device.
 //! struct Device {
@@ -121,6 +120,8 @@
 //! - `schemars-1`: Schemas for `schemars` (see [`formats::json`]).
 //! - `sqlx-08`, `rusqlite-037`: Storing strings in SQL databases with `sqlx` or
 //!   `rusqlite`.
+//!
+//! [`JsonValue`]: types::JsonValue
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -130,7 +131,6 @@ pub mod formats;
 pub mod shape;
 pub mod types;
 pub mod validation;
-pub mod value;
 
 #[cfg(feature = "serde-1")]
 pub mod serde;
@@ -143,7 +143,6 @@ pub use crate::encode::EncodeError;
 pub use crate::encode::View;
 pub use crate::shape::Shape;
 pub use crate::shape::Shaped;
-pub use crate::value::JsonValue;
 
 /// Macro for including bundles build with [`sidex_build_rs`].
 ///

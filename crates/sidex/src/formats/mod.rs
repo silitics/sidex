@@ -12,7 +12,7 @@
 //! messages are small enough for this to be insignificant. Writing streams
 //! without building a [`JsonValue`].
 //!
-//! [`JsonValue`]: crate::JsonValue
+//! [`JsonValue`]: crate::types::JsonValue
 
 #[cfg(any(feature = "json", feature = "toml"))]
 pub(crate) mod bridge;

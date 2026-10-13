@@ -6,7 +6,6 @@ use super::Tagging;
 use super::repr::BASE64;
 use super::repr::non_finite;
 use super::repr::with_display;
-use crate::JsonValue;
 use crate::encode::EncodeError;
 use crate::encode::MapView;
 use crate::encode::RecordView;
@@ -17,6 +16,7 @@ use crate::formats::view::ValueMapView;
 use crate::formats::view::ValueSeqView;
 use crate::formats::view::ValueView;
 use crate::shape::RecordShape;
+use crate::types::JsonValue;
 use crate::types::Map;
 use crate::types::Str;
 
@@ -157,12 +157,11 @@ fn value(value: &JsonValue, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
     match value {
         JsonValue::Null => f(ValueView::Null),
         JsonValue::Bool(value) => f(ValueView::Bool(*value)),
-        JsonValue::Int(value) => f(ValueView::Int(*value)),
-        JsonValue::Float(value) if value.is_finite() => f(ValueView::Float(*value)),
-        JsonValue::Float(value) => {
-            Err(EncodeError::new(format_args!(
-                "non-finite float {value} has no JSON representation"
-            )))
+        JsonValue::Number(number) => {
+            match number.as_i128() {
+                Some(value) => f(ValueView::Int(value)),
+                None => f(ValueView::Float(number.as_f64())),
+            }
         }
         JsonValue::String(value) => f(ValueView::String(value)),
         JsonValue::Seq(items) => f(ValueView::Seq(&ValueSeq(items))),
@@ -192,7 +191,7 @@ fn key(
         View::Json(key) => {
             match key.as_ref() {
                 JsonValue::String(key) => f(key),
-                JsonValue::Int(key) => with_display(key, f),
+                JsonValue::Number(key) if !key.is_f64() => with_display(key, f),
                 _ => Err(EncodeError::new("map keys must be strings or integers")),
             }
         }

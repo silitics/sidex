@@ -13,6 +13,9 @@
 //! [`HashMap`](std::collections::HashMap), and
 //! [`BTreeMap`](std::collections::BTreeMap).
 //!
+//! The `json` type is [`JsonValue`], whose numbers are [`Number`]s: integers in
+//! the 64-bit ranges or finite floats.
+//!
 //! This crate does not expose third-party crates. Compatibility features add
 //! conversions between the types of this module and those of popular crates,
 //! or implement their traits. Each feature is named after the crate and its
@@ -32,6 +35,8 @@
 use std::fmt;
 
 pub use self::bytes::Bytes;
+pub use self::json::JsonValue;
+pub use self::json::Number;
 pub use self::map::Map;
 pub use self::seq::Seq;
 pub use self::string::Str;
@@ -190,7 +195,7 @@ macro_rules! __impl_text {
         impl $crate::Encode for $ty {
             fn encode(&self) -> $crate::View<'_> {
                 let $value: &$ty = self;
-                $crate::View::Json(::std::borrow::Cow::Owned($crate::JsonValue::String(
+                $crate::View::Json(::std::borrow::Cow::Owned($crate::types::JsonValue::String(
                     $crate::types::Str::from($to_text),
                 )))
             }
@@ -207,6 +212,7 @@ macro_rules! __impl_text {
 }
 
 mod bytes;
+mod json;
 pub mod map;
 mod seq;
 #[cfg(feature = "sqlx-08")]

@@ -106,19 +106,19 @@ pub use self::text::to_string;
 #[cfg(feature = "json")]
 pub use self::text::to_string_pretty;
 use super::view::ValueView;
-use crate::JsonValue;
 use crate::decode::Decode;
 use crate::decode::DecodeError;
+use crate::decode::Path;
 use crate::encode::Encode;
 use crate::encode::EncodeError;
-use crate::value::Path;
+use crate::types::JsonValue;
 
 mod decoding;
 mod encoding;
 #[cfg(feature = "serde_json-1")]
 mod interop;
 mod meta;
-mod repr;
+pub(crate) mod repr;
 mod schema;
 #[cfg(feature = "json")]
 pub(crate) mod text;
@@ -134,7 +134,7 @@ pub(crate) fn encode<T: Encode + ?Sized>(
 /// Writes `value` as a JSON document held in a JSON value.
 ///
 /// ```
-/// use sidex::JsonValue;
+/// use sidex::types::JsonValue;
 ///
 /// let value = sidex::formats::json::to_value(&vec![1_u64, 2]).unwrap();
 /// assert_eq!(value, JsonValue::from(vec![1.into(), 2.into()]));
@@ -151,7 +151,7 @@ pub fn to_value<T: Encode + ?Sized>(value: &T) -> Result<JsonValue, EncodeError>
 /// Reads a value from a JSON document held in a JSON value.
 ///
 /// ```
-/// use sidex::JsonValue;
+/// use sidex::types::JsonValue;
 ///
 /// let value = JsonValue::from(vec!["1".into(), 2.into()]);
 /// let numbers: Vec<u64> = sidex::formats::json::from_value(&value).unwrap();
@@ -167,7 +167,7 @@ pub fn from_value<T: Decode>(value: &JsonValue) -> Result<T, DecodeError> {
 /// unknown fields are likely typos.
 ///
 /// ```
-/// use sidex::JsonValue;
+/// use sidex::types::JsonValue;
 /// use sidex::types::Map;
 ///
 /// let value = JsonValue::from_iter([("thing", JsonValue::from("x"))]);

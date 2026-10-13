@@ -24,8 +24,8 @@ use std::collections::HashMap;
 
 pub use check::check;
 pub use generated::attrs as raw;
-use sidex::JsonValue;
 use sidex::formats::json;
+use sidex::types::JsonValue;
 use sidex_ir as ir;
 
 const PLUGIN_DEPRECATED: &str = "deprecated";

@@ -207,7 +207,7 @@ macro_rules! impl_std_text {
 
             impl Encode for $ty {
                 fn encode(&self) -> View<'_> {
-                    View::Json(std::borrow::Cow::Owned(crate::JsonValue::String(
+                    View::Json(std::borrow::Cow::Owned(crate::types::JsonValue::String(
                         self.to_string().into(),
                     )))
                 }
@@ -244,7 +244,7 @@ impl Encode for std::path::PathBuf {
         match self.to_str() {
             Some(path) => View::String(path),
             None => {
-                View::Json(std::borrow::Cow::Owned(crate::JsonValue::String(
+                View::Json(std::borrow::Cow::Owned(crate::types::JsonValue::String(
                     self.to_string_lossy().into(),
                 )))
             }

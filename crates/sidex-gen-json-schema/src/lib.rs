@@ -373,7 +373,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
     }
 
     /// Resolves aliases and wrappers before describing built-in map keys.
-    fn map_key_schema(&self, typ: &ir::Type) -> Option<sidex::JsonValue> {
+    fn map_key_schema(&self, typ: &ir::Type) -> Option<sidex::types::JsonValue> {
         let mut typ = self.unit.resolve_aliases(typ);
         loop {
             let ir::TypeKind::Instance(instance) = &typ.kind else {
@@ -598,7 +598,7 @@ fn builtin_shape(path: &str) -> Option<&'static sidex::Shape> {
         "::core::builtins::uuid" => sidex::types::Uuid::SHAPE,
         "::core::builtins::timestamp" => sidex::types::Timestamp::SHAPE,
         "::core::builtins::date" => sidex::types::Date::SHAPE,
-        "::core::builtins::json" => sidex::JsonValue::SHAPE,
+        "::core::builtins::json" => sidex::types::JsonValue::SHAPE,
         _ => return None,
     })
 }

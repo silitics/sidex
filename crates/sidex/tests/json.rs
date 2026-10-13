@@ -18,7 +18,6 @@ use sidex::Decode;
 use sidex::DecodeError;
 use sidex::Decoder;
 use sidex::Encode;
-use sidex::JsonValue;
 use sidex::Shape;
 use sidex::Shaped;
 use sidex::View;
@@ -30,6 +29,8 @@ use sidex::shape::ShapeKind;
 use sidex::shape::VariantShape;
 use sidex::shape::shape_of;
 use sidex::types::Bytes;
+use sidex::types::JsonValue;
+use sidex::types::Number;
 use sidex::types::Uuid;
 
 /// Parses JSON text into a JSON value.
@@ -318,14 +319,34 @@ fn map_keys() {
 #[test]
 fn json_values() {
     let value = JsonValue::from_iter([
-        ("int", JsonValue::Int(i128::from(u64::MAX))),
+        ("max", JsonValue::from(u64::MAX)),
+        ("min", JsonValue::from(i64::MIN)),
         ("none", JsonValue::Null),
     ]);
-    assert_eq!(
-        json::to_string(&value).unwrap(),
-        r#"{"int":18446744073709551615,"none":null}"#
-    );
-    assert!(json::to_value(&JsonValue::Float(f64::NAN)).is_err());
+    let text = r#"{"max":18446744073709551615,"min":-9223372036854775808,"none":null}"#;
+    assert_eq!(json::to_string(&value).unwrap(), text);
+    assert_eq!(json::from_str::<JsonValue>(text).unwrap(), value);
+}
+
+/// Numbers are integers in the 64-bit ranges or finite floats, and `1` and
+/// `1.0` are different numbers.
+#[test]
+fn json_numbers() {
+    let int: JsonValue = json::from_str("1").unwrap();
+    let float: JsonValue = json::from_str("1.0").unwrap();
+    assert_ne!(int, float);
+    assert_eq!(int.as_u64(), Some(1));
+    assert_eq!(float.as_u64(), None);
+    assert_eq!(float.as_f64(), Some(1.0));
+    assert_eq!(json::to_string(&float).unwrap(), "1.0");
+    assert_eq!(Number::from(-1_i64).as_u64(), None);
+    assert_eq!(Number::from(u64::MAX).as_i64(), None);
+    assert_eq!(Number::from(7_u8), Number::from(7_i64));
+    assert!(Number::from_f64(f64::NAN).is_none());
+    assert!(Number::from_f64(f64::INFINITY).is_none());
+    // Integers beyond the 64-bit ranges become floats, like in `serde_json`.
+    let big: JsonValue = json::from_str("18446744073709551616").unwrap();
+    assert_eq!(big.as_f64(), Some(18446744073709551616.0));
 }
 
 /// Selects the JSON representation of [`Position`]'s cases.

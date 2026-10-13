@@ -3,7 +3,7 @@
 use std::borrow::Cow;
 use std::fmt;
 
-use crate::value::Path;
+use crate::decode::Path;
 
 /// Violation of a validation rule.
 #[derive(Debug, Clone, PartialEq, Eq)]

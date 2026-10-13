@@ -16,17 +16,17 @@ use super::Rule;
 use super::ValidationError;
 use super::ValidationReport;
 use crate::Encode;
-use crate::JsonValue;
 use crate::Shape;
 use crate::Shaped;
 use crate::View;
+use crate::decode::PathSegment;
 use crate::encode::RecordView;
 use crate::encode::VariantView;
 use crate::formats::json::Tagging;
 use crate::shape::RecordShape;
 use crate::shape::ShapeKind;
+use crate::types::JsonValue;
 use crate::types::Str;
-use crate::value::PathSegment;
 
 /// Checks the rules of `value` and of the values nested in it.
 pub fn validate<T: Shaped + Encode + ?Sized>(value: &T) -> Result<(), ValidationReport> {
@@ -323,8 +323,12 @@ fn term<'v>(view: &View<'v>) -> Result<Term<'v>, String> {
 
 fn value_scalar(value: &JsonValue) -> Result<Scalar<'_>, String> {
     match value {
-        JsonValue::Int(value) => Ok(Scalar::Number(Number::Int(*value))),
-        JsonValue::Float(value) => Ok(Scalar::Number(Number::Float(*value))),
+        JsonValue::Number(number) => {
+            Ok(Scalar::Number(match number.as_i128() {
+                Some(value) => Number::Int(value),
+                None => Number::Float(number.as_f64()),
+            }))
+        }
         JsonValue::String(value) => Ok(Scalar::String(Cow::Borrowed(value))),
         other => Err(format!("{} cannot be compared", other.kind())),
     }

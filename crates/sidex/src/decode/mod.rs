@@ -13,13 +13,15 @@
 
 use std::fmt;
 
-use crate::JsonValue;
+pub use self::path::Path;
+pub use self::path::PathSegment;
 use crate::shape::Shape;
 use crate::types::Date;
+use crate::types::JsonValue;
 use crate::types::Timestamp;
 use crate::types::Uuid;
-use crate::value::Path;
-use crate::value::PathSegment;
+
+mod path;
 
 /// Types that can be decoded.
 pub trait Decode: Sized {

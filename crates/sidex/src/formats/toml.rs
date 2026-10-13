@@ -11,7 +11,7 @@
 //! written either as `2026-10-12T08:30:00Z` or as `"2026-10-12T08:30:00Z"`.
 //!
 //! ```
-//! use sidex::JsonValue;
+//! use sidex::types::JsonValue;
 //!
 //! let value: JsonValue = sidex::formats::toml::from_str("at = 2026-10-12T08:30:00Z").unwrap();
 //! assert_eq!(value, JsonValue::from_iter([("at", "2026-10-12T08:30:00Z")]));
@@ -24,9 +24,10 @@ use crate::Decode;
 use crate::DecodeError;
 use crate::Encode;
 use crate::EncodeError;
-use crate::JsonValue;
+use crate::decode::Path;
 use crate::formats::json;
-use crate::value::Path;
+use crate::types::JsonValue;
+use crate::types::Number;
 
 /// Writes `value` as TOML.
 pub fn to_string<T: Encode + ?Sized>(value: &T) -> Result<String, EncodeError> {
@@ -69,8 +70,14 @@ fn parse(text: &str) -> Result<JsonValue, DecodeError> {
 fn from_toml(value: toml::Value) -> JsonValue {
     match value {
         toml::Value::String(value) => JsonValue::String(value.into()),
-        toml::Value::Integer(value) => JsonValue::Int(value.into()),
-        toml::Value::Float(value) => JsonValue::Float(value),
+        toml::Value::Integer(value) => JsonValue::from(value),
+        // Like in JSON, non-finite floats are strings.
+        toml::Value::Float(value) => {
+            Number::from_f64(value).map_or_else(
+                || JsonValue::from(json::repr::non_finite(value)),
+                JsonValue::Number,
+            )
+        }
         toml::Value::Boolean(value) => JsonValue::Bool(value),
         toml::Value::Datetime(value) => JsonValue::String(value.to_string().into()),
         toml::Value::Array(items) => JsonValue::Seq(items.into_iter().map(from_toml).collect()),

@@ -43,7 +43,7 @@ fn generate_defs() -> serde_json::Value {
 fn aliases() {
     let defs = generate();
     let mut expected = json::schema(sidex::types::Timestamp::SHAPE);
-    if let sidex::JsonValue::Map(entries) = &mut expected {
+    if let sidex::types::JsonValue::Map(entries) = &mut expected {
         entries.insert(
             "description".into(),
             "Instant at which something happened.".into(),
@@ -101,7 +101,7 @@ fn builtin_schema_parity() {
         ("identifier", sidex::types::Uuid::SHAPE),
         ("instant", sidex::types::Timestamp::SHAPE),
         ("calendar", sidex::types::Date::SHAPE),
-        ("arbitrary", sidex::JsonValue::SHAPE),
+        ("arbitrary", sidex::types::JsonValue::SHAPE),
         ("sequence", Vec::<u64>::SHAPE),
         ("map", sidex::types::Map::<String, i64>::SHAPE),
         ("integerKeys", sidex::types::Map::<u64, String>::SHAPE),
@@ -110,7 +110,7 @@ fn builtin_schema_parity() {
         ("wrappedKeys", sidex::types::Map::<u16, String>::SHAPE),
         (
             "nested",
-            sidex::types::Map::<String, Vec<sidex::JsonValue>>::SHAPE,
+            sidex::types::Map::<String, Vec<sidex::types::JsonValue>>::SHAPE,
         ),
     ] {
         assert_eq!(

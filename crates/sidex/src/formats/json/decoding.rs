@@ -8,19 +8,19 @@ use base64::Engine;
 use super::Tagging;
 use super::repr::BASE64;
 use super::repr::parse_non_finite;
-use crate::JsonValue;
 use crate::decode::DecodeError;
 use crate::decode::Decoder;
+use crate::decode::Path;
+use crate::decode::PathSegment;
 use crate::shape::CaseShape;
 use crate::shape::RecordShape;
 use crate::shape::Shape;
 use crate::types::Date;
+use crate::types::JsonValue;
 use crate::types::Map;
 use crate::types::Str;
 use crate::types::Timestamp;
 use crate::types::Uuid;
-use crate::value::Path;
-use crate::value::PathSegment;
 
 /// Callback receiving the index of a field or case and its decoder.
 type IndexFn<'f> = dyn FnMut(usize, &mut dyn Decoder) -> Result<(), DecodeError> + 'f;
@@ -163,9 +163,11 @@ impl<'v, 'u> JsonDecoder<'v, 'u> {
         from_string: bool,
     ) -> Result<T, DecodeError> {
         match self.item {
-            Item::Value(JsonValue::Int(value)) => {
-                T::try_from(*value)
-                    .map_err(|_| DecodeError::unexpected(&format!("`{value}`"), expected))
+            Item::Value(JsonValue::Number(number)) => {
+                number
+                    .as_i128()
+                    .and_then(|value| T::try_from(value).ok())
+                    .ok_or_else(|| DecodeError::unexpected(&format!("`{number}`"), expected))
             }
             Item::Value(JsonValue::String(text)) if from_string => parse(text, expected),
             Item::Key(text) => parse(text, expected),
@@ -176,9 +178,8 @@ impl<'v, 'u> JsonDecoder<'v, 'u> {
     fn float(&self) -> Result<f64, DecodeError> {
         const EXPECTED: &str = "a number or one of `NaN`, `+Infinity`, and `-Infinity`";
         match self.item {
-            Item::Value(JsonValue::Float(value)) => Ok(*value),
             // Precision loss is inherent to floats.
-            Item::Value(JsonValue::Int(value)) => Ok(*value as f64),
+            Item::Value(JsonValue::Number(number)) => Ok(number.as_f64()),
             Item::Value(JsonValue::String(text)) => {
                 parse_non_finite(text)
                     .ok_or_else(|| DecodeError::unexpected(&format!("`{text}`"), EXPECTED))

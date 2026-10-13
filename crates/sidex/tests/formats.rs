@@ -4,9 +4,9 @@ mod common;
 
 use common::Device;
 use common::Scalars;
-use sidex::JsonValue;
 use sidex::formats::json;
 use sidex::formats::toml;
+use sidex::types::JsonValue;
 
 /// JSON text follows the JSON representation and round-trips.
 #[test]

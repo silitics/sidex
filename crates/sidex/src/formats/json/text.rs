@@ -8,17 +8,19 @@ use serde::Deserializer;
 use serde::de;
 
 use super::repr::BASE64;
+use super::repr::non_finite;
 use crate::Decode;
 use crate::DecodeError;
 use crate::Encode;
 use crate::EncodeError;
-use crate::JsonValue;
+use crate::decode::Path;
 use crate::formats::bridge;
 use crate::formats::bridge::SerializeView;
 use crate::formats::bridge::Syntax;
+use crate::types::JsonValue;
 use crate::types::Map;
+use crate::types::Number;
 use crate::types::Str;
-use crate::value::Path;
 
 /// Writes `value` as compact JSON.
 pub fn to_string<T: Encode + ?Sized>(value: &T) -> Result<String, EncodeError> {
@@ -83,19 +85,20 @@ impl<'de> de::Visitor<'de> for ValueVisitor {
     }
 
     fn visit_i64<E>(self, value: i64) -> Result<JsonValue, E> {
-        Ok(JsonValue::Int(value.into()))
+        Ok(JsonValue::from(value))
     }
 
     fn visit_u64<E>(self, value: u64) -> Result<JsonValue, E> {
-        Ok(JsonValue::Int(value.into()))
+        Ok(JsonValue::from(value))
     }
 
+    /// Integers beyond the 64-bit ranges become floats, like in `serde_json`.
     fn visit_i128<E>(self, value: i128) -> Result<JsonValue, E> {
-        Ok(JsonValue::Int(value))
+        Ok(Number::from_i128(value).map_or_else(|| float(value as f64), JsonValue::Number))
     }
 
     fn visit_f64<E>(self, value: f64) -> Result<JsonValue, E> {
-        Ok(JsonValue::Float(value))
+        Ok(float(value))
     }
 
     fn visit_str<E>(self, value: &str) -> Result<JsonValue, E> {
@@ -138,4 +141,10 @@ impl<'de> de::Visitor<'de> for ValueVisitor {
         }
         Ok(JsonValue::Map(entries))
     }
+}
+
+/// Converts a float into a value. Non-finite floats, which only formats other
+/// than JSON have, become strings like typed floats.
+fn float(value: f64) -> JsonValue {
+    Number::from_f64(value).map_or_else(|| JsonValue::from(non_finite(value)), JsonValue::Number)
 }

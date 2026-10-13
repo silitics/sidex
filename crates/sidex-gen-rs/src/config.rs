@@ -74,7 +74,7 @@ impl TypesConfig {
             "::core::builtins::uuid" => ::sidex::types::Uuid,
             "::core::builtins::timestamp" => ::sidex::types::Timestamp,
             "::core::builtins::date" => ::sidex::types::Date,
-            "::core::builtins::json" => ::sidex::JsonValue,
+            "::core::builtins::json" => ::sidex::types::JsonValue,
             "::core::builtins::Sequence" => ::sidex::types::Seq,
             "::core::builtins::Map" => ::sidex::types::Map,
         };

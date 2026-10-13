@@ -10,7 +10,7 @@ pub mod ir {
         dead_code
     )]
     #[doc = "An arbitrary, schema-validated Sidex value.\n\nUsed by [`typed_attrs`] to carry the parsed result of a plugin's typed\nattribute schema in the JSON representation of the schema's types.\nProducers and consumers communicate through this representation, validated\nat IR build time against the plugin's Sidex schema.\n"]
-    pub type Value = ::sidex::JsonValue;
+    pub type Value = ::sidex::types::JsonValue;
     #[doc = "Uniquely identifies a source in an IR.\n"]
     #[derive(Clone, Debug, Copy, PartialEq, Eq, Hash)]
     pub struct SourceIdx(pub(crate) usize);

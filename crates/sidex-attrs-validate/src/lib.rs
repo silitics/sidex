@@ -16,7 +16,7 @@ mod generated;
 use std::collections::HashMap;
 
 pub use generated::attrs as raw;
-use sidex::JsonValue;
+use sidex::types::JsonValue;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Label;
 use sidex_diagnostics::Result;

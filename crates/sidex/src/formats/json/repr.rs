@@ -22,7 +22,7 @@ pub(super) const INFINITY: &str = "+Infinity";
 pub(super) const NEG_INFINITY: &str = "-Infinity";
 
 /// Returns the representation of a non-finite float.
-pub(super) fn non_finite(value: f64) -> &'static str {
+pub(crate) fn non_finite(value: f64) -> &'static str {
     if value.is_nan() {
         NAN
     } else if value.is_sign_positive() {

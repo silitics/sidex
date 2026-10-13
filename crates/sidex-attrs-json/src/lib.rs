@@ -11,7 +11,7 @@ mod generated;
 
 use std::collections::HashMap;
 
-use sidex::JsonValue;
+use sidex::types::JsonValue;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Result;
 use sidex_gen::rename::RenameFunction;
