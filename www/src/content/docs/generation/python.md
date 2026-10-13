@@ -35,7 +35,7 @@ print(encoded)
 
 Pydantic validates incoming values according to its model configuration. `by_alias=True` writes JSON field names, and `exclude_none=True` omits absent optional fields.
 
-Booleans and integers up to 32 bits require their JSON types. Integer values must fit the declared range. This keeps implicitly tagged variants from interpreting `1` as a boolean or `300` as a `u8`.
+Booleans and integers require their JSON types, and integers must fit the declared range, like in the other runtimes. Only 64-bit integers also accept decimal strings. This keeps implicitly tagged variants from interpreting `1` as a boolean or `300` as a `u8`.
 
 Python models use Python field identifiers. JSON aliases follow Sidex's naming rules, which default to camelCase. Do not assume that Python's field name is also the wire key.
 

@@ -1,5 +1,5 @@
 {
     "tagFieldName": "E",
-    "a": "42",
+    "a": 42,
     "b": "Hello World!"
 }

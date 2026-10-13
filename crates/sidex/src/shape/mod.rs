@@ -365,22 +365,6 @@ impl FieldShape {
             ..self
         }
     }
-
-    /// Represents the field's 64-bit integer as a JSON number instead of a
-    /// string.
-    ///
-    /// Formats defined by others, such as the claims of JSON Web Tokens, may
-    /// require numbers. Many JSON implementations lose the precision of
-    /// integers beyond 2^53.
-    pub const fn json_number(self) -> Self {
-        Self {
-            json: json::Field {
-                number: true,
-                ..self.json
-            },
-            ..self
-        }
-    }
 }
 
 /// Structure of a variant.
@@ -476,22 +460,6 @@ impl CaseShape {
         Self {
             json: json::Case {
                 content: Some(content),
-                ..self.json
-            },
-            ..self
-        }
-    }
-
-    /// Represents the 64-bit integer payload of an implicitly tagged case as a
-    /// JSON number instead of a string.
-    ///
-    /// Generated code uses this for cases whose declared payload type is a
-    /// 64-bit integer, so that they remain distinct from string cases.
-    /// Decoding such a case accepts numbers only.
-    pub const fn json_number(self) -> Self {
-        Self {
-            json: json::Case {
-                number: true,
                 ..self.json
             },
             ..self

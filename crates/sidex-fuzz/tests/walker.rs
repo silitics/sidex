@@ -218,16 +218,23 @@ fn i64_includes_full_range() {
 }
 
 #[test]
-fn integers_with_64_bits_are_decimal_strings() {
+fn integers_with_64_bits_are_numbers_or_decimal_strings_beyond_2_53() {
+    const MAX_SAFE: u128 = (1 << 53) - 1;
     let ir = load_fixture();
     for seed in 0..50 {
         let v = sample(&ir, "fuzz_fixture::data::BigInts", seed);
-        let s = v.get("s").unwrap();
-        let u = v.get("u").unwrap();
-        assert!(s.is_string(), "i64 field should be a string, got {s}");
-        assert!(u.is_string(), "u64 field should be a string, got {u}");
-        s.as_str().unwrap().parse::<i64>().expect("decimal i64");
-        u.as_str().unwrap().parse::<u64>().expect("decimal u64");
+        for value in [v.get("s").unwrap(), v.get("u").unwrap()] {
+            let integer = match value {
+                Value::Number(number) => number.to_string().parse::<i128>().unwrap(),
+                Value::String(text) => text.parse::<i128>().expect("decimal integer"),
+                other => panic!("expected a number or a string, got: {other}"),
+            };
+            assert_eq!(
+                value.is_string(),
+                integer.unsigned_abs() > MAX_SAFE,
+                "{value} uses the wrong representation"
+            );
+        }
     }
 }
 

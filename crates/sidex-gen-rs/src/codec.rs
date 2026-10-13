@@ -107,9 +107,6 @@ pub fn impl_traits(ctx: &SchemaCtx, def: &ir::Def, ty: &RsType) -> Result<TokenS
                 if field.json_attrs.inline {
                     field_builders.extend(quote! { .json_inline() });
                 }
-                if field.json_attrs.number {
-                    field_builders.extend(quote! { .json_number() });
-                }
                 fields.push(quote! {
                     ::sidex::shape::FieldShape::new(
                         #name,
@@ -222,12 +219,6 @@ pub fn impl_traits(ctx: &SchemaCtx, def: &ir::Def, ty: &RsType) -> Result<TokenS
                 }
                 if let Some(content) = &case.json_attrs.content {
                     case_builders.extend(quote! { .json_content(#content) });
-                }
-                if matches!(variant.json_attrs.tagged, JsonTaggedAttr::Implicitly)
-                    && let Some(payload) = &case_def.typ
-                    && ctx.bundle_ctx.unit.wide_integer(payload).is_some()
-                {
-                    case_builders.extend(quote! { .json_number() });
                 }
                 match &case.ty {
                     Some(payload_ty) => {

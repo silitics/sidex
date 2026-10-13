@@ -2,10 +2,11 @@
 
 """Types of Sidex's built-in types following Sidex's JSON representation.
 
-64-bit integers are decimal strings in JSON, because not every language can
-represent them as numbers. Non-finite floats are the strings ``"NaN"``,
-``"Infinity"``, and ``"-Infinity"``. Bytes are Base64 strings with padding.
-Decoding also accepts integers for 64-bit integers.
+64-bit integers beyond a magnitude of 2**53 - 1 are decimal strings in JSON,
+because JavaScript cannot represent them exactly as numbers. Non-finite floats
+are the strings ``"NaN"``, ``"Infinity"``, and ``"-Infinity"``. Bytes are
+Base64 strings with padding. Decoding also accepts decimal strings for all
+64-bit integers.
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from __future__ import annotations
 import base64
 import datetime
 import math
+import re
 import uuid
 from typing import Annotated
 
@@ -23,22 +25,21 @@ import pydantic_core
 # types, so serializing unions tries the next member.
 
 
-def _integer(value: object) -> object:
-    if isinstance(value, bool):
-        raise ValueError("expected an integer")
+_MAX_SAFE_INTEGER = 2**53 - 1
+
+
+def _int64(value: object) -> object:
+    if isinstance(value, str):
+        if not re.fullmatch("-?[0-9]+", value):
+            raise ValueError("expected an integer or a decimal string")
+        return int(value)
     return value
 
 
-def _number(value: object) -> object:
-    if not isinstance(value, int) or isinstance(value, bool):
-        raise ValueError("expected an integer number")
-    return value
-
-
-def _decimal(value: object) -> str:
+def _encode_int64(value: object) -> int | str:
     if not isinstance(value, int) or isinstance(value, bool):
         raise pydantic_core.PydanticSerializationUnexpectedValue("expected an integer")
-    return str(value)
+    return value if abs(value) <= _MAX_SAFE_INTEGER else str(value)
 
 
 def _float(value: object) -> float | str:
@@ -86,9 +87,9 @@ def _encode_bytes(value: object) -> str:
     return base64.b64encode(value).decode("ascii")
 
 
-# Booleans and integers are strict, so that implicitly tagged variants select
-# the same case as in other languages: `1` is not a boolean, `true` and `"1"` are
-# not integers, and `300` is not a `u8`.
+# Booleans and integers are strict, like in other languages: `1` is not a
+# boolean, `true` is not an integer, and `300` is not a `u8`. Only 64-bit
+# integers accept decimal strings.
 Bool = Annotated[bool, pydantic.Strict()]
 
 I8 = Annotated[int, pydantic.Strict(), pydantic.Field(ge=-(2**7), le=2**7 - 1)]
@@ -107,31 +108,18 @@ Idx = Annotated[int, pydantic.Strict(), pydantic.Field(ge=0)]
 
 I64 = Annotated[
     int,
-    pydantic.BeforeValidator(_integer),
+    pydantic.BeforeValidator(_int64),
+    pydantic.Strict(),
     pydantic.Field(ge=-(2**63), le=2**63 - 1),
-    pydantic.PlainSerializer(_decimal, return_type=str, when_used="json"),
+    pydantic.PlainSerializer(_encode_int64, return_type=int | str, when_used="json"),
 ]
 
 U64 = Annotated[
     int,
-    pydantic.BeforeValidator(_integer),
+    pydantic.BeforeValidator(_int64),
+    pydantic.Strict(),
     pydantic.Field(ge=0, le=2**64 - 1),
-    pydantic.PlainSerializer(_decimal, return_type=str, when_used="json"),
-]
-
-# 64-bit integers represented as JSON numbers, in marked fields and as payloads
-# of implicitly tagged cases. Rejecting strings keeps such cases distinct from
-# string cases.
-I64Number = Annotated[
-    int,
-    pydantic.BeforeValidator(_number),
-    pydantic.Field(ge=-(2**63), le=2**63 - 1),
-]
-
-U64Number = Annotated[
-    int,
-    pydantic.BeforeValidator(_number),
-    pydantic.Field(ge=0, le=2**64 - 1),
+    pydantic.PlainSerializer(_encode_int64, return_type=int | str, when_used="json"),
 ]
 
 F32 = Annotated[

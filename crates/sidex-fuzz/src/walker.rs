@@ -100,11 +100,11 @@ impl<'a> Walker<'a> {
             "::core::builtins::i8" => return Ok(pick_signed(source, I8_TABLE)),
             "::core::builtins::i16" => return Ok(pick_signed(source, I16_TABLE)),
             "::core::builtins::i32" => return Ok(pick_signed(source, I32_TABLE)),
-            "::core::builtins::i64" => return Ok(pick_decimal(source, I64_TABLE)),
+            "::core::builtins::i64" => return Ok(pick_int64(source, I64_TABLE)),
             "::core::builtins::u8" => return Ok(pick_unsigned(source, U8_TABLE)),
             "::core::builtins::u16" => return Ok(pick_unsigned(source, U16_TABLE)),
             "::core::builtins::u32" => return Ok(pick_unsigned(source, U32_TABLE)),
-            "::core::builtins::u64" => return Ok(pick_decimal(source, U64_TABLE)),
+            "::core::builtins::u64" => return Ok(pick_int64(source, U64_TABLE)),
             "::core::builtins::idx" => return Ok(pick_unsigned(source, IDX_TABLE)),
             "::core::builtins::f32" => return Ok(draw_float_f32(source)),
             "::core::builtins::f64" => return Ok(draw_float(source, FLOAT_F64_FINITE_TABLE)),
@@ -247,10 +247,7 @@ impl<'a> Walker<'a> {
                 continue;
             }
             let name = attrs.field_name(field, &field_attrs);
-            let mut value = self.gen_value(&field_typ, source)?;
-            if field_attrs.number {
-                value = self.numbers(&field_typ, value);
-            }
+            let value = self.gen_value(&field_typ, source)?;
             // For optional fields under the `Undefined` repr, an absent field
             // is the canonical encoding of "no value". A `null` here would
             // round-trip ambiguously (some targets drop it, others keep it),
@@ -262,31 +259,6 @@ impl<'a> Walker<'a> {
         }
         self.depth -= 1;
         Ok(())
-    }
-
-    /// Represents the 64-bit integers of a value of the type, also those in
-    /// sequences and map values, as numbers.
-    fn numbers(&self, typ: &ir::Type, value: Value) -> Value {
-        match (self.ir.builtin(typ), value) {
-            (Some(("i64" | "u64", _)), value) => into_number(value),
-            (Some(("Sequence", args)), Value::Array(items)) => {
-                Value::Array(
-                    items
-                        .into_iter()
-                        .map(|item| self.numbers(&args[0], item))
-                        .collect(),
-                )
-            }
-            (Some(("Map", args)), Value::Object(entries)) => {
-                Value::Object(
-                    entries
-                        .into_iter()
-                        .map(|(key, item)| (key, self.numbers(&args[1], item)))
-                        .collect(),
-                )
-            }
-            (_, value) => value,
-        }
     }
 
     fn inline_record_into(
@@ -413,37 +385,10 @@ impl<'a> Walker<'a> {
             JsonTaggedAttr::Implicitly => {
                 match payload_type {
                     None => Ok(Value::String(case_name.to_owned())),
-                    Some(typ) => {
-                        let value = self.gen_value(&typ, source)?;
-                        // Cases declared with a 64-bit integer payload are
-                        // numbers. Generic payloads keep their representation.
-                        let declared = case.typ.as_ref().expect("the case has a payload");
-                        if self.ir.wide_integer(declared).is_some() {
-                            Ok(into_number(value))
-                        } else {
-                            Ok(value)
-                        }
-                    }
+                    Some(typ) => self.gen_value(&typ, source),
                 }
             }
         }
-    }
-}
-
-/// Converts the decimal string of a 64-bit integer into a number.
-///
-/// JavaScript loses the precision of numbers beyond 2^53, which `number`
-/// accepts. To round-trip exactly in every language, values beyond are wrapped
-/// into the safe range.
-fn into_number(value: Value) -> Value {
-    const MAX_SAFE: i128 = (1 << 53) - 1;
-    match value {
-        Value::String(text) => {
-            let value: i128 = text.parse().expect("integers are decimal");
-            let value = value % (MAX_SAFE + 1);
-            Value::Number(i64::try_from(value).expect("safe integers fit").into())
-        }
-        value => value,
     }
 }
 
@@ -610,9 +555,16 @@ fn pick_from(source: &mut Source, table: &[&str]) -> Value {
     Value::String(pick_raw(source, table).to_owned())
 }
 
-/// Picks a 64-bit integer, represented as a decimal string.
-fn pick_decimal<T: Copy + ToString>(source: &mut Source, table: &[T]) -> Value {
-    Value::String(pick_raw(source, table).to_string())
+/// Picks a 64-bit integer, represented as a number or, beyond 2^53 - 1, as a
+/// decimal string.
+fn pick_int64<T: Copy + Into<i128>>(source: &mut Source, table: &[T]) -> Value {
+    const MAX_SAFE: u128 = (1 << 53) - 1;
+    let value: i128 = pick_raw(source, table).into();
+    if value.unsigned_abs() <= MAX_SAFE {
+        Value::Number(i64::try_from(value).expect("safe integers fit").into())
+    } else {
+        Value::String(value.to_string())
+    }
 }
 
 /// Picks a float from the table or a non-finite float.

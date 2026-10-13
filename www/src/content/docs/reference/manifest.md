@@ -63,7 +63,7 @@ opaque_lowering = "native"
 identity = "@example/identity-models"
 
 [backend.ts.types.table]
-"::core::builtins::i64" = "string"
+"::core::builtins::timestamp" = "string"
 ```
 
 | Key               | Default           | Meaning                                         |

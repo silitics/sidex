@@ -14,15 +14,4 @@ record Event {
     id: Identifier,
     scalar: Scalar,
     sequence: u64,
-    #[json(number)]
-    expires: u64,
-    #[json(number)]
-    counts: [u64],
-}
-
-/// Reading that is a count or a label.
-#[json(tagged = implicitly)]
-variant Reading {
-    Count: i64,
-    Label: string,
 }

@@ -2,8 +2,9 @@
  * Types of Sidex's built-in types in their JSON representation.
  *
  * Values of these types are what `JSON.parse` returns for data produced by any
- * Sidex implementation. 64-bit integers are decimal strings, because JavaScript
- * numbers cannot represent all of them. Non-finite floats are the strings
+ * Sidex implementation. 64-bit integers beyond `Number.MAX_SAFE_INTEGER` are
+ * decimal strings, because JavaScript numbers cannot represent them exactly.
+ * Non-finite floats are the strings
  * `"NaN"`, `"Infinity"`, and `"-Infinity"`, because JSON numbers cannot
  * represent them. The companion objects convert between these representations
  * and JavaScript values.
@@ -118,28 +119,33 @@ function smallInt<T extends number>(min: number, max: number): SmallInt<T> {
 // ---- 64-bit integers -------------------------------------------------------
 
 /**
- * A 64-bit signed integer, represented as a decimal string.
+ * A 64-bit signed integer, represented as a number or, if its magnitude exceeds
+ * `Number.MAX_SAFE_INTEGER`, as a decimal string.
  */
-export type I64 = Nominal<string, "::core::builtins::i64">
+export type I64 = Nominal<number | string, "::core::builtins::i64">
 
 export const I64 = bigInt<I64>(-(2n ** 63n), 2n ** 63n - 1n)
 
 /**
- * A 64-bit unsigned integer, represented as a decimal string.
+ * A 64-bit unsigned integer, represented as a number or, if it exceeds
+ * `Number.MAX_SAFE_INTEGER`, as a decimal string.
  */
-export type U64 = Nominal<string, "::core::builtins::u64">
+export type U64 = Nominal<number | string, "::core::builtins::u64">
 
 export const U64 = bigInt<U64>(0n, 2n ** 64n - 1n)
 
 /**
- * Operations of a 64-bit integer type represented as a decimal string.
+ * Operations of a 64-bit integer type.
  */
-export interface BigInt64<T extends string> {
+export interface BigInt64<T extends number | string> {
   /** The smallest value. */
   readonly MIN: T
   /** The largest value. */
   readonly MAX: T
-  /** Checks whether the value is a decimal string in the range of the type. */
+  /**
+   * Checks whether the value is a safe integer or a decimal string in the
+   * range of the type.
+   */
   is(value: unknown): value is T
   /**
    * Converts a `bigint` to the type.
@@ -164,18 +170,23 @@ export interface BigInt64<T extends string> {
   toNumber(value: T): number
 }
 
-function bigInt<T extends string>(min: bigint, max: bigint): BigInt64<T> {
+const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER)
+
+function bigInt<T extends number | string>(min: bigint, max: bigint): BigInt64<T> {
   const inRange = (value: bigint) => value >= min && value <= max
   const fromBigInt = (value: bigint): T => {
     if (!inRange(value)) {
       throw new RangeError(`${value} is not in [${min}, ${max}]`)
     }
-    return value.toString() as T
+    return (-MAX_SAFE <= value && value <= MAX_SAFE ? Number(value) : value.toString()) as T
   }
   return {
-    MIN: min.toString() as T,
-    MAX: max.toString() as T,
+    MIN: fromBigInt(min),
+    MAX: fromBigInt(max),
     is(value: unknown): value is T {
+      if (typeof value === "number") {
+        return Number.isSafeInteger(value) && inRange(BigInt(value))
+      }
       return typeof value === "string" && /^-?[0-9]+$/.test(value) && inRange(BigInt(value))
     },
     fromBigInt,

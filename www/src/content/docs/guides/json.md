@@ -86,45 +86,15 @@ variant Position {
 
 The same payload under external tagging is `{"Coordinates":{"x":1,"y":2}}`; a case without a payload is just `"Unknown"`.
 
-Implicit tagging omits the tag. A payload is encoded directly and a case without a payload becomes its name. Readers pick the first case in declaration order that accepts the value. This can make cases ambiguous. Prefer explicit tags when multiple cases could accept the same JSON shape.
-
-A case declared with an `i64` or `u64` payload is a JSON number, so that it stays distinct from string cases:
-
-```sidex
-#[json(tagged = implicitly)]
-variant Reading {
-    Count: i64,
-    Label: string,
-}
-```
-
-`Count(3)` is `3` and `Label("3")` is `"3"`. This only applies to the declared payload type. A generic payload, such as `T` instantiated with `u64`, keeps the string representation.
+Implicit tagging omits the tag. A payload is encoded directly and a case without a payload becomes its name. Readers pick the first case in declaration order that accepts the value. This can make cases ambiguous. Prefer explicit tags when multiple cases could accept the same JSON shape. For instance, readers accept 64-bit integers as decimal strings, so an `i64` case declared before a `string` case also accepts `"3"`.
 
 ## Numbers and Bytes
 
-Integers up to 32 bits and `idx` are JSON numbers. JavaScript and many other JSON implementations cannot represent all 64-bit integers exactly, so `i64` and `u64` are decimal strings, such as `"9007199254740993"`. Readers also accept JSON numbers. Payloads of implicitly tagged cases are the exception (see [Variant Tagging](#variant-tagging)).
+Integers are JSON numbers. JavaScript represents integers exactly only up to a magnitude of 2^53 − 1, so `i64` and `u64` values beyond are decimal strings, such as `"9007199254740993"`. Readers also accept decimal strings for smaller 64-bit integers.
 
 `f32` and `f64` are JSON numbers. JSON has no non-finite numbers, so these are the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
 
 `bytes` are Base64 strings.
-
-Formats defined by others, or read by software that predates this representation, may require 64-bit integers to be JSON numbers. For instance, the `exp` claim of a JSON Web Token is a number. Mark such fields with `number`:
-
-```sidex
-record Claims {
-    sub: string,
-    #[json(number)]
-    exp: u64,
-}
-```
-
-```json
-{ "sub": "device-1", "exp": 1791847993 }
-```
-
-`number` also applies to the integers in sequences and map values of the field, such as `[u64]` or `[string: i64]`.
-
-Only use `number` when the format requires it. Readers that parse JSON numbers as floating-point numbers lose precision beyond 2^53.
 
 ## Wrappers and Opaque Values
 

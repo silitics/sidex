@@ -9,7 +9,6 @@ use serde::Serialize;
 use sidex::types::Map;
 use sidex_attrs_api::render_doc_prelude;
 use sidex_attrs_api::stability_of_def;
-use sidex_attrs_json::JsonTaggedAttr;
 use sidex_attrs_json::field_attrs;
 use sidex_attrs_json::opaque_type_attrs;
 use sidex_attrs_json::record_type_attrs;
@@ -395,16 +394,16 @@ impl<'cx> JsonSchemaCtx<'cx> {
                     .set_allowed_types(Some(Type::Integer.into()))
                     .set_format(Some("uint32".to_owned()));
             }
-            // 64-bit integers are decimal strings. Decoders also accept integers.
+            // 64-bit integers beyond 2^53 - 1 are decimal strings.
             "::core::builtins::i64" => {
                 json_schema
-                    .set_allowed_types(Some(vec![Type::String, Type::Integer].into()))
+                    .set_allowed_types(Some(vec![Type::Integer, Type::String].into()))
                     .set_format(Some("int64".to_owned()));
                 set_pattern(&mut json_schema, "^-?[0-9]+$");
             }
             "::core::builtins::u64" => {
                 json_schema
-                    .set_allowed_types(Some(vec![Type::String, Type::Integer].into()))
+                    .set_allowed_types(Some(vec![Type::Integer, Type::String].into()))
                     .set_format(Some("uint64".to_owned()));
                 set_pattern(&mut json_schema, "^[0-9]+$");
             }
@@ -433,54 +432,6 @@ impl<'cx> JsonSchemaCtx<'cx> {
         Ok(json_schema)
     }
 
-    /// Returns the schema of values whose 64-bit integers, also those in
-    /// sequences and map values, are JSON numbers, if `number` is set and the
-    /// type has such integers.
-    fn number_schema(&self, typ: &ir::Type, number: bool) -> Option<TypeSchema> {
-        if !number {
-            return None;
-        }
-        let schema = self.number_object(typ)?;
-        Some(TypeSchema {
-            name: "number".to_owned(),
-            use_schema: schema.clone(),
-            def_schema: None,
-            inline_schema: Some(schema),
-        })
-    }
-
-    fn number_object(&self, typ: &ir::Type) -> Option<SchemaObject> {
-        let (name, args) = self.unit.builtin(typ)?;
-        let mut schema = SchemaObject::new();
-        match name {
-            "i64" | "u64" => {
-                let format = if name == "i64" { "int64" } else { "uint64" };
-                schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some(format.to_owned()));
-            }
-            "Sequence" => {
-                let items = self.number_object(&args[0])?;
-                schema
-                    .set_allowed_types(Some(Type::Array.into()))
-                    .set_array_keywords(Some(Box::new(
-                        ArrayKeywords::new().with_items(Some(Box::new(items.into()))),
-                    )));
-            }
-            "Map" => {
-                let values = self.number_object(&args[1])?;
-                schema
-                    .set_allowed_types(Some(Type::Object.into()))
-                    .set_object_keywords(Some(Box::new(
-                        ObjectKeywords::new()
-                            .with_additional_properties(Some(Box::new(values.into()))),
-                    )));
-            }
-            _ => return None,
-        }
-        Some(schema)
-    }
-
     fn record_type_schema(
         &mut self,
         def: &ir::Def,
@@ -493,10 +444,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
         for field in &record_type.fields {
             let json_field_attrs = field_attrs(field)?;
             let field_name = json_type_attrs.field_name(field, &json_field_attrs);
-            let type_schema = match self.number_schema(&field.typ, json_field_attrs.number) {
-                Some(schema) => schema,
-                None => self.resolve(&field.typ)?,
-            };
+            let type_schema = self.resolve(&field.typ)?;
             // let mut idl_field = IdlField::new(field_name.clone(), type_schema.name.clone());
             if json_field_attrs.inline {
                 builder.add_inline_field(type_schema);
@@ -531,12 +479,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
             // let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
             if let Some(typ) = &variant.typ {
                 let content_field = json_type_attrs.content_field_name(&json_variant_attrs);
-                // Implicitly tagged cases represent 64-bit integers as numbers.
-                let number = json_type_attrs.tagged == JsonTaggedAttr::Implicitly;
-                let type_schema = match self.number_schema(typ, number) {
-                    Some(schema) => schema,
-                    None => self.resolve(typ)?,
-                };
+                let type_schema = self.resolve(typ)?;
                 let may_inline = self.unit.record_type(typ).is_some();
                 // idl_variant.set_type_ref(Some(type_schema.name.clone()));
                 builder.add_data_variant(&content_field, &variant_name, type_schema, may_inline);

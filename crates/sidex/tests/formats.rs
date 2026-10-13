@@ -15,7 +15,7 @@ fn json_text() {
         display_name: Some("Hub".to_owned()),
     };
     let text = json::to_string(&device).unwrap();
-    assert_eq!(text, r#"{"id":"1","displayName":"Hub"}"#);
+    assert_eq!(text, r#"{"id":1,"displayName":"Hub"}"#);
     assert_eq!(json::from_str::<Device>(&text).unwrap(), device);
     assert!(json::from_str::<Device>("{").is_err());
 }
@@ -23,7 +23,7 @@ fn json_text() {
 /// Strict JSON reading rejects unknown fields.
 #[test]
 fn json_strict() {
-    let text = r#"{"id":"1","color":"red"}"#;
+    let text = r#"{"id":1,"color":"red"}"#;
     assert!(json::from_str::<Device>(text).is_ok());
     let error = json::from_str_strict::<Device>(text).unwrap_err();
     assert!(error.is_unknown_field());
@@ -38,7 +38,7 @@ fn toml_text() {
         display_name: Some("Hub".to_owned()),
     };
     let text = toml::to_string(&device).unwrap();
-    assert_eq!(text, "id = \"1\"\ndisplayName = \"Hub\"\n");
+    assert_eq!(text, "id = 1\ndisplayName = \"Hub\"\n");
     assert_eq!(toml::from_str::<Device>(&text).unwrap(), device);
 }
 

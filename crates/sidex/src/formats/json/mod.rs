@@ -14,11 +14,11 @@
 //! ```
 //! # #[cfg(feature = "json")]
 //! # {
-//! let text = sidex::formats::json::to_string(&vec![1_u64, 2]).unwrap();
-//! assert_eq!(text, r#"["1","2"]"#);
+//! let text = sidex::formats::json::to_string(&vec![1_u64, u64::MAX]).unwrap();
+//! assert_eq!(text, r#"[1,"18446744073709551615"]"#);
 //!
 //! let numbers: Vec<u64> = sidex::formats::json::from_str(&text).unwrap();
-//! assert_eq!(numbers, [1, 2]);
+//! assert_eq!(numbers, [1, u64::MAX]);
 //! # }
 //! ```
 //!
@@ -29,7 +29,7 @@
 //! | `unit` | `null` | |
 //! | `bool` | boolean | |
 //! | `i8` to `i32`, `u8` to `u32`, `idx` | integer | |
-//! | `i64`, `u64` | decimal string, for instance, `"42"` | integer |
+//! | `i64`, `u64` | integer, or decimal string beyond ±(2^53 − 1) | decimal string |
 //! | `f32`, `f64` | number, or `"NaN"`, `"Infinity"`, and `"-Infinity"` | integer, `"+Infinity"` |
 //! | `string` | string | |
 //! | `bytes` | Base64 string with padding | missing padding |
@@ -43,10 +43,11 @@
 //! | wrapper | representation of the wrapped type | |
 //! | freeform value | the value itself, with bytes as Base64 strings | |
 //!
-//! JavaScript represents numbers as 64-bit floats, which cannot represent all
-//! 64-bit integers. Representing `i64` and `u64` as strings keeps them exact in
-//! every language. JSON has no representation of non-finite floats, so typed
-//! floats use strings for them. Non-finite freeform floats cannot be encoded.
+//! JavaScript represents numbers as 64-bit floats, which represent integers
+//! exactly only up to a magnitude of 2^53 − 1. Larger `i64` and `u64` values
+//! are decimal strings, which keeps them exact in every language. JSON has no
+//! representation of non-finite floats, so typed floats use strings for them. Non-finite
+//! freeform floats cannot be encoded.
 //!
 //! Map keys may be strings, integers, UUIDs, timestamps, and dates. Keys use the
 //! text representation of their type, with integers in decimal.
@@ -130,7 +131,7 @@ pub(crate) fn encode<T: Encode + ?Sized>(
 /// use sidex::Value;
 ///
 /// let value = sidex::formats::json::to_value(&vec![1_u64, 2]).unwrap();
-/// assert_eq!(value, Value::from(vec!["1".into(), "2".into()]));
+/// assert_eq!(value, Value::from(vec![1.into(), 2.into()]));
 /// ```
 pub fn to_value<T: Encode + ?Sized>(value: &T) -> Result<Value, EncodeError> {
     let mut out = Value::Null;

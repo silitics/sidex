@@ -1,4 +1,4 @@
 {
-    "testField1": "42",
+    "testField1": 42,
     "testField2": "Hello World!"
 }

@@ -107,30 +107,3 @@ fn opaque_lowering_flag_is_accepted() {
     render(serde_json::json!({ "opaque_lowering": "native" }));
     render(serde_json::json!({ "opaque_lowering": "json" }));
 }
-
-#[test]
-fn number_fields_are_numbers() {
-    let out = render(serde_json::json!({}));
-    assert!(
-        out.contains("\"exp\": number"),
-        "`#[json(number)]` fields should be `number`, got:\n{out}"
-    );
-    assert!(
-        out.contains("\"sequence\": __sidex_types.builtins.U64"),
-        "other 64-bit integers should stay strings, got:\n{out}"
-    );
-    assert!(
-        out.contains("\"audiences\": __sidex_types.builtins.Sequence<number>"),
-        "sequences of `#[json(number)]` fields should hold numbers, got:\n{out}"
-    );
-}
-
-/// Payloads of implicitly tagged cases declared as 64-bit integers are numbers.
-#[test]
-fn implicit_integer_cases_are_numbers() {
-    let out = render(serde_json::json!({}));
-    assert!(
-        out.contains("export type Reading = (number | __sidex_types.builtins.String);"),
-        "the `i64` case should be `number`, got:\n{out}"
-    );
-}

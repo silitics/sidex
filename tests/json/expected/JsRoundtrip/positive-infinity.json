@@ -1,6 +1,6 @@
 {
-    "bigU": "0",
-    "negI": "0",
+    "bigU": 0,
+    "negI": 0,
     "finiteF": 0.0,
     "nonFiniteF": "Infinity",
     "seqU": [],

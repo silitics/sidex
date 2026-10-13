@@ -135,7 +135,7 @@ pub mod attrs {
             })
         }
     }
-    #[doc = "JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline, number)]`.\n"]
+    #[doc = "JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline)]`.\n"]
     #[derive(Clone, Debug)]
     pub struct FieldAttrs {
         #[doc = "Override the JSON key with an explicit string.\n"]
@@ -144,12 +144,10 @@ pub mod attrs {
         pub rename: ::std::option::Option<::std::string::String>,
         #[doc = "Whether to inline the field's contents into the enclosing object.\n"]
         pub inline: ::std::option::Option<bool>,
-        #[doc = "Whether a 64-bit integer is a JSON number instead of a string.\n"]
-        pub number: ::std::option::Option<bool>,
     }
     #[automatically_derived]
     impl ::sidex::Shaped for FieldAttrs {
-        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::FieldAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON key with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the field name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("inline" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether to inline the field's contents into the enclosing object.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("number" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether a 64-bit integer is a JSON number instead of a string.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline, number)]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("field") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::FieldAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON key with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the field name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("inline" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether to inline the field's contents into the enclosing object.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline)]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("field") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
     impl ::sidex::Encode for FieldAttrs {
@@ -180,11 +178,6 @@ pub mod attrs {
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
-                3usize => {
-                    self.number
-                        .as_ref()
-                        .map(|value| ::sidex::Encode::encode(value))
-                }
                 _ => ::std::option::Option::None,
             }
         }
@@ -198,7 +191,6 @@ pub mod attrs {
             let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
             let mut __field_1 = ::std::option::Option::<::std::string::String>::None;
             let mut __field_2 = ::std::option::Option::<bool>::None;
-            let mut __field_3 = ::std::option::Option::<bool>::None;
             decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
                 match index {
                     0usize => {
@@ -215,10 +207,6 @@ pub mod attrs {
                         __field_2 =
                             ::std::option::Option::Some(<bool as ::sidex::Decode>::decode(decoder)?)
                     }
-                    3usize => {
-                        __field_3 =
-                            ::std::option::Option::Some(<bool as ::sidex::Decode>::decode(decoder)?)
-                    }
                     _ => {}
                 }
                 ::std::result::Result::Ok(())
@@ -227,7 +215,6 @@ pub mod attrs {
                 name: __field_0,
                 rename: __field_1,
                 inline: __field_2,
-                number: __field_3,
             })
         }
     }

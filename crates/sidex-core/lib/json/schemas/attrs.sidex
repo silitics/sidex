@@ -38,7 +38,7 @@ record RecordTypeAttrs {
 
 /// JSON-specific attributes that may be applied to a record `field`.
 ///
-/// Source form: `#[json(name = "explicit", rename = "camelCase", inline, number)]`.
+/// Source form: `#[json(name = "explicit", rename = "camelCase", inline)]`.
 #[attrs(plugin = "json", target = field)]
 #[json(rename_all = "snake_case")]
 record FieldAttrs {
@@ -48,8 +48,6 @@ record FieldAttrs {
     rename?: string,
     /// Whether to inline the field's contents into the enclosing object.
     inline?: bool,
-    /// Whether a 64-bit integer is a JSON number instead of a string.
-    number?: bool,
 }
 
 /// JSON-specific attributes that may be applied to a `variant` definition.

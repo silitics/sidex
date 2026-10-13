@@ -372,10 +372,6 @@ fn implicitly_tagged(
             }
             continue;
         }
-        if case.json.number && !matches!(value, Value::Int(_)) {
-            failures.push(format!("`{}`: expected a number", case.json.name));
-            continue;
-        }
         match f(index, &mut JsonDecoder::new(value, strict)) {
             Ok(()) => return Ok(()),
             Err(error) => failures.push(format!("`{}`: {error}", case.json.name)),

@@ -64,35 +64,16 @@ fn opaque_types() {
     );
 }
 
-/// 64-bit integers are strings unless their field is a JSON number.
+/// 64-bit integers are integers or, beyond 2^53 - 1, decimal strings.
 #[test]
 fn integers() {
     let properties = &generate()["json_schema_fixture.types.Event"]["properties"];
     assert_eq!(
-        properties["sequence"]["type"],
-        serde_json::json!(["string", "integer"])
-    );
-    assert_eq!(
-        properties["expires"],
-        serde_json::json!({ "type": "integer", "format": "uint64" })
-    );
-    assert_eq!(
-        properties["counts"],
+        properties["sequence"],
         serde_json::json!({
-            "type": "array",
-            "items": { "type": "integer", "format": "uint64" },
+            "type": ["integer", "string"],
+            "format": "uint64",
+            "pattern": "^[0-9]+$",
         })
     );
-}
-
-/// Payloads of implicitly tagged cases declared as 64-bit integers are JSON
-/// numbers.
-#[test]
-fn implicit_integer_cases() {
-    let cases = &generate()["json_schema_fixture.types.Reading"]["anyOf"];
-    assert_eq!(
-        cases[0],
-        serde_json::json!({ "type": "integer", "format": "int64" })
-    );
-    assert_eq!(cases[1], serde_json::json!({ "type": "string" }));
 }

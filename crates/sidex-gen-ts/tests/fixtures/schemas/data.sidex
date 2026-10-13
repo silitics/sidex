@@ -8,19 +8,3 @@ opaque NullableTimestamp
 
 #[json(type = "any")]
 opaque Anything
-
-/// Token claims whose expiry is a JSON number.
-record Claims {
-    #[json(number)]
-    exp: u64,
-    sequence: u64,
-    #[json(number)]
-    audiences: [u64],
-}
-
-/// Reading that is a count or a label.
-#[json(tagged = implicitly)]
-variant Reading {
-    Count: i64,
-    Label: string,
-}

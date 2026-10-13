@@ -8,13 +8,13 @@ Attributes precede the element they annotate. Use `#[...]` for definitions, fiel
 
 ## JSON
 
-| Target       | Arguments                                                              | Meaning                                                                                   |
-| ------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Opaque type  | `type = "..."`, `schema = "..."`                                       | JSON shape and optional JSON Schema reference                                             |
-| Record       | `rename_all = "..."`                                                   | Default field naming                                                                      |
-| Field        | `name = "..."`, `rename = "..."`, `inline`, `number`                   | Explicit name, naming convention, flattening metadata, or 64-bit integers as JSON numbers |
-| Variant      | `rename_all = "..."`, `tagged = ...`, `tag = "..."`, `content = "..."` | Case naming and tagging                                                                   |
-| Variant case | `name = "..."`, `rename = "..."`, `content = "..."`                    | Case name and content field override                                                      |
+| Target       | Arguments                                                              | Meaning                                                  |
+| ------------ | ---------------------------------------------------------------------- | -------------------------------------------------------- |
+| Opaque type  | `type = "..."`, `schema = "..."`                                       | JSON shape and optional JSON Schema reference            |
+| Record       | `rename_all = "..."`                                                   | Default field naming                                     |
+| Field        | `name = "..."`, `rename = "..."`, `inline`                             | Explicit name, naming convention, or flattening metadata |
+| Variant      | `rename_all = "..."`, `tagged = ...`, `tag = "..."`, `content = "..."` | Case naming and tagging                                  |
+| Variant case | `name = "..."`, `rename = "..."`, `content = "..."`                    | Case name and content field override                     |
 
 JSON shape names are `number`, `boolean`, `string`, `null`, `object`, `array`, and `any`. Combine them with `|`, as in `"string|null"`.
 

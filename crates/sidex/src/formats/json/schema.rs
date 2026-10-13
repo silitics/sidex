@@ -200,10 +200,7 @@ impl Builder {
                 self.fields(inner, properties, required);
                 continue;
             }
-            let mut property = match number_schema(shape) {
-                Some(schema) if field.json.number => schema,
-                _ => self.schema(shape),
-            };
+            let mut property = self.schema(shape);
             if let Value::Map(entries) = &mut property {
                 if let Some(docs) = field.docs {
                     entries.insert("description".into(), docs.trim().into());
@@ -237,12 +234,7 @@ impl Builder {
                         ("additionalProperties", false.into()),
                     ])
                 }
-                (Tagging::Implicit, Some(payload)) => {
-                    match number_schema(payload()) {
-                        Some(schema) if case.json.number => schema,
-                        _ => self.schema(payload()),
-                    }
-                }
+                (Tagging::Implicit, Some(payload)) => self.schema(payload()),
                 (Tagging::Internal { tag, .. } | Tagging::Adjacent { tag, .. }, payload) => {
                     let mut properties = Map::new();
                     let mut required = vec![Value::from(tag)];
@@ -286,33 +278,6 @@ impl Builder {
     }
 }
 
-/// Returns the schema of values whose 64-bit integers, also those in sequences
-/// and map values, are numbers, or `None` if the values have no such integers.
-fn number_schema(shape: &'static Shape) -> Option<Value> {
-    match &shape.kind {
-        ShapeKind::Scalar(Scalar::I64) => Some(object([("type", "integer".into())])),
-        ShapeKind::Scalar(Scalar::U64) => {
-            Some(object([
-                ("type", "integer".into()),
-                ("minimum", Value::Int(0)),
-            ]))
-        }
-        ShapeKind::Wrapper(inner) => number_schema(inner()),
-        ShapeKind::Sequence(item) => {
-            let items = number_schema(item())?;
-            Some(object([("type", "array".into()), ("items", items)]))
-        }
-        ShapeKind::Map(_, value) => {
-            let values = number_schema(value())?;
-            Some(object([
-                ("type", "object".into()),
-                ("additionalProperties", values),
-            ]))
-        }
-        _ => None,
-    }
-}
-
 /// Returns the schema of a scalar.
 fn scalar_schema(scalar: Scalar) -> Value {
     let integer = |min: i128, max: i128| {
@@ -333,16 +298,17 @@ fn scalar_schema(scalar: Scalar) -> Value {
         Scalar::U16 => integer(0, u16::MAX.into()),
         Scalar::U32 => integer(0, u32::MAX.into()),
         Scalar::Idx => object([("type", "integer".into()), ("minimum", Value::Int(0))]),
-        // Decimal strings, but decoding also accepts integers.
+        // Integers, or decimal strings beyond 2^53 - 1.
         Scalar::I64 => {
             object([
-                ("type", Value::from(vec!["string".into(), "integer".into()])),
+                ("type", Value::from(vec!["integer".into(), "string".into()])),
                 ("pattern", "^-?[0-9]+$".into()),
             ])
         }
         Scalar::U64 => {
             object([
-                ("type", Value::from(vec!["string".into(), "integer".into()])),
+                ("type", Value::from(vec!["integer".into(), "string".into()])),
+                ("minimum", Value::Int(0)),
                 ("pattern", "^[0-9]+$".into()),
             ])
         }

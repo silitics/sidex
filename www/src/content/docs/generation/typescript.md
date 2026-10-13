@@ -51,16 +51,17 @@ wrapper UserId: string
 
 This prevents assigning a `TaskId` where a `UserId` is expected. A brand supplies type safety; it does not change the JSON value or validate it at runtime.
 
-Built-in numeric types also use brands in `@sidex/types`. Like their JSON representation, `I64` and `U64` are decimal strings, so values beyond 2^53 stay exact. Convert them explicitly:
+Built-in numeric types also use brands in `@sidex/types`. Like their JSON representation, `I64` and `U64` are numbers or, beyond `Number.MAX_SAFE_INTEGER`, decimal strings, so all values stay exact. Convert them explicitly:
 
 ```ts
 import { U64 } from "@sidex/types";
 
 const size = U64.fromNumber(1024);
 const kibibytes = U64.toNumber(size) / 1024;
+const exact = U64.toBigInt(size);
 ```
 
-Fields marked with `#[json(number)]` and integer payloads of implicitly tagged cases are plain `number`s; see [numbers and bytes](/sidex/docs/guides/json/#numbers-and-bytes).
+See [numbers and bytes](/sidex/docs/guides/json/#numbers-and-bytes).
 
 Maps are objects. `entries` from `@sidex/types` lists the entries of a map with the map's key type, such as a nominal identifier type.
 
@@ -102,7 +103,7 @@ Type mappings use fully qualified Sidex paths:
 
 ```toml
 [backend.ts.types.table]
-"::core::builtins::i64" = "string"
+"::core::builtins::timestamp" = "string"
 ```
 
 A mapping changes a generated type expression. It does not add a serializer or make other applications adopt the same wire representation.

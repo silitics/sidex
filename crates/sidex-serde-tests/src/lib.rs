@@ -66,6 +66,5 @@ mod tests {
         test!(RecordFieldNamesDefault);
         test!(RecordFieldNamesScreamingSnake);
         test!(JsRoundtrip);
-        test!(NumberFields);
     }
 }
