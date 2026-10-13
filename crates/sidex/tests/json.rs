@@ -502,3 +502,10 @@ fn null_for_optional_value_fields() {
     let extension: Extension = json::from_value(&parse(r#"{"data":{}}"#)).unwrap();
     assert_eq!(extension.data, Some(Value::Map(Default::default())));
 }
+
+/// Freeform values display as compact JSON text.
+#[test]
+fn value_display() {
+    let value = Value::from_iter([("a", Value::from(1)), ("b", Value::from("x"))]);
+    assert_eq!(value.to_string(), r#"{"a":1,"b":"x"}"#);
+}

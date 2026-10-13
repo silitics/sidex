@@ -137,6 +137,15 @@ impl Value {
     }
 }
 
+/// Formats the value as compact JSON text.
+#[cfg(feature = "json")]
+impl std::fmt::Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let text = crate::formats::json::to_string(self).map_err(|_| std::fmt::Error)?;
+        f.write_str(&text)
+    }
+}
+
 impl Shaped for Value {
     const SHAPE: &'static Shape = &Shape::new("::core::builtins::value", ShapeKind::Value);
 }
