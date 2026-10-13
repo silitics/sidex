@@ -580,12 +580,13 @@ record!(Labels {
     nullable: Label<true> => .optional();
 });
 
-/// Optional fields treat `null` as absent unless the opaque type admits it.
+/// Optional fields treat `null` as absent, also if the opaque type admits it,
+/// like Serde's `Option` does.
 #[test]
 fn null_for_optional_opaque_fields() {
     let labels: Labels = json::from_value(&parse(r#"{"strict":null,"nullable":null}"#)).unwrap();
     assert_eq!(labels.strict, None);
-    assert_eq!(labels.nullable, Some(Label(None)));
+    assert_eq!(labels.nullable, None);
 }
 
 record!(Extension {

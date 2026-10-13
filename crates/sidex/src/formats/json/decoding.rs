@@ -12,10 +12,8 @@ use crate::JsonValue;
 use crate::decode::DecodeError;
 use crate::decode::Decoder;
 use crate::shape::CaseShape;
-use crate::shape::FieldShape;
 use crate::shape::RecordShape;
 use crate::shape::Shape;
-use crate::shape::ShapeKind;
 use crate::types::Date;
 use crate::types::Map;
 use crate::types::Str;
@@ -325,8 +323,9 @@ impl Decoder for JsonDecoder<'_, '_> {
             }
             let name = field.json.name;
             match entries.get(name) {
-                None if field.optional => {}
-                Some(JsonValue::Null) if field.optional && !admits_null(field) => {}
+                // Like Serde's `Option`, `null` is absent, also if the type admits
+                // `null`. Many languages cannot tell the two apart.
+                None | Some(JsonValue::Null) if field.optional => {}
                 None => return Err(missing_field(name)),
                 Some(value) => {
                     self.unknown
@@ -520,25 +519,6 @@ fn known_fields(record: &RecordShape, known: &mut Vec<&'static str>) -> bool {
         }
     }
     true
-}
-
-/// Indicates whether `null` may represent a value of the field's type.
-///
-/// Optional fields accept `null` as absent, unless `null` is a value. JSON
-/// values include `null`, but many languages cannot tell an absent value from
-/// `null`, so optional JSON value fields treat `null` as absent.
-fn admits_null(field: &FieldShape) -> bool {
-    fn shape_admits_null(shape: &Shape) -> bool {
-        match &shape.kind {
-            ShapeKind::Scalar(_) => false,
-            ShapeKind::Wrapper(inner) => shape_admits_null(inner()),
-            ShapeKind::Variant(variant) => variant.json == Tagging::Implicit,
-            ShapeKind::Opaque(opaque) => opaque.json.admits(super::Type::Null),
-            ShapeKind::Json => false,
-            ShapeKind::Sequence(_) | ShapeKind::Map(..) | ShapeKind::Record(_) => false,
-        }
-    }
-    shape_admits_null((field.shape)())
 }
 
 /// Finds the case with the given JSON name.
