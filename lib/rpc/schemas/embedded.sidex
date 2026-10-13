@@ -1,2 +1,0 @@
-#[rust(type = "crate::json::Value")]
-opaque Embedded

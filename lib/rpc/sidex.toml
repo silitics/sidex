@@ -1,9 +1,0 @@
-[bundle]
-name = "rpc"
-version = "1"
-description = "Sidex RPC library."
-authors = ["Silitics GmbH <info@silitics.com>"]
-
-[backend.rust]
-derive = ["Clone", "Debug"]
-plugins = ["builder"]
