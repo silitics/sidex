@@ -1,5 +1,6 @@
 //! Decoding typed values from JSON values.
 
+use std::cell::RefCell;
 use std::str::FromStr;
 
 use base64::Engine;
@@ -20,18 +21,73 @@ use crate::types::Map;
 use crate::types::Str;
 use crate::types::Timestamp;
 use crate::types::Uuid;
+use crate::value::Path;
 use crate::value::PathSegment;
 
 /// Callback receiving the index of a field or case and its decoder.
 type IndexFn<'f> = dyn FnMut(usize, &mut dyn Decoder) -> Result<(), DecodeError> + 'f;
 
 /// [`Decoder`] reading the JSON representation from a JSON value.
-pub(super) struct JsonDecoder<'v> {
+pub(super) struct JsonDecoder<'v, 'u> {
     item: Item<'v>,
-    /// Indicates whether records reject unknown fields.
-    strict: bool,
+    /// Handling of fields unknown to records.
+    unknown: Unknown<'u>,
     /// Keys of the item, if it is a map, that belong to someone else.
     claimed: Claimed,
+}
+
+/// Handling of fields unknown to records.
+#[derive(Clone, Copy)]
+pub(super) enum Unknown<'u> {
+    /// Ignore unknown fields.
+    Ignore,
+    /// Reject unknown fields.
+    Reject,
+    /// Collect the paths of unknown fields.
+    Collect(&'u RefCell<Vec<Path>>),
+}
+
+impl Unknown<'_> {
+    /// Returns a mark for the paths that a nested item collects.
+    fn mark(self) -> usize {
+        match self {
+            Unknown::Collect(paths) => paths.borrow().len(),
+            Unknown::Ignore | Unknown::Reject => 0,
+        }
+    }
+
+    /// Prepends `segment` to the paths collected since `mark`.
+    fn within(self, mark: usize, segment: &PathSegment) {
+        if let Unknown::Collect(paths) = self {
+            for path in &mut paths.borrow_mut()[mark..] {
+                path.prepend(segment.clone());
+            }
+        }
+    }
+
+    /// Discards the paths collected since `mark`.
+    fn discard(self, mark: usize) {
+        if let Unknown::Collect(paths) = self {
+            paths.borrow_mut().truncate(mark);
+        }
+    }
+
+    /// Decodes a nested item with `f` and attributes errors and unknown fields
+    /// to `segment`.
+    fn nested(
+        self,
+        segment: PathSegment,
+        f: impl FnOnce() -> Result<(), DecodeError>,
+    ) -> Result<(), DecodeError> {
+        let mark = self.mark();
+        match f() {
+            Ok(()) => {
+                self.within(mark, &segment);
+                Ok(())
+            }
+            Err(error) => Err(error.within(segment)),
+        }
+    }
 }
 
 /// Keys of a map that do not belong to the record decoded from it.
@@ -54,11 +110,11 @@ enum Item<'v> {
     Key(&'v str),
 }
 
-impl<'v> JsonDecoder<'v> {
-    pub(super) fn new(value: &'v JsonValue, strict: bool) -> Self {
+impl<'v, 'u> JsonDecoder<'v, 'u> {
+    pub(super) fn new(value: &'v JsonValue, unknown: Unknown<'u>) -> Self {
         Self {
             item: Item::Value(value),
-            strict,
+            unknown,
             claimed: Claimed::None,
         }
     }
@@ -66,14 +122,14 @@ impl<'v> JsonDecoder<'v> {
     fn key(key: &'v str) -> Self {
         Self {
             item: Item::Key(key),
-            strict: false,
+            unknown: Unknown::Ignore,
             claimed: Claimed::None,
         }
     }
 
     /// Returns a decoder for a nested value.
-    fn child<'c>(&self, value: &'c JsonValue) -> JsonDecoder<'c> {
-        JsonDecoder::new(value, self.strict)
+    fn child<'c>(&self, value: &'c JsonValue) -> JsonDecoder<'c, 'u> {
+        JsonDecoder::new(value, self.unknown)
     }
 
     /// Returns the item if it is a value.
@@ -142,7 +198,7 @@ impl<'v> JsonDecoder<'v> {
     }
 }
 
-impl Decoder for JsonDecoder<'_> {
+impl Decoder for JsonDecoder<'_, '_> {
     fn bool(&mut self) -> Result<bool, DecodeError> {
         match self.as_value() {
             Some(JsonValue::Bool(value)) => Ok(*value),
@@ -229,7 +285,8 @@ impl Decoder for JsonDecoder<'_> {
             return Err(self.unexpected("a sequence"));
         };
         for (index, item) in items.iter().enumerate() {
-            f(&mut self.child(item)).map_err(|error| error.within(PathSegment::Index(index)))?;
+            self.unknown
+                .nested(PathSegment::Index(index), || f(&mut self.child(item)))?;
         }
         Ok(())
     }
@@ -242,8 +299,9 @@ impl Decoder for JsonDecoder<'_> {
             return Err(self.unexpected("a map"));
         };
         for (key, value) in entries {
-            f(&mut JsonDecoder::key(key), &mut self.child(value))
-                .map_err(|error| error.within(PathSegment::Key(key.clone())))?;
+            self.unknown.nested(PathSegment::Key(key.clone()), || {
+                f(&mut JsonDecoder::key(key), &mut self.child(value))
+            })?;
         }
         Ok(())
     }
@@ -271,18 +329,31 @@ impl Decoder for JsonDecoder<'_> {
                 Some(JsonValue::Null) if field.optional && !admits_null(field) => {}
                 None => return Err(missing_field(name)),
                 Some(value) => {
-                    f(index, &mut self.child(value))
-                        .map_err(|error| error.within(PathSegment::Key(Str::from_static(name))))?
+                    self.unknown
+                        .nested(PathSegment::Key(Str::from_static(name)), || {
+                            f(index, &mut self.child(value))
+                        })?
                 }
             }
         }
-        if self.strict {
-            let claimed = match self.claimed {
-                Claimed::None => None,
-                Claimed::Tag(tag) => Some(tag),
-                Claimed::All => return Ok(()),
-            };
-            reject_unknown_fields(entries, record, claimed)?;
+        let claimed = match self.claimed {
+            Claimed::None => None,
+            Claimed::Tag(tag) => Some(tag),
+            Claimed::All => return Ok(()),
+        };
+        match self.unknown {
+            Unknown::Ignore => {}
+            Unknown::Reject => {
+                if let Some(key) = unknown_fields(entries, record, claimed).next() {
+                    return Err(DecodeError::unknown_field(key));
+                }
+            }
+            Unknown::Collect(paths) => {
+                paths.borrow_mut().extend(
+                    unknown_fields(entries, record, claimed)
+                        .map(|key| Path::from_iter([PathSegment::Key(key.clone())])),
+                );
+            }
         }
         Ok(())
     }
@@ -295,10 +366,10 @@ impl Decoder for JsonDecoder<'_> {
             .as_value()
             .ok_or_else(|| self.unexpected("a variant"))?;
         match variant.json {
-            Tagging::External => externally_tagged(value, shape, self.strict, f),
-            Tagging::Implicit => implicitly_tagged(value, shape, self.strict, f),
+            Tagging::External => externally_tagged(value, shape, self.unknown, f),
+            Tagging::Implicit => implicitly_tagged(value, shape, self.unknown, f),
             Tagging::Internal { tag, .. } | Tagging::Adjacent { tag, .. } => {
-                tagged(value, shape, variant.json, tag, self.strict, f)
+                tagged(value, shape, variant.json, tag, self.unknown, f)
             }
         }
     }
@@ -314,7 +385,7 @@ impl Decoder for JsonDecoder<'_> {
 fn externally_tagged(
     value: &JsonValue,
     shape: &'static Shape,
-    strict: bool,
+    unknown: Unknown<'_>,
     f: &mut IndexFn<'_>,
 ) -> Result<(), DecodeError> {
     const EXPECTED: &str = "a string or a map with a single entry";
@@ -326,7 +397,7 @@ fn externally_tagged(
                     "case `{name}` requires a payload"
                 )));
             }
-            f(index, &mut JsonDecoder::new(&JsonValue::Null, strict))
+            f(index, &mut JsonDecoder::new(&JsonValue::Null, unknown))
         }
         JsonValue::Map(entries) if entries.len() == 1 => {
             let (name, payload) = entries.iter().next().expect("the map has one entry");
@@ -336,8 +407,9 @@ fn externally_tagged(
                     "case `{name}` has no payload and must be a string"
                 )));
             }
-            f(index, &mut JsonDecoder::new(payload, strict))
-                .map_err(|error| error.within(PathSegment::Key(name.clone())))
+            unknown.nested(PathSegment::Key(name.clone()), || {
+                f(index, &mut JsonDecoder::new(payload, unknown))
+            })
         }
         _ => Err(DecodeError::unexpected(value.kind(), EXPECTED)),
     }
@@ -347,7 +419,7 @@ fn externally_tagged(
 fn implicitly_tagged(
     value: &JsonValue,
     shape: &'static Shape,
-    strict: bool,
+    unknown: Unknown<'_>,
     f: &mut IndexFn<'_>,
 ) -> Result<(), DecodeError> {
     let variant = shape.as_variant().expect("callers check the shape");
@@ -355,13 +427,18 @@ fn implicitly_tagged(
     for (index, case) in variant.cases.iter().enumerate() {
         if case.payload.is_none() {
             if matches!(value, JsonValue::String(name) if name == case.json.name) {
-                return f(index, &mut JsonDecoder::new(&JsonValue::Null, strict));
+                return f(index, &mut JsonDecoder::new(&JsonValue::Null, unknown));
             }
             continue;
         }
-        match f(index, &mut JsonDecoder::new(value, strict)) {
+        let mark = unknown.mark();
+        match f(index, &mut JsonDecoder::new(value, unknown)) {
             Ok(()) => return Ok(()),
-            Err(error) => failures.push(format!("`{}`: {error}", case.json.name)),
+            Err(error) => {
+                // Unknown fields of cases that do not match are irrelevant.
+                unknown.discard(mark);
+                failures.push(format!("`{}`: {error}", case.json.name));
+            }
         }
     }
     Err(DecodeError::new(format_args!(
@@ -377,7 +454,7 @@ fn tagged(
     shape: &'static Shape,
     tagging: Tagging,
     tag: &'static str,
-    strict: bool,
+    unknown: Unknown<'_>,
     f: &mut IndexFn<'_>,
 ) -> Result<(), DecodeError> {
     let JsonValue::Map(entries) = value else {
@@ -394,43 +471,39 @@ fn tagged(
     let (index, case) =
         find_case(shape, name).map_err(|error| error.within(PathSegment::Key(Str::from(tag))))?;
     let Some(payload_shape) = case.payload else {
-        return f(index, &mut JsonDecoder::new(&JsonValue::Null, strict));
+        return f(index, &mut JsonDecoder::new(&JsonValue::Null, unknown));
     };
     match case.json.content_field(tagging, payload_shape()) {
         Some(content) => {
             let payload = entries.get(content).ok_or_else(|| missing_field(content))?;
-            f(index, &mut JsonDecoder::new(payload, strict))
-                .map_err(|error| error.within(PathSegment::Key(Str::from_static(content))))
+            unknown.nested(PathSegment::Key(Str::from_static(content)), || {
+                f(index, &mut JsonDecoder::new(payload, unknown))
+            })
         }
         // The record's fields share the map with the tag.
         None => {
             let mut decoder = JsonDecoder {
                 claimed: Claimed::Tag(tag),
-                ..JsonDecoder::new(value, strict)
+                ..JsonDecoder::new(value, unknown)
             };
             f(index, &mut decoder)
         }
     }
 }
 
-/// Rejects keys of the map that are not fields of the record, except for the
-/// claimed key.
-fn reject_unknown_fields(
-    entries: &Map<Str, JsonValue>,
+/// Returns the keys of the map that are not fields of the record, except for
+/// the claimed key.
+fn unknown_fields<'e>(
+    entries: &'e Map<Str, JsonValue>,
     record: &RecordShape,
-    claimed: Option<&str>,
-) -> Result<(), DecodeError> {
+    claimed: Option<&'static str>,
+) -> impl Iterator<Item = &'e Str> {
     let mut known = Vec::new();
-    if !known_fields(record, &mut known) {
-        // Inline fields that are not records may consume any key.
-        return Ok(());
-    }
-    for key in entries.keys() {
-        if Some(key.as_str()) != claimed && !known.contains(&key.as_str()) {
-            return Err(DecodeError::unknown_field(key));
-        }
-    }
-    Ok(())
+    // Inline fields that are not records may consume any key.
+    let checked = known_fields(record, &mut known);
+    entries.keys().filter(move |key| {
+        checked && Some(key.as_str()) != claimed && !known.contains(&key.as_str())
+    })
 }
 
 /// Collects the JSON names of the record's fields, including those of inline

@@ -81,6 +81,9 @@
 //!
 //! [`formats`]: crate::formats
 
+use std::cell::RefCell;
+
+use self::decoding::Unknown;
 pub use self::meta::Case;
 pub use self::meta::Field;
 pub use self::meta::Opaque;
@@ -97,6 +100,8 @@ pub use self::text::from_str;
 #[cfg(feature = "json")]
 pub use self::text::from_str_strict;
 #[cfg(feature = "json")]
+pub use self::text::from_str_with_unknown;
+#[cfg(feature = "json")]
 pub use self::text::to_string;
 #[cfg(feature = "json")]
 pub use self::text::to_string_pretty;
@@ -106,6 +111,7 @@ use crate::decode::Decode;
 use crate::decode::DecodeError;
 use crate::encode::Encode;
 use crate::encode::EncodeError;
+use crate::value::Path;
 
 mod decoding;
 mod encoding;
@@ -152,7 +158,7 @@ pub fn to_value<T: Encode + ?Sized>(value: &T) -> Result<JsonValue, EncodeError>
 /// assert_eq!(numbers, [1, 2]);
 /// ```
 pub fn from_value<T: Decode>(value: &JsonValue) -> Result<T, DecodeError> {
-    T::decode(&mut decoding::JsonDecoder::new(value, false))
+    T::decode(&mut decoding::JsonDecoder::new(value, Unknown::Ignore))
 }
 
 /// Reads a value like [`from_value`], but rejects fields unknown to records.
@@ -169,5 +175,23 @@ pub fn from_value<T: Decode>(value: &JsonValue) -> Result<T, DecodeError> {
 /// assert_eq!(map["thing"], "x");
 /// ```
 pub fn from_value_strict<T: Decode>(value: &JsonValue) -> Result<T, DecodeError> {
-    T::decode(&mut decoding::JsonDecoder::new(value, true))
+    T::decode(&mut decoding::JsonDecoder::new(value, Unknown::Reject))
+}
+
+/// Reads a value like [`from_value`] and also returns the paths of fields
+/// unknown to records.
+///
+/// Use this for documents written by people, such as configuration files, to
+/// warn about unknown fields. They may be typos, but they may also be fields
+/// that a later version added. The paths only contain keys and indices, so
+/// applications can show them without revealing values.
+pub fn from_value_with_unknown<T: Decode>(
+    value: &JsonValue,
+) -> Result<(T, Vec<Path>), DecodeError> {
+    let unknown = RefCell::new(Vec::new());
+    let decoded = T::decode(&mut decoding::JsonDecoder::new(
+        value,
+        Unknown::Collect(&unknown),
+    ))?;
+    Ok((decoded, unknown.into_inner()))
 }

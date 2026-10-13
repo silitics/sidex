@@ -209,6 +209,78 @@ fn strict_decoding() {
     assert_eq!(error.to_string(), "content.z: unknown field `z`");
 }
 
+/// Decoding with unknown fields accepts them and returns their paths, also of
+/// inline records and variant payloads, but not the tag of internally tagged
+/// variants.
+#[test]
+fn unknown_field_paths() {
+    /// Decodes `text` as `T` and returns the unknown fields' paths.
+    fn unknown<T: Decode>(text: &str) -> Vec<String> {
+        let (_, paths) = json::from_value_with_unknown::<T>(&parse(text)).unwrap();
+        paths.iter().map(ToString::to_string).collect()
+    }
+
+    assert_eq!(
+        unknown::<Fleet>(r#"{"devices":[{"id":"1"},{"id":"2","color":"red"}],"size":2}"#),
+        ["devices[1].color", "size"]
+    );
+    assert_eq!(
+        unknown::<Located>(r#"{"name":"home","x":1,"y":2,"z":3}"#),
+        ["z"]
+    );
+    assert!(unknown::<Position<Internal>>(r#"{"tag":"Coordinates","x":1,"y":2}"#).is_empty());
+    assert_eq!(
+        unknown::<Position<Adjacent>>(r#"{"tag":"Coordinates","content":{"x":1,"y":2,"z":3}}"#),
+        ["content.z"]
+    );
+    assert_eq!(
+        unknown::<Position<External>>(r#"{"Coordinates":{"x":1,"y":2,"z":3}}"#),
+        ["Coordinates.z"]
+    );
+    // Other errors still fail decoding.
+    assert!(json::from_value_with_unknown::<Fleet>(&parse(r#"{"devices":[{}]}"#)).is_err());
+}
+
+/// Unknown fields of implicitly tagged cases that do not match are dropped.
+#[test]
+fn unknown_fields_of_implicit_cases() {
+    /// Variant `Items { Points: [Point], Values: [json] }` with implicit tagging.
+    struct Items;
+
+    impl Shaped for Items {
+        const SHAPE: &'static Shape = &Shape::new(
+            "::tests::Items",
+            ShapeKind::Variant(
+                VariantShape::new(&[
+                    CaseShape::new("Points", Some(shape_of::<Vec<Point>>)),
+                    CaseShape::new("Values", Some(shape_of::<Vec<JsonValue>>)),
+                ])
+                .json_tagging(json::Tagging::Implicit),
+            ),
+        );
+    }
+
+    impl Decode for Items {
+        fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
+            decoder.variant(Self::SHAPE, &mut |case, payload| {
+                match case {
+                    0 => Vec::<Point>::decode(payload).map(drop),
+                    _ => Vec::<JsonValue>::decode(payload).map(drop),
+                }
+            })?;
+            Ok(Items)
+        }
+    }
+
+    // The first case collects `[0].z` before it fails on the string.
+    let (_, paths) =
+        json::from_value_with_unknown::<Items>(&parse(r#"[{"x":1,"y":2,"z":3},"text"]"#)).unwrap();
+    assert!(paths.is_empty());
+    let (_, paths) =
+        json::from_value_with_unknown::<Items>(&parse(r#"[{"x":1,"y":2,"z":3}]"#)).unwrap();
+    assert_eq!(paths[0].to_string(), "[0].z");
+}
+
 /// Schemas describe records with their JSON names and merged inline fields,
 /// and variants with their taggings.
 #[test]

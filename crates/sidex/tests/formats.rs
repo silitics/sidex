@@ -52,6 +52,17 @@ fn toml_strict() {
     assert_eq!(error.to_string(), "color: unknown field `color`");
 }
 
+/// Reading text with unknown fields accepts them and returns their paths.
+#[test]
+fn unknown_fields() {
+    let text = r#"{"id":1,"color":"red"}"#;
+    let (device, paths) = json::from_str_with_unknown::<Device>(text).unwrap();
+    assert_eq!(device.id, Some(1));
+    assert_eq!(paths[0].to_string(), "color");
+    let (_, paths) = toml::from_str_with_unknown::<Device>("id = 1\ncolor = \"red\"\n").unwrap();
+    assert_eq!(paths[0].to_string(), "color");
+}
+
 /// TOML accepts native date-times for timestamps.
 #[test]
 fn toml_timestamps() {

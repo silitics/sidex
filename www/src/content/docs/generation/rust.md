@@ -64,7 +64,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-`json::from_str` ignores fields that a record does not define. For documents written by people, such as configuration files, `json::from_str_strict` rejects such fields, which are likely typos. With the `toml` feature, `sidex::formats::toml` reads and writes TOML in the same way.
+`json::from_str` ignores fields that a record does not define, so older readers accept fields that later versions add. For documents written by people, such as configuration files, `json::from_str_with_unknown` also returns the paths of such fields, so that applications can warn about likely typos:
+
+```rust
+let (config, unknown) = json::from_str_with_unknown::<Config>(&text)?;
+for path in unknown {
+    eprintln!("warning: unknown field `{path}`");
+}
+```
+
+`json::from_str_strict` rejects such fields instead. With the `toml` feature, `sidex::formats::toml` reads and writes TOML in the same way.
 
 The build helper emits Cargo rerun directives for relevant files and formats output with Rustfmt when available. Use matching Sidex crate versions for the features your bundle requires.
 

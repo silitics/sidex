@@ -18,6 +18,7 @@ use crate::formats::bridge::SerializeView;
 use crate::formats::bridge::Syntax;
 use crate::types::Map;
 use crate::types::Str;
+use crate::value::Path;
 
 /// Writes `value` as compact JSON.
 pub fn to_string<T: Encode + ?Sized>(value: &T) -> Result<String, EncodeError> {
@@ -44,6 +45,13 @@ pub fn from_str<T: Decode>(text: &str) -> Result<T, DecodeError> {
 pub fn from_str_strict<T: Decode>(text: &str) -> Result<T, DecodeError> {
     let DeserializeValue(value) = serde_json::from_str(text).map_err(DecodeError::new)?;
     super::from_value_strict(&value)
+}
+
+/// Reads a value from JSON text and also returns the paths of fields unknown to
+/// records (see [`from_value_with_unknown`](super::from_value_with_unknown)).
+pub fn from_str_with_unknown<T: Decode>(text: &str) -> Result<(T, Vec<Path>), DecodeError> {
+    let DeserializeValue(value) = serde_json::from_str(text).map_err(DecodeError::new)?;
+    super::from_value_with_unknown(&value)
 }
 
 /// Reads a value from UTF-8 encoded JSON.

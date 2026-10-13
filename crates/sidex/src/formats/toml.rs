@@ -26,6 +26,7 @@ use crate::Encode;
 use crate::EncodeError;
 use crate::JsonValue;
 use crate::formats::json;
+use crate::value::Path;
 
 /// Writes `value` as TOML.
 pub fn to_string<T: Encode + ?Sized>(value: &T) -> Result<String, EncodeError> {
@@ -50,6 +51,12 @@ pub fn from_str<T: Decode>(text: &str) -> Result<T, DecodeError> {
 /// [`json::from_value_strict`]).
 pub fn from_str_strict<T: Decode>(text: &str) -> Result<T, DecodeError> {
     json::from_value_strict(&parse(text)?)
+}
+
+/// Reads a value from TOML text and also returns the paths of fields unknown to
+/// records (see [`json::from_value_with_unknown`]).
+pub fn from_str_with_unknown<T: Decode>(text: &str) -> Result<(T, Vec<Path>), DecodeError> {
+    json::from_value_with_unknown(&parse(text)?)
 }
 
 /// Parses TOML text as a JSON value.
