@@ -59,3 +59,53 @@ fn json_representation() {
         serde_json::from_str::<Via<Device>>(r#"{"id":"1","displayName":null}"#).unwrap();
     assert_eq!(decoded.display_name, None);
 }
+
+/// Byte size that, like `byte_calc::NumBytes`, requests an integer from the
+/// deserializer, but also accepts strings.
+#[derive(Debug, PartialEq)]
+struct Size(u64);
+
+impl<'de> Deserialize<'de> for Size {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct Visitor;
+
+        impl serde::de::Visitor<'_> for Visitor {
+            type Value = Size;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("a byte size")
+            }
+
+            fn visit_u64<E>(self, value: u64) -> Result<Size, E> {
+                Ok(Size(value))
+            }
+
+            fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Size, E> {
+                let kibibytes = value
+                    .strip_suffix("KiB")
+                    .and_then(|n| n.parse::<u64>().ok());
+                kibibytes
+                    .map(|n| Size(n * 1024))
+                    .ok_or_else(|| E::custom("invalid byte size"))
+            }
+        }
+
+        deserializer.deserialize_u64(Visitor)
+    }
+}
+
+/// Serde types used as Sidex types receive values like from a self-describing
+/// format, so that a type requesting an integer also receives strings.
+#[test]
+fn serde_types_receive_any_value() {
+    use sidex::serde::Serde;
+
+    let size: Serde<Size> = sidex::formats::json::from_str(r#""4KiB""#).unwrap();
+    assert_eq!(size.0, Size(4096));
+    let size: Serde<Size> = sidex::formats::json::from_str("4096").unwrap();
+    assert_eq!(size.0, Size(4096));
+    let map: Serde<std::collections::BTreeMap<String, Option<u8>>> =
+        sidex::formats::json::from_str(r#"{"a":null,"b":1}"#).unwrap();
+    assert_eq!(map.0["a"], None);
+    assert_eq!(map.0["b"], Some(1));
+}

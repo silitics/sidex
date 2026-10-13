@@ -26,9 +26,13 @@ use ::serde::Serializer;
 use ::serde::de::DeserializeOwned;
 use ::serde::de::DeserializeSeed;
 use ::serde::de::Error as _;
+use ::serde::de::IntoDeserializer;
 use ::serde::de::MapAccess;
 use ::serde::de::SeqAccess;
 use ::serde::de::Visitor;
+use ::serde::de::value::MapAccessDeserializer;
+use ::serde::de::value::MapDeserializer;
+use ::serde::de::value::SeqDeserializer;
 use ::serde::ser::Error as _;
 
 use crate::Decode;
@@ -361,11 +365,106 @@ pub fn encode_serde<T: Serialize + ?Sized>(value: &T) -> View<'static> {
 #[doc(hidden)]
 pub fn decode_serde<T: DeserializeOwned>(decoder: &mut dyn Decoder) -> Result<T, DecodeError> {
     let value = decoder.json()?;
-    let value = bridge::encode(&value, Syntax::Json, |view: &SerializeView<'_, '_>| {
-        serde_json::to_value(view)
-    })
-    .map_err(DecodeError::new)?;
-    serde_json::from_value(value).map_err(DecodeError::new)
+    T::deserialize(ValueDeserializer(&value)).map_err(DecodeError::new)
+}
+
+/// Deserializer reading a JSON value like a self-describing format.
+///
+/// Unlike `serde_json::Value`, it passes values to the visitor whatever type
+/// the deserialized type requests, like TOML's deserializer does. Hence, types
+/// requesting an integer may also accept strings, for instance, byte sizes
+/// like `"4GiB"` in configuration files.
+struct ValueDeserializer<'v>(&'v JsonValue);
+
+impl<'de> Deserializer<'de> for ValueDeserializer<'_> {
+    type Error = ::serde::de::value::Error;
+
+    fn deserialize_any<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
+        match self.0 {
+            JsonValue::Null => visitor.visit_unit(),
+            JsonValue::Bool(value) => visitor.visit_bool(*value),
+            JsonValue::Int(value) => {
+                if let Ok(value) = u64::try_from(*value) {
+                    visitor.visit_u64(value)
+                } else if let Ok(value) = i64::try_from(*value) {
+                    visitor.visit_i64(value)
+                } else {
+                    visitor.visit_i128(*value)
+                }
+            }
+            JsonValue::Float(value) => visitor.visit_f64(*value),
+            JsonValue::String(value) => visitor.visit_str(value),
+            JsonValue::Seq(items) => {
+                let mut seq = SeqDeserializer::new(items.iter().map(ValueDeserializer));
+                let value = visitor.visit_seq(&mut seq)?;
+                seq.end()?;
+                Ok(value)
+            }
+            JsonValue::Map(entries) => {
+                let mut map = MapDeserializer::new(
+                    entries
+                        .iter()
+                        .map(|(key, value)| (key.as_str(), ValueDeserializer(value))),
+                );
+                let value = visitor.visit_map(&mut map)?;
+                map.end()?;
+                Ok(value)
+            }
+        }
+    }
+
+    fn deserialize_option<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
+        match self.0 {
+            JsonValue::Null => visitor.visit_none(),
+            _ => visitor.visit_some(self),
+        }
+    }
+
+    fn deserialize_newtype_struct<V: Visitor<'de>>(
+        self,
+        _name: &'static str,
+        visitor: V,
+    ) -> Result<V::Value, Self::Error> {
+        visitor.visit_newtype_struct(self)
+    }
+
+    /// Reads a unit variant from a string and other variants from a map with a
+    /// single entry, like `serde_json` does.
+    fn deserialize_enum<V: Visitor<'de>>(
+        self,
+        _name: &'static str,
+        _variants: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error> {
+        match self.0 {
+            JsonValue::String(name) => visitor.visit_enum(name.as_str().into_deserializer()),
+            JsonValue::Map(entries) if entries.len() == 1 => {
+                visitor.visit_enum(MapAccessDeserializer::new(MapDeserializer::new(
+                    entries
+                        .iter()
+                        .map(|(key, value)| (key.as_str(), ValueDeserializer(value))),
+                )))
+            }
+            _ => {
+                Err(::serde::de::Error::custom(
+                    "expected a string or a map with a single entry",
+                ))
+            }
+        }
+    }
+
+    ::serde::forward_to_deserialize_any! {
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string bytes
+        byte_buf unit unit_struct seq tuple tuple_struct map struct identifier ignored_any
+    }
+}
+
+impl IntoDeserializer<'_, ::serde::de::value::Error> for ValueDeserializer<'_> {
+    type Deserializer = Self;
+
+    fn into_deserializer(self) -> Self {
+        self
+    }
 }
 
 impl<T: Serialize> Serialize for Serde<T> {
