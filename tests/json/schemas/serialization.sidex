@@ -1,0 +1,36 @@
+//! Optional field omission and preservation of JSON null across language bindings.
+
+#[json(type = "null")]
+#[rust(type = "::sidex::types::JsonValue")]
+opaque Null
+
+record OptionalFields {
+    required_null: Null,
+    required_json: json,
+    values: [json],
+    entries: [string: json],
+    #[json(name = "optional.note")]
+    optional_note?: string,
+    optional_json?: json,
+}
+
+record Box<T> {
+    payload: T,
+    note?: string,
+}
+
+variant Internal { Empty, Record: OptionalFields, Generic: Box<json>, Null: Null }
+#[json(tagged = adjacently)]
+variant Adjacent { Empty, Record: OptionalFields, Null: Null }
+#[json(tagged = externally)]
+variant External { Empty, Record: OptionalFields, Null: Null }
+#[json(tagged = implicitly)]
+variant Implicit { Record: OptionalFields }
+
+record Encodings {
+    large_int: u64,
+    special_float: f64,
+    at: timestamp,
+    blob: bytes,
+    note?: string,
+}

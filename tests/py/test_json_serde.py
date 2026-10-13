@@ -37,7 +37,7 @@ def _roundtrip(adapter: TypeAdapter, path: Path):
     raw = path.read_text()
     expected = json.loads(raw)
     obj = adapter.validate_json(raw)
-    reserialized = json.loads(adapter.dump_json(obj, by_alias=True, exclude_none=True))
+    reserialized = json.loads(adapter.dump_json(obj, by_alias=True))
     return expected, reserialized
 
 

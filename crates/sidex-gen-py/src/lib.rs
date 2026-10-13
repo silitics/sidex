@@ -542,7 +542,7 @@ fn generate_record(ctx: &SchemaCtx, def: &ir::Def, rec: &ir::RecordTypeDef) -> R
         r#"
 
 
-        class @name(pydantic.BaseModel@generics):
+        class @name(_sidex.Model@generics):
             @(@docstring_block)*
             model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
@@ -651,7 +651,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
                         r#"
 
 
-                        class @class_name(pydantic.BaseModel@gen_bases):
+                        class @class_name(_sidex.Model@gen_bases):
                             model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                             value: @inner = pydantic.Field(validation_alias="@json_name", serialization_alias="@json_name")
@@ -797,7 +797,7 @@ fn generate_internally_tagged_variant(
                 r#"
 
 
-                class @class_name(pydantic.BaseModel@gen_bases):
+                class @class_name(_sidex.Model@gen_bases):
                     model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                     @tag_field
@@ -818,7 +818,7 @@ fn generate_internally_tagged_variant(
                 r#"
 
 
-                class @class_name(pydantic.BaseModel@gen_bases):
+                class @class_name(_sidex.Model@gen_bases):
                     model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                     @tag_field
@@ -833,7 +833,7 @@ fn generate_internally_tagged_variant(
             r#"
 
 
-            class @class_name(pydantic.BaseModel@gen_bases):
+            class @class_name(_sidex.Model@gen_bases):
                 model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
                 @tag_field
@@ -882,7 +882,7 @@ fn generate_adjacently_tagged_variant(
         r#"
 
 
-        class @class_name(pydantic.BaseModel@gen_bases):
+        class @class_name(_sidex.Model@gen_bases):
             model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
             @tag_field
