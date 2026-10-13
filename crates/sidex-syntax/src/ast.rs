@@ -297,8 +297,9 @@ pub enum TypeExpr {
     Sequence(SequenceTypeExpr),
     /// Map type `[K: V]`.
     Map(MapTypeExpr),
-    /// Unit type `()`.
-    Unit,
+    /// Placeholder for a type expression that failed to parse. The parser
+    /// reports an error for it.
+    Missing,
 }
 
 /// An instantiation of a named type.

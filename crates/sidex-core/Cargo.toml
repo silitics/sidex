@@ -1,7 +1,7 @@
 [package]
 name = "sidex-core"
 description = "The core of Sidex."
-version = "0.1.0"
+version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
@@ -24,6 +24,7 @@ hashbrown.workspace = true # PRIVATE
 # Lexer, parser, and ASTs for Sidex schemas.
 sidex-syntax.workspace = true # PRIVATE
 sidex-ir.workspace = true # PUBLIC
+sidex = { workspace = true, features = ["serde-1", "serde_json-1"] } # PUBLIC
 sidex-diagnostics.workspace = true # PUBLIC
 # Parallel processing of schemas.
 rayon.workspace = true # PRIVATE

@@ -2,9 +2,9 @@
 source: crates/sidex-fmt/tests/smoke.rs
 expression: out
 ---
-import std::option::Option
-import std::result::Error
-import std::result::Result
+import ::core::attrs::Deprecated
+import ::core::builtins::date
+import ::core::builtins::uuid
 
 import a::A
 import b::B

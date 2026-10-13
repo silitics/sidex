@@ -78,7 +78,7 @@ jobs:
           pattern: npm-*
           merge-multiple: true
           path: dist/npm
-      - name: Publish platform packages, then the launcher, using OIDC
+      - name: Publish the libraries, platform packages, and launcher using OIDC
         run: python packaging/npm.py publish
 
   publish-pypi:

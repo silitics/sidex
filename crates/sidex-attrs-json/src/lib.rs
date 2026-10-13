@@ -11,7 +11,7 @@ mod generated;
 
 use std::collections::HashMap;
 
-use serde_json::Value;
+use sidex::types::JsonValue;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Result;
 use sidex_gen::rename::RenameFunction;
@@ -28,13 +28,13 @@ const PLUGIN: &str = "json";
 /// Pull the typed `json` attributes off any IR node's `typed_attrs` map and
 /// deserialize them into the generated struct `T`. Returns `Ok(None)` if the
 /// node has no `json` attrs.
-pub fn extract<T>(typed_attrs: &HashMap<String, Value>) -> Result<Option<T>>
+pub fn extract<T>(typed_attrs: &HashMap<String, JsonValue>) -> Result<Option<T>>
 where
-    T: serde::de::DeserializeOwned,
+    T: sidex::Decode,
 {
     match typed_attrs.get(PLUGIN) {
         Some(value) => {
-            serde_json::from_value(value.clone())
+            sidex::formats::json::from_value(value)
                 .map(Some)
                 .map_err(|err| {
                     Box::new(Diagnostic::error(format!(

@@ -5,6 +5,18 @@ use eyre::Result;
 use sidex_core::ir;
 use sidex_core::transformer::Transformer;
 
+/// Error indicating that errors have been reported as diagnostics.
+#[derive(Debug)]
+pub struct ReportedErrors;
+
+impl std::fmt::Display for ReportedErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("The Sidex bundle has errors.")
+    }
+}
+
+impl std::error::Error for ReportedErrors {}
+
 pub fn load_unit_and_bundle(
     directory: Option<&Path>,
 ) -> Result<(ir::Ir, ir::BundleIdx, Transformer)> {
@@ -25,10 +37,14 @@ pub fn load_unit_and_bundle(
 
         let idx = transformer.load_bundle_recursive(&bundle_path)?;
         let unit = transformer.transform(idx);
-        Ok((unit, idx))
+        Ok::<_, eyre::Report>((unit, idx))
     });
 
-    ctx.report().eprint(&transformer.sources);
-
-    result.map(|(unit, bundle_idx)| (unit, bundle_idx, transformer))
+    let report = ctx.report();
+    report.eprint(&transformer.sources);
+    let (unit, bundle_idx) = result?;
+    if report.has_error() {
+        return Err(ReportedErrors.into());
+    }
+    Ok((unit, bundle_idx, transformer))
 }

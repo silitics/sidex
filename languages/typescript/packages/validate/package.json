@@ -1,6 +1,6 @@
 {
   "name": "@sidex/validate",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Runtime support for Sidex's validation extension.",
   "author": "Silitics GmbH <info@silitics.com>",
   "license": "MIT OR Apache-2.0",
@@ -44,6 +44,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
     "clean": "rm -rf dist",
     "prepare": "npm run build",
     "prepublishOnly": "npm run clean && npm run build"

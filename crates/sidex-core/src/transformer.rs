@@ -4,6 +4,8 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 
+use sidex_diagnostics::Diagnostic;
+use sidex_diagnostics::Label;
 use sidex_syntax::ast;
 use sidex_syntax::parse;
 use sidex_syntax::tokens;
@@ -189,19 +191,27 @@ impl<'t, 'm> Resolver<'t, 'm> {
     fn populate_imports(&mut self) {
         let schema = &self.transformer.loaded[self.bundle.idx()].schemas[self.schema];
         for import in &schema.imports {
-            let mut stack = vec![(LookupEntry::Bundle(self.bundle), &import.tree)];
-            while let Some((root, tree)) = stack.pop() {
+            // Each tree comes with the entry its path is relative to and the
+            // segment that named that entry, if any.
+            let mut stack = vec![(
+                LookupEntry::Bundle(self.bundle),
+                &import.tree,
+                None::<&ast::Identifier>,
+            )];
+            while let Some((root, tree, parent)) = stack.pop() {
                 match tree {
                     ast::ImportTree::Path(path) => {
-                        let entry = self.resolve_segments(
-                            if path.is_absolute {
-                                LookupEntry::Root
-                            } else {
-                                root
-                            },
-                            &path.segments,
-                        );
-                        let name = path.segments.last().unwrap();
+                        let root = if path.is_absolute {
+                            LookupEntry::Root
+                        } else {
+                            root
+                        };
+                        let (Some(entry), Some(name)) = (
+                            self.resolve_segments(root, &path.segments),
+                            path.segments.last(),
+                        ) else {
+                            continue;
+                        };
                         self.table.entry(name.as_str().to_owned()).or_insert(entry);
                     }
                     ast::ImportTree::Wildcard => {
@@ -230,22 +240,34 @@ impl<'t, 'm> Resolver<'t, 'm> {
                                     });
                                 }
                             }
-                            LookupEntry::Root | LookupEntry::Def { .. } => {
-                                panic!("Invalid import target.")
+                            LookupEntry::Root => {
+                                Diagnostic::error("Bundles cannot be imported with `*`.")
+                                    .with_help("Import the bundle by name, as in `import ::core`.")
+                                    .emit();
+                            }
+                            LookupEntry::Def { .. } => {
+                                let mut diagnostic = Diagnostic::error(
+                                    "Definitions have no members to import with `*`.",
+                                );
+                                if let Some(parent) = parent {
+                                    diagnostic = diagnostic.with_span(Some(parent.span().clone()));
+                                }
+                                diagnostic.emit();
                             }
                         }
                     }
                     ast::ImportTree::Group { path, trees } => {
-                        let entry = self.resolve_segments(
-                            if path.is_absolute {
-                                LookupEntry::Root
-                            } else {
-                                root
-                            },
-                            &path.segments,
-                        );
+                        let root = if path.is_absolute {
+                            LookupEntry::Root
+                        } else {
+                            root
+                        };
+                        let Some(entry) = self.resolve_segments(root, &path.segments) else {
+                            continue;
+                        };
+                        let parent = path.segments.last().or(parent);
                         for tree in trees {
-                            stack.push((entry.clone(), tree));
+                            stack.push((entry.clone(), tree, parent));
                         }
                     }
                 }
@@ -267,37 +289,56 @@ impl<'t, 'm> Resolver<'t, 'm> {
         }
     }
 
-    fn resolve_segments(&self, root: LookupEntry, segments: &[ast::Identifier]) -> LookupEntry {
-        if let Some((first, rest)) = segments.split_first() {
-            let child = match root {
+    /// Resolves `segments` relative to `root`, reporting the first segment
+    /// that does not resolve.
+    fn resolve_segments(
+        &self,
+        root: LookupEntry,
+        segments: &[ast::Identifier],
+    ) -> Option<LookupEntry> {
+        let mut entry = root;
+        for segment in segments {
+            let name = segment.as_str();
+            entry = match entry {
                 LookupEntry::Root => {
-                    LookupEntry::Bundle(*self.dependencies.get(first.as_str()).unwrap())
+                    let Some(bundle) = self.dependencies.get(name) else {
+                        return unresolved(
+                            segment,
+                            format!("Unknown bundle `{name}`."),
+                            Some("Declare the bundle as a dependency in `sidex.toml`.".to_owned()),
+                        );
+                    };
+                    LookupEntry::Bundle(*bundle)
                 }
-                LookupEntry::Bundle(idx) => {
-                    let schema = self.transformer.loaded[idx.idx()]
-                        .schema_by_name
-                        .get(first.as_str())
-                        .unwrap_or_else(|| {
-                            panic!(
-                                "Unable to find schema {} in bundle {}.",
-                                first.as_str(),
-                                self.transformer.loaded[idx.idx()]
-                                    .source
-                                    .manifest
-                                    .metadata
-                                    .name
-                            )
-                        });
+                LookupEntry::Bundle(bundle) => {
+                    let loaded = &self.transformer.loaded[bundle.idx()];
+                    let Some(schema) = loaded.schema_by_name.get(name) else {
+                        // Relative paths start in the schema's own bundle.
+                        let help = (bundle == self.bundle && self.dependencies.contains_key(name))
+                            .then(|| format!("Import from the bundle `{name}` with `::{name}`."));
+                        return unresolved(
+                            segment,
+                            format!(
+                                "Bundle `{}` has no schema `{name}`.",
+                                loaded.source.manifest.metadata.name
+                            ),
+                            help,
+                        );
+                    };
                     LookupEntry::Schema {
-                        bundle: idx,
+                        bundle,
                         schema: *schema,
                     }
                 }
                 LookupEntry::Schema { bundle, schema } => {
-                    let def = self.transformer.loaded[bundle.idx()].schemas[schema]
-                        .def_by_name
-                        .get(first.as_str())
-                        .unwrap_or_else(|| panic!("Unable to find definition {}.", first.as_str()));
+                    let parsed = &self.transformer.loaded[bundle.idx()].schemas[schema];
+                    let Some(def) = parsed.def_by_name.get(name) else {
+                        return unresolved(
+                            segment,
+                            format!("Schema `{}` has no definition `{name}`.", parsed.name),
+                            None,
+                        );
+                    };
                     LookupEntry::Def {
                         bundle,
                         schema,
@@ -305,27 +346,38 @@ impl<'t, 'm> Resolver<'t, 'm> {
                     }
                 }
                 LookupEntry::Def { .. } => {
-                    panic!("Invalid lookup chain ending at a definition.")
+                    return unresolved(
+                        segment,
+                        format!("Definitions have no members, so `{name}` does not exist."),
+                        None,
+                    );
                 }
             };
-            self.resolve_segments(child, rest)
-        } else {
-            root
         }
+        Some(entry)
     }
 
-    fn resolve_path(&self, path: &ast::Path) -> LookupEntry {
-        let (root, tail) = if path.is_absolute {
-            (LookupEntry::Root, path.segments.as_slice())
-        } else {
-            let first = path.segments.first().unwrap();
-            let entry = self
-                .table
-                .get(first.as_str())
-                .unwrap_or_else(|| panic!("Unable to resolve `{}`.", path));
-            (entry.clone(), &path.segments[1..])
+    /// Resolves a path, reporting the first segment that does not resolve.
+    fn resolve_path(&self, path: &ast::Path) -> Option<LookupEntry> {
+        if path.is_absolute {
+            return self.resolve_segments(LookupEntry::Root, &path.segments);
+        }
+        let (first, rest) = path.segments.split_first()?;
+        let Some(entry) = self.table.get(first.as_str()) else {
+            return unresolved(
+                first,
+                format!("Cannot find `{first}` in this schema."),
+                Some("Define it in this schema or import it.".to_owned()),
+            );
         };
-        self.resolve_segments(root, tail)
+        self.resolve_segments(entry.clone(), rest)
+    }
+
+    /// Returns the type that stands in for a type expression with a reported
+    /// error, so that resolution continues and reports further errors.
+    fn placeholder_type(&self) -> ir::Type {
+        let def_ref = self.builtin_def_ref("json");
+        ir::Type::new(ir::TypeKind::Instance(ir::InstanceType::new(def_ref)))
     }
 
     /// Translate a local (bundle, schema, def) triple into a fully-resolved
@@ -372,7 +424,9 @@ impl<'t, 'm> Resolver<'t, 'm> {
                         )));
                     }
                 }
-                let entry = self.resolve_path(&instance.path);
+                let Some(entry) = self.resolve_path(&instance.path) else {
+                    return self.placeholder_type();
+                };
                 match entry {
                     LookupEntry::Def {
                         bundle,
@@ -386,11 +440,27 @@ impl<'t, 'm> Resolver<'t, 'm> {
                                     .subst
                                     .iter()
                                     .map(|subst| self.resolve_type_expr(enclosing, subst))
-                                    .collect(),
+                                    .collect::<Vec<_>>(),
                             ),
                         ))
                     }
-                    _ => panic!("Path does not resolve to a definition."),
+                    LookupEntry::Root | LookupEntry::Bundle(_) | LookupEntry::Schema { .. } => {
+                        let kind = match entry {
+                            LookupEntry::Schema { .. } => "a schema",
+                            _ => "a bundle",
+                        };
+                        let mut diagnostic = Diagnostic::error(format!(
+                            "`{}` is {kind}, not a type.",
+                            instance.path
+                        ));
+                        if let Some(last) = instance.path.segments.last() {
+                            diagnostic = diagnostic
+                                .with_span(Some(last.span().clone()))
+                                .with_label(Label::new(last.span().clone(), "not a type"));
+                        }
+                        diagnostic.emit();
+                        self.placeholder_type()
+                    }
                 }
             }
             ast::TypeExpr::Sequence(sequence) => {
@@ -409,12 +479,26 @@ impl<'t, 'm> Resolver<'t, 'm> {
                     ]),
                 ))
             }
-            ast::TypeExpr::Unit => {
-                let def_ref = self.builtin_def_ref("unit");
-                ir::Type::new(ir::TypeKind::Instance(ir::InstanceType::new(def_ref)))
-            }
+            // The parser has reported an error.
+            ast::TypeExpr::Missing => self.placeholder_type(),
         }
     }
+}
+
+/// Reports that `segment` of a path does not resolve.
+fn unresolved(
+    segment: &ast::Identifier,
+    message: String,
+    help: Option<String>,
+) -> Option<LookupEntry> {
+    let mut diagnostic = Diagnostic::error(message)
+        .with_span(Some(segment.span().clone()))
+        .with_label(Label::new(segment.span().clone(), "not found"));
+    if let Some(help) = help {
+        diagnostic = diagnostic.with_help(help);
+    }
+    diagnostic.emit();
+    None
 }
 
 /// Convert an AST attribute value (`Attr` on the rhs of an Assign) into a
@@ -798,9 +882,8 @@ impl Transformer {
                 }
             }
             // Make the standard library implicitly available under its
-            // declared bundle name (currently "core") so user schemas can
-            // write `import core::attrs::*` etc. We also keep the legacy
-            // "std" alias for backwards compatibility with existing schemas.
+            // declared bundle name (`core`) so user schemas can write
+            // `import ::core::attrs::*` etc.
             let std_bundle_name = self.loaded[STD_BUNDLE.idx()]
                 .source
                 .manifest
@@ -808,7 +891,6 @@ impl Transformer {
                 .name
                 .clone();
             dependencies.insert(std_bundle_name, STD_BUNDLE);
-            dependencies.insert("std".to_owned(), STD_BUNDLE);
 
             for parsed in &loaded.schemas {
                 let mut resolver = Resolver {
@@ -857,7 +939,7 @@ impl Transformer {
                                                 .with_attrs(transform_attrs(&field.attrs))
                                                 .with_is_optional(field.is_optional)
                                             })
-                                            .collect(),
+                                            .collect::<Vec<_>>(),
                                     ),
                                 )
                             }
@@ -877,7 +959,7 @@ impl Transformer {
                                                     resolver.resolve_type_expr(ast_def, t)
                                                 }))
                                             })
-                                            .collect(),
+                                            .collect::<Vec<_>>(),
                                     ),
                                 )
                             }
@@ -906,5 +988,76 @@ impl Transformer {
         crate::attrs_parser::populate_typed_attrs(&mut ir, &registry);
 
         ir
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use sidex_diagnostics::DiagnosticCtx;
+
+    use super::*;
+
+    /// Transforms a bundle with a single schema and returns the messages of
+    /// the reported errors.
+    fn errors(source: &str) -> Vec<String> {
+        let mut transformer = Transformer::new();
+        let source_id = transformer.insert_source(source.to_owned(), None);
+        let manifest = Manifest::new(ir::Metadata::new("demo".to_owned(), "0".to_owned()));
+        let bundle = transformer
+            .insert_bundle(BundleSource {
+                manifest,
+                path: None,
+                schemas: HashMap::from([("main".to_owned(), source_id)]),
+            })
+            .unwrap();
+        let ctx = DiagnosticCtx::new();
+        ctx.exec(|| transformer.transform(bundle));
+        ctx.report()
+            .diagnostics()
+            .filter(|diagnostic| diagnostic.is_error())
+            .map(|diagnostic| diagnostic.message().to_owned())
+            .collect()
+    }
+
+    #[test]
+    fn resolves_valid_paths() {
+        let source =
+            "import ::core::builtins::uuid\nrecord A { id: uuid, other: B }\nrecord B {}\n";
+        assert_eq!(errors(source), Vec::<String>::new());
+    }
+
+    #[test]
+    fn reports_unresolved_imports() {
+        assert_eq!(
+            errors("import nothing::Thing\n"),
+            ["Bundle `demo` has no schema `nothing`."]
+        );
+        assert_eq!(
+            errors("import ::nothing::Thing\n"),
+            ["Unknown bundle `nothing`."]
+        );
+        assert_eq!(
+            errors("import ::core::builtins::{uuid, nope}\n"),
+            ["Schema `builtins` has no definition `nope`."]
+        );
+        assert_eq!(
+            errors("import ::core::builtins::uuid::*\n"),
+            ["Definitions have no members to import with `*`."]
+        );
+    }
+
+    #[test]
+    fn reports_unresolved_types() {
+        assert_eq!(
+            errors("record A { x: Missing, y: [Other] }\n"),
+            [
+                "Cannot find `Missing` in this schema.",
+                "Cannot find `Other` in this schema.",
+            ]
+        );
+        assert_eq!(
+            errors("import ::core::builtins\nrecord A { x: builtins }\n"),
+            ["`builtins` is a schema, not a type."]
+        );
     }
 }

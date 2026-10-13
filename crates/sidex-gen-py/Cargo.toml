@@ -1,7 +1,7 @@
 [package]
 name = "sidex-gen-py"
 description = "Sidex code generation for Python."
-version = "0.1.0"
+version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true

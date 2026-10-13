@@ -11,6 +11,8 @@
 //! Rust plugin, so `(path, code)` tuples reported by the two backends
 //! match byte-for-byte on the same input.
 
+use std::collections::HashMap;
+
 use sidex_attrs_json::field_attrs as json_field_attrs;
 use sidex_attrs_json::record_type_attrs as json_record_type_attrs;
 use sidex_attrs_validate as attrs;
@@ -56,7 +58,7 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
     let any_field_rules = record.fields.iter().any(|f| {
         f.typed_attrs
             .get("validate")
-            .and_then(|v| v.as_array())
+            .and_then(|v| v.as_seq())
             .is_some_and(|a| !a.is_empty())
     });
     if record_rules.is_empty() && !any_field_rules {
@@ -69,6 +71,12 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
     // the validator must reach for `__instance.<wireName>` rather than the
     // raw Sidex identifier. Per-field renames stack on top of `rename_all`.
     let ty_json_attrs = json_record_type_attrs(def)?;
+    let mut fields = FieldTable::new();
+    for field in &record.fields {
+        let json_name = ty_json_attrs.field_name(field, &json_field_attrs(field)?);
+        let numeric = target_for_type(ctx, &field.typ) == expr::Target::Number;
+        fields.insert(field.name.as_str().to_owned(), (json_name, numeric));
+    }
 
     // Per-field validators (standalone functions) and the corresponding
     // step inside the whole-record validator. The two share rule bodies
@@ -90,7 +98,13 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         // contribute sibling methods (e.g. a future `format` plugin would
         // assign `User.fields.email.format(value)`); the validate plugin
         // owns only the `.validate` slot.
-        let stmts_standalone = lower_rules_to_ts(&field_rules, "__value", "__path", target);
+        let stmts_standalone = lower_rules_to_ts(
+            &field_rules,
+            "__value",
+            "__path",
+            target,
+            &FieldTable::new(),
+        );
         let validator = quote!(
             r#"
             @field_name: {
@@ -108,7 +122,13 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
         // `__instance.<field_name>` and the path is nested under
         // `__path.field("<field_name>")`.
         let value_var = format!("__instance.{field_name}");
-        let stmts_inline = lower_rules_to_ts(&field_rules, &value_var, "__field_path", target);
+        let stmts_inline = lower_rules_to_ts(
+            &field_rules,
+            &value_var,
+            "__field_path",
+            target,
+            &FieldTable::new(),
+        );
         let step = if field.is_optional {
             quote!(
                 r#"
@@ -132,8 +152,13 @@ fn emit_record(ctx: &SchemaCtx, def: &ir::Def, record: &ir::RecordTypeDef) -> Re
     }
 
     // Record-level rules apply against `__instance` directly.
-    let record_steps =
-        lower_rules_to_ts(&record_rules, "__instance", "__path", expr::Target::Record);
+    let record_steps = lower_rules_to_ts(
+        &record_rules,
+        "__instance",
+        "__path",
+        expr::Target::Record,
+        &fields,
+    );
 
     // Within the same schema file the type alias is in scope under its
     // bare name (the types plugin emits `export type Foo = ...;`).
@@ -166,11 +191,11 @@ fn emit_wrapper(ctx: &SchemaCtx, def: &ir::Def, wrapper: &ir::WrapperTypeDef) ->
     let name = def.name.as_str().to_owned();
     let target = target_for_type(ctx, &wrapper.wrapped);
     let inner_ty = ctx.resolve_type(def, &wrapper.wrapped);
-    let stmts = lower_rules_to_ts(&rules, "__value", "__path", target);
+    let stmts = lower_rules_to_ts(&rules, "__value", "__path", target, &FieldTable::new());
 
     let qualified = Code::from(name.as_str());
     // Standalone validator that operates on `__value`.
-    let try_new_stmts = lower_rules_to_ts(&rules, "__value", "__path", target);
+    let try_new_stmts = lower_rules_to_ts(&rules, "__value", "__path", target, &FieldTable::new());
 
     Ok(quote!(
         r#"
@@ -219,11 +244,15 @@ fn emit_opaque(def: &ir::Def) -> Result<Code> {
 
 // ---- Lowering --------------------------------------------------------------
 
+/// JSON names and numeric-ness of the fields of a record, by schema name.
+type FieldTable = HashMap<String, (String, bool)>;
+
 fn lower_rules_to_ts<R: HasRule>(
     rules: &[R],
     value_var: &str,
     path_var: &str,
     target: expr::Target,
+    fields: &FieldTable,
 ) -> Code {
     let mut steps: Vec<Code> = Vec::new();
     let mut regex_count: usize = 0;
@@ -251,8 +280,11 @@ fn lower_rules_to_ts<R: HasRule>(
         for r in &recognized.rules {
             steps.push(lower_rule_to_ts(
                 r,
+                &parsed,
                 value_var,
                 path_var,
+                target,
+                fields,
                 rule.message(),
                 rule.code(),
                 &mut regex_count,
@@ -262,10 +294,17 @@ fn lower_rules_to_ts<R: HasRule>(
     quote!(r#"@(@steps)*"#)
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "lowering needs the full context of a rule"
+)]
 fn lower_rule_to_ts(
     rule: &expr::Rule,
+    parsed: &expr::Expr,
     value_var: &str,
     path_var: &str,
+    target: expr::Target,
+    fields: &FieldTable,
     message_override: Option<&str>,
     code_override: Option<&str>,
     _regex_count: &mut usize,
@@ -289,7 +328,7 @@ fn lower_rule_to_ts(
                 expr::HelperKind::Eq => "eq",
                 expr::HelperKind::Ne => "ne",
             };
-            let lhs = lower_accessor_ts(accessor, value_var);
+            let lhs = lower_accessor_ts(accessor, value_var, target, fields);
             let bound = lower_threshold_ts(threshold);
             let code = code_override.unwrap_or(code);
             Code::from(format!(
@@ -299,7 +338,10 @@ fn lower_rule_to_ts(
         expr::Rule::Regex { accessor, pattern } => {
             let target_value = match accessor {
                 expr::Accessor::Self_ => value_var.to_owned(),
-                expr::Accessor::Field(name) => format!("({value_var} as any).{name}"),
+                expr::Accessor::Field(name) => {
+                    let json_name = fields.get(name).map_or(name.as_str(), |(json, _)| json);
+                    format!("({value_var} as any).{json_name}")
+                }
                 expr::Accessor::CharCount
                 | expr::Accessor::ByteCount
                 | expr::Accessor::ItemCount
@@ -314,16 +356,46 @@ fn lower_rule_to_ts(
             ))
         }
         expr::Rule::Predicate { source } => {
-            let escaped = escape_ts_string(source);
+            // Comparisons the recognizer does not know, such as comparisons of
+            // two fields, are evaluated as written.
+            let expr::Expr::Compare { operands, ops } = parsed else {
+                let escaped = escape_ts_string(source);
+                return Code::from(format!("/* unsupported rule `{escaped}` */\n"));
+            };
+            let Some(operands) = operands
+                .iter()
+                .map(|operand| lower_operand_ts(operand, value_var, target, fields))
+                .collect::<Option<Vec<_>>>()
+            else {
+                let escaped = escape_ts_string(source);
+                return Code::from(format!("/* unsupported rule `{escaped}` */\n"));
+            };
+            let ops = ops
+                .iter()
+                .map(|op| format!("\"{}\"", op.as_str()))
+                .collect::<Vec<_>>();
+            let code = code_override.unwrap_or("invalid");
             Code::from(format!(
-                "/* predicate fallback for `{escaped}` — codegen TODO */\n"
+                "__report.merge(__validate.check(__validate.holds([{}], [{}]), \"{code}\", {message_arg}, {path_var}));\n",
+                operands.join(", "),
+                ops.join(", "),
             ))
         }
     }
 }
 
-fn lower_accessor_ts(accessor: &expr::Accessor, value_var: &str) -> String {
+/// Lowers an accessor. Numbers go through `numeric`, because 64-bit integers
+/// and non-finite floats are strings.
+fn lower_accessor_ts(
+    accessor: &expr::Accessor,
+    value_var: &str,
+    target: expr::Target,
+    fields: &FieldTable,
+) -> String {
     match accessor {
+        expr::Accessor::Self_ if target == expr::Target::Number => {
+            format!("__validate.numeric({value_var} as any)")
+        }
         expr::Accessor::Self_ => format!("{value_var} as any"),
         expr::Accessor::CharCount => {
             format!("__validate.charCount({value_var} as unknown as string)")
@@ -337,13 +409,51 @@ fn lower_accessor_ts(accessor: &expr::Accessor, value_var: &str) -> String {
         expr::Accessor::EntryCount => {
             format!("__validate.entryCount({value_var} as unknown as Record<string, unknown>)")
         }
-        expr::Accessor::Field(name) => format!("({value_var} as any).{name}"),
+        expr::Accessor::Field(name) => {
+            match fields.get(name) {
+                Some((json_name, true)) => {
+                    format!("__validate.numeric(({value_var} as any).{json_name})")
+                }
+                Some((json_name, false)) => format!("({value_var} as any).{json_name}"),
+                None => format!("({value_var} as any).{name}"),
+            }
+        }
     }
+}
+
+/// Lowers an operand of a comparison.
+fn lower_operand_ts(
+    operand: &expr::Expr,
+    value_var: &str,
+    target: expr::Target,
+    fields: &FieldTable,
+) -> Option<String> {
+    Some(match operand {
+        expr::Expr::Underscore => {
+            lower_accessor_ts(&expr::Accessor::Self_, value_var, target, fields)
+        }
+        expr::Expr::Member { path } if path.len() == 1 => {
+            lower_accessor_ts(
+                &expr::Accessor::Field(path[0].clone()),
+                value_var,
+                target,
+                fields,
+            )
+        }
+        expr::Expr::Lit(literal) => lower_threshold_ts(literal),
+        _ => return None,
+    })
 }
 
 fn lower_threshold_ts(literal: &expr::Literal) -> String {
     match literal {
-        expr::Literal::Number(n) => n.clone(),
+        // Integers beyond the safe range of numbers are `bigint`s.
+        expr::Literal::Number(n) => {
+            match n.parse::<i128>() {
+                Ok(value) if value.unsigned_abs() > (1 << 53) - 1 => format!("{n}n"),
+                _ => n.clone(),
+            }
+        }
         expr::Literal::String(s) => format!("\"{}\"", escape_ts_string(s)),
     }
 }
@@ -384,7 +494,7 @@ fn target_for_type(ctx: &SchemaCtx, ty: &ir::Type) -> expr::Target {
 // ---- Trait abstracting the four `*Rule` records ---------------------------
 
 trait HasRule {
-    fn expr(&self) -> &attrs::raw::TokensValue;
+    fn expr(&self) -> &ir::TokensValue;
     fn message(&self) -> Option<&str>;
     fn code(&self) -> Option<&str>;
 }
@@ -393,7 +503,7 @@ macro_rules! impl_has_rule {
     ($($ty:ty),*) => {
         $(
             impl HasRule for $ty {
-                fn expr(&self) -> &attrs::raw::TokensValue { &self.expr }
+                fn expr(&self) -> &ir::TokensValue { &self.expr }
                 fn message(&self) -> Option<&str> { self.message.as_deref() }
                 fn code(&self) -> Option<&str> { self.code.as_deref() }
             }

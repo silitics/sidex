@@ -18,7 +18,7 @@ pub const SCHEMA_EXTENSION: &str = ".sidex";
 #[non_exhaustive]
 pub struct Manifest {
     /// Metadata of the schema.
-    #[serde(rename = "bundle")]
+    #[serde(rename = "bundle", with = "sidex::serde")]
     pub metadata: ir::Metadata,
     /// Dependencies of the schema.
     #[serde(default)]

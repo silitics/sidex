@@ -197,7 +197,8 @@ class TestMaybeRef:
         ids=[n for n, _ in _fixture_files("MaybeRefInteger")],
     )
     def test_integer(self, data, name, path):
-        expected, actual = _roundtrip(TypeAdapter(data.MaybeRef[int]), path)
+        # `MaybeRef<u64>`, whose integers are decimal strings.
+        expected, actual = _roundtrip(TypeAdapter(data.MaybeRef[data._sidex.U64]), path)
         assert actual == expected
 
     @pytest.mark.parametrize(
@@ -226,3 +227,65 @@ class TestAny:
     def test_roundtrip(self, data, name, path):
         expected, actual = _roundtrip(TypeAdapter(data.Any), path)
         assert actual == expected
+
+    def test_first_matching_case(self, data):
+        """The first matching case wins, so decimal strings select the ``i64`` case."""
+        adapter = TypeAdapter(data.Any)
+        assert adapter.validate_json("3") == 3
+        assert adapter.validate_json('"3"') == 3
+        assert adapter.validate_json('"three"') == "three"
+
+
+class TestScalars:
+    """Booleans and integers up to 32 bits are strict and range checked."""
+
+    def test_bool_rejects_integers(self, data):
+        adapter = TypeAdapter(data._sidex.Bool)
+        assert adapter.validate_json("true") is True
+        with pytest.raises(ValueError):
+            adapter.validate_json("1")
+
+    def test_integers_reject_other_types(self, data):
+        adapter = TypeAdapter(data._sidex.U32)
+        assert adapter.validate_json("1") == 1
+        for raw in ("true", '"1"', "1.5"):
+            with pytest.raises(ValueError):
+                adapter.validate_json(raw)
+
+    def test_integers_are_range_checked(self, data):
+        adapter = TypeAdapter(data._sidex.U8)
+        assert adapter.validate_json("255") == 255
+        for raw in ("256", "-1"):
+            with pytest.raises(ValueError):
+                adapter.validate_json(raw)
+
+
+class TestInt64:
+    """64-bit integers are numbers up to a magnitude of 2**53 - 1 and decimal
+    strings beyond."""
+
+    def test_safe_range(self, data):
+        adapter = TypeAdapter(data._sidex.I64)
+        for value, raw in (
+            (2**53 - 1, "9007199254740991"),
+            (-(2**53) + 1, "-9007199254740991"),
+            (2**53, '"9007199254740992"'),
+            (-(2**53), '"-9007199254740992"'),
+        ):
+            assert adapter.validate_json(raw) == value
+            assert adapter.dump_json(value).decode() == raw
+
+    def test_accepts_decimal_strings(self, data):
+        adapter = TypeAdapter(data._sidex.U64)
+        assert adapter.validate_json('"5"') == 5
+        for raw in ('"5.0"', '"five"', "true", "5.5", "-1"):
+            with pytest.raises(ValueError):
+                adapter.validate_json(raw)
+
+    def test_top_level_wrapper(self, data):
+        """Generated aliases retain their JSON serializers through TypeAdapter."""
+        adapter = TypeAdapter(data.SubscriptionId)
+        for value, encoded in ((0, 0), (2**64 - 1, str(2**64 - 1))):
+            decoded = adapter.validate_json(json.dumps(encoded))
+            assert decoded == value
+            assert json.loads(adapter.dump_json(decoded)) == encoded

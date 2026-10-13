@@ -490,13 +490,13 @@ impl Parser {
             }
             DefKw::Alias => {
                 self.expect_punct(PunctuationKind::Colon);
-                let aliased = self.parse_type_expr().unwrap_or(ast::TypeExpr::Unit);
+                let aliased = self.parse_type_expr().unwrap_or(ast::TypeExpr::Missing);
                 ast::DefKind::Alias(ast::AliasDef { aliased })
             }
             DefKw::Opaque => ast::DefKind::OpaqueType(ast::OpaqueTypeDef {}),
             DefKw::Wrapper => {
                 self.expect_punct(PunctuationKind::Colon);
-                let wrapped = self.parse_type_expr().unwrap_or(ast::TypeExpr::Unit);
+                let wrapped = self.parse_type_expr().unwrap_or(ast::TypeExpr::Missing);
                 ast::DefKind::WrapperType(ast::WrapperTypeDef { wrapped })
             }
         };
@@ -521,7 +521,7 @@ impl Parser {
         };
         let is_optional = self.eat_punct(PunctuationKind::QuestionMark);
         self.expect_punct(PunctuationKind::Colon);
-        let typ = self.parse_type_expr().unwrap_or(ast::TypeExpr::Unit);
+        let typ = self.parse_type_expr().unwrap_or(ast::TypeExpr::Missing);
         self.builder.finish_node();
         Some(ast::Field {
             name,

@@ -1,11 +1,16 @@
 [package]
 name = "sidex-gen-ir"
-version = "0.1.0"
+description = "Sidex generator writing the intermediate representation as JSON."
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
 edition = "2021"
 
 [dependencies]
 sidex-gen.workspace = true
-serde_json.workspace = true
+sidex.workspace = true
 
 [lints]
 workspace = true

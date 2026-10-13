@@ -1,4 +1,4 @@
-//! Cases that exercise each recognizer shape and the runtime helpers.
+//! Cases that exercise each kind of rule.
 
 record User {
     #[validate({ 1 <= _.size <= 254 })]
@@ -21,6 +21,5 @@ record Range {
     max: i32,
 }
 
-/// Record with no `#[validate]` rules — the plugin still emits a no-op
-/// `Validate` impl so generic call sites can call `.validate()` uniformly.
+/// Record without rules.
 record Empty {}

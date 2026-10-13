@@ -2,11 +2,11 @@
 source: crates/sidex-fmt/tests/smoke.rs
 expression: out
 ---
+import ::core::attrs::Deprecated
+import ::core::builtins::uuid
+
 import ::other::Baz
 import ::other::Foo
 import ::other::Quux
-
-import std::option::Option
-import std::result::Result
 
 import schema::Bar

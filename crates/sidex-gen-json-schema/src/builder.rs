@@ -1,7 +1,6 @@
 //! Helpers for building schemas from type definitions.
 
-use indexmap::IndexMap;
-use indexmap::indexmap;
+use sidex::types::Map;
 use sidex_attrs_json::JsonTaggedAttr;
 
 use crate::Any;
@@ -80,7 +79,7 @@ impl RecordTypeSchemaBuilder {
             .expect("invariant violation: object keywords should be initialized")
     }
 
-    fn properties_mut(&mut self) -> &mut IndexMap<String, Schema> {
+    fn properties_mut(&mut self) -> &mut Map<String, Schema> {
         self.object_keywords_mut()
             .properties
             .as_mut()
@@ -176,11 +175,9 @@ impl VariantTypeSchemaBuilder {
                     .into_iter()
                     .map(|name| {
                         match self.tagged {
-                            Externally | Implicitly => Any::String(name),
+                            Externally | Implicitly => Any::from(name),
                             Internally | Adjacently => {
-                                Any::Object(indexmap! {
-                                    self.tag_field.clone() => Any::String(name),
-                                })
+                                Any::from_iter([(self.tag_field.clone(), name)])
                             }
                         }
                     })
@@ -246,7 +243,7 @@ pub fn inline_object(target: &mut SchemaObject, other: &SchemaObject) {
 }
 
 fn make_schema_string<S: AsRef<str>>(string: S) -> SchemaObject {
-    SchemaObject::new().with_allowed_value(Some(Any::String(string.as_ref().to_owned())))
+    SchemaObject::new().with_allowed_value(Some(Any::from(string.as_ref())))
 }
 
 pub fn pure_tag(variant_name: &str) -> SchemaObject {
@@ -258,9 +255,10 @@ pub fn object_tag(tag_field: &str, variant_name: &str) -> SchemaObject {
         .with_allowed_types(Some(Type::Object.into()))
         .with_object_keywords(Some(Box::new(
             ObjectKeywords::new()
-                .with_properties(Some(indexmap! {
-                    tag_field.to_owned() => make_schema_string(variant_name).into(),
-                }))
+                .with_properties(Some(Map::from_iter([(
+                    tag_field.to_owned(),
+                    make_schema_string(variant_name).into(),
+                )])))
                 .with_required(Some(vec![tag_field.to_owned()])),
         )))
 }
@@ -268,11 +266,15 @@ pub fn object_tag(tag_field: &str, variant_name: &str) -> SchemaObject {
 pub fn externally_tagged(variant_name: &str, content_schema: SchemaObject) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(ObjectKeywords::new().with_properties(Some(
-            indexmap! {
-                variant_name.to_owned() => content_schema.into(),
-            },
-        )))))
+        .with_object_keywords(Some(Box::new(
+            ObjectKeywords::new()
+                .with_properties(Some(Map::from_iter([(
+                    variant_name.to_owned(),
+                    content_schema.into(),
+                )])))
+                .with_required(Some(vec![variant_name.to_owned()]))
+                .with_additional_properties(Some(Box::new(Schema::Bool(false)))),
+        )))
 }
 
 pub fn adjacently_tagged(
@@ -283,12 +285,17 @@ pub fn adjacently_tagged(
 ) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(ObjectKeywords::new().with_properties(Some(
-            indexmap! {
-                tag_field.to_owned() => make_schema_string(variant_name).into(),
-                content_field.to_owned() => content_schema.into(),
-            },
-        )))))
+        .with_object_keywords(Some(Box::new(
+            ObjectKeywords::new()
+                .with_properties(Some(Map::from_iter([
+                    (
+                        tag_field.to_owned(),
+                        make_schema_string(variant_name).into(),
+                    ),
+                    (content_field.to_owned(), content_schema.into()),
+                ])))
+                .with_required(Some(vec![tag_field.to_owned(), content_field.to_owned()])),
+        )))
 }
 
 pub fn internally_tagged(

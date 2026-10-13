@@ -25,13 +25,12 @@ use sidex_attrs_json::variant_type_attrs as json_variant_type_attrs;
 use sidex_attrs_rust::Visibility;
 use sidex_attrs_rust::field_attrs as rust_field_attrs;
 use sidex_attrs_rust::type_attrs as rust_type_attrs;
+use sidex_gen::diagnostics::Diagnostic;
 use sidex_gen::diagnostics::Result;
 use sidex_gen::ir::Def;
 use sidex_gen::ir::DefKind;
 
 use crate::context::SchemaCtx;
-
-pub mod serde;
 
 pub fn rs_type_to_rs_def(rs_type: &RsType) -> TokenStream {
     let RsType {
@@ -181,11 +180,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
     let kind = match &def.kind {
         DefKind::WrapperType(wrapper_type_def) => {
             let wrapped = ctx.resolve_type_old(def, &wrapper_type_def.wrapped, false);
-            let wrapped_encoding = ctx.resolve_encoding(def, &wrapper_type_def.wrapped);
-            RsTypeKind::Wrapper(RsTypeWrapper {
-                wrapped,
-                wrapped_encoding,
-            })
+            RsTypeKind::Wrapper(RsTypeWrapper { wrapped })
         }
         DefKind::TypeAlias(alias) => {
             let aliased = ctx.resolve_type_old(def, &alias.aliased, false);
@@ -205,7 +200,12 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
             } else {
                 match &attrs.typ {
                     Some(typ) => TokenStream::from_str(&typ.path).unwrap(),
-                    None => todo!(),
+                    None => {
+                        return Err(Box::new(Diagnostic::error(format!(
+                            "opaque type `{}` needs a Rust type: add `#[rust(type = \"...\")]`",
+                            def.name.as_str()
+                        ))));
+                    }
                 }
             };
             RsTypeKind::Alias(RsTypeAlias { aliased })
@@ -233,20 +233,14 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                     );
                     let field_meta = stability_attr_tokens(&field_stability);
                     let mut inner_ty = ctx.resolve_type_old(def, &field.typ, false);
-                    let mut inner_encoding = ctx.resolve_encoding(def, &field.typ);
                     for wrapper in attrs.wrappers {
                         let wrapper_path = TokenStream::from_str(&wrapper.wrapper).unwrap();
-                        inner_encoding =
-                            wrap_encoding(&wrapper.wrapper, &wrapper_path, &inner_encoding);
                         inner_ty = quote! { #wrapper_path < #inner_ty > };
                     }
-                    let (ty, encoding) = if field.is_optional {
-                        (
-                            quote! { ::std::option::Option< #inner_ty > },
-                            quote! { ::std::option::Option< #inner_encoding > },
-                        )
+                    let ty = if field.is_optional {
+                        quote! { ::std::option::Option< #inner_ty > }
                     } else {
-                        (inner_ty.clone(), inner_encoding.clone())
+                        inner_ty.clone()
                     };
                     let json_attrs = json_field_attrs(field)?;
                     Ok(RsField {
@@ -259,9 +253,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         json_name: ty_json_attrs.field_name(field, &json_attrs),
                         json_attrs,
                         ty,
-                        encoding,
                         inner_ty,
-                        inner_encoding,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
@@ -292,10 +284,6 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         .typ
                         .as_ref()
                         .map(|typ| ctx.resolve_type_old(def, typ, false));
-                    let encoding = variant
-                        .typ
-                        .as_ref()
-                        .map(|typ| ctx.resolve_encoding(def, typ));
                     let json_attrs = json_variant_attrs(variant)?;
                     Ok(RsVariant {
                         name: variant.name.name.clone(),
@@ -304,14 +292,7 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
                         ident: name,
                         json_name: ty_json_attrs.variant_name(variant, &json_attrs),
                         json_attrs,
-                        is_record: if let Some(typ) = &variant.typ {
-                            let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
-                            ctx.bundle_ctx.unit.record_type(&resolved).is_some()
-                        } else {
-                            false
-                        },
                         ty,
-                        encoding,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?;
@@ -333,42 +314,13 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
     }))
 }
 
-/// Wrap an inner [`SerializeAs`]/[`DeserializeAs`] encoding in a user-supplied
-/// field wrapper.
-///
-/// For the standard library's transparent shared-pointer wrappers (`Box`,
-/// `Arc`, `Rc`) Sidex provides blanket encoding propagation, so the inner
-/// encoding bubbles up through the wrapper. For other wrappers we don't know
-/// their `SerializeAs` impl shape, so we collapse to [`AsSelf`] over the
-/// wrapped type — string-encoded `i64`/`u64`/floats inside an arbitrary
-/// user wrapper degrade to their native serde encoding.
-///
-/// [`SerializeAs`]: sidex_serde::SerializeAs
-/// [`DeserializeAs`]: sidex_serde::DeserializeAs
-/// [`AsSelf`]: sidex_serde::AsSelf
-fn wrap_encoding(
-    wrapper_path: &str,
-    wrapper_tokens: &TokenStream,
-    inner_encoding: &TokenStream,
-) -> TokenStream {
-    let propagates = matches!(
-        wrapper_path,
-        "::std::boxed::Box" | "::std::sync::Arc" | "::std::rc::Rc" | "Box" | "Arc" | "Rc"
-    );
-    if propagates {
-        quote! { #wrapper_tokens < #inner_encoding > }
-    } else {
-        quote! { __sidex_serde::AsSelf }
-    }
-}
-
 /// Lower an opaque definition to a Rust type token stream that mirrors its
-/// `#[json(type = ...)]`-declared JSON shape, defaulting to
-/// `serde_json::Value` when no JSON attribute is set.
+/// `#[json(type = ...)]`-declared JSON shape, defaulting to a JSON value
+/// when no JSON attribute is set.
 fn opaque_json_lowering(def: &Def) -> Result<TokenStream> {
     let union = match json_opaque_type_attrs(def)?.typ {
         Some(union) => union,
-        None => return Ok(quote! { ::serde_json::Value }),
+        None => return Ok(quote! { ::sidex::types::JsonValue }),
     };
     Ok(match union.classify() {
         JsonShape::Single(t) => json_type_to_rs(t),
@@ -376,21 +328,21 @@ fn opaque_json_lowering(def: &Def) -> Result<TokenStream> {
             let inner = json_type_to_rs(t);
             quote! { ::std::option::Option<#inner> }
         }
-        JsonShape::Other => quote! { ::serde_json::Value },
+        JsonShape::Other => quote! { ::sidex::types::JsonValue },
     })
 }
 
 fn json_type_to_rs(ty: JsonType) -> TokenStream {
     match ty {
-        JsonType::String => quote! { ::std::string::String },
+        JsonType::String => quote! { ::sidex::types::Str },
         JsonType::Number => quote! { f64 },
         JsonType::Boolean => quote! { bool },
-        JsonType::Null => quote! { () },
-        JsonType::Array => quote! { ::std::vec::Vec<::serde_json::Value> },
+        JsonType::Null => quote! { ::sidex::types::JsonValue },
+        JsonType::Array => quote! { ::sidex::types::Seq<::sidex::types::JsonValue> },
         JsonType::Object => {
-            quote! { ::serde_json::Map<::std::string::String, ::serde_json::Value> }
+            quote! { ::sidex::types::Map<::sidex::types::Str, ::sidex::types::JsonValue> }
         }
-        JsonType::Any => quote! { ::serde_json::Value },
+        JsonType::Any => quote! { ::sidex::types::JsonValue },
     }
 }
 
@@ -430,7 +382,6 @@ pub enum RsTypeKind {
 #[derive(Debug, Clone)]
 pub struct RsTypeWrapper {
     pub wrapped: RsTypePath,
-    pub wrapped_encoding: TokenStream,
 }
 
 #[derive(Debug, Clone)]
@@ -459,15 +410,9 @@ pub struct RsField {
     /// Field type as written in the generated struct. For optional fields,
     /// this is `Option<inner_ty>`.
     pub ty: RsTypePath,
-    /// `SerializeAs` / `DeserializeAs` encoding mirroring [`Self::ty`],
-    /// substituting Sidex-specific wire forms at the leaves.
-    pub encoding: TokenStream,
     /// `ty` without the optional `Option<...>` wrap. Equal to `ty` when the
     /// field is non-optional.
     pub inner_ty: RsTypePath,
-    /// `encoding` without the optional `Option<...>` wrap. Equal to
-    /// `encoding` when the field is non-optional.
-    pub inner_encoding: TokenStream,
 }
 
 #[derive(Debug, Clone)]
@@ -485,10 +430,7 @@ pub struct RsVariant {
     pub meta: TokenStream,
     pub json_attrs: JsonVariantAttrs,
     pub json_name: String,
-    pub is_record: bool,
     pub ty: Option<RsTypePath>,
-    /// Marker mirroring `ty`. `None` iff `ty` is `None`.
-    pub encoding: Option<TokenStream>,
 }
 
 fn with_stability_prelude(stability: &Stability, body: &str) -> String {

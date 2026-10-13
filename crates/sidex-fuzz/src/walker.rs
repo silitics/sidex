@@ -89,27 +89,24 @@ impl<'a> Walker<'a> {
         match qualified.as_str() {
             "::core::builtins::Sequence" => return self.gen_sequence(instance, source),
             "::core::builtins::Map" => return self.gen_map(instance, source),
-            "::core::builtins::unit" => return Ok(Value::Null),
             "::core::builtins::bool" => return Ok(pick_bool(source)),
-            "::core::builtins::string" | "::core::builtins::bytes" => {
-                return Ok(pick_string(source));
-            }
+            "::core::builtins::string" => return Ok(pick_string(source)),
+            "::core::builtins::bytes" => return Ok(pick_from(source, BYTES_TABLE)),
+            "::core::builtins::uuid" => return Ok(pick_from(source, UUID_TABLE)),
+            "::core::builtins::timestamp" => return Ok(pick_from(source, TIMESTAMP_TABLE)),
+            "::core::builtins::date" => return Ok(pick_from(source, DATE_TABLE)),
+            "::core::builtins::json" => return self.gen_any_value(source),
             "::core::builtins::i8" => return Ok(pick_signed(source, I8_TABLE)),
             "::core::builtins::i16" => return Ok(pick_signed(source, I16_TABLE)),
             "::core::builtins::i32" => return Ok(pick_signed(source, I32_TABLE)),
-            "::core::builtins::i64" => return Ok(self.draw_i64(source)),
+            "::core::builtins::i64" => return Ok(pick_int64(source, I64_TABLE)),
             "::core::builtins::u8" => return Ok(pick_unsigned(source, U8_TABLE)),
             "::core::builtins::u16" => return Ok(pick_unsigned(source, U16_TABLE)),
             "::core::builtins::u32" => return Ok(pick_unsigned(source, U32_TABLE)),
-            "::core::builtins::u64" | "::core::builtins::idx" => {
-                return Ok(self.draw_u64(source));
-            }
-            "::core::builtins::f32" => {
-                return Ok(self.draw_float_f32(source));
-            }
-            "::core::builtins::f64" => {
-                return Ok(self.draw_float(source, FLOAT_F64_FINITE_TABLE));
-            }
+            "::core::builtins::u64" => return Ok(pick_int64(source, U64_TABLE)),
+            "::core::builtins::idx" => return Ok(pick_unsigned(source, IDX_TABLE)),
+            "::core::builtins::f32" => return Ok(draw_float_f32(source)),
+            "::core::builtins::f64" => return Ok(draw_float(source, FLOAT_F64_FINITE_TABLE)),
             _ => {}
         }
         // User-defined opaque: the contract is the `json` attribute's union type.
@@ -122,94 +119,16 @@ impl<'a> Walker<'a> {
         self.gen_from_union(&union, source)
     }
 
-    /// Draw an `i64` from the curated table, encoding as a JSON string when
-    /// `integers_as_strings` is set since values past 2^53 lose precision in JS.
-    /// Without that flag, the table is restricted to JS-safe-integer range so
-    /// JSON consumers across all targets round-trip the value cleanly.
-    fn draw_i64(&self, source: &mut Source) -> Value {
-        let table: &[i64] = if self.config.integers_as_strings {
-            I64_TABLE
-        } else {
-            I64_SAFE_TABLE
-        };
-        let v = table[source.draw_choice(table.len())];
-        if self.config.integers_as_strings {
-            Value::String(v.to_string())
-        } else {
-            Value::Number(v.into())
-        }
-    }
-
-    fn draw_u64(&self, source: &mut Source) -> Value {
-        let table: &[u64] = if self.config.integers_as_strings {
-            U64_TABLE
-        } else {
-            U64_SAFE_TABLE
-        };
-        let v = table[source.draw_choice(table.len())];
-        if self.config.integers_as_strings {
-            Value::String(v.to_string())
-        } else {
-            Value::Number(v.into())
-        }
-    }
-
-    /// Draw an `f64` field's value from [`FLOAT_F64_FINITE_TABLE`]. The
-    /// special-value table extends the choice only when `floats_as_strings`
-    /// is set; those entries encode as the JSON strings `"NaN"`, `"Infinity"`,
-    /// `"-Infinity"`.
-    fn draw_float<T: Copy + Into<f64>>(&self, source: &mut Source, table: &[T]) -> Value {
-        let len = table.len()
-            + if self.config.floats_as_strings {
-                FLOAT_SPECIAL_TABLE.len()
-            } else {
-                0
-            };
-        let idx = source.draw_choice(len);
-        if idx < table.len() {
-            json_f64(table[idx].into())
-        } else {
-            Value::String(FLOAT_SPECIAL_TABLE[idx - table.len()].to_owned())
-        }
-    }
-
-    /// Draw an `f32` field's value from [`FLOAT_F32_FINITE_TABLE`].
-    ///
-    /// The wire form must be the *f32-shortest* decimal so that a roundtrip
-    /// through Rust (which deserializes to `f32`, then re-serializes via
-    /// `ryu_f32`) produces the same string the dynamic targets see. Emitting
-    /// the f64-shortest of `f32::MIN as f64` (`-3.4028234663852886e+38`)
-    /// would round-trip differently than the f32-shortest (`-3.4028235e+38`),
-    /// so we route through `f32::to_string` then re-parse to `f64`.
-    fn draw_float_f32(&self, source: &mut Source) -> Value {
-        let len = FLOAT_F32_FINITE_TABLE.len()
-            + if self.config.floats_as_strings {
-                FLOAT_SPECIAL_TABLE.len()
-            } else {
-                0
-            };
-        let idx = source.draw_choice(len);
-        if idx < FLOAT_F32_FINITE_TABLE.len() {
-            let v = FLOAT_F32_FINITE_TABLE[idx];
-            let f32_shortest = v.to_string();
-            let as_f64: f64 = f32_shortest
-                .parse()
-                .expect("f32 Display always round-trips as f64");
-            json_f64(as_f64)
-        } else {
-            Value::String(FLOAT_SPECIAL_TABLE[idx - FLOAT_F32_FINITE_TABLE.len()].to_owned())
-        }
-    }
-
     fn gen_from_union(&mut self, union: &JsonUnionType, source: &mut Source) -> Result<Value> {
         // Pick one member of the declared union, then generate a value of that
-        // JSON type. For `any`, fall through to a depth-budgeted free draw.
-        let members: Vec<JsonType> = union.types.iter().copied().collect();
+        // JSON type. For `any`, fall through to a depth-budgeted free draw. The
+        // members are sorted, so that seeds reproduce samples.
+        let members = union.types_sorted();
         let chosen = members[source.draw_choice(members.len())];
         Ok(match chosen {
             // Opaques declared as `Number` give no width — assume the wider
-            // f64 contract.
-            JsonType::Number => self.draw_float(source, FLOAT_F64_FINITE_TABLE),
+            // f64 contract. JSON numbers are finite.
+            JsonType::Number => json_f64(pick_raw(source, FLOAT_F64_FINITE_TABLE)),
             JsonType::Boolean => pick_bool(source),
             JsonType::String => pick_string(source),
             JsonType::Null => Value::Null,
@@ -518,7 +437,7 @@ const I32_TABLE: &[i32] = &[
 ];
 
 /// `i64` table — includes the JS safe-integer boundary (±2^53) so we exercise
-/// the precision cliff that motivates `integers_as_strings`.
+/// the precision cliff that motivates representing 64-bit integers as strings.
 const I64_TABLE: &[i64] = &[
     0,
     1,
@@ -531,22 +450,6 @@ const I64_TABLE: &[i64] = &[
     -(1 << 53),
     (1 << 53) - 1,
     (1 << 53) + 1,
-];
-
-/// JS-safe subset of `I64_TABLE`. Used when `integers_as_strings` is off so
-/// every target — including JS, which can't represent past 2^53-1 — round-trips
-/// values without losing precision. JS's `Number.MAX_SAFE_INTEGER` is `2^53 -
-/// 1` (the largest `N` such that both `N` and `N+1` round-trip through f64);
-/// `±2^53` itself collides with `±(2^53 + 1)` after a JS read-back, so the
-/// safe range stops one step short.
-const I64_SAFE_TABLE: &[i64] = &[
-    0,
-    1,
-    -1,
-    (1 << 53) - 1,
-    -((1 << 53) - 1),
-    1 << 32,
-    -(1 << 32),
 ];
 
 const U8_TABLE: &[u8] = &[0, 1, u8::MAX, u8::MAX - 1, 2, 127, 128];
@@ -565,8 +468,8 @@ const U64_TABLE: &[u64] = &[
     (u32::MAX as u64) + 1,
 ];
 
-/// JS-safe subset of `U64_TABLE`.
-const U64_SAFE_TABLE: &[u64] = &[0, 1, (1 << 53) - 1, u32::MAX as u64, (u32::MAX as u64) + 1];
+/// `idx` values are JSON integers, so they stay in the JS-safe range.
+const IDX_TABLE: &[u64] = &[0, 1, (1 << 53) - 1, u32::MAX as u64, (u32::MAX as u64) + 1];
 
 const FLOAT_F64_FINITE_TABLE: &[f64] = &[
     0.0,
@@ -601,9 +504,25 @@ const FLOAT_F32_FINITE_TABLE: &[f32] = &[
     -0.5,
 ];
 
-/// Float values that aren't valid JSON numbers — only emitted (as JSON
-/// strings) when [`Config::floats_as_strings`] is set.
-const FLOAT_SPECIAL_TABLE: &[&str] = &["NaN", "Infinity", "-Infinity"];
+/// Float values that aren't valid JSON numbers, represented as strings.
+const FLOAT_SPECIAL_TABLE: &[&str] = &["NaN", "+Infinity", "-Infinity"];
+
+/// Base64 representations of byte sequences.
+const BYTES_TABLE: &[&str] = &["", "AA==", "AQID", "/w==", "aGVsbG8="];
+
+const UUID_TABLE: &[&str] = &[
+    "00000000-0000-0000-0000-000000000000",
+    "67e55044-10b1-426f-9247-bb680e5fe0c8",
+    "ffffffff-ffff-ffff-ffff-ffffffffffff",
+];
+
+const TIMESTAMP_TABLE: &[&str] = &[
+    "1970-01-01T00:00:00Z",
+    "2024-02-29T12:34:56.789Z",
+    "9999-12-30T22:00:00.999999999Z",
+];
+
+const DATE_TABLE: &[&str] = &["1970-01-01", "2024-02-29", "9999-12-31"];
 
 const STRING_TABLE: &[&str] = &[
     "",
@@ -628,6 +547,59 @@ fn pick_string_raw<'a>(source: &mut Source) -> &'a str {
     STRING_TABLE[source.draw_choice(STRING_TABLE.len())]
 }
 
+fn pick_raw<T: Copy>(source: &mut Source, table: &[T]) -> T {
+    table[source.draw_choice(table.len())]
+}
+
+fn pick_from(source: &mut Source, table: &[&str]) -> Value {
+    Value::String(pick_raw(source, table).to_owned())
+}
+
+/// Picks a 64-bit integer, represented as a number or, beyond 2^53 - 1, as a
+/// decimal string.
+fn pick_int64<T: Copy + Into<i128>>(source: &mut Source, table: &[T]) -> Value {
+    const MAX_SAFE: u128 = (1 << 53) - 1;
+    let value: i128 = pick_raw(source, table).into();
+    if value.unsigned_abs() <= MAX_SAFE {
+        Value::Number(i64::try_from(value).expect("safe integers fit").into())
+    } else {
+        Value::String(value.to_string())
+    }
+}
+
+/// Picks a float from the table or a non-finite float.
+fn draw_float(source: &mut Source, table: &[f64]) -> Value {
+    let idx = source.draw_choice(table.len() + FLOAT_SPECIAL_TABLE.len());
+    match table.get(idx) {
+        Some(value) => json_f64(*value),
+        None => Value::String(FLOAT_SPECIAL_TABLE[idx - table.len()].to_owned()),
+    }
+}
+
+/// Picks an `f32` from [`FLOAT_F32_FINITE_TABLE`] or a non-finite float.
+///
+/// The wire form must be the *f32-shortest* decimal so that a roundtrip
+/// through Rust (which decodes to `f32` and encodes the shortest decimal)
+/// produces the same string the dynamic targets see. Emitting the
+/// f64-shortest of `f32::MIN as f64` (`-3.4028234663852886e+38`) would
+/// round-trip differently than the f32-shortest (`-3.4028235e+38`), so we
+/// route through `f32::to_string` then re-parse to `f64`.
+fn draw_float_f32(source: &mut Source) -> Value {
+    let table = FLOAT_F32_FINITE_TABLE;
+    let idx = source.draw_choice(table.len() + FLOAT_SPECIAL_TABLE.len());
+    match table.get(idx) {
+        Some(value) => {
+            let shortest = value.to_string();
+            json_f64(
+                shortest
+                    .parse()
+                    .expect("f32 Display always round-trips as f64"),
+            )
+        }
+        None => Value::String(FLOAT_SPECIAL_TABLE[idx - table.len()].to_owned()),
+    }
+}
+
 fn pick_signed<T: Copy + Into<i64>>(source: &mut Source, table: &[T]) -> Value {
     let value: i64 = table[source.draw_choice(table.len())].into();
     Value::Number(value.into())
@@ -642,4 +614,18 @@ fn json_f64(value: f64) -> Value {
     serde_json::Number::from_f64(value)
         .map(Value::Number)
         .unwrap_or(Value::Null)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TIMESTAMP_TABLE;
+
+    /// Timestamp samples fit the runtime's range and use its canonical spelling.
+    #[test]
+    fn timestamp_samples_roundtrip() {
+        for sample in TIMESTAMP_TABLE {
+            let timestamp: sidex::types::Timestamp = sample.parse().unwrap();
+            assert_eq!(timestamp.to_string(), *sample);
+        }
+    }
 }

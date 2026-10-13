@@ -4,7 +4,7 @@ description: Share application constraints between Rust and TypeScript.
 order: 1
 ---
 
-A type describes a value's structure. A validation rule adds a constraint, such as a size limit or numeric range. Sidex compiles supported rules into runtime validators for Rust and TypeScript.
+A type describes a value's structure. A validation rule adds a constraint, such as a size limit or numeric range. Sidex checks rules in Rust and TypeScript.
 
 Validators receive values whose structure is already known. They check declared constraints; they do not replace parsing or JSON Schema validation of untrusted input.
 
@@ -32,10 +32,9 @@ Each attribute is one rule; repeated attributes accumulate. `_` is the validated
 
 ## Enable the Generators
 
-```toml
-[backend.rust]
-plugins = ["builder", "serde", "validate"]
+Generated Rust types carry their rules, and the `sidex` crate checks them with its `validation` feature, which is enabled by default. TypeScript validators need the `validate` plugin:
 
+```toml
 [backend.ts]
 plugins = ["validate"]
 ```
@@ -48,30 +47,23 @@ sidex generate ts generated/ts
 
 `sidex check` parses and checks validation expressions, including invalid or unsupported regex patterns. Generation and application compilation remain necessary to verify target-specific expressions.
 
-Rust code using validation needs the `sidex-validate` runtime, which also provides regex support. TypeScript needs `@sidex/validate` alongside `@sidex/types`.
+TypeScript code needs `@sidex/validate` alongside `@sidex/types`.
 
 ## Validate in Rust
 
 ```rust
-use sidex_validate::Validate;
-
 let user = User::new("".into(), 30);
-let report = user.validate();
 
-for error in report.errors() {
-    println!("{}: {} ({})", error.path, error.message, error.code);
+if let Err(report) = sidex::validation::validate(&user) {
+    for error in report.errors() {
+        println!("{}: {} ({})", error.path(), error.message(), error.code());
+    }
 }
 ```
 
-A report collects every failed generated check. An empty report means the value passed those checks.
+`validate` checks the rules of a value and of every value nested in it, such as the rules of a `Slug` in a field. A report contains every violated rule.
 
-Wrappers with rules also get a checked constructor:
-
-```rust
-let slug = Slug::try_new("release-notes".into())?;
-```
-
-Ordinary constructors and deserialization do not automatically run the constraint validators.
+Constructors and decoding do not check rules.
 
 ## Validate in TypeScript
 
@@ -117,7 +109,7 @@ Use regex syntax supported by both JavaScript and Rust's `regex` crate. Backrefe
 
 ## Error Reports
 
-Errors carry a path, a stable code, and a human-readable message. Paths use JSON Pointer-style locations. Common codes include `min`, `max`, `eq`, `ne`, `min_size`, `max_size`, and `regex`. Only recognized rule shapes are enforced.
+Errors carry a path, a stable code, and a human-readable message. Paths locate the value by field names and indices. Common codes include `min`, `max`, `eq`, `ne`, `min_size`, `max_size`, and `regex`. Other comparisons, such as comparisons of two fields, use `invalid`.
 
 Override a message or code when the constraint has a domain-specific meaning:
 
@@ -132,10 +124,8 @@ record Order {
 
 ## Current Limits
 
-Cross-field expressions such as `_.min <= _.max` parse, but the current generators emit no check for this predicate fallback. Unsupported predicates do not fail validation. Keep these checks in application code.
+Validation attributes on opaque types are retained as metadata without checks. Use a wrapper when you need enforced constraints on a distinct type.
 
-Validation attributes on opaque types are retained as metadata without generated checks. Use a wrapper when you need enforced constraints on a distinct type.
-
-Generated record validation evaluates supported rules on that record and its annotated fields. It does not automatically traverse every nested model to run that model's validators. Call nested validators explicitly where needed.
+TypeScript record validators check the rules of that record and its fields. Unlike Rust, they do not check values nested in fields against the rules of their types. Call nested validators explicitly where needed.
 
 The Python backend does not generate these validators, and JSON Schema output does not include the rules.

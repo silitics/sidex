@@ -1,3 +1,5 @@
+//! JSON Schema 2020-12 generation from Sidex type definitions.
+
 use std::collections::BTreeSet;
 use std::collections::VecDeque;
 
@@ -6,6 +8,8 @@ use builder::VariantTypeSchemaBuilder;
 use indexmap::IndexMap;
 use serde::Deserialize;
 use serde::Serialize;
+use sidex::Shaped;
+use sidex::types::Map;
 use sidex_attrs_api::render_doc_prelude;
 use sidex_attrs_api::stability_of_def;
 use sidex_attrs_json::field_attrs;
@@ -19,54 +23,9 @@ use sidex_gen::diagnostics;
 use sidex_gen::ir::STD_BUNDLE_IDX;
 use sidex_gen::ir::TypeVarType;
 use sidex_gen::ir::{self};
-use sidex_gen::rename::RenameFunction;
 use sidex_types_json_schema::*;
 
 pub mod builder;
-
-/// Configuration options for the JSON representation.
-pub struct JsonConfig {
-    /// The default renaming function to use for field names.
-    ///
-    /// Defaults to `camelCase`.
-    pub default_field_rename: RenameFunction,
-    /// The default renaming function to use for variant names.
-    ///
-    /// Defaults to `none`.
-    pub default_variant_rename: RenameFunction,
-    /// Indicates how to deal with optional fields.
-    pub default_optional_field_repr: OptionalFieldRepr,
-    /// Indicates whether to represent `NaN` and the infinities as strings.
-    ///
-    /// Note that neither `NaN` nor the infinites can be represented as a number in JSON.
-    pub enable_floats_as_strings: bool,
-    /// Indicates whether to represent integers with more than 32 bits as strings.
-    ///
-    /// Note that JavaScript's native JSON functionality is limited to 32 bit integers.
-    pub enable_integers_as_strings: bool,
-}
-
-/// TODO: We probably want to be able to control this with a attributes.
-pub enum OptionalFieldRepr {
-    /// If there is no value, then the field is missing.
-    Undefined,
-    /// The field is always there but may be null.
-    Null,
-    /// The field may be missing or its value may be `null`.
-    Both,
-}
-
-impl Default for JsonConfig {
-    fn default() -> Self {
-        Self {
-            default_field_rename: RenameFunction::CamelCase,
-            default_variant_rename: RenameFunction::None,
-            default_optional_field_repr: OptionalFieldRepr::Undefined,
-            enable_floats_as_strings: false,
-            enable_integers_as_strings: false,
-        }
-    }
-}
 
 /// Configuration options for JSON Schema generation.
 pub struct JsonSchemaConfig {
@@ -253,6 +212,8 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 let ref_schema = self.def_ref(&def_name);
                 // There exists no definition, let's create a schema for the type.
                 let typ_def = self.unit.type_def(typ).unwrap();
+                // Unlike `typ_def`, this is the alias itself for aliases.
+                let own_def = &self.unit[instance.def];
                 // Insert `None` such that recursive usage yields a reference.
                 if instance.def.bundle != STD_BUNDLE_IDX {
                     self.defs.insert(
@@ -265,17 +226,30 @@ impl<'cx> JsonSchemaCtx<'cx> {
                         },
                     );
                 }
-                let (mut def_schema, inline_schema) = match &typ_def.kind {
-                    TypeAlias(_) => todo!(),
-                    OpaqueType(opaque_def) => {
-                        let schema = self.opaque_type_schema(instance, typ_def, opaque_def)?;
-                        (schema.clone(), schema)
+                let (mut def_schema, inline_schema) = match &own_def.kind {
+                    TypeAlias(_) => {
+                        let aliased = self.resolve(&self.unit.resolve_aliases(typ))?;
+                        (aliased.use_schema.clone(), aliased.use_schema)
                     }
-                    RecordType(record_def) => self.record_type_schema(typ_def, record_def)?,
-                    VariantType(variant_type) => self.variant_type_schema(typ_def, variant_type)?,
-                    WrapperType(wrapper_type) => {
-                        let resolved = self.resolve(&wrapper_type.wrapped)?;
-                        (resolved.use_schema.clone(), resolved.use_schema)
+                    _ => {
+                        match &typ_def.kind {
+                            TypeAlias(_) => unreachable!("aliases are resolved"),
+                            OpaqueType(opaque_def) => {
+                                let schema =
+                                    self.opaque_type_schema(instance, typ_def, opaque_def)?;
+                                (schema.clone(), schema)
+                            }
+                            RecordType(record_def) => {
+                                self.record_type_schema(typ_def, record_def)?
+                            }
+                            VariantType(variant_type) => {
+                                self.variant_type_schema(typ_def, variant_type)?
+                            }
+                            WrapperType(wrapper_type) => {
+                                let resolved = self.resolve(&wrapper_type.wrapped)?;
+                                (resolved.use_schema.clone(), resolved.use_schema)
+                            }
+                        }
                     }
                 };
 
@@ -289,9 +263,9 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 } else {
                     // inline_schema.set_extension("x-idl-type-ref", &def_name);
                     // def_schema.set_extension("x-idl-type-def", &def_name);
-                    let stability = stability_of_def(typ_def);
+                    let stability = stability_of_def(own_def);
                     let prelude = render_doc_prelude(&stability);
-                    let body = typ_def
+                    let body = own_def
                         .docs
                         .as_ref()
                         .map(|docs| docs.as_str().trim())
@@ -339,32 +313,37 @@ impl<'cx> JsonSchemaCtx<'cx> {
         let json_type_attrs = opaque_type_attrs(def)?;
         if let Some(typ) = json_type_attrs.typ {
             let types = typ.types;
-            let mut includes_any = false;
-            json_schema.set_allowed_types(Some(MaybeArray::Array(
-                types
-                    .iter()
-                    .filter_map(|typ| {
-                        Some(match typ {
-                            JsonType::Any => {
-                                includes_any = true;
-                                return None;
-                            }
-                            JsonType::Number => Type::Number,
-                            JsonType::Boolean => Type::Boolean,
-                            JsonType::String => Type::String,
-                            JsonType::Null => Type::Null,
-                            JsonType::Object => Type::Object,
-                            JsonType::Array => Type::Array,
-                        })
-                    })
-                    .collect(),
-            )));
+            let includes_any = types.contains(&JsonType::Any);
+            // The attribute's types are unordered, so emit them in a fixed order.
+            let mut allowed = [
+                (JsonType::String, Type::String),
+                (JsonType::Number, Type::Number),
+                (JsonType::Boolean, Type::Boolean),
+                (JsonType::Object, Type::Object),
+                (JsonType::Array, Type::Array),
+                (JsonType::Null, Type::Null),
+            ]
+            .into_iter()
+            .filter(|(json_type, _)| types.contains(json_type))
+            .map(|(_, typ)| typ)
+            .collect::<Vec<_>>();
+            json_schema.set_allowed_types(Some(if allowed.len() == 1 {
+                MaybeArray::Single(allowed.remove(0))
+            } else {
+                MaybeArray::Array(allowed)
+            }));
             if includes_any {
                 json_schema.set_allowed_types(None);
             }
             return Ok(json_schema);
         }
         let name = self.qualified_path(instance);
+        if let Some(shape) = builtin_shape(&name) {
+            return Ok(
+                sidex::formats::json::from_value_strict(&sidex::formats::json::schema(shape))
+                    .expect("built-in schemas use supported JSON Schema keywords"),
+            );
+        }
         match name.as_str() {
             "::core::builtins::Sequence" => {
                 let element_type = &instance.subst[0];
@@ -374,58 +353,41 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 ))));
             }
             "::core::builtins::Map" => {
-                let _key_type = &instance.subst[0];
+                let key_type = &instance.subst[0];
                 let value_type = &instance.subst[1];
                 let type_schema = self.resolve(value_type)?;
-                // TODO: Check that key is string.
+                let mut keywords = ObjectKeywords::new()
+                    .with_additional_properties(Some(Box::new(type_schema.use_schema.into())));
+                if let Some(key_schema) = self.map_key_schema(key_type) {
+                    keywords.set_property_names(Some(Box::new(
+                        sidex::formats::json::from_value_strict(&key_schema)
+                            .expect("map key schemas use supported JSON Schema keywords"),
+                    )));
+                }
                 json_schema.set_allowed_types(Some(Type::Object.into()));
-                json_schema.set_object_keywords(Some(Box::new(
-                    ObjectKeywords::new()
-                        .with_additional_properties(Some(Box::new(type_schema.use_schema.into()))),
-                )));
-            }
-            "::core::builtins::unit" => {
-                json_schema.set_allowed_types(Some(Type::Null.into()));
-            }
-            "::meta::ir::Value" => {
-                // Anything goes — clear the inherited any-type constraints.
-                json_schema.set_allowed_types(None);
-            }
-            "::core::builtins::string" => {
-                json_schema.set_allowed_types(Some(Type::String.into()));
-            }
-            "::core::builtins::idx" => {
-                json_schema.set_allowed_types(Some(Type::Integer.into()));
-            }
-            "::core::builtins::i32" => {
-                json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some("int32".to_owned()));
-            }
-            "::core::builtins::i64" => {
-                json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some("int64".to_owned()));
-            }
-            "::core::builtins::u32" => {
-                json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some("uint32".to_owned()));
-            }
-            "::core::builtins::u64" => {
-                json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some("uint64".to_owned()));
-            }
-            "::core::builtins::f64" => {
-                json_schema.set_allowed_types(Some(Type::Number.into()));
-            }
-            "::core::builtins::bool" => {
-                json_schema.set_allowed_types(Some(Type::Boolean.into()));
+                json_schema.set_object_keywords(Some(Box::new(keywords)));
             }
             _ => {}
         }
         Ok(json_schema)
+    }
+
+    /// Resolves aliases and wrappers before describing built-in map keys.
+    fn map_key_schema(&self, typ: &ir::Type) -> Option<sidex::types::JsonValue> {
+        let mut typ = self.unit.resolve_aliases(typ);
+        loop {
+            let ir::TypeKind::Instance(instance) = &typ.kind else {
+                return None;
+            };
+            if let Some(shape) = builtin_shape(&self.qualified_path(instance)) {
+                return sidex::formats::json::map_key_schema(shape);
+            }
+            let def = self.unit.type_def(&typ)?;
+            let ir::DefKind::WrapperType(wrapper) = &def.kind else {
+                return None;
+            };
+            typ = self.unit.resolve_aliases(&wrapper.wrapped);
+        }
     }
 
     fn record_type_schema(
@@ -475,8 +437,22 @@ impl<'cx> JsonSchemaCtx<'cx> {
             // let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
             if let Some(typ) = &variant.typ {
                 let content_field = json_type_attrs.content_field_name(&json_variant_attrs);
-                let type_schema = self.resolve(typ)?;
-                let may_inline = self.unit.record_type(typ).is_some();
+                let mut type_schema = self.resolve(typ)?;
+                if type_schema.inline_schema.is_none() {
+                    // The payload is still being resolved because the types are recursive.
+                    let unit = self.unit;
+                    type_schema.inline_schema = Some(match unit.type_def(typ) {
+                        Some(
+                            def @ ir::Def {
+                                kind: ir::DefKind::RecordType(record),
+                                ..
+                            },
+                        ) => self.record_type_schema(def, record)?.1,
+                        _ => type_schema.use_schema.clone(),
+                    });
+                }
+                let may_inline =
+                    json_variant_attrs.content.is_none() && self.unit.record_type(typ).is_some();
                 // idl_variant.set_type_ref(Some(type_schema.name.clone()));
                 builder.add_data_variant(&content_field, &variant_name, type_schema, may_inline);
             } else {
@@ -496,7 +472,13 @@ pub struct JsonSchemaGenerator;
 impl Generator for JsonSchemaGenerator {
     fn generate(&self, job: sidex_gen::Job) -> diagnostics::Result<()> {
         // let config = Config::deserialize(job.config.clone().into_deserializer())?;
-        let mut ctx = JsonSchemaCtx::new(job.unit, Default::default());
+        let mut ctx = JsonSchemaCtx::new(
+            job.unit,
+            JsonSchemaConfig {
+                emit_ids: false,
+                ..Default::default()
+            },
+        );
         // ctx.set_def_prefix("");
         for (bundle_idx, bundle) in job.unit.bundles.iter().enumerate() {
             if bundle.is_internal {
@@ -513,10 +495,10 @@ impl Generator for JsonSchemaGenerator {
                                     .enumerate()
                                     .map(|(idx, _)| {
                                         ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
-                                            idx.into(),
+                                            ir::TypeVarIdx::from(idx),
                                         )))
                                     })
-                                    .collect(),
+                                    .collect::<Vec<_>>(),
                             ),
                     ));
                     ctx.resolve(&typ)?;
@@ -528,16 +510,12 @@ impl Generator for JsonSchemaGenerator {
             let reachable = transitive_def_refs(name, schema, &defs);
             let mut filtered_defs = defs
                 .iter()
-                .filter(|(def_name, _)| *def_name != name && reachable.contains(*def_name))
-                .map(|(name, schema)| {
-                    (
-                        name.clone(),
-                        schema.clone().with_id(Some(name.clone())).into(),
-                    )
-                })
-                .collect::<IndexMap<_, _>>();
-            filtered_defs.sort_keys();
-            let root_schema = RootSchema::new(schema.clone())
+                .filter(|(def_name, _)| reachable.contains(*def_name))
+                .map(|(name, schema)| (name.clone(), schema.clone().into()))
+                .collect::<Vec<_>>();
+            filtered_defs.sort_by(|(a, _), (b, _)| a.cmp(b));
+            let filtered_defs = filtered_defs.into_iter().collect::<Map<_, _>>();
+            let root_schema = RootSchema::new(schema.clone().with_id(Some(name.clone())))
                 .with_meta_schema(Some(
                     "https://json-schema.org/draft/2020-12/schema".to_owned(),
                 ))
@@ -547,7 +525,12 @@ impl Generator for JsonSchemaGenerator {
                     Some(filtered_defs)
                 });
             let schema_file = job.output.join(format!("{name}.schema.json"));
-            std::fs::write(schema_file, serde_json::to_string_pretty(&root_schema)?)?;
+            let json = sidex::formats::json::to_string_pretty(&root_schema).map_err(|error| {
+                Box::new(sidex_gen::diagnostics::Diagnostic::error(format!(
+                    "Unable to encode JSON Schema: {error}"
+                )))
+            })?;
+            std::fs::write(schema_file, json)?;
         }
 
         let config = JsonSchemaConfig {
@@ -573,10 +556,10 @@ impl Generator for JsonSchemaGenerator {
                                     .enumerate()
                                     .map(|(idx, _)| {
                                         ir::Type::new(ir::TypeKind::TypeVar(TypeVarType::new(
-                                            idx.into(),
+                                            ir::TypeVarIdx::from(idx),
                                         )))
                                     })
-                                    .collect(),
+                                    .collect::<Vec<_>>(),
                             ),
                     ));
                     ctx.resolve(&typ)?;
@@ -595,9 +578,34 @@ impl Generator for JsonSchemaGenerator {
     }
 }
 
+/// Returns the runtime shape of a scalar built-in or `json`.
+fn builtin_shape(path: &str) -> Option<&'static sidex::Shape> {
+    Some(match path {
+        "::core::builtins::bool" => bool::SHAPE,
+        "::core::builtins::i8" => i8::SHAPE,
+        "::core::builtins::i16" => i16::SHAPE,
+        "::core::builtins::i32" => i32::SHAPE,
+        "::core::builtins::i64" => i64::SHAPE,
+        "::core::builtins::u8" => u8::SHAPE,
+        "::core::builtins::u16" => u16::SHAPE,
+        "::core::builtins::u32" => u32::SHAPE,
+        "::core::builtins::u64" => u64::SHAPE,
+        "::core::builtins::idx" => usize::SHAPE,
+        "::core::builtins::f32" => f32::SHAPE,
+        "::core::builtins::f64" => f64::SHAPE,
+        "::core::builtins::string" => String::SHAPE,
+        "::core::builtins::bytes" => sidex::types::Bytes::SHAPE,
+        "::core::builtins::uuid" => sidex::types::Uuid::SHAPE,
+        "::core::builtins::timestamp" => sidex::types::Timestamp::SHAPE,
+        "::core::builtins::date" => sidex::types::Date::SHAPE,
+        "::core::builtins::json" => sidex::types::JsonValue::SHAPE,
+        _ => return None,
+    })
+}
+
 /// Compute the set of def names transitively reachable from `root` via
-/// `#/$defs/...` references, looking up further refs in `defs`. The root's own
-/// name is excluded from the result.
+/// `#/$defs/...` references, looking up further refs in `defs`. Includes the
+/// root's name when recursion references it.
 fn transitive_def_refs(
     root_name: &str,
     root_schema: &SchemaObject,
@@ -624,7 +632,6 @@ fn transitive_def_refs(
             }
         }
     }
-    reachable.remove(root_name);
     reachable
 }
 

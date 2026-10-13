@@ -49,12 +49,19 @@ pub fn main() -> color_eyre::Result<()> {
 
     let args = Args::parse();
 
-    match &args.command {
+    let result = match &args.command {
         Command::New(new_args) => commands::new::exec(new_args),
         Command::Check(check_args) => commands::check::exec(check_args),
         Command::Fmt(fmt_args) => commands::fmt::exec(fmt_args),
         Command::Generate(generate_args) => commands::generate::exec(generate_args),
         Command::Json(json_args) => commands::json::exec(json_args),
         Command::ValidateIr(args) => commands::validate_ir::exec(args),
+    };
+    // The diagnostics describing the errors have already been printed.
+    if let Err(error) = &result
+        && error.downcast_ref::<utils::ReportedErrors>().is_some()
+    {
+        std::process::exit(1);
     }
+    result
 }

@@ -24,8 +24,6 @@ pub struct FormatOptions {
     pub indent: usize,
     /// Names of bundles considered external (their imports are grouped first
     /// and separated from internal-schema imports by a blank line).
-    ///
-    /// `std` is always treated as external.
     pub external_bundles: Vec<String>,
     /// Fully-rendered import paths to drop from the output. Used by
     /// `sidex check --fix` to remove unused imports. The string format
@@ -39,7 +37,7 @@ impl Default for FormatOptions {
         Self {
             max_width: 80,
             indent: 4,
-            external_bundles: vec!["std".to_owned()],
+            external_bundles: Vec::new(),
             excluded_imports: std::collections::HashSet::new(),
         }
     }

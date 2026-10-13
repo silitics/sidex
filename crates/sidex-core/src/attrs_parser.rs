@@ -309,7 +309,7 @@ fn parse_node_attrs(
     ir: &ir::Ir,
     enclosing_schema: ir::SchemaIdx,
     markers: SchemaMarkers,
-) -> HashMap<String, Value> {
+) -> HashMap<String, sidex::types::JsonValue> {
     if attrs.is_empty() {
         return HashMap::new();
     }
@@ -344,7 +344,7 @@ fn parse_node_attrs(
         };
         match result {
             Ok(value) => {
-                typed.insert(plugin.to_owned(), value);
+                typed.insert(plugin.to_owned(), sidex::types::JsonValue::from(value));
             }
             Err(diag) => {
                 diag.emit();
@@ -431,7 +431,7 @@ fn parse_record(
                             plugin_attr
                                 .span
                                 .clone()
-                                .unwrap_or_else(|| ir::Span::new(0.into(), 0, 0)),
+                                .unwrap_or_else(|| ir::Span::new(ir::SourceIdx::from(0), 0, 0)),
                             "expected `(...)` form",
                         )),
                     ));
@@ -1026,10 +1026,12 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "Target")
             .expect("Target def not found");
-        let demo = target_def
-            .typed_attrs
-            .get("demo")
-            .expect("typed_attrs[demo] should be populated");
+        let demo = &serde_json::Value::from(
+            target_def
+                .typed_attrs
+                .get("demo")
+                .expect("typed_attrs[demo] should be populated"),
+        );
         assert_eq!(demo["greeting"], serde_json::json!("hello"));
         assert_eq!(demo["enabled"], serde_json::json!(true));
     }
@@ -1080,10 +1082,12 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "DeleteUserAction")
             .expect("DeleteUserAction def not found");
-        let request = action
-            .typed_attrs
-            .get("request")
-            .expect("typed_attrs[request] populated");
+        let request = &serde_json::Value::from(
+            action
+                .typed_attrs
+                .get("request")
+                .expect("typed_attrs[request] populated"),
+        );
         let empty_def = ir
             .defs
             .iter()
@@ -1163,10 +1167,12 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "CreateUserAction")
             .expect("CreateUserAction def not found");
-        let request = action
-            .typed_attrs
-            .get("request")
-            .expect("typed_attrs[request] populated");
+        let request = &serde_json::Value::from(
+            action
+                .typed_attrs
+                .get("request")
+                .expect("typed_attrs[request] populated"),
+        );
         assert_eq!(request["name"], serde_json::json!("users.CreateUser"));
         let response_def = ir
             .defs
@@ -1197,10 +1203,12 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "Endpoint")
             .expect("Endpoint def not found");
-        let request = endpoint
-            .typed_attrs
-            .get("request")
-            .expect("typed_attrs[request] should be populated");
+        let request = &serde_json::Value::from(
+            endpoint
+                .typed_attrs
+                .get("request")
+                .expect("typed_attrs[request] should be populated"),
+        );
         let response = &request["response"];
         // The DefRef should resolve to the ResponseType def in the same schema.
         let response_def = ir
@@ -1244,10 +1252,12 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "Target")
             .expect("Target def not found");
-        let value = target_def
-            .typed_attrs
-            .get("demo")
-            .expect("typed_attrs[demo] populated");
+        let value = &serde_json::Value::from(
+            target_def
+                .typed_attrs
+                .get("demo")
+                .expect("typed_attrs[demo] populated"),
+        );
         let typed: DemoAttrs =
             serde_json::from_value(value.clone()).expect("deserializes into typed struct");
         assert_eq!(
@@ -1304,10 +1314,11 @@ mod tests {
                 .iter()
                 .find(|f| f.name.as_str() == field_name)
                 .expect("field not found");
-            field
+            let rust = field
                 .typed_attrs
                 .get("rust")
-                .expect("rust typed_attrs populated")
+                .expect("rust typed_attrs populated");
+            serde_json::Value::from(rust)
                 .get("pub")
                 .expect("pub field present")
                 .clone()
@@ -1355,10 +1366,12 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "Either")
             .expect("Either def not found");
-        let json_attrs = either
-            .typed_attrs
-            .get("json")
-            .expect("typed_attrs[json] populated");
+        let json_attrs = &serde_json::Value::from(
+            either
+                .typed_attrs
+                .get("json")
+                .expect("typed_attrs[json] populated"),
+        );
         assert_eq!(json_attrs["tagged"], serde_json::json!("Adjacently"));
     }
 
@@ -1391,7 +1404,7 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "Target")
             .expect("Target def not found");
-        let demo = target_def.typed_attrs.get("demo").unwrap();
+        let demo = &serde_json::Value::from(target_def.typed_attrs.get("demo").unwrap());
         assert_eq!(
             demo["derive"],
             serde_json::json!(["Clone", "Debug", "PartialEq"])
@@ -1436,10 +1449,11 @@ mod tests {
             .iter()
             .find(|f| f.name.as_str() == "age")
             .expect("age field not found");
-        let validate = age
-            .typed_attrs
-            .get("validate")
-            .expect("typed_attrs[validate] populated");
+        let validate = &serde_json::Value::from(
+            age.typed_attrs
+                .get("validate")
+                .expect("typed_attrs[validate] populated"),
+        );
         assert_eq!(validate["expr"]["text"], serde_json::json!("0 <= _ <= 100"));
         // The span is present and points into the originating source.
         assert!(
@@ -1483,10 +1497,13 @@ mod tests {
             .iter()
             .find(|f| f.name.as_str() == "code")
             .expect("code field not found");
-        let rules = code
-            .typed_attrs
-            .get("validate")
-            .and_then(|v| v.get("rules"))
+        let validate = serde_json::Value::from(
+            code.typed_attrs
+                .get("validate")
+                .expect("rules array populated"),
+        );
+        let rules = validate
+            .get("rules")
             .expect("rules array populated")
             .as_array()
             .expect("rules is a JSON array");
@@ -1538,10 +1555,12 @@ mod tests {
             .iter()
             .find(|f| f.name.as_str() == "age")
             .expect("age field not found");
-        let rules = age
-            .typed_attrs
-            .get("validate")
-            .expect("typed_attrs[validate] populated")
+        let validate = serde_json::Value::from(
+            age.typed_attrs
+                .get("validate")
+                .expect("typed_attrs[validate] populated"),
+        );
+        let rules = validate
             .as_array()
             .expect("repeated mode produces a JSON array");
         assert_eq!(rules.len(), 2);
@@ -1588,10 +1607,12 @@ mod tests {
             .iter()
             .find(|f| f.name.as_str() == "slug")
             .expect("slug field not found");
-        let rules = slug
-            .typed_attrs
-            .get("validate")
-            .expect("typed_attrs[validate] populated")
+        let validate = serde_json::Value::from(
+            slug.typed_attrs
+                .get("validate")
+                .expect("typed_attrs[validate] populated"),
+        );
+        let rules = validate
             .as_array()
             .expect("repeated mode produces a JSON array");
         assert_eq!(rules.len(), 2);
@@ -1623,7 +1644,7 @@ mod tests {
             .iter()
             .find(|d| d.name.as_str() == "Target")
             .expect("Target def not found");
-        let demo = target_def.typed_attrs.get("demo").unwrap();
+        let demo = &serde_json::Value::from(target_def.typed_attrs.get("demo").unwrap());
         assert_eq!(demo["greeting"], serde_json::json!("hi"));
         assert_eq!(demo["enabled"], serde_json::json!(true));
     }

@@ -28,6 +28,17 @@ impl Plugin for Builder {
                     let name = &info.name;
                     let typ = &info.typ;
                     let vis = &info.vis;
+                    // Strings and bytes accept anything convertible into them, for
+                    // instance, `&str` for strings. Other parameters keep their
+                    // type, so that arguments like `iter.collect()` can be inferred.
+                    let (param, value) = if !field.is_optional && is_text(ctx, &field.typ) {
+                        (
+                            quote! { impl ::std::convert::Into<#typ> },
+                            quote! { #name.into() },
+                        )
+                    } else {
+                        (quote! { #typ }, quote! { #name })
+                    };
                     // Methods for direct field access, mostly for convenience.
                     let set_doc = format!("Sets the value of `{}`.", name);
                     let set_method = format_ident!("set_{}", name);
@@ -35,13 +46,13 @@ impl Plugin for Builder {
                     let with_method = format_ident!("with_{}", name);
                     methods.push(quote! {
                         #[doc = #set_doc]
-                        #vis fn #set_method(&mut self, #name: #typ) -> &mut Self {
-                            self.#name = #name;
+                        #vis fn #set_method(&mut self, #name: #param) -> &mut Self {
+                            self.#name = #value;
                             self
                         }
                         #[doc = #with_doc]
-                        #vis fn #with_method(mut self, #name: #typ) -> Self {
-                            self.#name = #name;
+                        #vis fn #with_method(mut self, #name: #param) -> Self {
+                            self.#name = #value;
                             self
                         }
                     });
@@ -65,7 +76,7 @@ impl Plugin for Builder {
                     });
 
                     if !field.is_optional && !is_container && !is_default_field {
-                        constructor_fields.push(info);
+                        constructor_fields.push((info, param, value));
                     } else {
                         default_fields.push(info);
                     }
@@ -73,10 +84,9 @@ impl Plugin for Builder {
 
                 let constructor_args = constructor_fields
                     .iter()
-                    .map(|info| {
+                    .map(|(info, param, _)| {
                         let name = &info.name;
-                        let typ = &info.typ;
-                        quote! { #name: #typ }
+                        quote! { #name: #param }
                     })
                     .collect::<Vec<_>>();
 
@@ -84,9 +94,9 @@ impl Plugin for Builder {
 
                 let construct = constructor_fields
                     .iter()
-                    .map(|info| {
+                    .map(|(info, _, value)| {
                         let name = &info.name;
-                        quote! { #name }
+                        quote! { #name: #value }
                     })
                     .chain(default_fields.iter().map(|info| {
                         let name = &info.name;
@@ -130,4 +140,16 @@ impl Plugin for Builder {
             }
         }
     }
+}
+
+/// Indicates whether the type is the built-in `string` or `bytes` type.
+fn is_text(ctx: &crate::context::SchemaCtx, typ: &ir::Type) -> bool {
+    let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
+    let ir::TypeKind::Instance(instance) = &resolved.kind else {
+        return false;
+    };
+    matches!(
+        ctx.fully_qualified_type_name(instance).as_str(),
+        "::core::builtins::string" | "::core::builtins::bytes"
+    )
 }

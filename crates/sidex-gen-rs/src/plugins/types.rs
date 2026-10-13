@@ -2,6 +2,7 @@ use sidex_gen::diagnostics::Result;
 use sidex_gen::ir::Def;
 
 use super::Plugin;
+use crate::codec;
 use crate::context::SchemaCtx;
 use crate::rstyir::rs_type_from_def;
 use crate::rstyir::rs_type_to_rs_def;
@@ -14,6 +15,8 @@ impl Plugin for Types {
             return Ok(Default::default());
         };
         println!("Generating type definition for {}.", def.name.as_str());
-        Ok(rs_type_to_rs_def(&rs_type))
+        let mut tokens = rs_type_to_rs_def(&rs_type);
+        tokens.extend(codec::impl_traits(ctx, def, &rs_type)?);
+        Ok(tokens)
     }
 }

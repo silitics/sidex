@@ -52,7 +52,7 @@ fn native_mode_uses_rust_typ_attribute() {
 #[test]
 fn json_mode_overrides_rust_typ_attribute() {
     // With opaque_lowering = "json", the `#[rust(typ)]` is ignored. `Uuid`
-    // has no JSON attribute, so it falls back to `serde_json::Value`.
+    // has no JSON attribute, so it falls back to a freeform value.
     let cfg = Config {
         opaque_lowering: OpaqueLowering::Json,
         ..Default::default()
@@ -63,8 +63,8 @@ fn json_mode_overrides_rust_typ_attribute() {
         "rust.typ should be ignored in JSON mode, but uuid::Uuid appeared:\n{out}"
     );
     assert!(
-        out.contains("type Uuid < > = :: serde_json :: Value"),
-        "Uuid should alias to serde_json::Value, got:\n{out}"
+        out.contains("type Uuid < > = :: sidex :: types :: JsonValue"),
+        "Uuid should alias to sidex::types::JsonValue, got:\n{out}"
     );
 }
 
@@ -76,8 +76,8 @@ fn json_mode_lowers_string_to_native_string() {
     };
     let out = render_normalized(cfg);
     assert!(
-        out.contains("type Email < > = :: std :: string :: String"),
-        "Email should alias to String, got:\n{out}"
+        out.contains("type Email < > = :: sidex :: types :: Str"),
+        "Email should alias to Str, got:\n{out}"
     );
 }
 
@@ -90,9 +90,9 @@ fn json_mode_lowers_nullable_string_to_option() {
     let out = render_normalized(cfg);
     assert!(
         out.contains(
-            "type NullableTimestamp < > = :: std :: option :: Option < :: std :: string :: String >"
+            "type NullableTimestamp < > = :: std :: option :: Option < :: sidex :: types :: Str >"
         ),
-        "NullableTimestamp should alias to Option<String>, got:\n{out}"
+        "NullableTimestamp should alias to Option<Str>, got:\n{out}"
     );
 }
 
@@ -104,8 +104,8 @@ fn json_mode_lowers_any_to_value() {
     };
     let out = render_normalized(cfg);
     assert!(
-        out.contains("type Anything < > = :: serde_json :: Value"),
-        "Anything should alias to serde_json::Value, got:\n{out}"
+        out.contains("type Anything < > = :: sidex :: types :: JsonValue"),
+        "Anything should alias to sidex::types::JsonValue, got:\n{out}"
     );
 }
 
@@ -117,7 +117,7 @@ fn json_mode_lowers_multi_union_to_value() {
     };
     let out = render_normalized(cfg);
     assert!(
-        out.contains("type StringOrNumber < > = :: serde_json :: Value"),
-        "StringOrNumber should fall back to serde_json::Value, got:\n{out}"
+        out.contains("type StringOrNumber < > = :: sidex :: types :: JsonValue"),
+        "StringOrNumber should fall back to sidex::types::JsonValue, got:\n{out}"
     );
 }

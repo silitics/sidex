@@ -7,6 +7,9 @@ mod tests {
 
     use serde::Deserialize;
     use serde::Serialize;
+    use sidex::Decode;
+    use sidex::Encode;
+    use sidex::formats::json;
 
     use super::generated::data::*;
 
@@ -17,18 +20,26 @@ mod tests {
         ))
     }
 
-    fn test<T: Serialize + for<'de> Deserialize<'de>>(type_name: &str) {
+    /// Checks that every fixture decodes and encodes to itself, both with the
+    /// JSON format and with Serde.
+    fn test<T>(type_name: &str)
+    where
+        T: Encode + Decode + Serialize + for<'de> Deserialize<'de>,
+    {
         for entry in fs::read_dir(expected_dir().join(type_name)).unwrap() {
             let path = entry.unwrap().path();
-
             println!("{}", path.to_string_lossy());
+            let text = fs::read_to_string(&path).unwrap();
+            let expected = serde_json::from_str::<serde_json::Value>(&text).unwrap();
 
-            let json = fs::read_to_string(&path).unwrap();
+            let decoded = json::from_str::<T>(&text).unwrap();
+            let encoded =
+                serde_json::from_str::<serde_json::Value>(&json::to_string(&decoded).unwrap())
+                    .unwrap();
+            assert_eq!(expected, encoded);
 
-            let expected = serde_json::from_str::<serde_json::Value>(&json).unwrap();
             let deserialized = serde_json::from_value::<T>(expected.clone()).unwrap();
             let serialized = serde_json::to_value(&deserialized).unwrap();
-
             assert_eq!(expected, serialized);
         }
     }

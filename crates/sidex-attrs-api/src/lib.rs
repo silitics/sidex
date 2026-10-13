@@ -24,7 +24,8 @@ use std::collections::HashMap;
 
 pub use check::check;
 pub use generated::attrs as raw;
-use serde_json::Value;
+use sidex::formats::json;
+use sidex::types::JsonValue;
 use sidex_ir as ir;
 
 const PLUGIN_DEPRECATED: &str = "deprecated";
@@ -76,7 +77,7 @@ impl Stability {
 /// Pull the rollup off any IR node's `typed_attrs`. The schema records share
 /// a common shape per plugin, so a single deserialization path covers
 /// def / field / variant / schema positions.
-pub fn stability_of(typed_attrs: &HashMap<String, Value>) -> Stability {
+pub fn stability_of(typed_attrs: &HashMap<String, JsonValue>) -> Stability {
     Stability {
         deprecated: extract_deprecated(typed_attrs),
         unstable: extract_unstable(typed_attrs),
@@ -86,18 +87,18 @@ pub fn stability_of(typed_attrs: &HashMap<String, Value>) -> Stability {
 
 /// Extract just the deprecation metadata, or `None` when the node isn't
 /// deprecated.
-pub fn deprecated_of(typed_attrs: &HashMap<String, Value>) -> Option<Deprecated> {
+pub fn deprecated_of(typed_attrs: &HashMap<String, JsonValue>) -> Option<Deprecated> {
     extract_deprecated(typed_attrs)
 }
 
 /// Extract just the unstable metadata, or `None` when the node is stable.
-pub fn unstable_of(typed_attrs: &HashMap<String, Value>) -> Option<Unstable> {
+pub fn unstable_of(typed_attrs: &HashMap<String, JsonValue>) -> Option<Unstable> {
     extract_unstable(typed_attrs)
 }
 
 /// Extract just the `#[since]` metadata, or `None` when no version is
 /// recorded for this node.
-pub fn since_of(typed_attrs: &HashMap<String, Value>) -> Option<Since> {
+pub fn since_of(typed_attrs: &HashMap<String, JsonValue>) -> Option<Since> {
     extract_since(typed_attrs)
 }
 
@@ -178,62 +179,33 @@ pub fn stability_of_schema(schema: &ir::Schema) -> Stability {
 
 // ---- internals -------------------------------------------------------------
 
-fn extract_deprecated(typed_attrs: &HashMap<String, Value>) -> Option<Deprecated> {
+fn extract_deprecated(typed_attrs: &HashMap<String, JsonValue>) -> Option<Deprecated> {
     let value = typed_attrs.get(PLUGIN_DEPRECATED)?;
     // The schema record is identical across targets, so a single deserialize
     // call suffices regardless of position.
-    serde_json::from_value::<DeprecatedWire>(value.clone())
-        .ok()
-        .map(|w| {
-            Deprecated {
-                since: w.since,
-                note: w.note,
-                remove_in: w.remove_in,
-            }
-        })
+    json::from_value::<raw::DefDeprecated>(value).ok().map(|w| {
+        Deprecated {
+            since: w.since,
+            note: w.note,
+            remove_in: w.remove_in,
+        }
+    })
 }
 
-fn extract_unstable(typed_attrs: &HashMap<String, Value>) -> Option<Unstable> {
+fn extract_unstable(typed_attrs: &HashMap<String, JsonValue>) -> Option<Unstable> {
     let value = typed_attrs.get(PLUGIN_UNSTABLE)?;
-    serde_json::from_value::<UnstableWire>(value.clone())
-        .ok()
-        .map(|w| {
-            Unstable {
-                feature: w.feature,
-                note: w.note,
-                issue: w.issue,
-            }
-        })
+    json::from_value::<raw::DefUnstable>(value).ok().map(|w| {
+        Unstable {
+            feature: w.feature,
+            note: w.note,
+            issue: w.issue,
+        }
+    })
 }
 
-fn extract_since(typed_attrs: &HashMap<String, Value>) -> Option<Since> {
+fn extract_since(typed_attrs: &HashMap<String, JsonValue>) -> Option<Since> {
     let value = typed_attrs.get(PLUGIN_SINCE)?;
-    serde_json::from_value::<SinceWire>(value.clone())
+    json::from_value::<raw::DefSince>(value)
         .ok()
         .map(|w| Since { version: w.version })
-}
-
-#[derive(serde::Deserialize)]
-struct DeprecatedWire {
-    #[serde(default)]
-    since: Option<String>,
-    #[serde(default)]
-    note: Option<String>,
-    #[serde(default)]
-    remove_in: Option<String>,
-}
-
-#[derive(serde::Deserialize)]
-struct UnstableWire {
-    #[serde(default)]
-    feature: Option<String>,
-    #[serde(default)]
-    note: Option<String>,
-    #[serde(default)]
-    issue: Option<String>,
-}
-
-#[derive(serde::Deserialize)]
-struct SinceWire {
-    version: String,
 }

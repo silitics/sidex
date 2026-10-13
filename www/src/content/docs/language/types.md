@@ -76,27 +76,23 @@ opaque UserUuid
 
 The JSON contract is a string. Rust and Python use their native UUID implementations; your application must provide the Rust dependency. TypeScript derives the representation from `json(type = ...)`.
 
-Opaque types can also represent free-form JSON:
-
-```sidex
-#[json(type = "any")]
-opaque JsonValue
-```
-
 See [opaque lowering](/sidex/docs/reference/manifest/#opaque-lowering) for generators that need raw JSON values instead of native mappings.
 
 ## Built-in Types
 
-| Type                      | Meaning                                  |
-| ------------------------- | ---------------------------------------- |
-| `bool`                    | Boolean                                  |
-| `string`                  | Unicode string                           |
-| `bytes`                   | Sequence of bytes                        |
-| `i8`, `i16`, `i32`, `i64` | Signed integers of the indicated width   |
-| `u8`, `u16`, `u32`, `u64` | Unsigned integers of the indicated width |
-| `idx`                     | Index type, mapped to `usize` in Rust    |
-| `f32`, `f64`              | Floating-point numbers                   |
-| `unit`                    | A value carrying no data                 |
+| Type                      | Meaning                                   |
+| ------------------------- | ----------------------------------------- |
+| `bool`                    | Boolean                                   |
+| `string`                  | Unicode string                            |
+| `bytes`                   | Sequence of bytes                         |
+| `i8`, `i16`, `i32`, `i64` | Signed integers of the indicated width    |
+| `u8`, `u16`, `u32`, `u64` | Unsigned integers of the indicated width  |
+| `idx`                     | Index type, mapped to `usize` in Rust     |
+| `f32`, `f64`              | Floating-point numbers                    |
+| `uuid`                    | Universally unique identifier             |
+| `timestamp`               | Instant in time with nanosecond precision |
+| `date`                    | Date in the Gregorian calendar            |
+| `json`                    | Any JSON value                            |
 
 `[T]` is a sequence of values of type `T`. `[K: V]` is a map from `K` to `V`:
 
@@ -107,7 +103,11 @@ record Inventory {
 }
 ```
 
-For interoperable JSON objects, use string keys. Read [numeric representations](/sidex/docs/guides/json/#numbers-and-bytes) before sharing 64-bit integers with JavaScript.
+For interoperable JSON objects, use string keys. The [JSON mapping](/sidex/docs/guides/json/#built-in-types) lists the representation of each built-in type.
+
+Use `json` only for data whose shape is open, such as user-defined properties or data passed through from other systems. Define a type whenever you know the shape.
+
+For a case or response without data, use a case without a payload or an empty record. An empty record can gain optional fields later without breaking readers.
 
 ## Generics
 

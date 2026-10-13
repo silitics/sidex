@@ -1,6 +1,5 @@
-//! Integration tests for the `validate` plugin: load a small fixture
-//! bundle, run the Rust generator with `plugins = ["validate"]`, and
-//! assert the emitted text contains the expected runtime calls.
+//! Integration tests for validation rules: load a small fixture bundle, run
+//! the Rust generator, and check the rules in the generated shapes.
 
 use std::path::PathBuf;
 
@@ -24,13 +23,10 @@ fn load_fixture() -> (ir::Ir, ir::BundleIdx) {
 
 fn render() -> String {
     let (unit, bundle) = load_fixture();
-    let mut cfg = Config::default();
-    cfg.plugins.push("validate".to_owned());
-    // Also enable types so the bundle compiles to something inspectable.
     let tokens = RustGenerator::new()
-        .generate_macro(&cfg, &unit, bundle)
+        .generate_macro(&Config::default(), &unit, bundle)
         .expect("generation succeeds");
-    tokens.to_string()
+    normalize(&tokens.to_string())
 }
 
 fn normalize(s: &str) -> String {
@@ -38,101 +34,60 @@ fn normalize(s: &str) -> String {
 }
 
 #[test]
-fn record_with_string_field_emits_size_helpers() {
-    let out = normalize(&render());
-    // `1 <= _.size <= 254` on a string decomposes into a min_inclusive +
-    // max_inclusive call against char_count, both pointing at the `email`
-    // field path. Codes are uniform `min_size` / `max_size` regardless of
-    // the underlying accessor.
-    assert!(
-        out.contains(":: sidex_validate :: min_inclusive"),
-        "expected min_inclusive call, got:\n{out}"
-    );
-    assert!(
-        out.contains(":: sidex_validate :: max_inclusive"),
-        "expected max_inclusive call, got:\n{out}"
-    );
-    assert!(
-        out.contains(":: sidex_validate :: char_count"),
-        "expected char_count accessor, got:\n{out}"
-    );
-    assert!(
-        out.contains("\"min_size\""),
-        "expected min_size code, got:\n{out}"
-    );
-    assert!(
-        out.contains("\"max_size\""),
-        "expected max_size code, got:\n{out}"
-    );
-}
-
-#[test]
-fn message_and_code_overrides_thread_through() {
+fn chained_comparisons_become_compare_rules() {
     let out = render();
     assert!(
-        out.contains("\"Bad email.\""),
-        "expected user-supplied message in generated code"
-    );
-    assert!(
-        out.contains("\"format:email\""),
-        "expected user-supplied code in generated code"
+        out.contains(
+            "Rule :: new (\"1 <= _.size <= 254\" , :: sidex :: validation :: Expr :: Compare { \
+             operands : & [:: sidex :: validation :: Operand :: Int (1i128) , \
+             :: sidex :: validation :: Operand :: Member (& [\"size\"]) , \
+             :: sidex :: validation :: Operand :: Int (254i128)] , \
+             ops : & [:: sidex :: validation :: CmpOp :: Le , :: sidex :: validation :: CmpOp :: Le] , })"
+        ),
+        "expected the size rule of `email`, got:\n{out}"
     );
 }
 
 #[test]
-fn regex_rule_emits_static_oncelock() {
+fn matches_becomes_a_matches_rule_with_overrides() {
     let out = render();
     assert!(
-        out.contains("OnceLock"),
-        "expected OnceLock for regex caching"
-    );
-    assert!(
-        out.contains("regex_match"),
-        "expected regex_match call, got:\n{out}"
-    );
-}
-
-#[test]
-fn wrapper_with_rules_emits_try_new() {
-    let out = normalize(&render());
-    // `Slug` has a size-range rule; codegen emits both a `Validate` impl
-    // and a `try_new` constructor.
-    assert!(
-        out.contains("impl Slug"),
-        "expected Slug impl block, got:\n{out}"
-    );
-    assert!(
-        out.contains("pub fn try_new"),
-        "expected Slug::try_new, got:\n{out}"
-    );
-    assert!(
-        out.contains("impl :: sidex_validate :: Validate for Slug"),
-        "expected Validate impl for Slug, got:\n{out}"
+        out.contains(
+            ":: sidex :: validation :: Expr :: Matches { operand : \
+             :: sidex :: validation :: Operand :: Value , pattern : \"^[^@]+@[^@]+$\" }) \
+             . with_message (\"Bad email.\") . with_code (\"format:email\")"
+        ),
+        "expected the regex rule of `email`, got:\n{out}"
     );
 }
 
 #[test]
-fn optional_field_validates_only_when_present() {
+fn record_rules_compare_members() {
     let out = render();
-    // `nickname?: string` with a min_size rule generates an
-    // `if let Some(...)` guard so absent values bypass validation.
     assert!(
-        out.contains("if let :: std :: option :: Option :: Some"),
-        "expected optional-field guard, got snippet:\n{out}"
+        out.contains(
+            "operands : & [:: sidex :: validation :: Operand :: Member (& [\"min\"]) , \
+             :: sidex :: validation :: Operand :: Member (& [\"max\"])]"
+        ),
+        "expected the record rule of `Range`, got:\n{out}"
     );
 }
 
 #[test]
-fn every_record_emits_a_validate_impl() {
-    let out = normalize(&render());
-    // Once `validate` is enabled, every record in the bundle gets a
-    // `Validate` impl — types without rules get a no-op body so generic
-    // call sites (`fn run<T: Validate>(t: T)`) can rely on the bound
-    // uniformly.
-    assert!(out.contains("impl :: sidex_validate :: Validate for User"));
-    assert!(out.contains("impl :: sidex_validate :: Validate for Range"));
-    assert!(out.contains("impl :: sidex_validate :: Validate for Slug"));
-    assert!(out.contains("impl :: sidex_validate :: Validate for Empty"));
+fn wrapper_rules_are_part_of_the_wrapper_shape() {
+    let out = render();
+    assert!(
+        out.contains(
+            "ShapeKind :: Wrapper (:: sidex :: shape :: shape_of :: < :: sidex :: types :: Str >)) \
+             . with_attrs"
+        ),
+        "expected the shape of `Slug`, got:\n{out}"
+    );
+    assert!(
+        out.contains(
+            ". with_rules (& [:: sidex :: validation :: Rule :: new (\"1 <= _.size <= 64\""
+        )
+    );
 }
 
 /// Verify the generated code is syntactically valid Rust so a compile
@@ -144,9 +99,6 @@ fn generated_output_is_syntactically_valid_rust() {
     // wrap it so syn can parse it as a top-level file.
     let wrapped = format!("mod __probe {{ {out} }}");
     if let Err(err) = syn::parse_file(&wrapped) {
-        panic!(
-            "generated validate code is not syntactically valid Rust:\n  {err}\n\n\
-             snippet:\n{out}"
-        );
+        panic!("generated code is not syntactically valid Rust:\n  {err}\n\nsnippet:\n{out}");
     }
 }

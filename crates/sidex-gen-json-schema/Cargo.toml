@@ -1,6 +1,7 @@
 [package]
 name = "sidex-gen-json-schema"
-version = "0.1.0"
+description = "Sidex code generation for JSON Schema."
+version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
@@ -9,13 +10,17 @@ homepage.workspace = true
 
 [dependencies]
 serde.workspace = true # PUBLIC
-sidex-serde.workspace = true
+sidex.workspace = true
 indexmap.workspace = true
 serde_json.workspace = true
 sidex-gen.workspace = true
 sidex-attrs-api.workspace = true
 sidex-attrs-json.workspace = true
 sidex-types-json-schema.workspace = true
+
+[dev-dependencies]
+sidex-core.workspace = true
+sidex-diagnostics.workspace = true
 
 [lints]
 workspace = true

@@ -7,7 +7,12 @@ impl Generator for IrGenerator {
     fn generate(&self, job: sidex_gen::Job) -> diagnostics::Result<()> {
         let ir_file = job.output.join("ir.json");
 
-        std::fs::write(ir_file, serde_json::to_vec(job.unit)?)?;
+        let json = sidex::formats::json::to_string(job.unit).map_err(|error| {
+            Box::new(diagnostics::Diagnostic::error(format!(
+                "Unable to encode IR: {error}"
+            )))
+        })?;
+        std::fs::write(ir_file, json)?;
 
         Ok(())
     }

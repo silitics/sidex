@@ -60,6 +60,10 @@ record SchemaObject {
     /// 
     /// See [JSON Schema Validation 7](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-vocabularies-for-semantic-c).
     format?: string,
+    /// Encoding of string contents.
+    ///
+    /// See JSON Schema Validation 8.3.
+    content_encoding?: string,
     /// The `$ref` keyword.
     #[json(name = "$ref")]
     #[rust(name = "reference")]
@@ -124,16 +128,7 @@ variant MaybeArray<T> {
 }
 
 /// Any JSON value.
-#[json(tagged = implicitly)]
-variant Any {
-    // Null: unit,
-    Boolean: bool,
-    Integer: i32,
-    Number: f64,
-    String: string,
-    Object: [string: Any],
-    Array: [Any],
-}
+alias Any: json
 
 /// A reference to a JSON schema.
 wrapper SchemaRef: string
@@ -237,12 +232,8 @@ record NumberKeywords {
     exclusive_minimum?: Number,
 }
 
-/// A number that is either an integer or a floating point number.
-#[json(tagged = implicitly)]
-variant Number {
-    Integer: i64,
-    Float: f64,
-}
+/// A JSON number.
+alias Number: json
 
 /// Keywords applying to strings.
 record StringKeywords {

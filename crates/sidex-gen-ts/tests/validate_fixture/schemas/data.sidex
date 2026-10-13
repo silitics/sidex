@@ -18,3 +18,13 @@ record CodeOnly {
     #[validate({ matches(_, "^[A-Z]{2}-[0-9]{4}$") }, code = "format:order")]
     code: string,
 }
+
+#[validate({ _.min_value <= _.max_value })]
+record Limits {
+    #[validate({ 1 <= _ <= 9007199254740993 })]
+    max_size: u64,
+    #[validate({ _ != 0.5 })]
+    ratio: f64,
+    min_value: i64,
+    max_value: i64,
+}

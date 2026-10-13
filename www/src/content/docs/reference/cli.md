@@ -83,8 +83,6 @@ Emits random JSON samples following a type's JSON shape. It does not enforce val
 | `--max-depth N`          | `6`     | Bound recursive generation                        |
 | `--max-collection-len N` | `8`     | Bound generated collections and free-form objects |
 | `--max-string-len N`     | `16`    | Bound strings and free-form keys                  |
-| `--integers-as-strings`  | Off     | Emit `i64`, `u64`, and `idx` as decimal strings   |
-| `--floats-as-strings`    | Off     | Permit `"NaN"`, `"Infinity"`, and `"-Infinity"`   |
 
 Without `--pretty`, output is one compact JSON value per line. Limits bound random generation choices rather than validate application data.
 

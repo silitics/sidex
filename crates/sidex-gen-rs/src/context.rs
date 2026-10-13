@@ -232,88 +232,6 @@ impl<'cx> SchemaCtx<'cx> {
         syn::parse2(self.resolve_type_old(def, typ, false)).unwrap()
     }
 
-    /// Resolves a Sidex type into the [`SerializeAs`]/[`DeserializeAs`]
-    /// encoding that pairs with the Rust type returned by
-    /// [`Self::resolve_type_old`].
-    ///
-    /// The encoding mirrors the structure of the Rust type but substitutes
-    /// a Sidex-specific wire form (e.g. `AsU64`) at the leaves where the
-    /// default Serde encoding doesn't roundtrip cleanly through JavaScript
-    /// JSON. Container types like `Vec`, `Option`, and `HashMap` carry the
-    /// encoding of their element type.
-    ///
-    /// [`SerializeAs`]: sidex_serde::SerializeAs
-    /// [`DeserializeAs`]: sidex_serde::DeserializeAs
-    /// Returns the concrete Rust path the user has configured for a
-    /// container builtin (e.g. `indexmap::IndexMap` for `::core::builtins::Map`),
-    /// falling back to `default_path` (e.g. `::std::collections::HashMap`)
-    /// when no override is set.
-    fn container_path(&self, qualified_path: &str, default_path: &str) -> TokenStream {
-        let path = self
-            .bundle_ctx
-            .cfg
-            .types
-            .table
-            .get(qualified_path)
-            .map(String::as_str)
-            .unwrap_or(default_path);
-        syn::parse_str::<syn::TypePath>(path)
-            .unwrap()
-            .to_token_stream()
-    }
-
-    pub fn resolve_encoding(&self, def: &ir::Def, typ: &ir::Type) -> TokenStream {
-        let resolved = self.bundle_ctx.unit.resolve_aliases(typ);
-        match &resolved.kind {
-            ir::TypeKind::TypeVar(var) => {
-                let name = format_ident!("{}", def[var.idx].name.as_str());
-                quote! { <#name as __sidex_serde::SidexType>::Encoding }
-            }
-            ir::TypeKind::Instance(instance) => {
-                let unit = self.bundle_ctx.unit;
-                let bundle = &unit[instance.def.bundle];
-                let schema = &unit[instance.def.schema];
-                let instance_def = &unit[instance.def];
-                let qualified_path = format!(
-                    "::{}::{}::{}",
-                    bundle.metadata.name,
-                    schema.name,
-                    instance_def.name.as_str()
-                );
-
-                match qualified_path.as_str() {
-                    "::core::builtins::i64" => return quote! { __sidex_serde::AsI64 },
-                    "::core::builtins::u64" => return quote! { __sidex_serde::AsU64 },
-                    "::core::builtins::f32" => return quote! { __sidex_serde::AsF32 },
-                    "::core::builtins::f64" => return quote! { __sidex_serde::AsF64 },
-                    "::core::builtins::bytes" => return quote! { __sidex_serde::AsBytes },
-                    // For `Sequence` and `Map` we reuse the same concrete
-                    // container the user configured for the value type
-                    // (e.g. `indexmap::IndexMap` instead of `HashMap`) — the
-                    // encoding only flips the leaf type parameters to their
-                    // `SidexType::Encoding` equivalents. `sidex-serde` ships
-                    // `SerializeAs`/`DeserializeAs`/`SidexType` impls for
-                    // every container path it knows about.
-                    "::core::builtins::Sequence" => {
-                        let container = self.container_path(&qualified_path, "::std::vec::Vec");
-                        let inner = self.resolve_encoding(def, &instance.subst[0]);
-                        return quote! { #container<#inner> };
-                    }
-                    "::core::builtins::Map" => {
-                        let container =
-                            self.container_path(&qualified_path, "::std::collections::HashMap");
-                        let key = self.resolve_encoding(def, &instance.subst[0]);
-                        let value = self.resolve_encoding(def, &instance.subst[1]);
-                        return quote! { #container<#key, #value> };
-                    }
-                    _ => {}
-                }
-
-                quote! { __sidex_serde::AsSelf }
-            }
-        }
-    }
-
     pub fn resolve_type_old(
         &self,
         def: &ir::Def,
@@ -340,8 +258,8 @@ impl<'cx> SchemaCtx<'cx> {
                 );
 
                 let typ = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path) {
-                    let rust_path = syn::parse_str::<syn::TypePath>(path).unwrap();
-                    rust_path.to_token_stream()
+                    let rust_type = syn::parse_str::<syn::Type>(path).unwrap();
+                    rust_type.to_token_stream()
                 } else {
                     if instance.def.bundle == self.bundle_ctx.bundle_idx {
                         let def_name = format_ident!("{}", &instance_def.name.as_str());
@@ -362,7 +280,11 @@ impl<'cx> SchemaCtx<'cx> {
                             .cfg
                             .external
                             .get(&bundle.metadata.name)
-                            .unwrap();
+                            .unwrap_or_else(|| {
+                                panic!(
+                                    "no Rust type or external bundle configured for `{qualified_path}`"
+                                )
+                            });
                         let parsed = syn::parse_str::<TokenStream>(external_path).unwrap();
                         let schema_name = format_ident!("{}", &schema.name);
                         let def_name = format_ident!("{}", &instance_def.name.as_str());
@@ -371,9 +293,9 @@ impl<'cx> SchemaCtx<'cx> {
                 };
 
                 // In plain-JSON lowering, the key type of `Map<K, V>` is
-                // forced to `String` since JSON object keys are always strings —
-                // the original key type may lower to something that doesn't
-                // implement `Eq + Hash` (e.g. `serde_json::Value`).
+                // forced to a string since JSON object keys are always strings.
+                // The original key type may lower to something that doesn't
+                // implement `Eq + Hash`, for instance, a freeform value.
                 let force_string_keyed_map = matches!(
                     self.bundle_ctx.cfg.opaque_lowering,
                     crate::config::OpaqueLowering::Json,
@@ -385,14 +307,18 @@ impl<'cx> SchemaCtx<'cx> {
                     .enumerate()
                     .map(|(idx, t)| {
                         if force_string_keyed_map && idx == 0 {
-                            quote! { ::std::string::String }
+                            quote! { ::sidex::types::Str }
                         } else {
                             self.resolve_type_old(def, t, extra_super)
                         }
                     })
                     .collect::<Vec<_>>();
 
-                quote! { #typ < #(#subst , )* > }
+                if subst.is_empty() {
+                    typ
+                } else {
+                    quote! { #typ < #(#subst , )* > }
+                }
             }
         }
     }

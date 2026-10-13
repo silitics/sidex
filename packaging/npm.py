@@ -1,4 +1,8 @@
-"""Build npm distributions and binary archives from Sidex release artifacts."""
+"""Build npm distributions and binary archives from Sidex release artifacts.
+
+Besides the CLI, the npm distributions include the `@sidex` libraries. All of
+them share the version of the Cargo workspace.
+"""
 
 import argparse
 import base64
@@ -14,6 +18,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
+LIBRARIES = ROOT / "languages/typescript/packages"
+LIBRARY_NAMES = ["types", "validate"]
 PLATFORMS = [
     ("x86_64-unknown-linux-gnu", "ubuntu-24.04", "linux", "x64", "glibc"),
     ("aarch64-unknown-linux-gnu", "ubuntu-24.04-arm", "linux", "arm64", "glibc"),
@@ -37,8 +43,8 @@ def main():
     binary.add_argument("--binary", required=True, type=Path)
     args = parser.parse_args()
 
-    with (ROOT / "crates/sidex-cli/Cargo.toml").open("rb") as manifest:
-        version = tomllib.load(manifest)["package"]["version"]
+    with (ROOT / "Cargo.toml").open("rb") as manifest:
+        version = tomllib.load(manifest)["workspace"]["package"]["version"]
     if not re.fullmatch(
         r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)"
         r"(?:-(?:alpha|beta|rc)\.(?:0|[1-9]\d*))?",
@@ -47,7 +53,14 @@ def main():
         parser.error("Release versions must be X.Y.Z or X.Y.Z-{alpha,beta,rc}.N")
     if args.command == "prepare":
         if args.tag and args.tag != f"v{version}":
-            parser.error(f"Tag {args.tag!r} does not match CLI version v{version}")
+            parser.error(f"Tag {args.tag!r} does not match version v{version}")
+        for name in LIBRARY_NAMES:
+            manifest = json.loads((LIBRARIES / name / "package.json").read_text())
+            if manifest["version"] != version:
+                parser.error(
+                    f"@sidex/{name} has version {manifest['version']}, not {version}"
+                )
+        prepare_libraries()
         prepare_launcher(version)
         outputs = {
             "version": version,
@@ -56,7 +69,7 @@ def main():
         if output_file := os.environ.get("GITHUB_OUTPUT"):
             with open(output_file, "a") as output:
                 output.writelines(f"{key}={value}\n" for key, value in outputs.items())
-        print(f"Prepared sidex-cli {version}")
+        print(f"Prepared the npm distributions of Sidex {version}")
     elif args.command == "publish":
         publish(version)
     else:
@@ -82,6 +95,22 @@ def main():
         archives.mkdir(parents=True, exist_ok=True)
         with tarfile.open(archives / f"sidex-{args.target}.tar.gz", "w:gz") as archive:
             archive.add(native_binary, arcname="sidex")
+
+
+def prepare_libraries():
+    """Test, build, and pack the `@sidex` libraries."""
+    destination = DIST / "npm"
+    destination.mkdir(parents=True, exist_ok=True)
+    for name in LIBRARY_NAMES:
+        directory = LIBRARIES / name
+        for script in ("test", "clean"):
+            subprocess.run(["npm", "run", script], cwd=directory, check=True)
+        # Packing builds the library with its `prepare` script.
+        subprocess.run(
+            ["npm", "pack", "--pack-destination", str(destination)],
+            cwd=directory,
+            check=True,
+        )
 
 
 def platform_row(row):
@@ -168,7 +197,8 @@ def pack(directory):
 
 def publish(version):
     """Publish exact artifacts in dependency order, allowing safe job retries."""
-    names = [f"@sidex/cli-{platform_row(row)['platform']}" for row in PLATFORMS]
+    names = [f"@sidex/{name}" for name in LIBRARY_NAMES]
+    names += [f"@sidex/cli-{platform_row(row)['platform']}" for row in PLATFORMS]
     names.append("sidex-cli")
     packages = []
     for name in names:

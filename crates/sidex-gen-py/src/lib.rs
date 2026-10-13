@@ -78,23 +78,25 @@ impl TypesConfig {
     fn populate_builtins(&mut self) {
         for (path, py_type) in [
             ("::core::builtins::string", "str"),
-            ("::core::builtins::bytes", "bytes"),
-            ("::core::builtins::i8", "int"),
-            ("::core::builtins::i16", "int"),
-            ("::core::builtins::i32", "int"),
-            ("::core::builtins::i64", "int"),
-            ("::core::builtins::u8", "int"),
-            ("::core::builtins::u16", "int"),
-            ("::core::builtins::u32", "int"),
-            ("::core::builtins::u64", "int"),
-            ("::core::builtins::idx", "int"),
-            ("::core::builtins::f32", "float"),
-            ("::core::builtins::f64", "float"),
-            ("::core::builtins::bool", "bool"),
-            ("::core::builtins::unit", "None"),
+            ("::core::builtins::bytes", "_sidex.Bytes"),
+            ("::core::builtins::i8", "_sidex.I8"),
+            ("::core::builtins::i16", "_sidex.I16"),
+            ("::core::builtins::i32", "_sidex.I32"),
+            ("::core::builtins::i64", "_sidex.I64"),
+            ("::core::builtins::u8", "_sidex.U8"),
+            ("::core::builtins::u16", "_sidex.U16"),
+            ("::core::builtins::u32", "_sidex.U32"),
+            ("::core::builtins::u64", "_sidex.U64"),
+            ("::core::builtins::idx", "_sidex.Idx"),
+            ("::core::builtins::f32", "_sidex.F32"),
+            ("::core::builtins::f64", "_sidex.F64"),
+            ("::core::builtins::bool", "_sidex.Bool"),
+            ("::core::builtins::uuid", "_sidex.Uuid"),
+            ("::core::builtins::timestamp", "_sidex.Timestamp"),
+            ("::core::builtins::date", "_sidex.Date"),
+            ("::core::builtins::json", "_sidex.Json"),
             ("::core::builtins::Sequence", "list"),
             ("::core::builtins::Map", "dict"),
-            ("::meta::ir::Value", "typing.Any"),
         ] {
             self.table
                 .entry(path.to_owned())
@@ -220,6 +222,8 @@ impl Generator for PyGenerator {
             job.output.join("__init__.py"),
             generate_init(&bundle_ctx).to_string(),
         )?;
+        // Types of Sidex's built-in types, shared by the schema modules.
+        std::fs::write(job.output.join("_sidex.py"), include_str!("runtime.py"))?;
         // PEP 561 marker for typed packages.
         std::fs::write(job.output.join("py.typed"), "")?;
 
@@ -434,6 +438,8 @@ fn generate_schema(ctx: &SchemaCtx) -> Result<Code> {
 
         import pydantic  # noqa: F401
         import pydantic_core  # noqa: F401
+
+        from . import _sidex  # noqa: F401
         @(@preamble_blocks)*
         @(@defs)*
         "#
@@ -711,8 +717,15 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
         );
 
     let docs_lines = doc_comment_lines(def);
+    // Like the other languages, implicitly tagged variants decode the first
+    // case that matches.
+    let first_match = union_members.len() > 1 && ty_json.tagged == JsonTaggedAttr::Implicitly;
     let alias_decl = if use_discriminator {
         quote!("type @name@params = Annotated[@union_expr, pydantic.Discriminator(\"@tag_py\")]")
+    } else if first_match {
+        quote!(
+            "type @name@params = Annotated[@union_expr, pydantic.Field(union_mode=\"left_to_right\")]"
+        )
     } else {
         quote!("type @name@params = @union_expr")
     };
@@ -1225,7 +1238,12 @@ fn sanitize_py_name(name: &str) -> String {
 }
 
 fn escape_docstring(s: &str) -> String {
-    s.replace('\\', "\\\\").replace("\"\"\"", "\\\"\\\"\\\"")
+    let escaped = s.replace('\\', "\\\\").replace("\"\"\"", "\\\"\\\"\\\"");
+    // A quote right before the closing quotes would end the docstring early.
+    match escaped.strip_suffix('"') {
+        Some(rest) => format!("{rest}\\\""),
+        None => escaped,
+    }
 }
 
 fn escape_string_literal(s: &str) -> String {
@@ -1320,5 +1338,22 @@ fn optional_block(code: Code) -> Vec<Code> {
         Vec::new()
     } else {
         vec![code]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Docstrings keep backslashes, triple quotes, and a final quote inside
+    /// the docstring.
+    #[test]
+    fn docstring_escaping() {
+        assert_eq!(escape_docstring(r#"a \ b"#), r#"a \\ b"#);
+        assert_eq!(escape_docstring(r#"a """ b"#), r#"a \"\"\" b"#);
+        assert_eq!(
+            escape_docstring(r#"the signal "no replica.""#),
+            r#"the signal "no replica.\""#
+        );
     }
 }

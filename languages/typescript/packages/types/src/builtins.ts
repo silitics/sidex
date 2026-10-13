@@ -1,4 +1,18 @@
-import Nominal from "./nominal"
+/**
+ * Types of Sidex's built-in types in their JSON representation.
+ *
+ * Values of these types are what `JSON.parse` returns for data produced by any
+ * Sidex implementation. 64-bit integers beyond `Number.MAX_SAFE_INTEGER` are
+ * decimal strings, because JavaScript numbers cannot represent them exactly.
+ * Non-finite floats are the strings
+ * `"NaN"`, `"+Infinity"`, and `"-Infinity"`, because JSON numbers cannot
+ * represent them. The companion objects convert between these representations
+ * and JavaScript values.
+ *
+ * @module
+ */
+
+import type { Nominal } from "./nominal.js"
 
 /**
  * A string.
@@ -8,234 +22,357 @@ import Nominal from "./nominal"
 export type String = string
 
 /**
- * A Base64-encoded sequence of bytes.
- */
-export type Bytes = Nominal<string, "::std::builtins::bytes">
-
-/**
- * An 8-bit signed integer.
- */
-export type I8 = Nominal<number, "::std::builtins::i8">
-
-export const I8 = {
-  ZERO: 0 as I8,
-  ONE: 1 as I8,
-  MIN: -127 as I8,
-  MAX: 127 as I8,
-  from: toI8,
-  is: isI8,
-  default: () => 0 as I8,
-}
-
-/**
- * Convert any number to an 8-bit signed integer.
- *
- * @param x The number to convert.
- * @returns The 8-bit signed integer.
- */
-export function toI8(x: number): I8 {
-  return (((x | 0) << 24) >> 24) as I8
-}
-
-/**
- * Check whether the provided number is an 8-bit signed integer.
- *
- * @param x The number to check.
- * @returns Indicates whether the number is an 8-bit signed integer.
- */
-export function isI8(x: number): x is I8 {
-  return toI8(x) === x
-}
-
-/**
- * A 16-bit signed integer.
- */
-export type I16 = Nominal<number, "::std::builtins::i16">
-
-/**
- * Convert any number to an 16-bit signed integer.
- *
- * @param x The number to convert.
- * @returns The 16-bit signed integer.
- */
-export function toI16(x: number): I16 {
-  return (((x | 0) << 16) >> 16) as I16
-}
-
-/**
- * Check whether the provided number is an 16-bit signed integer.
- *
- * @param x The number to check.
- * @returns Indicates whether the number is an 16-bit signed integer.
- */
-export function isI16(x: number): x is I16 {
-  return toI16(x) === x
-}
-
-/**
- * A 32-bit signed integer.
- */
-export type I32 = Nominal<number, "::std::builtins::i32">
-
-/**
- * A 64-bit signed integer.
- */
-export type I64 = Nominal<string, "::std::builtins::i64">
-
-/**
- * A signed integer.
- */
-export type SignedInt = I8 | I16 | I32 | I64
-
-/**
- * An 8-bit unsigned integer.
- */
-export type U8 = Nominal<number, "::std::builtins::u8">
-
-/**
- * Convert any number to an 8-bit unsigned integer.
- *
- * @param x The number to convert.
- * @returns The 8-bit unsigned integer.
- */
-export function toU8(x: number): U8 {
-  return (x && 0xff) as U8
-}
-
-/**
- * Check whether the provided number is an 8-bit unsigned integer.
- *
- * @param x The number to check.
- * @returns Indicates whether the number is an 8-bit unsigned integer.
- */
-export function isU8(x: number): x is U8 {
-  return toU8(x) === x
-}
-
-/**
- * A 16-bit unsigned integer.
- */
-export type U16 = Nominal<number, "::std::builtins::u16">
-
-/**
- * Convert any number to an 16-bit unsigned integer.
- *
- * @param x The number to convert.
- * @returns The 16-bit unsigned integer.
- */
-export function toU16(x: number): U16 {
-  return (x && 0xffff) as U16
-}
-
-/**
- * Check whether the provided number is an 16-bit unsigned integer.
- *
- * @param x The number to check.
- * @returns Indicates whether the number is an 16-bit unsigned integer.
- */
-export function isU16(x: number): x is U16 {
-  return toU16(x) === x
-}
-
-/**
- * A 32-bit unsigned integer.
- */
-export type U32 = Nominal<number, "::std::builtins::u32">
-
-/**
- * A 64-bit unsigned integer.
- */
-export type U64 = Nominal<string | number, "::std::builtins::u64">
-
-/**
- * An unsigned integer.
- */
-export type UnsignedInt = U8 | U16 | U32 | U64
-
-/**
- * An integer.
- */
-export type Int = SignedInt | UnsignedInt
-
-/**
- * An index.
- */
-export type Idx = Nominal<number, "::std::builtins::idx">
-
-/**
- * Convert any number to an index.
- *
- * @param x The number to convert.
- * @returns The index.
- */
-export function toIdx(x: number): Idx {
-  // Remove the sign and truncate the number to 32 bits.
-  return (Math.abs(x) | 0) as Idx
-}
-
-/**
- * Check whether the provided number is an index.
- *
- * @param x The number to check.
- * @returns Indicates whether the number is an index.
- */
-export function isIdx(x: number): x is Idx {
-  return toIdx(x) === x
-}
-
-/**
- * A 32-bit floating point number.
- */
-export type F32 = Nominal<number | "+Infinity" | "-Infinity" | "NaN", "f32">
-
-/**
- * A 64-bit floating point number.
- */
-export type F64 = Nominal<number | "+Infinity" | "-Infinity" | "NaN", "f64">
-
-/**
- * A floating point number.
- */
-export type Float = F32 | F64
-
-/**
- * A numeric value.
- */
-export type Numeric = Int | Idx | Float
-
-/**
- * Convert any numeric value to a JavaScript number.
- *
- * @param x The numeric value to convert.
- * @returns The JavaScript number.
- */
-function toNumber(x: Numeric): number {
-  switch (typeof x) {
-    case "number":
-      return x
-    case "string":
-      switch (x) {
-        case "+Infinity":
-          return +Infinity
-        case "-Infinity":
-          return -Infinity
-        case "NaN":
-          return NaN
-        default:
-          return Number.parseInt(x)
-      }
-  }
-}
-
-/**
  * A boolean.
  */
 export type Bool = boolean
 
+// ---- Small integers --------------------------------------------------------
+
 /**
- *
+ * An 8-bit signed integer.
  */
-export type Unit = null
+export type I8 = Nominal<number, "::core::builtins::i8">
+
+export const I8 = smallInt<I8>(-128, 127)
+
+/**
+ * A 16-bit signed integer.
+ */
+export type I16 = Nominal<number, "::core::builtins::i16">
+
+export const I16 = smallInt<I16>(-32_768, 32_767)
+
+/**
+ * A 32-bit signed integer.
+ */
+export type I32 = Nominal<number, "::core::builtins::i32">
+
+export const I32 = smallInt<I32>(-2_147_483_648, 2_147_483_647)
+
+/**
+ * An 8-bit unsigned integer.
+ */
+export type U8 = Nominal<number, "::core::builtins::u8">
+
+export const U8 = smallInt<U8>(0, 255)
+
+/**
+ * A 16-bit unsigned integer.
+ */
+export type U16 = Nominal<number, "::core::builtins::u16">
+
+export const U16 = smallInt<U16>(0, 65_535)
+
+/**
+ * A 32-bit unsigned integer.
+ */
+export type U32 = Nominal<number, "::core::builtins::u32">
+
+export const U32 = smallInt<U32>(0, 4_294_967_295)
+
+/**
+ * An index into a sequence.
+ */
+export type Idx = Nominal<number, "::core::builtins::idx">
+
+export const Idx = smallInt<Idx>(0, Number.MAX_SAFE_INTEGER)
+
+/**
+ * Operations of an integer type represented as a JavaScript number.
+ */
+export interface SmallInt<T extends number> {
+  /** The smallest value. */
+  readonly MIN: T
+  /** The largest value. */
+  readonly MAX: T
+  /** Checks whether the value is an integer in the range of the type. */
+  is(value: unknown): value is T
+  /**
+   * Converts a number to the type.
+   *
+   * @throws {RangeError} If the number is not an integer in the range.
+   */
+  fromNumber(value: number): T
+}
+
+function smallInt<T extends number>(min: number, max: number): SmallInt<T> {
+  const is = (value: unknown): value is T =>
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= min &&
+    value <= max
+  return {
+    MIN: min as T,
+    MAX: max as T,
+    is,
+    fromNumber(value: number): T {
+      if (!is(value)) {
+        throw new RangeError(`${value} is not an integer in [${min}, ${max}]`)
+      }
+      return value
+    },
+  }
+}
+
+// ---- 64-bit integers -------------------------------------------------------
+
+// Declared before `I64` and `U64`, whose construction reads it.
+const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER)
+
+/**
+ * A 64-bit signed integer, represented as a number or, if its magnitude exceeds
+ * `Number.MAX_SAFE_INTEGER`, as a decimal string.
+ */
+export type I64 = Nominal<number | string, "::core::builtins::i64">
+
+export const I64 = bigInt<I64>(-(2n ** 63n), 2n ** 63n - 1n)
+
+/**
+ * A 64-bit unsigned integer, represented as a number or, if it exceeds
+ * `Number.MAX_SAFE_INTEGER`, as a decimal string.
+ */
+export type U64 = Nominal<number | string, "::core::builtins::u64">
+
+export const U64 = bigInt<U64>(0n, 2n ** 64n - 1n)
+
+/**
+ * Operations of a 64-bit integer type.
+ */
+export interface BigInt64<T extends number | string> {
+  /** The smallest value. */
+  readonly MIN: T
+  /** The largest value. */
+  readonly MAX: T
+  /**
+   * Checks whether the value is a safe integer or a decimal string in the
+   * range of the type.
+   */
+  is(value: unknown): value is T
+  /**
+   * Converts a `bigint` to the type.
+   *
+   * @throws {RangeError} If the value is out of range.
+   */
+  fromBigInt(value: bigint): T
+  /** Converts a value of the type to a `bigint`. This is exact. */
+  toBigInt(value: T): bigint
+  /**
+   * Converts a number to the type.
+   *
+   * @throws {RangeError} If the number is not a safe integer in the range.
+   */
+  fromNumber(value: number): T
+  /**
+   * Converts a value of the type to the nearest number.
+   *
+   * Values beyond `Number.MAX_SAFE_INTEGER` lose precision. Use
+   * {@link BigInt64.toBigInt} for exact values.
+   */
+  toNumber(value: T): number
+}
+
+function bigInt<T extends number | string>(
+  min: bigint,
+  max: bigint,
+): BigInt64<T> {
+  const inRange = (value: bigint) => value >= min && value <= max
+  const fromBigInt = (value: bigint): T => {
+    if (!inRange(value)) {
+      throw new RangeError(`${value} is not in [${min}, ${max}]`)
+    }
+    return (
+      -MAX_SAFE <= value && value <= MAX_SAFE ? Number(value) : value.toString()
+    ) as T
+  }
+  return {
+    MIN: fromBigInt(min),
+    MAX: fromBigInt(max),
+    is(value: unknown): value is T {
+      if (typeof value === "number") {
+        return Number.isSafeInteger(value) && inRange(BigInt(value))
+      }
+      return (
+        typeof value === "string" &&
+        (min < 0n ? /^-?[0-9]+$/ : /^[0-9]+$/).test(value) &&
+        inRange(BigInt(value))
+      )
+    },
+    fromBigInt,
+    toBigInt(value: T): bigint {
+      return BigInt(value)
+    },
+    fromNumber(value: number): T {
+      if (!Number.isSafeInteger(value)) {
+        throw new RangeError(`${value} is not a safe integer`)
+      }
+      return fromBigInt(BigInt(value))
+    },
+    toNumber(value: T): number {
+      return Number(value)
+    },
+  }
+}
+
+// ---- Floats ----------------------------------------------------------------
+
+/**
+ * Representations of non-finite floats. Writers use `"+Infinity"`, and
+ * readers also accept `"Infinity"`.
+ */
+export type NonFinite = "NaN" | "+Infinity" | "Infinity" | "-Infinity"
+
+/**
+ * A 32-bit float, represented as a number or, if it is not finite, as a string.
+ */
+export type F32 = Nominal<number | NonFinite, "::core::builtins::f32">
+
+export const F32 = float<F32>()
+
+/**
+ * A 64-bit float, represented as a number or, if it is not finite, as a string.
+ */
+export type F64 = Nominal<number | NonFinite, "::core::builtins::f64">
+
+export const F64 = float<F64>()
+
+/**
+ * Operations of a float type.
+ */
+export interface Float<T> {
+  /** Checks whether the value is a finite number or an accepted non-finite string. */
+  is(value: unknown): value is T
+  /** Converts a number to the type. */
+  fromNumber(value: number): T
+  /** Converts a value of the type to a number. */
+  toNumber(value: T): number
+}
+
+function float<T>(): Float<T> {
+  return {
+    is(value: unknown): value is T {
+      return (
+        (typeof value === "number" && Number.isFinite(value)) ||
+        value === "NaN" ||
+        value === "Infinity" ||
+        value === "+Infinity" ||
+        value === "-Infinity"
+      )
+    },
+    fromNumber(value: number): T {
+      if (Number.isFinite(value)) return value as T
+      if (Number.isNaN(value)) return "NaN" as T
+      return (value > 0 ? "+Infinity" : "-Infinity") as T
+    },
+    toNumber(value: T): number {
+      if (typeof value === "number") return value
+      switch (value as string) {
+        case "NaN":
+          return NaN
+        case "Infinity":
+        case "+Infinity":
+          return Infinity
+        case "-Infinity":
+          return -Infinity
+        default:
+          throw new TypeError(`${value} is not a float`)
+      }
+    },
+  }
+}
+
+// ---- Bytes -----------------------------------------------------------------
+
+/**
+ * A sequence of bytes, represented as a Base64 string with padding.
+ */
+export type Bytes = Nominal<string, "::core::builtins::bytes">
+
+export const Bytes = {
+  /** Encodes bytes. */
+  fromUint8Array(bytes: Uint8Array): Bytes {
+    let binary = ""
+    for (const byte of bytes) binary += String.fromCharCode(byte)
+    return btoa(binary) as Bytes
+  },
+  /** Decodes bytes. */
+  toUint8Array(value: Bytes): Uint8Array {
+    const binary = atob(value)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+    return bytes
+  },
+}
+
+// ---- Identifiers and time --------------------------------------------------
+
+/**
+ * A UUID, represented as a lowercase hyphenated string.
+ */
+export type Uuid = Nominal<string, "::core::builtins::uuid">
+
+export const Uuid = {
+  /** Checks whether the value is a hyphenated UUID string. */
+  is(value: unknown): value is Uuid {
+    return (
+      typeof value === "string" &&
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+        value,
+      )
+    )
+  },
+  /**
+   * Normalizes a hyphenated UUID string.
+   *
+   * @throws {TypeError} If the string is not a hyphenated UUID.
+   */
+  parse(value: string): Uuid {
+    if (!Uuid.is(value)) throw new TypeError(`${value} is not a UUID`)
+    return value.toLowerCase() as Uuid
+  },
+}
+
+/**
+ * An instant in time with nanosecond precision, represented as an RFC 3339
+ * string in UTC.
+ */
+export type Timestamp = Nominal<string, "::core::builtins::timestamp">
+
+export const Timestamp = {
+  /** Converts a JavaScript date. */
+  fromDate(date: globalThis.Date): Timestamp {
+    return date.toISOString() as Timestamp
+  },
+  /** Converts to a JavaScript date, which has millisecond precision. */
+  toDate(value: Timestamp): globalThis.Date {
+    return new globalThis.Date(value)
+  },
+  /** Returns the current time. */
+  now(): Timestamp {
+    return new globalThis.Date().toISOString() as Timestamp
+  },
+}
+
+/**
+ * A date in the Gregorian calendar, represented as `YYYY-MM-DD`.
+ */
+export type Date = Nominal<string, "::core::builtins::date">
+
+export const Date = {
+  /** Checks whether the value is a YYYY-MM-DD string. */
+  is(value: unknown): value is Date {
+    return (
+      typeof value === "string" && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)
+    )
+  },
+}
+
+// ---- Compound types --------------------------------------------------------
+
+/**
+ * A JSON value.
+ */
+export type Json =
+  null | boolean | number | string | Json[] | { [key: string]: Json }
 
 /**
  * A sequence.
@@ -243,66 +380,25 @@ export type Unit = null
 export type Sequence<T> = T[]
 
 /**
- * A map represented as a sequence of key-value pairs.
- */
-export type EntriesMap<K, V> = [K, V][]
-
-/**
- * A map represented as an object.
- */
-export type ObjectMap<K extends string, V> = { [key in K]?: V }
-
-export function entries<K extends string, V>(map: ObjectMap<K, V>): [K, V][]
-
-export function entries<K, V>(map: EntriesMap<K, V>): [K, V][]
-
-/**
- * The entries of the map.
+ * A map, represented as an object with keys in their text representation.
  *
- * @param map
- * @returns
+ * Maps with keys from a finite set, such as the cases of a string enum, may
+ * lack keys. Maps with arbitrary string keys have an index signature.
  */
-export function entries<K, V>(map: any): any {
-  if (Array.isArray(map)) {
-    return map
-  } else {
-    return Object.entries(map) as unknown as [K, V][]
-  }
+export type ObjectMap<K extends string, V> = string extends K
+  ? { [key: string]: V }
+  : { [key in K]?: V }
+
+/**
+ * Returns the entries of a map.
+ *
+ * Unlike `Object.entries`, the entries keep the map's key type, such as a
+ * nominal identifier type, and omit absent keys.
+ */
+export function entries<K extends string, V>(
+  map: ObjectMap<K, V>,
+): [K, Exclude<V, undefined>][] {
+  return (Object.entries(map) as [K, V][]).filter(
+    (entry): entry is [K, Exclude<V, undefined>] => entry[1] !== undefined,
+  )
 }
-
-declare const __indexMap: unique symbol
-
-function getIndexMap<K, V>(map: EntriesMap<K, V>): Map<K, number> {
-  if (map.hasOwnProperty(__indexMap)) {
-    return (map as any)[__indexMap]
-  } else {
-    const map = new Map()
-    map.forEach(([key, _], index) => map.set(key, index))
-    return map
-  }
-}
-
-// export function get<K, V>(map: AnyMap<K, V>, key: K): V | undefined {
-//   if (Array.isArray(map)) {
-//     const index = getIndexMap(map).get(key)
-//     return index === undefined ? undefined : (map[index] as [K, V])[1]
-//   } else {
-//     return (map as ObjectMap<any, V>)[key]
-//   }
-// }
-
-// export function set<K, V>(map: AnyMap<K, V>, key: K, value: V) {
-//   if (Array.isArray(map)) {
-//     const indexMap = getIndexMap(map)
-//     const existingIndex = indexMap.get(key)
-//     if (existingIndex !== undefined) {
-//       map[existingIndex] = [key, value]
-//     } else {
-//       const index = map.length
-//       map.push([key, value])
-//       indexMap.set(key, index)
-//     }
-//   } else {
-//     return (map as ObjectMap<any, V>)[key]
-//   }
-// }

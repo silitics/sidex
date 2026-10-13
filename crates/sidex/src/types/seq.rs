@@ -1,0 +1,281 @@
+//! Shared sequences.
+
+use std::borrow::Borrow;
+use std::fmt;
+use std::ops::Deref;
+use std::ops::DerefMut;
+use std::sync::Arc;
+
+use crate::decode::Decode;
+use crate::decode::DecodeError;
+use crate::decode::Decoder;
+use crate::encode::Encode;
+use crate::encode::EncodeError;
+use crate::encode::SeqView;
+use crate::encode::View;
+use crate::shape::Shape;
+use crate::shape::Shaped;
+
+/// Sequence that is cheap to clone.
+///
+/// Clones share the elements. Mutation copies the elements first if they are
+/// shared ("copy on write").
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Seq<T>(Arc<Vec<T>>);
+
+impl<T> Seq<T> {
+    /// Creates an empty sequence.
+    pub fn new() -> Self {
+        Self(Arc::new(Vec::new()))
+    }
+
+    /// Creates an empty sequence with space for at least `capacity` elements.
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self(Arc::new(Vec::with_capacity(capacity)))
+    }
+
+    /// Returns the elements as a slice.
+    pub fn as_slice(&self) -> &[T] {
+        &self.0
+    }
+
+    /// Returns `true` if the sequence contains an element equal to `item`.
+    ///
+    /// Unlike [`slice::contains`], the item may have a different type, for
+    /// instance, a `Seq<Str>` may be searched for a `String`.
+    pub fn contains<U: ?Sized>(&self, item: &U) -> bool
+    where
+        T: PartialEq<U>,
+    {
+        self.0.iter().any(|element| element == item)
+    }
+}
+
+impl<T: Clone> Seq<T> {
+    /// Returns the elements for mutation, copying them if they are shared.
+    pub fn to_mut(&mut self) -> &mut Vec<T> {
+        Arc::make_mut(&mut self.0)
+    }
+
+    /// Appends an element.
+    pub fn push(&mut self, item: T) {
+        self.to_mut().push(item);
+    }
+
+    /// Removes the last element and returns it.
+    pub fn pop(&mut self) -> Option<T> {
+        self.to_mut().pop()
+    }
+
+    /// Inserts an element at the given index.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the index is greater than the length.
+    pub fn insert(&mut self, index: usize, item: T) {
+        self.to_mut().insert(index, item);
+    }
+
+    /// Removes the element at the given index and returns it.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the index is out of bounds.
+    pub fn remove(&mut self, index: usize) -> T {
+        self.to_mut().remove(index)
+    }
+
+    /// Retains the elements for which `keep` returns `true`.
+    pub fn retain(&mut self, keep: impl FnMut(&T) -> bool) {
+        self.to_mut().retain(keep);
+    }
+
+    /// Shortens the sequence to the given length.
+    pub fn truncate(&mut self, len: usize) {
+        self.to_mut().truncate(len);
+    }
+
+    /// Removes all elements.
+    pub fn clear(&mut self) {
+        *self = Self::new();
+    }
+
+    /// Removes consecutive elements for which `same` returns `true`.
+    pub fn dedup_by(&mut self, same: impl FnMut(&mut T, &mut T) -> bool) {
+        self.to_mut().dedup_by(same);
+    }
+
+    /// Removes consecutive elements with the same key.
+    pub fn dedup_by_key<K: PartialEq>(&mut self, key: impl FnMut(&mut T) -> K) {
+        self.to_mut().dedup_by_key(key);
+    }
+}
+
+impl<T: Clone + PartialEq> Seq<T> {
+    /// Removes consecutive repeated elements.
+    pub fn dedup(&mut self) {
+        self.to_mut().dedup();
+    }
+}
+
+impl<T> Clone for Seq<T> {
+    fn clone(&self) -> Self {
+        Self(self.0.clone())
+    }
+}
+
+impl<T> Default for Seq<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<T> Deref for Seq<T> {
+    type Target = [T];
+
+    fn deref(&self) -> &[T] {
+        &self.0
+    }
+}
+
+impl<T: Clone> DerefMut for Seq<T> {
+    fn deref_mut(&mut self) -> &mut [T] {
+        self.to_mut()
+    }
+}
+
+impl<T: fmt::Debug> fmt::Debug for Seq<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_list().entries(self.iter()).finish()
+    }
+}
+
+impl<T> AsRef<[T]> for Seq<T> {
+    fn as_ref(&self) -> &[T] {
+        self
+    }
+}
+
+impl<T> Borrow<[T]> for Seq<T> {
+    fn borrow(&self) -> &[T] {
+        self
+    }
+}
+
+impl<T: PartialEq<U>, U> PartialEq<Vec<U>> for Seq<T> {
+    fn eq(&self, other: &Vec<U>) -> bool {
+        self.as_slice() == other.as_slice()
+    }
+}
+
+impl<T: PartialEq<U>, U> PartialEq<[U]> for Seq<T> {
+    fn eq(&self, other: &[U]) -> bool {
+        self.as_slice() == other
+    }
+}
+
+impl<T: PartialEq<U>, U, const N: usize> PartialEq<[U; N]> for Seq<T> {
+    fn eq(&self, other: &[U; N]) -> bool {
+        self.as_slice() == other
+    }
+}
+
+impl<T: PartialEq<U>, U> PartialEq<&[U]> for Seq<T> {
+    fn eq(&self, other: &&[U]) -> bool {
+        self.as_slice() == *other
+    }
+}
+
+impl<T: Clone> From<&[T]> for Seq<T> {
+    fn from(items: &[T]) -> Self {
+        Self(Arc::new(items.to_vec()))
+    }
+}
+
+impl<T, const N: usize> From<[T; N]> for Seq<T> {
+    fn from(items: [T; N]) -> Self {
+        Self(Arc::new(items.into()))
+    }
+}
+
+impl<T> From<Vec<T>> for Seq<T> {
+    fn from(items: Vec<T>) -> Self {
+        Self(Arc::new(items))
+    }
+}
+
+impl<T: Clone> From<Seq<T>> for Vec<T> {
+    fn from(items: Seq<T>) -> Self {
+        Arc::unwrap_or_clone(items.0)
+    }
+}
+
+impl<T> FromIterator<T> for Seq<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        Self(Arc::new(iter.into_iter().collect()))
+    }
+}
+
+impl<T: Clone> Extend<T> for Seq<T> {
+    fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
+        self.to_mut().extend(iter);
+    }
+}
+
+impl<'s, T> IntoIterator for &'s Seq<T> {
+    type Item = &'s T;
+    type IntoIter = std::slice::Iter<'s, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
+impl<'s, T: Clone> IntoIterator for &'s mut Seq<T> {
+    type Item = &'s mut T;
+    type IntoIter = std::slice::IterMut<'s, T>;
+
+    /// Iterates over the elements for mutation, copying them if they are shared.
+    fn into_iter(self) -> Self::IntoIter {
+        self.to_mut().iter_mut()
+    }
+}
+
+impl<T: Clone> IntoIterator for Seq<T> {
+    type Item = T;
+    type IntoIter = std::vec::IntoIter<T>;
+
+    /// Iterates over the elements, copying them if they are shared.
+    fn into_iter(self) -> Self::IntoIter {
+        Vec::from(self).into_iter()
+    }
+}
+
+impl<T: Shaped> Shaped for Seq<T> {
+    const SHAPE: &'static Shape = <Vec<T>>::SHAPE;
+}
+
+impl<T: Encode> Encode for Seq<T> {
+    fn encode(&self) -> View<'_> {
+        View::Seq(self)
+    }
+}
+
+impl<T: Encode> SeqView for Seq<T> {
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn each(
+        &self,
+        f: &mut dyn FnMut(View<'_>) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError> {
+        self.iter().try_for_each(|item| f(item.encode()))
+    }
+}
+
+impl<T: Decode> Decode for Seq<T> {
+    fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
+        Vec::decode(decoder).map(Seq::from)
+    }
+}

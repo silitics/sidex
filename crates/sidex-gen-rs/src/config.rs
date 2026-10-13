@@ -30,7 +30,7 @@ pub enum OpaqueLowering {
     Native,
     /// Ignore `#[rust(typ = ...)]` and lower the opaque to the JSON-primitive
     /// native type implied by its `#[json(type = ...)]` attribute, defaulting
-    /// to `serde_json::Value` when no JSON attribute is set.
+    /// to a freeform value when no JSON attribute is set.
     ///
     /// Use this for conformance test drivers, where every opaque should
     /// round-trip through its raw JSON shape rather than a strict native
@@ -57,8 +57,8 @@ impl TypesConfig {
             };
         }
         populate_table! {
-            "::core::builtins::string" => ::std::string::String,
-            "::core::builtins::bytes" => ::std::vec::Vec<u8>,
+            "::core::builtins::string" => ::sidex::types::Str,
+            "::core::builtins::bytes" => ::sidex::types::Bytes,
             "::core::builtins::i8" => i8,
             "::core::builtins::i16" => i16,
             "::core::builtins::i32" => i32,
@@ -71,10 +71,12 @@ impl TypesConfig {
             "::core::builtins::f32" => f32,
             "::core::builtins::f64" => f64,
             "::core::builtins::bool" => bool,
-            "::core::builtins::unit" => ::std::unit,
-            "::core::builtins::Sequence" => ::std::vec::Vec,
-            "::core::builtins::Map" => ::std::collections::HashMap,
-            "::meta::ir::Value" => ::serde_json::Value,
+            "::core::builtins::uuid" => ::sidex::types::Uuid,
+            "::core::builtins::timestamp" => ::sidex::types::Timestamp,
+            "::core::builtins::date" => ::sidex::types::Date,
+            "::core::builtins::json" => ::sidex::types::JsonValue,
+            "::core::builtins::Sequence" => ::sidex::types::Seq,
+            "::core::builtins::Map" => ::sidex::types::Map,
         };
     }
 }

@@ -130,14 +130,19 @@ pub(crate) fn render<W: std::io::Write>(
         write!(writer, "\n\n")?;
     }
 
-    // 3️⃣ Print further useful information.
-    write!(
-        writer,
-        "\nCreated At:\n   {}:{}:{}\n\n",
-        diagnostic.created_at.file(),
-        diagnostic.created_at.line(),
-        diagnostic.created_at.column()
-    )?;
+    // 3️⃣ Print where Sidex created the diagnostic, which helps debugging Sidex.
+    if cfg!(debug_assertions) {
+        write!(
+            writer,
+            "\nCreated At:\n   {}:{}:{}\n",
+            diagnostic.created_at.file(),
+            diagnostic.created_at.line(),
+            diagnostic.created_at.column()
+        )?;
+    }
+
+    // Separate the diagnostic from the next one.
+    writeln!(writer)?;
 
     Ok(())
 }

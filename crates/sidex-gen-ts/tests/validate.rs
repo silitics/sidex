@@ -158,43 +158,20 @@ fn generated_code_runs_under_node() {
     let validate_dest = work.path().join("sidex_validate.ts");
     std::fs::copy(&validate_src, &validate_dest).expect("copy validate runtime");
 
-    // Minimal `@sidex/types` shim — only `Nominal` and the builtins used
-    // by the fixture are needed.
-    std::fs::write(
-        work.path().join("sidex_types.ts"),
-        r#"
-            declare const SIDEX_PATH_SYMBOL: unique symbol;
-            type N<P extends string> = { [SIDEX_PATH_SYMBOL]: { [key in P]: null } };
-            export type Nominal<T, P extends string> = T & N<P>;
-            export namespace builtins {
-                export type String = string;
-                export type Bytes = Uint8Array;
-                export type I8 = number;
-                export type I16 = number;
-                export type I32 = number;
-                export type I64 = number;
-                export type U8 = number;
-                export type U16 = number;
-                export type U32 = number;
-                export type U64 = number;
-                export type Idx = number;
-                export type F32 = number;
-                export type F64 = number;
-                export type Bool = boolean;
-                export type Unit = null;
-                export type Sequence<T> = T[];
-                export type ObjectMap<K extends string, V> = Record<K, V>;
-            }
-        "#,
-    )
-    .unwrap();
+    let types_src = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../languages/typescript/packages/types/src");
+    let types_dest = work.path().join("sidex_types");
+    std::fs::create_dir(&types_dest).unwrap();
+    for file in ["index.ts", "builtins.ts", "nominal.ts"] {
+        std::fs::copy(types_src.join(file), types_dest.join(file)).expect("copy types runtime");
+    }
 
     // Rewrite generated import paths to point at the local runtime stubs.
     let data_path = gen_dir.join("data.ts");
     let data = std::fs::read_to_string(&data_path).expect("data.ts");
     let data = data
         .replace("@sidex/validate", "../sidex_validate")
-        .replace("@sidex/types", "../sidex_types");
+        .replace("@sidex/types", "../sidex_types/index");
     std::fs::write(&data_path, data).unwrap();
 
     // A driver script that runs each validator on inputs and prints a JSON
@@ -216,7 +193,7 @@ record("user_valid", validators.User.validate({
     email: "test@example.com",
     age: 30,
     nickname: "rusty",
-}));
+} as any));
 record("user_empty_email", validators.User.validate({
     email: "",
     age: 30,
@@ -231,7 +208,7 @@ record("user_optional_empty", validators.User.validate({
     email: "x",
     age: 1,
     nickname: "",
-}));
+} as any));
 const slugBad = validators.Slug.tryNew("");
 if (slugBad.ok) {
     reports["slug_bad_try_new"] = [];
@@ -250,7 +227,19 @@ record("code_format_override", validators.CodeOnly.validate({ code: "lower" } as
 // leaving room for other plugins to attach sibling methods later.
 record("field_email_too_short", validators.User.fields.email.validate(""));
 record("field_email_ok", validators.User.fields.email.validate("user@example.com"));
-record("field_age_oor", validators.User.fields.age.validate(200));
+record("field_age_oor", validators.User.fields.age.validate(200 as any));
+
+// 64-bit integers are strings and compared exactly, also beyond 2^53.
+const limits = {
+    maxSize: "9007199254740993",
+    ratio: "Infinity",
+    minValue: "-5",
+    maxValue: "9223372036854775807",
+} as any;
+record("limits_valid", validators.Limits.validate(limits));
+record("limits_too_big", validators.Limits.validate({ ...limits, maxSize: "9007199254740994" }));
+record("limits_ratio", validators.Limits.validate({ ...limits, ratio: 0.5 }));
+record("limits_order", validators.Limits.validate({ ...limits, minValue: "10", maxValue: "9" }));
 
 console.log(JSON.stringify(reports));
 "#,
@@ -270,7 +259,7 @@ console.log(JSON.stringify(reports));
                 "skipLibCheck": true,
                 "lib": ["es2020", "dom"]
             },
-            "include": ["driver.ts", "sidex_validate.ts", "sidex_types.ts", "gen/**/*.ts"]
+            "include": ["driver.ts", "sidex_validate.ts", "sidex_types/*.ts", "gen/**/*.ts"]
         }"#,
     )
     .unwrap();
@@ -321,22 +310,22 @@ console.log(JSON.stringify(reports));
     assert!(
         codes_for("user_empty_email")
             .iter()
-            .any(|(p, c)| p == "/email" && c == "min_size"),
-        "expected /email min_size, got {:?}",
+            .any(|(p, c)| p == "email" && c == "min_size"),
+        "expected email min_size, got {:?}",
         codes_for("user_empty_email"),
     );
     assert!(
         codes_for("user_age_oor")
             .iter()
-            .any(|(p, c)| p == "/age" && c == "max"),
-        "expected /age max, got {:?}",
+            .any(|(p, c)| p == "age" && c == "max"),
+        "expected age max, got {:?}",
         codes_for("user_age_oor"),
     );
     assert!(
         codes_for("user_optional_empty")
             .iter()
-            .any(|(p, c)| p == "/nickname" && c == "min_size"),
-        "expected /nickname min_size, got {:?}",
+            .any(|(p, c)| p == "nickname" && c == "min_size"),
+        "expected nickname min_size, got {:?}",
         codes_for("user_optional_empty"),
     );
     assert!(
@@ -359,12 +348,12 @@ console.log(JSON.stringify(reports));
     );
 
     // Per-field validators: standalone `User.fields.<name>.validate(value)`.
-    // The path on errors is rooted at `/` (not `/email`) since the caller
-    // passes the value directly, not a nested object.
+    // The path on errors is the root (not `email`) since the caller passes
+    // the value directly, not a nested object.
     assert!(
         codes_for("field_email_too_short")
             .iter()
-            .any(|(p, c)| p == "/" && c == "min_size"),
+            .any(|(p, c)| p.is_empty() && c == "min_size"),
         "expected per-field email min_size, got {:?}",
         codes_for("field_email_too_short"),
     );
@@ -373,6 +362,20 @@ console.log(JSON.stringify(reports));
         codes_for("field_age_oor").iter().any(|(_, c)| c == "max"),
         "expected per-field age max, got {:?}",
         codes_for("field_age_oor"),
+    );
+
+    assert_eq!(codes_for("limits_valid"), Vec::<(String, String)>::new());
+    assert_eq!(
+        codes_for("limits_too_big"),
+        vec![("maxSize".to_owned(), "max".to_owned())]
+    );
+    assert_eq!(
+        codes_for("limits_ratio"),
+        vec![("ratio".to_owned(), "ne".to_owned())]
+    );
+    assert_eq!(
+        codes_for("limits_order"),
+        vec![(String::new(), "invalid".to_owned())]
     );
 }
 

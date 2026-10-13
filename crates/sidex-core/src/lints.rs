@@ -191,6 +191,6 @@ fn collect_paths_in_type<'a>(typ: &'a ast::TypeExpr, out: &mut Vec<&'a ast::Path
             collect_paths_in_type(&m.key, out);
             collect_paths_in_type(&m.value, out);
         }
-        ast::TypeExpr::Unit => {}
+        ast::TypeExpr::Missing => {}
     }
 }
