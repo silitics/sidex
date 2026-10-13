@@ -32,6 +32,15 @@ fn toml_text() {
     assert_eq!(toml::from_str::<Device>(&text).unwrap(), device);
 }
 
+/// Strict TOML reading rejects unknown fields.
+#[test]
+fn toml_strict() {
+    let text = "id = 1\ncolor = \"red\"\n";
+    assert!(toml::from_str::<Device>(text).is_ok());
+    let error = toml::from_str_strict::<Device>(text).unwrap_err();
+    assert_eq!(error.to_string(), "color: unknown field `color`");
+}
+
 /// TOML accepts native date-times for timestamps and cannot represent `null`.
 #[test]
 fn toml_specifics() {

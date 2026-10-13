@@ -39,8 +39,19 @@ pub fn to_string_pretty<T: Encode + ?Sized>(value: &T) -> Result<String, EncodeE
 
 /// Reads a value from TOML text.
 pub fn from_str<T: Decode>(text: &str) -> Result<T, DecodeError> {
+    json::from_value(&parse(text)?)
+}
+
+/// Reads a value from TOML text and rejects unknown fields (see
+/// [`json::from_value_strict`]).
+pub fn from_str_strict<T: Decode>(text: &str) -> Result<T, DecodeError> {
+    json::from_value_strict(&parse(text)?)
+}
+
+/// Parses TOML text as a freeform value.
+fn parse(text: &str) -> Result<Value, DecodeError> {
     let table: toml::Table = toml::from_str(text).map_err(DecodeError::new)?;
-    json::from_value(&from_toml(toml::Value::Table(table)))
+    Ok(from_toml(toml::Value::Table(table)))
 }
 
 /// Converts a TOML value into a freeform value.
