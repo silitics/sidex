@@ -1,12 +1,37 @@
-//! Conversions between freeform values and `serde_json` values.
+//! Interoperability between freeform values and `serde_json` values.
+
+use std::borrow::Cow;
 
 use base64::Engine;
 
 use super::repr::BASE64;
 use super::repr::non_finite;
+use crate::Decode;
+use crate::DecodeError;
+use crate::Decoder;
+use crate::Encode;
+use crate::Shape;
+use crate::Shaped;
 use crate::Value;
+use crate::View;
 use crate::types::Map;
 use crate::types::Str;
+
+impl Shaped for serde_json::Value {
+    const SHAPE: &'static Shape = Value::SHAPE;
+}
+
+impl Encode for serde_json::Value {
+    fn encode(&self) -> View<'_> {
+        View::Value(Cow::Owned(Value::from(self.clone())))
+    }
+}
+
+impl Decode for serde_json::Value {
+    fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
+        decoder.value().map(Self::from)
+    }
+}
 
 /// Converts the value like the JSON format writes it.
 ///
@@ -112,5 +137,15 @@ mod tests {
         );
         assert_eq!(serde_json::Value::from(value), json);
         assert_eq!(serde_json::Value::from(Value::Float(f64::NAN)), "NaN");
+    }
+
+    /// `serde_json` values encode and decode like freeform values.
+    #[test]
+    fn traits() {
+        let json = serde_json::json!({ "count": 1, "tags": ["a", null] });
+        let text = crate::formats::json::to_string(&json).unwrap();
+        assert_eq!(text, r#"{"count":1,"tags":["a",null]}"#);
+        let decoded: serde_json::Value = crate::formats::json::from_str(&text).unwrap();
+        assert_eq!(decoded, json);
     }
 }

@@ -115,8 +115,9 @@
 //! - `toml`: TOML format (see [`formats`]).
 //! - `serde-1`: Interoperability with Serde (see `serde`).
 //! - `indexmap-2`, `jiff-02`, `uuid-1`: Conversions to and from types of third-party
-//!   crates (see [`types`]).
-//! - `serde_json-1`: Conversions between [`Value`] and `serde_json::Value`.
+//!   crates and, for their scalar types, implementations of the traits (see [`types`]).
+//! - `serde_json-1`: Conversions between [`Value`] and `serde_json::Value`, which also
+//!   implements the traits like [`Value`].
 //! - `schemars-1`: Schemas for `schemars` (see [`formats::json`]).
 //! - `sqlx-08`, `rusqlite-037`: Storing strings in SQL databases with `sqlx` or
 //!   `rusqlite`.
