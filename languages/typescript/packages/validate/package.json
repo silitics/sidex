@@ -1,6 +1,6 @@
 {
   "name": "@sidex/validate",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Runtime support for Sidex's validation extension.",
   "author": "Silitics GmbH <info@silitics.com>",
   "license": "MIT OR Apache-2.0",
