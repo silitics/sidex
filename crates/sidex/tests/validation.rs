@@ -125,17 +125,17 @@ fn field_rules() {
             (
                 "name".to_owned(),
                 "max_size",
-                "Value exceeds the maximum size.".to_owned()
+                "JsonValue exceeds the maximum size.".to_owned()
             ),
             (
                 "name".to_owned(),
                 "regex",
-                "Value does not match the required pattern.".to_owned()
+                "JsonValue does not match the required pattern.".to_owned()
             ),
             (
                 "retries".to_owned(),
                 "max",
-                "Value is above the maximum.".to_owned()
+                "JsonValue is above the maximum.".to_owned()
             ),
         ]
     );
@@ -164,7 +164,11 @@ fn record_rules() {
     assert!(validate(&window(5, None)).is_ok());
     assert_eq!(
         violations(&window(5, Some(3))),
-        [(String::new(), "invalid", "Value is not valid.".to_owned())]
+        [(
+            String::new(),
+            "invalid",
+            "JsonValue is not valid.".to_owned()
+        )]
     );
 }
 

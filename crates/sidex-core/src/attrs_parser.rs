@@ -309,7 +309,7 @@ fn parse_node_attrs(
     ir: &ir::Ir,
     enclosing_schema: ir::SchemaIdx,
     markers: SchemaMarkers,
-) -> HashMap<String, sidex::Value> {
+) -> HashMap<String, sidex::JsonValue> {
     if attrs.is_empty() {
         return HashMap::new();
     }
@@ -344,7 +344,7 @@ fn parse_node_attrs(
         };
         match result {
             Ok(value) => {
-                typed.insert(plugin.to_owned(), sidex::Value::from(value));
+                typed.insert(plugin.to_owned(), sidex::JsonValue::from(value));
             }
             Err(diag) => {
                 diag.emit();

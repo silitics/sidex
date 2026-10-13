@@ -4,6 +4,7 @@ mod common;
 
 use common::Device;
 use common::Scalars;
+use sidex::JsonValue;
 use sidex::formats::json;
 use sidex::formats::toml;
 
@@ -51,17 +52,31 @@ fn toml_strict() {
     assert_eq!(error.to_string(), "color: unknown field `color`");
 }
 
-/// TOML accepts native date-times for timestamps and cannot represent `null`.
+/// TOML accepts native date-times for timestamps.
 #[test]
-fn toml_specifics() {
+fn toml_timestamps() {
     let scalars: Scalars = toml::from_str("timestamp = 2026-10-12T10:30:00+02:00").unwrap();
     assert_eq!(
         scalars.timestamp.unwrap().to_string(),
         "2026-10-12T08:30:00Z"
     );
-    let unit = Scalars {
-        unit: Some(()),
-        ..Scalars::default()
-    };
-    assert!(toml::to_string(&unit).is_err());
+}
+
+/// TOML omits map entries whose value is `null`, cannot represent `null` in
+/// arrays, and writes integers beyond its 64-bit range as decimal strings.
+#[test]
+fn toml_json_values() {
+    let value = JsonValue::from_iter([
+        ("big", JsonValue::from(u64::MAX)),
+        ("none", JsonValue::Null),
+    ]);
+    assert_eq!(
+        toml::to_string(&value).unwrap(),
+        "big = \"18446744073709551615\"\n"
+    );
+    let array = JsonValue::from_iter([("items", JsonValue::from(vec![JsonValue::Null]))]);
+    assert_eq!(
+        toml::to_string(&array).unwrap_err().to_string(),
+        "TOML has no representation of `null` in arrays"
+    );
 }

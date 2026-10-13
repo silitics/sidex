@@ -1,10 +1,10 @@
-//! Freeform values.
+//! JSON values and paths into values.
 //!
-//! A [`Value`] is a self-describing tree following a JSON-like data model,
-//! extended with exact integers and bytes. Like [`Seq`] and [`Map`], values are
-//! cheap to clone. Types use values for data without a
-//! schema. Formats also use values to hold documents in memory, for instance,
-//! when reading JSON (see [`formats`]).
+//! A [`JsonValue`] is a self-describing tree following the JSON data model,
+//! with exact integers. Like [`Seq`] and [`Map`], values are cheap to clone.
+//! The built-in `json` type uses values for data without a schema. Formats also
+//! use values to hold documents in memory, for instance, when reading JSON or
+//! TOML (see [`formats`]).
 //!
 //! [`formats`]: crate::formats
 //! [`Seq`]: crate::types::Seq
@@ -22,17 +22,16 @@ use crate::encode::View;
 use crate::shape::Shape;
 use crate::shape::ShapeKind;
 use crate::shape::Shaped;
-use crate::types::Bytes;
 use crate::types::Map;
 use crate::types::Seq;
 use crate::types::Str;
 
 mod path;
 
-/// Freeform value.
+/// JSON value.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub enum Value {
-    /// Absence of a value.
+pub enum JsonValue {
+    /// The `null` value.
     #[default]
     Null,
     /// Boolean.
@@ -43,27 +42,27 @@ pub enum Value {
     /// ranges.
     Int(i128),
     /// Floating-point number.
+    ///
+    /// JSON has no representation of non-finite floats, so encoding them fails.
     Float(f64),
     /// String.
     String(Str),
-    /// Sequence of bytes.
-    Bytes(Bytes),
     /// Sequence of values.
-    Seq(Seq<Value>),
+    Seq(Seq<JsonValue>),
     /// Map from strings to values in insertion order.
-    Map(Map<Str, Value>),
+    Map(Map<Str, JsonValue>),
 }
 
-impl Value {
+impl JsonValue {
     /// Returns whether the value is null.
     pub fn is_null(&self) -> bool {
-        matches!(self, Value::Null)
+        matches!(self, JsonValue::Null)
     }
 
     /// Returns the boolean, if the value is one.
     pub fn as_bool(&self) -> Option<bool> {
         match self {
-            Value::Bool(value) => Some(*value),
+            JsonValue::Bool(value) => Some(*value),
             _ => None,
         }
     }
@@ -71,7 +70,7 @@ impl Value {
     /// Returns the integer, if the value is one.
     pub fn as_int(&self) -> Option<i128> {
         match self {
-            Value::Int(value) => Some(*value),
+            JsonValue::Int(value) => Some(*value),
             _ => None,
         }
     }
@@ -79,8 +78,8 @@ impl Value {
     /// Returns the number as a float, if the value is an integer or a float.
     pub fn as_f64(&self) -> Option<f64> {
         match self {
-            Value::Int(value) => Some(*value as f64),
-            Value::Float(value) => Some(*value),
+            JsonValue::Int(value) => Some(*value as f64),
+            JsonValue::Float(value) => Some(*value),
             _ => None,
         }
     }
@@ -88,86 +87,77 @@ impl Value {
     /// Returns the string, if the value is one.
     pub fn as_str(&self) -> Option<&str> {
         match self {
-            Value::String(value) => Some(value),
-            _ => None,
-        }
-    }
-
-    /// Returns the bytes, if the value is a sequence of bytes.
-    pub fn as_bytes(&self) -> Option<&[u8]> {
-        match self {
-            Value::Bytes(value) => Some(value),
+            JsonValue::String(value) => Some(value),
             _ => None,
         }
     }
 
     /// Returns the values, if the value is a sequence.
-    pub fn as_seq(&self) -> Option<&Seq<Value>> {
+    pub fn as_seq(&self) -> Option<&Seq<JsonValue>> {
         match self {
-            Value::Seq(items) => Some(items),
+            JsonValue::Seq(items) => Some(items),
             _ => None,
         }
     }
 
     /// Returns the entries, if the value is a map.
-    pub fn as_map(&self) -> Option<&Map<Str, Value>> {
+    pub fn as_map(&self) -> Option<&Map<Str, JsonValue>> {
         match self {
-            Value::Map(entries) => Some(entries),
+            JsonValue::Map(entries) => Some(entries),
             _ => None,
         }
     }
 
     /// Returns the value of `key`, if the value is a map with that key.
-    pub fn get(&self, key: &str) -> Option<&Value> {
+    pub fn get(&self, key: &str) -> Option<&JsonValue> {
         self.as_map()?.get(key)
     }
 
     /// Short description of the value's kind for error messages.
     pub(crate) fn kind(&self) -> &'static str {
         match self {
-            Value::Null => "null",
-            Value::Bool(_) => "a boolean",
-            Value::Int(_) => "an integer",
-            Value::Float(_) => "a float",
-            Value::String(_) => "a string",
-            Value::Bytes(_) => "bytes",
-            Value::Seq(_) => "a sequence",
-            Value::Map(_) => "a map",
+            JsonValue::Null => "null",
+            JsonValue::Bool(_) => "a boolean",
+            JsonValue::Int(_) => "an integer",
+            JsonValue::Float(_) => "a float",
+            JsonValue::String(_) => "a string",
+            JsonValue::Seq(_) => "a sequence",
+            JsonValue::Map(_) => "a map",
         }
     }
 }
 
 /// Formats the value as compact JSON text.
 #[cfg(feature = "json")]
-impl std::fmt::Display for Value {
+impl std::fmt::Display for JsonValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let text = crate::formats::json::to_string(self).map_err(|_| std::fmt::Error)?;
         f.write_str(&text)
     }
 }
 
-impl Shaped for Value {
-    const SHAPE: &'static Shape = &Shape::new("::core::builtins::value", ShapeKind::Value);
+impl Shaped for JsonValue {
+    const SHAPE: &'static Shape = &Shape::new("::core::builtins::json", ShapeKind::Json);
 }
 
-impl Encode for Value {
+impl Encode for JsonValue {
     fn encode(&self) -> View<'_> {
-        View::Value(Cow::Borrowed(self))
+        View::Json(Cow::Borrowed(self))
     }
 }
 
-impl Decode for Value {
+impl Decode for JsonValue {
     fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
-        decoder.value()
+        decoder.json()
     }
 }
 
 macro_rules! impl_from_int {
     ($($ty:ty),*) => {
         $(
-            impl From<$ty> for Value {
+            impl From<$ty> for JsonValue {
                 fn from(value: $ty) -> Self {
-                    Value::Int(value.into())
+                    JsonValue::Int(value.into())
                 }
             }
         )*
@@ -176,63 +166,57 @@ macro_rules! impl_from_int {
 
 impl_from_int!(i8, i16, i32, i64, u8, u16, u32, u64);
 
-impl From<bool> for Value {
+impl From<bool> for JsonValue {
     fn from(value: bool) -> Self {
-        Value::Bool(value)
+        JsonValue::Bool(value)
     }
 }
 
-impl From<f64> for Value {
+impl From<f64> for JsonValue {
     fn from(value: f64) -> Self {
-        Value::Float(value)
+        JsonValue::Float(value)
     }
 }
 
-impl From<&str> for Value {
+impl From<&str> for JsonValue {
     fn from(value: &str) -> Self {
-        Value::String(value.into())
+        JsonValue::String(value.into())
     }
 }
 
-impl From<String> for Value {
+impl From<String> for JsonValue {
     fn from(value: String) -> Self {
-        Value::String(value.into())
+        JsonValue::String(value.into())
     }
 }
 
-impl From<Str> for Value {
+impl From<Str> for JsonValue {
     fn from(value: Str) -> Self {
-        Value::String(value)
+        JsonValue::String(value)
     }
 }
 
-impl From<Bytes> for Value {
-    fn from(value: Bytes) -> Self {
-        Value::Bytes(value)
+impl From<Vec<JsonValue>> for JsonValue {
+    fn from(value: Vec<JsonValue>) -> Self {
+        JsonValue::Seq(value.into())
     }
 }
 
-impl From<Vec<Value>> for Value {
-    fn from(value: Vec<Value>) -> Self {
-        Value::Seq(value.into())
+impl From<Seq<JsonValue>> for JsonValue {
+    fn from(value: Seq<JsonValue>) -> Self {
+        JsonValue::Seq(value)
     }
 }
 
-impl From<Seq<Value>> for Value {
-    fn from(value: Seq<Value>) -> Self {
-        Value::Seq(value)
+impl From<Map<Str, JsonValue>> for JsonValue {
+    fn from(value: Map<Str, JsonValue>) -> Self {
+        JsonValue::Map(value)
     }
 }
 
-impl From<Map<Str, Value>> for Value {
-    fn from(value: Map<Str, Value>) -> Self {
-        Value::Map(value)
-    }
-}
-
-impl<K: Into<Str>, V: Into<Value>> FromIterator<(K, V)> for Value {
+impl<K: Into<Str>, V: Into<JsonValue>> FromIterator<(K, V)> for JsonValue {
     fn from_iter<I: IntoIterator<Item = (K, V)>>(iter: I) -> Self {
-        Value::Map(
+        JsonValue::Map(
             iter.into_iter()
                 .map(|(key, value)| (key.into(), value.into()))
                 .collect(),

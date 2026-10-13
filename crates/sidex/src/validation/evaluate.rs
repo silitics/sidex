@@ -16,9 +16,9 @@ use super::Rule;
 use super::ValidationError;
 use super::ValidationReport;
 use crate::Encode;
+use crate::JsonValue;
 use crate::Shape;
 use crate::Shaped;
-use crate::Value;
 use crate::View;
 use crate::encode::RecordView;
 use crate::encode::VariantView;
@@ -309,8 +309,8 @@ fn term<'v>(view: &View<'v>) -> Result<Term<'v>, String> {
         View::F32(value) => Scalar::Number(Number::Float((*value).into())),
         View::F64(value) => Scalar::Number(Number::Float(*value)),
         View::String(value) => Scalar::String(Cow::Borrowed(value)),
-        View::Value(Cow::Borrowed(value)) => value_scalar(value)?,
-        View::Value(Cow::Owned(value)) => {
+        View::Json(Cow::Borrowed(value)) => value_scalar(value)?,
+        View::Json(Cow::Owned(value)) => {
             match value_scalar(value)? {
                 Scalar::String(text) => Scalar::String(Cow::Owned(text.into_owned())),
                 Scalar::Number(number) => Scalar::Number(number),
@@ -321,11 +321,11 @@ fn term<'v>(view: &View<'v>) -> Result<Term<'v>, String> {
     Ok(Term { value, size: false })
 }
 
-fn value_scalar(value: &Value) -> Result<Scalar<'_>, String> {
+fn value_scalar(value: &JsonValue) -> Result<Scalar<'_>, String> {
     match value {
-        Value::Int(value) => Ok(Scalar::Number(Number::Int(*value))),
-        Value::Float(value) => Ok(Scalar::Number(Number::Float(*value))),
-        Value::String(value) => Ok(Scalar::String(Cow::Borrowed(value))),
+        JsonValue::Int(value) => Ok(Scalar::Number(Number::Int(*value))),
+        JsonValue::Float(value) => Ok(Scalar::Number(Number::Float(*value))),
+        JsonValue::String(value) => Ok(Scalar::String(Cow::Borrowed(value))),
         other => Err(format!("{} cannot be compared", other.kind())),
     }
 }
@@ -337,12 +337,11 @@ fn size(view: &View<'_>) -> Result<usize, String> {
         View::Bytes(value) => Ok(value.len()),
         View::Seq(seq) => Ok(seq.len()),
         View::Map(map) => Ok(map.len()),
-        View::Value(value) => {
+        View::Json(value) => {
             match value.as_ref() {
-                Value::String(value) => Ok(value.chars().count()),
-                Value::Bytes(value) => Ok(value.len()),
-                Value::Seq(items) => Ok(items.len()),
-                Value::Map(entries) => Ok(entries.len()),
+                JsonValue::String(value) => Ok(value.chars().count()),
+                JsonValue::Seq(items) => Ok(items.len()),
+                JsonValue::Map(entries) => Ok(entries.len()),
                 other => Err(format!("{} has no size", other.kind())),
             }
         }
@@ -410,16 +409,16 @@ fn code(left: (&Operand, &Term<'_>), op: CmpOp, right: (&Operand, &Term<'_>)) ->
 
 fn default_message(code: &str) -> &'static str {
     match code {
-        "min" => "Value is below the minimum.",
-        "max" => "Value is above the maximum.",
-        "eq" => "Value does not match the expected value.",
-        "ne" => "Value matches a forbidden value.",
-        "min_size" => "Value is below the minimum size.",
-        "max_size" => "Value exceeds the maximum size.",
-        "eq_size" => "Value does not have the expected size.",
-        "ne_size" => "Value has a forbidden size.",
-        "regex" => "Value does not match the required pattern.",
-        _ => "Value is not valid.",
+        "min" => "JsonValue is below the minimum.",
+        "max" => "JsonValue is above the maximum.",
+        "eq" => "JsonValue does not match the expected value.",
+        "ne" => "JsonValue matches a forbidden value.",
+        "min_size" => "JsonValue is below the minimum size.",
+        "max_size" => "JsonValue exceeds the maximum size.",
+        "eq_size" => "JsonValue does not have the expected size.",
+        "ne_size" => "JsonValue has a forbidden size.",
+        "regex" => "JsonValue does not match the required pattern.",
+        _ => "JsonValue is not valid.",
     }
 }
 
@@ -465,7 +464,6 @@ fn key_text(key: &View<'_>) -> Str {
 /// Short description of a view's kind for error messages.
 fn kind(view: &View<'_>) -> &'static str {
     match view {
-        View::Unit => "a unit",
         View::Bool(_) => "a boolean",
         View::I8(_)
         | View::I16(_)
@@ -486,6 +484,6 @@ fn kind(view: &View<'_>) -> &'static str {
         View::Map(_) => "a map",
         View::Record(_) => "a record",
         View::Variant(_) => "a variant",
-        View::Value(value) => value.kind(),
+        View::Json(value) => value.kind(),
     }
 }

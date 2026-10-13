@@ -5,14 +5,14 @@
 //!
 //! - [`json`]: JSON. Its representation is the cross-language contract of Sidex, which
 //!   the Rust, TypeScript, and Python backends all follow. JSON documents can also be
-//!   held in memory as freeform values (see [`json::to_value`]).
+//!   held in memory as JSON values (see [`json::to_value`]).
 //! - `toml`: TOML, using the representation of JSON. Requires the `toml` feature.
 //!
-//! Reading builds a [`Value`] before decoding it. Configuration files and API
+//! Reading builds a [`JsonValue`] before decoding it. Configuration files and API
 //! messages are small enough for this to be insignificant. Writing streams
-//! without building a [`Value`].
+//! without building a [`JsonValue`].
 //!
-//! [`Value`]: crate::Value
+//! [`JsonValue`]: crate::JsonValue
 
 #[cfg(any(feature = "json", feature = "toml"))]
 pub(crate) mod bridge;

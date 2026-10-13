@@ -1,4 +1,4 @@
-//! Decoding typed values from freeform values.
+//! Decoding typed values from JSON values.
 
 use std::str::FromStr;
 
@@ -7,13 +7,12 @@ use base64::Engine;
 use super::Tagging;
 use super::repr::BASE64;
 use super::repr::parse_non_finite;
-use crate::Value;
+use crate::JsonValue;
 use crate::decode::DecodeError;
 use crate::decode::Decoder;
 use crate::shape::CaseShape;
 use crate::shape::FieldShape;
 use crate::shape::RecordShape;
-use crate::shape::Scalar;
 use crate::shape::Shape;
 use crate::shape::ShapeKind;
 use crate::types::Date;
@@ -26,7 +25,7 @@ use crate::value::PathSegment;
 /// Callback receiving the index of a field or case and its decoder.
 type IndexFn<'f> = dyn FnMut(usize, &mut dyn Decoder) -> Result<(), DecodeError> + 'f;
 
-/// [`Decoder`] reading the JSON representation from a freeform value.
+/// [`Decoder`] reading the JSON representation from a JSON value.
 pub(super) struct JsonDecoder<'v> {
     item: Item<'v>,
     /// Indicates whether records reject unknown fields.
@@ -50,13 +49,13 @@ enum Claimed {
 #[derive(Clone, Copy)]
 enum Item<'v> {
     /// Value.
-    Value(&'v Value),
+    Value(&'v JsonValue),
     /// Key of a map, which represents integers as strings.
     Key(&'v str),
 }
 
 impl<'v> JsonDecoder<'v> {
-    pub(super) fn new(value: &'v Value, strict: bool) -> Self {
+    pub(super) fn new(value: &'v JsonValue, strict: bool) -> Self {
         Self {
             item: Item::Value(value),
             strict,
@@ -73,12 +72,12 @@ impl<'v> JsonDecoder<'v> {
     }
 
     /// Returns a decoder for a nested value.
-    fn child<'c>(&self, value: &'c Value) -> JsonDecoder<'c> {
+    fn child<'c>(&self, value: &'c JsonValue) -> JsonDecoder<'c> {
         JsonDecoder::new(value, self.strict)
     }
 
     /// Returns the item if it is a value.
-    fn as_value(&self) -> Option<&'v Value> {
+    fn as_value(&self) -> Option<&'v JsonValue> {
         match self.item {
             Item::Value(value) => Some(value),
             Item::Key(_) => None,
@@ -88,7 +87,7 @@ impl<'v> JsonDecoder<'v> {
     /// Returns the text of the item if it is a string.
     fn text(&self) -> Option<&'v str> {
         match self.item {
-            Item::Value(Value::String(text)) => Some(text),
+            Item::Value(JsonValue::String(text)) => Some(text),
             Item::Key(text) => Some(text),
             Item::Value(_) => None,
         }
@@ -110,11 +109,11 @@ impl<'v> JsonDecoder<'v> {
         from_string: bool,
     ) -> Result<T, DecodeError> {
         match self.item {
-            Item::Value(Value::Int(value)) => {
+            Item::Value(JsonValue::Int(value)) => {
                 T::try_from(*value)
                     .map_err(|_| DecodeError::unexpected(&format!("`{value}`"), expected))
             }
-            Item::Value(Value::String(text)) if from_string => parse(text, expected),
+            Item::Value(JsonValue::String(text)) if from_string => parse(text, expected),
             Item::Key(text) => parse(text, expected),
             _ => Err(self.unexpected(expected)),
         }
@@ -123,10 +122,10 @@ impl<'v> JsonDecoder<'v> {
     fn float(&self) -> Result<f64, DecodeError> {
         const EXPECTED: &str = "a number or one of `NaN`, `Infinity`, and `-Infinity`";
         match self.item {
-            Item::Value(Value::Float(value)) => Ok(*value),
+            Item::Value(JsonValue::Float(value)) => Ok(*value),
             // Precision loss is inherent to floats.
-            Item::Value(Value::Int(value)) => Ok(*value as f64),
-            Item::Value(Value::String(text)) => {
+            Item::Value(JsonValue::Int(value)) => Ok(*value as f64),
+            Item::Value(JsonValue::String(text)) => {
                 parse_non_finite(text)
                     .ok_or_else(|| DecodeError::unexpected(&format!("`{text}`"), EXPECTED))
             }
@@ -144,16 +143,9 @@ impl<'v> JsonDecoder<'v> {
 }
 
 impl Decoder for JsonDecoder<'_> {
-    fn unit(&mut self) -> Result<(), DecodeError> {
-        match self.as_value() {
-            Some(Value::Null) => Ok(()),
-            _ => Err(self.unexpected("null")),
-        }
-    }
-
     fn bool(&mut self) -> Result<bool, DecodeError> {
         match self.as_value() {
-            Some(Value::Bool(value)) => Ok(*value),
+            Some(JsonValue::Bool(value)) => Ok(*value),
             _ => Err(self.unexpected("a boolean")),
         }
     }
@@ -211,15 +203,10 @@ impl Decoder for JsonDecoder<'_> {
 
     fn bytes(&mut self) -> Result<Vec<u8>, DecodeError> {
         const EXPECTED: &str = "a Base64 string";
-        match self.item {
-            Item::Value(Value::Bytes(bytes)) => Ok(bytes.to_vec()),
-            _ => {
-                let text = self.text().ok_or_else(|| self.unexpected(EXPECTED))?;
-                BASE64
-                    .decode(text)
-                    .map_err(|_| DecodeError::unexpected("invalid Base64", EXPECTED))
-            }
-        }
+        let text = self.text().ok_or_else(|| self.unexpected(EXPECTED))?;
+        BASE64
+            .decode(text)
+            .map_err(|_| DecodeError::unexpected("invalid Base64", EXPECTED))
     }
 
     fn uuid(&mut self) -> Result<Uuid, DecodeError> {
@@ -238,7 +225,7 @@ impl Decoder for JsonDecoder<'_> {
         &mut self,
         f: &mut dyn FnMut(&mut dyn Decoder) -> Result<(), DecodeError>,
     ) -> Result<(), DecodeError> {
-        let Some(Value::Seq(items)) = self.as_value() else {
+        let Some(JsonValue::Seq(items)) = self.as_value() else {
             return Err(self.unexpected("a sequence"));
         };
         for (index, item) in items.iter().enumerate() {
@@ -251,7 +238,7 @@ impl Decoder for JsonDecoder<'_> {
         &mut self,
         f: &mut dyn FnMut(&mut dyn Decoder, &mut dyn Decoder) -> Result<(), DecodeError>,
     ) -> Result<(), DecodeError> {
-        let Some(Value::Map(entries)) = self.as_value() else {
+        let Some(JsonValue::Map(entries)) = self.as_value() else {
             return Err(self.unexpected("a map"));
         };
         for (key, value) in entries {
@@ -265,7 +252,7 @@ impl Decoder for JsonDecoder<'_> {
         let record = shape
             .as_record()
             .ok_or_else(|| DecodeError::new(format_args!("shape `{shape}` is not a record")))?;
-        let Some(map @ Value::Map(entries)) = self.as_value() else {
+        let Some(map @ JsonValue::Map(entries)) = self.as_value() else {
             return Err(self.unexpected("a map"));
         };
         for (index, field) in record.fields.iter().enumerate() {
@@ -281,7 +268,7 @@ impl Decoder for JsonDecoder<'_> {
             let name = field.json.name;
             match entries.get(name) {
                 None if field.optional => {}
-                Some(Value::Null) if field.optional && !admits_null(field) => {}
+                Some(JsonValue::Null) if field.optional && !admits_null(field) => {}
                 None => return Err(missing_field(name)),
                 Some(value) => {
                     f(index, &mut self.child(value))
@@ -316,32 +303,32 @@ impl Decoder for JsonDecoder<'_> {
         }
     }
 
-    fn value(&mut self) -> Result<Value, DecodeError> {
+    fn json(&mut self) -> Result<JsonValue, DecodeError> {
         Ok(match self.item {
             Item::Value(value) => value.clone(),
-            Item::Key(key) => Value::String(key.into()),
+            Item::Key(key) => JsonValue::String(key.into()),
         })
     }
 }
 
 fn externally_tagged(
-    value: &Value,
+    value: &JsonValue,
     shape: &'static Shape,
     strict: bool,
     f: &mut IndexFn<'_>,
 ) -> Result<(), DecodeError> {
     const EXPECTED: &str = "a string or a map with a single entry";
     match value {
-        Value::String(name) => {
+        JsonValue::String(name) => {
             let (index, case) = find_case(shape, name)?;
             if case.payload.is_some() {
                 return Err(DecodeError::new(format_args!(
                     "case `{name}` requires a payload"
                 )));
             }
-            f(index, &mut JsonDecoder::new(&Value::Null, strict))
+            f(index, &mut JsonDecoder::new(&JsonValue::Null, strict))
         }
-        Value::Map(entries) if entries.len() == 1 => {
+        JsonValue::Map(entries) if entries.len() == 1 => {
             let (name, payload) = entries.iter().next().expect("the map has one entry");
             let (index, case) = find_case(shape, name)?;
             if case.payload.is_none() {
@@ -358,7 +345,7 @@ fn externally_tagged(
 
 /// Decodes the first case in declaration order that matches.
 fn implicitly_tagged(
-    value: &Value,
+    value: &JsonValue,
     shape: &'static Shape,
     strict: bool,
     f: &mut IndexFn<'_>,
@@ -367,8 +354,8 @@ fn implicitly_tagged(
     let mut failures = Vec::new();
     for (index, case) in variant.cases.iter().enumerate() {
         if case.payload.is_none() {
-            if matches!(value, Value::String(name) if name == case.json.name) {
-                return f(index, &mut JsonDecoder::new(&Value::Null, strict));
+            if matches!(value, JsonValue::String(name) if name == case.json.name) {
+                return f(index, &mut JsonDecoder::new(&JsonValue::Null, strict));
             }
             continue;
         }
@@ -386,18 +373,18 @@ fn implicitly_tagged(
 
 /// Decodes an internally or adjacently tagged variant.
 fn tagged(
-    value: &Value,
+    value: &JsonValue,
     shape: &'static Shape,
     tagging: Tagging,
     tag: &'static str,
     strict: bool,
     f: &mut IndexFn<'_>,
 ) -> Result<(), DecodeError> {
-    let Value::Map(entries) = value else {
+    let JsonValue::Map(entries) = value else {
         return Err(DecodeError::unexpected(value.kind(), "a map"));
     };
     let name = match entries.get(tag) {
-        Some(Value::String(name)) => name,
+        Some(JsonValue::String(name)) => name,
         Some(other) => {
             return Err(DecodeError::unexpected(other.kind(), "a string")
                 .within(PathSegment::Key(Str::from(tag))));
@@ -407,7 +394,7 @@ fn tagged(
     let (index, case) =
         find_case(shape, name).map_err(|error| error.within(PathSegment::Key(Str::from(tag))))?;
     let Some(payload_shape) = case.payload else {
-        return f(index, &mut JsonDecoder::new(&Value::Null, strict));
+        return f(index, &mut JsonDecoder::new(&JsonValue::Null, strict));
     };
     match case.json.content_field(tagging, payload_shape()) {
         Some(content) => {
@@ -429,7 +416,7 @@ fn tagged(
 /// Rejects keys of the map that are not fields of the record, except for the
 /// claimed key.
 fn reject_unknown_fields(
-    entries: &Map<Str, Value>,
+    entries: &Map<Str, JsonValue>,
     record: &RecordShape,
     claimed: Option<&str>,
 ) -> Result<(), DecodeError> {
@@ -464,17 +451,17 @@ fn known_fields(record: &RecordShape, known: &mut Vec<&'static str>) -> bool {
 
 /// Indicates whether `null` may represent a value of the field's type.
 ///
-/// Optional fields accept `null` as absent, unless `null` is a value. Freeform
+/// Optional fields accept `null` as absent, unless `null` is a value. JSON
 /// values include `null`, but many languages cannot tell an absent value from
-/// `null`, so optional freeform fields treat `null` as absent.
+/// `null`, so optional JSON value fields treat `null` as absent.
 fn admits_null(field: &FieldShape) -> bool {
     fn shape_admits_null(shape: &Shape) -> bool {
         match &shape.kind {
-            ShapeKind::Scalar(scalar) => *scalar == Scalar::Unit,
+            ShapeKind::Scalar(_) => false,
             ShapeKind::Wrapper(inner) => shape_admits_null(inner()),
             ShapeKind::Variant(variant) => variant.json == Tagging::Implicit,
             ShapeKind::Opaque(opaque) => opaque.json.admits(super::Type::Null),
-            ShapeKind::Value => false,
+            ShapeKind::Json => false,
             ShapeKind::Sequence(_) | ShapeKind::Map(..) | ShapeKind::Record(_) => false,
         }
     }

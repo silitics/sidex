@@ -409,8 +409,9 @@ impl<'t, 'm> Resolver<'t, 'm> {
                     ]),
                 ))
             }
-            ast::TypeExpr::Unit => {
-                let def_ref = self.builtin_def_ref("unit");
+            // The parser has reported an error, so any type will do.
+            ast::TypeExpr::Missing => {
+                let def_ref = self.builtin_def_ref("json");
                 ir::Type::new(ir::TypeKind::Instance(ir::InstanceType::new(def_ref)))
             }
         }

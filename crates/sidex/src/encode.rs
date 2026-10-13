@@ -7,7 +7,7 @@
 //! and payload, and sequences and maps provide their items through callbacks.
 //!
 //! Views know nothing about formats. A format, such as [`json`], walks a view
-//! together with the type's [`Shape`] to produce a freeform value.
+//! together with the type's [`Shape`] to produce a JSON value.
 //!
 //! [`json`]: crate::formats::json
 //! [`Shape`]: crate::Shape
@@ -15,7 +15,7 @@
 use std::borrow::Cow;
 use std::fmt;
 
-use crate::Value;
+use crate::JsonValue;
 use crate::shape::Shape;
 use crate::types::Date;
 use crate::types::Timestamp;
@@ -29,8 +29,6 @@ pub trait Encode {
 
 /// Borrowed view of a typed value.
 pub enum View<'a> {
-    /// A `unit` value.
-    Unit,
     /// A `bool` value.
     Bool(bool),
     /// An `i8` value.
@@ -73,11 +71,11 @@ pub enum View<'a> {
     Record(&'a dyn RecordView),
     /// Variant.
     Variant(&'a dyn VariantView),
-    /// Freeform value.
+    /// JSON value.
     ///
     /// Owned values let types whose data is not available as a view, such as
     /// types encoded through another serialization framework, produce one.
-    Value(Cow<'a, Value>),
+    Json(Cow<'a, JsonValue>),
 }
 
 /// Sequence of a [`View`].

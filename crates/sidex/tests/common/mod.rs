@@ -95,7 +95,6 @@ record!(Scalars {
     uuid: Uuid => .optional();
     timestamp: Timestamp => .optional();
     date: Date => .optional();
-    unit: () => .optional();
 });
 
 record!(Point {

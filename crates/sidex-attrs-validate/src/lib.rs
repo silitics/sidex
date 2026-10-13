@@ -16,7 +16,7 @@ mod generated;
 use std::collections::HashMap;
 
 pub use generated::attrs as raw;
-use sidex::Value;
+use sidex::JsonValue;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Label;
 use sidex_diagnostics::Result;
@@ -27,7 +27,7 @@ const PLUGIN: &str = "validate";
 
 /// Pull the typed `validate` rules off any IR node's `typed_attrs`. Returns
 /// an empty `Vec` when the node carries no `#[validate(...)]` attributes.
-fn extract_rules<R>(typed_attrs: &HashMap<String, Value>) -> Result<Vec<R>>
+fn extract_rules<R>(typed_attrs: &HashMap<String, JsonValue>) -> Result<Vec<R>>
 where
     R: sidex::Decode,
 {

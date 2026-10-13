@@ -1,54 +1,51 @@
-//! Interoperability between freeform values and `serde_json` values.
+//! Interoperability between Sidex's and `serde_json`'s JSON values.
 
 use std::borrow::Cow;
 
-use base64::Engine;
-
-use super::repr::BASE64;
 use super::repr::non_finite;
 use crate::Decode;
 use crate::DecodeError;
 use crate::Decoder;
 use crate::Encode;
+use crate::JsonValue;
 use crate::Shape;
 use crate::Shaped;
-use crate::Value;
 use crate::View;
 use crate::types::Map;
 use crate::types::Str;
 
 impl Shaped for serde_json::Value {
-    const SHAPE: &'static Shape = Value::SHAPE;
+    const SHAPE: &'static Shape = JsonValue::SHAPE;
 }
 
 impl Encode for serde_json::Value {
     fn encode(&self) -> View<'_> {
-        View::Value(Cow::Owned(Value::from(self.clone())))
+        View::Json(Cow::Owned(JsonValue::from(self.clone())))
     }
 }
 
 impl Decode for serde_json::Value {
     fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
-        decoder.value().map(Self::from)
+        decoder.json().map(Self::from)
     }
 }
 
-/// Converts the value like the JSON format writes it.
+/// Converts the value.
 ///
-/// Bytes become Base64 strings and non-finite floats become strings. Integers
-/// beyond the 64-bit ranges become floats.
-impl From<Value> for serde_json::Value {
-    fn from(value: Value) -> Self {
+/// Non-finite floats, which JSON cannot represent, become strings like typed
+/// floats. Integers beyond the 64-bit ranges become floats.
+impl From<JsonValue> for serde_json::Value {
+    fn from(value: JsonValue) -> Self {
         Self::from(&value)
     }
 }
 
-impl From<&Value> for serde_json::Value {
-    fn from(value: &Value) -> Self {
+impl From<&JsonValue> for serde_json::Value {
+    fn from(value: &JsonValue) -> Self {
         match value {
-            Value::Null => Self::Null,
-            Value::Bool(value) => Self::Bool(*value),
-            Value::Int(value) => {
+            JsonValue::Null => Self::Null,
+            JsonValue::Bool(value) => Self::Bool(*value),
+            JsonValue::Int(value) => {
                 if let Ok(value) = i64::try_from(*value) {
                     Self::from(value)
                 } else if let Ok(value) = u64::try_from(*value) {
@@ -57,11 +54,10 @@ impl From<&Value> for serde_json::Value {
                     float(*value as f64)
                 }
             }
-            Value::Float(value) => float(*value),
-            Value::String(value) => Self::String(value.to_string()),
-            Value::Bytes(value) => Self::String(BASE64.encode(value)),
-            Value::Seq(items) => Self::Array(items.iter().map(Self::from).collect()),
-            Value::Map(entries) => {
+            JsonValue::Float(value) => float(*value),
+            JsonValue::String(value) => Self::String(value.to_string()),
+            JsonValue::Seq(items) => Self::Array(items.iter().map(Self::from).collect()),
+            JsonValue::Map(entries) => {
                 Self::Object(
                     entries
                         .iter()
@@ -80,29 +76,29 @@ fn float(value: f64) -> serde_json::Value {
 }
 
 /// Converts the value like the JSON format reads it.
-impl From<serde_json::Value> for Value {
+impl From<serde_json::Value> for JsonValue {
     fn from(value: serde_json::Value) -> Self {
         match value {
-            serde_json::Value::Null => Value::Null,
-            serde_json::Value::Bool(value) => Value::Bool(value),
+            serde_json::Value::Null => JsonValue::Null,
+            serde_json::Value::Bool(value) => JsonValue::Bool(value),
             serde_json::Value::Number(number) => {
                 if let Some(value) = number.as_i64() {
-                    Value::Int(value.into())
+                    JsonValue::Int(value.into())
                 } else if let Some(value) = number.as_u64() {
-                    Value::Int(value.into())
+                    JsonValue::Int(value.into())
                 } else {
-                    Value::Float(number.as_f64().unwrap_or(f64::NAN))
+                    JsonValue::Float(number.as_f64().unwrap_or(f64::NAN))
                 }
             }
-            serde_json::Value::String(value) => Value::String(value.into()),
+            serde_json::Value::String(value) => JsonValue::String(value.into()),
             serde_json::Value::Array(items) => {
-                Value::Seq(items.into_iter().map(Value::from).collect())
+                JsonValue::Seq(items.into_iter().map(JsonValue::from).collect())
             }
             serde_json::Value::Object(entries) => {
-                Value::Map(
+                JsonValue::Map(
                     entries
                         .into_iter()
-                        .map(|(key, value)| (Str::from(key), Value::from(value)))
+                        .map(|(key, value)| (Str::from(key), JsonValue::from(value)))
                         .collect::<Map<_, _>>(),
                 )
             }
@@ -122,24 +118,28 @@ mod tests {
             "ratio": 0.5,
             "tags": ["a", null, true],
         });
-        let value = Value::from(json.clone());
+        let value = JsonValue::from(json.clone());
         assert_eq!(
             value,
-            Value::from_iter([
-                ("name", Value::from("device")),
-                ("count", Value::from(u64::MAX)),
-                ("ratio", Value::from(0.5)),
+            JsonValue::from_iter([
+                ("name", JsonValue::from("device")),
+                ("count", JsonValue::from(u64::MAX)),
+                ("ratio", JsonValue::from(0.5)),
                 (
                     "tags",
-                    Value::from(vec![Value::from("a"), Value::Null, Value::from(true)])
+                    JsonValue::from(vec![
+                        JsonValue::from("a"),
+                        JsonValue::Null,
+                        JsonValue::from(true)
+                    ])
                 ),
             ])
         );
         assert_eq!(serde_json::Value::from(value), json);
-        assert_eq!(serde_json::Value::from(Value::Float(f64::NAN)), "NaN");
+        assert_eq!(serde_json::Value::from(JsonValue::Float(f64::NAN)), "NaN");
     }
 
-    /// `serde_json` values encode and decode like freeform values.
+    /// `serde_json` values encode and decode like Sidex's JSON values.
     #[test]
     fn traits() {
         let json = serde_json::json!({ "count": 1, "tags": ["a", null] });

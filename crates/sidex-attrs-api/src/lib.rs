@@ -24,7 +24,7 @@ use std::collections::HashMap;
 
 pub use check::check;
 pub use generated::attrs as raw;
-use sidex::Value;
+use sidex::JsonValue;
 use sidex::formats::json;
 use sidex_ir as ir;
 
@@ -77,7 +77,7 @@ impl Stability {
 /// Pull the rollup off any IR node's `typed_attrs`. The schema records share
 /// a common shape per plugin, so a single deserialization path covers
 /// def / field / variant / schema positions.
-pub fn stability_of(typed_attrs: &HashMap<String, Value>) -> Stability {
+pub fn stability_of(typed_attrs: &HashMap<String, JsonValue>) -> Stability {
     Stability {
         deprecated: extract_deprecated(typed_attrs),
         unstable: extract_unstable(typed_attrs),
@@ -87,18 +87,18 @@ pub fn stability_of(typed_attrs: &HashMap<String, Value>) -> Stability {
 
 /// Extract just the deprecation metadata, or `None` when the node isn't
 /// deprecated.
-pub fn deprecated_of(typed_attrs: &HashMap<String, Value>) -> Option<Deprecated> {
+pub fn deprecated_of(typed_attrs: &HashMap<String, JsonValue>) -> Option<Deprecated> {
     extract_deprecated(typed_attrs)
 }
 
 /// Extract just the unstable metadata, or `None` when the node is stable.
-pub fn unstable_of(typed_attrs: &HashMap<String, Value>) -> Option<Unstable> {
+pub fn unstable_of(typed_attrs: &HashMap<String, JsonValue>) -> Option<Unstable> {
     extract_unstable(typed_attrs)
 }
 
 /// Extract just the `#[since]` metadata, or `None` when no version is
 /// recorded for this node.
-pub fn since_of(typed_attrs: &HashMap<String, Value>) -> Option<Since> {
+pub fn since_of(typed_attrs: &HashMap<String, JsonValue>) -> Option<Since> {
     extract_since(typed_attrs)
 }
 
@@ -179,7 +179,7 @@ pub fn stability_of_schema(schema: &ir::Schema) -> Stability {
 
 // ---- internals -------------------------------------------------------------
 
-fn extract_deprecated(typed_attrs: &HashMap<String, Value>) -> Option<Deprecated> {
+fn extract_deprecated(typed_attrs: &HashMap<String, JsonValue>) -> Option<Deprecated> {
     let value = typed_attrs.get(PLUGIN_DEPRECATED)?;
     // The schema record is identical across targets, so a single deserialize
     // call suffices regardless of position.
@@ -192,7 +192,7 @@ fn extract_deprecated(typed_attrs: &HashMap<String, Value>) -> Option<Deprecated
     })
 }
 
-fn extract_unstable(typed_attrs: &HashMap<String, Value>) -> Option<Unstable> {
+fn extract_unstable(typed_attrs: &HashMap<String, JsonValue>) -> Option<Unstable> {
     let value = typed_attrs.get(PLUGIN_UNSTABLE)?;
     json::from_value::<raw::DefUnstable>(value).ok().map(|w| {
         Unstable {
@@ -203,7 +203,7 @@ fn extract_unstable(typed_attrs: &HashMap<String, Value>) -> Option<Unstable> {
     })
 }
 
-fn extract_since(typed_attrs: &HashMap<String, Value>) -> Option<Since> {
+fn extract_since(typed_attrs: &HashMap<String, JsonValue>) -> Option<Since> {
     let value = typed_attrs.get(PLUGIN_SINCE)?;
     json::from_value::<raw::DefSince>(value)
         .ok()

@@ -12,7 +12,6 @@ Writers produce the canonical representation. Readers also accept the listed alt
 
 | Type                      | Written as                                                                    | Also read       |
 | ------------------------- | ----------------------------------------------------------------------------- | --------------- |
-| `unit`                    | `null`                                                                        |                 |
 | `bool`                    | `true` or `false`                                                             |                 |
 | `i8`, `i16`, `i32`        | number                                                                        |                 |
 | `u8`, `u16`, `u32`, `idx` | number                                                                        |                 |
@@ -23,7 +22,7 @@ Writers produce the canonical representation. Readers also accept the listed alt
 | `uuid`                    | lowercase hyphenated string, such as `"67e55044-10b1-426f-9247-bb680e5fe0c8"` | uppercase       |
 | `timestamp`               | RFC 3339 string in UTC, such as `"2026-10-12T08:30:00.25Z"`                   | any offset      |
 | `date`                    | `YYYY-MM-DD` string, such as `"2026-10-12"`                                   |                 |
-| `value`                   | the JSON value itself                                                         |                 |
+| `json`                    | the JSON value itself                                                         |                 |
 | `[T]`                     | array                                                                         |                 |
 | `[K: V]`                  | object with keys in their text representation                                 |                 |
 
@@ -31,7 +30,9 @@ Readers reject other JSON types and values out of range. For instance, `1` is no
 
 JavaScript represents integers exactly only up to a magnitude of 2^53 − 1 (`Number.MAX_SAFE_INTEGER`). Larger `i64` and `u64` values are therefore decimal strings, such as `"9007199254740993"`, so they stay exact in every language. Typical values, such as sizes, counts, and timestamps in seconds, remain plain numbers.
 
-JSON has no non-finite numbers, so non-finite floats are strings. A `value` cannot hold non-finite floats.
+JSON has no non-finite numbers, so non-finite floats are strings.
+
+A `json` value is written as is. Its integers remain numbers beyond 2^53 − 1, so data from other systems passes through unchanged, but JavaScript may lose their precision. A `json` value cannot hold non-finite floats.
 
 Map keys may be strings, integers, UUIDs, timestamps, and dates. A `[u64: string]` map is an object such as `{"42": "answer"}`.
 
@@ -52,7 +53,7 @@ record User {
 { "displayName": "Ada" }
 ```
 
-An absent optional field is omitted. Its underlying type does not automatically include `null`. Readers treat `null` for an optional field as absent, unless `null` is a value of the field's type. Optional `value` fields always treat `null` as absent, because many languages cannot tell an absent value from `null`. Use the generated JSON Schema to define the shape you require at a boundary.
+An absent optional field is omitted. Its underlying type does not automatically include `null`. Readers treat `null` for an optional field as absent, unless `null` is a value of the field's type. Optional `json` fields always treat `null` as absent, because many languages cannot tell an absent value from `null`. Use the generated JSON Schema to define the shape you require at a boundary.
 
 Change names at the record or field level:
 
@@ -131,6 +132,16 @@ opaque NullableName
 ```
 
 Accepted JSON shape names are `number`, `boolean`, `string`, `null`, `object`, `array`, and `any`. Join multiple shapes with `|`.
+
+## TOML
+
+TOML documents, such as configuration files, use the same representation. TOML has no `null` and only signed 64-bit integers, so writers adapt three cases:
+
+- Map entries whose value is `null` are omitted, like absent optional fields.
+- `null` in arrays cannot be written, so writing fails.
+- Integers beyond the 64-bit range of TOML are decimal strings.
+
+Readers also accept TOML date-times for timestamps.
 
 ## Keep the Contract Consistent
 

@@ -183,15 +183,13 @@ pub enum ShapeKind {
     Wrapper(ShapeRef),
     /// Opaque type whose representation is provided by its implementation.
     Opaque(OpaqueShape),
-    /// Freeform value.
-    Value,
+    /// JSON value.
+    Json,
 }
 
 /// Built-in scalar types.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Scalar {
-    /// The `unit` type.
-    Unit,
     /// The `bool` type.
     Bool,
     /// The `i8` type.

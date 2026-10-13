@@ -46,9 +46,6 @@ opaque f64
 /// A boolean.
 opaque bool
 
-/// Unit type indicating the absence of any specific data.
-opaque unit
-
 /// A universally unique identifier (UUID).
 opaque uuid
 
@@ -58,8 +55,8 @@ opaque timestamp
 /// A date in the Gregorian calendar.
 opaque date
 
-/// A freeform value following the JSON data model.
-opaque value
+/// A JSON value: `null`, a boolean, a number, a string, an array, or an object.
+opaque json
 
 /// A sequence type.
 opaque Sequence<T>

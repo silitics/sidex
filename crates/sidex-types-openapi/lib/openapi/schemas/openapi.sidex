@@ -132,7 +132,7 @@ record ExternalDocumentation {
 }
 
 /// Any JSON value.
-alias Any: value
+alias Any: json
 
 /// A [Parameter Object](https://spec.openapis.org/oas/v3.1.0#parameter-object) (4.8.12).
 record Parameter {

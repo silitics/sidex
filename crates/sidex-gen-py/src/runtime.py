@@ -146,4 +146,4 @@ Timestamp = pydantic.AwareDatetime
 
 Date = datetime.date
 
-Value = pydantic.JsonValue
+Json = pydantic.JsonValue

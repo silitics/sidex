@@ -124,7 +124,7 @@ variant MaybeArray<T> {
 }
 
 /// Any JSON value.
-alias Any: value
+alias Any: json
 
 /// A reference to a JSON schema.
 wrapper SchemaRef: string
@@ -229,7 +229,7 @@ record NumberKeywords {
 }
 
 /// A JSON number.
-alias Number: value
+alias Number: json
 
 /// Keywords applying to strings.
 record StringKeywords {

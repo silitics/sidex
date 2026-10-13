@@ -32,23 +32,6 @@ impl_scalar!(usize, "idx", Idx, idx);
 impl_scalar!(f32, "f32", F32, f32);
 impl_scalar!(f64, "f64", F64, f64);
 
-impl Shaped for () {
-    const SHAPE: &'static Shape =
-        &Shape::new("::core::builtins::unit", ShapeKind::Scalar(Scalar::Unit));
-}
-
-impl Encode for () {
-    fn encode(&self) -> View<'_> {
-        View::Unit
-    }
-}
-
-impl Decode for () {
-    fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
-        decoder.unit()
-    }
-}
-
 impl Shaped for str {
     const SHAPE: &'static Shape = &Shape::new(
         "::core::builtins::string",
@@ -224,7 +207,7 @@ macro_rules! impl_std_text {
 
             impl Encode for $ty {
                 fn encode(&self) -> View<'_> {
-                    View::Value(std::borrow::Cow::Owned(crate::Value::String(
+                    View::Json(std::borrow::Cow::Owned(crate::JsonValue::String(
                         self.to_string().into(),
                     )))
                 }
@@ -261,7 +244,7 @@ impl Encode for std::path::PathBuf {
         match self.to_str() {
             Some(path) => View::String(path),
             None => {
-                View::Value(std::borrow::Cow::Owned(crate::Value::String(
+                View::Json(std::borrow::Cow::Owned(crate::JsonValue::String(
                     self.to_string_lossy().into(),
                 )))
             }

@@ -3,6 +3,7 @@
 
 mod common;
 
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::marker::PhantomData;
 
@@ -17,9 +18,9 @@ use sidex::Decode;
 use sidex::DecodeError;
 use sidex::Decoder;
 use sidex::Encode;
+use sidex::JsonValue;
 use sidex::Shape;
 use sidex::Shaped;
-use sidex::Value;
 use sidex::View;
 use sidex::encode::VariantView;
 use sidex::formats::json;
@@ -31,8 +32,8 @@ use sidex::shape::shape_of;
 use sidex::types::Bytes;
 use sidex::types::Uuid;
 
-/// Parses JSON text into a freeform value.
-fn parse(text: &str) -> Value {
+/// Parses JSON text into a JSON value.
+fn parse(text: &str) -> JsonValue {
     sidex::formats::json::from_str(text).unwrap()
 }
 
@@ -59,7 +60,6 @@ fn scalars() {
         uuid: Some("67e55044-10b1-426f-9247-bb680e5fe0c8".parse().unwrap()),
         timestamp: Some("2026-10-12T08:30:00.25Z".parse().unwrap()),
         date: Some("2026-10-12".parse().unwrap()),
-        unit: Some(()),
     };
     assert_roundtrip(
         &scalars,
@@ -75,8 +75,7 @@ fn scalars() {
             "bytes": "AAH/",
             "uuid": "67e55044-10b1-426f-9247-bb680e5fe0c8",
             "timestamp": "2026-10-12T08:30:00.25Z",
-            "date": "2026-10-12",
-            "unit": null
+            "date": "2026-10-12"
         }"#,
     );
 }
@@ -211,7 +210,7 @@ fn schemas() {
         r#"{"type":"object","properties":{"name":{"type":"string"},"x":{"type":"integer","minimum":-2147483648,"maximum":2147483647},"y":{"type":"integer","minimum":-2147483648,"maximum":2147483647}},"required":["name","x","y"]}"#
     );
     let schema = json::schema(<Position<Internal> as Shaped>::SHAPE);
-    let alternatives = schema.get("oneOf").and_then(Value::as_seq).unwrap();
+    let alternatives = schema.get("oneOf").and_then(JsonValue::as_seq).unwrap();
     assert_eq!(
         sidex::formats::json::to_string(&alternatives[1]).unwrap(),
         r#"{"type":"object","properties":{"tag":{"const":"Named"},"content":{"type":"string"}},"required":["tag","content"]}"#
@@ -234,18 +233,18 @@ fn map_keys() {
     );
 }
 
-/// Freeform values are represented as themselves, bytes as Base64.
+/// JSON values are represented as themselves, also integers beyond 2^53.
 #[test]
-fn freeform_values() {
-    let value = Value::from_iter([
-        ("int", Value::Int(i128::from(u64::MAX))),
-        ("bytes", Value::Bytes(Bytes::from(vec![255]))),
+fn json_values() {
+    let value = JsonValue::from_iter([
+        ("int", JsonValue::Int(i128::from(u64::MAX))),
+        ("none", JsonValue::Null),
     ]);
     assert_eq!(
-        json::to_value(&value).unwrap(),
-        parse(r#"{"int":18446744073709551615,"bytes":"/w=="}"#)
+        json::to_string(&value).unwrap(),
+        r#"{"int":18446744073709551615,"none":null}"#
     );
-    assert!(json::to_value(&Value::Float(f64::NAN)).is_err());
+    assert!(json::to_value(&JsonValue::Float(f64::NAN)).is_err());
 }
 
 /// Selects the JSON representation of [`Position`]'s cases.
@@ -480,16 +479,16 @@ impl<const NULLABLE: bool> Encode for Label<NULLABLE> {
     fn encode(&self) -> View<'_> {
         match &self.0 {
             Some(label) => View::String(label),
-            None => View::Unit,
+            None => View::Json(Cow::Owned(JsonValue::Null)),
         }
     }
 }
 
 impl<const NULLABLE: bool> Decode for Label<NULLABLE> {
     fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
-        match decoder.value()? {
-            Value::Null => Ok(Self(None)),
-            Value::String(label) => Ok(Self(Some(label.into()))),
+        match decoder.json()? {
+            JsonValue::Null => Ok(Self(None)),
+            JsonValue::String(label) => Ok(Self(Some(label.into()))),
             _ => Err(DecodeError::new("expected a string or null")),
         }
     }
@@ -509,21 +508,21 @@ fn null_for_optional_opaque_fields() {
 }
 
 record!(Extension {
-    data: Value => .optional();
+    data: JsonValue => .optional();
 });
 
-/// Optional freeform fields treat `null` as absent, like most languages do.
+/// Optional JSON value fields treat `null` as absent, like most languages do.
 #[test]
 fn null_for_optional_value_fields() {
     let extension: Extension = json::from_value(&parse(r#"{"data":null}"#)).unwrap();
     assert_eq!(extension.data, None);
     let extension: Extension = json::from_value(&parse(r#"{"data":{}}"#)).unwrap();
-    assert_eq!(extension.data, Some(Value::Map(Default::default())));
+    assert_eq!(extension.data, Some(JsonValue::Map(Default::default())));
 }
 
-/// Freeform values display as compact JSON text.
+/// JSON values display as compact JSON text.
 #[test]
 fn value_display() {
-    let value = Value::from_iter([("a", Value::from(1)), ("b", Value::from("x"))]);
+    let value = JsonValue::from_iter([("a", JsonValue::from(1)), ("b", JsonValue::from("x"))]);
     assert_eq!(value.to_string(), r#"{"a":1,"b":"x"}"#);
 }

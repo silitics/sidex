@@ -70,7 +70,7 @@ The build helper emits Cargo rerun directives for relevant files and formats out
 
 ## Built-in Types
 
-Strings, sequences, maps, and bytes are `sidex::types::Str`, `Seq`, `Map`, and `Bytes`. Clones share their data, so cloning large values is cheap, and mutation copies shared data first. Maps preserve the insertion order of their entries. `uuid`, `timestamp`, and `date` are `sidex::types::Uuid`, `Timestamp`, and `Date`, and `value` is `sidex::Value`, a freeform JSON value.
+Strings, sequences, maps, and bytes are `sidex::types::Str`, `Seq`, `Map`, and `Bytes`. Clones share their data, so cloning large values is cheap, and mutation copies shared data first. Maps preserve the insertion order of their entries. `uuid`, `timestamp`, and `date` are `sidex::types::Uuid`, `Timestamp`, and `Date`, and `json` is `sidex::JsonValue`.
 
 To use other Rust types, map the built-in type in `backend.rust.types.table`. Rust's `String`, `Vec`, `HashMap`, and `BTreeMap` implement the runtime traits:
 

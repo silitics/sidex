@@ -1,4 +1,4 @@
-//! Encoding typed values as freeform values.
+//! Encoding typed values as JSON values.
 
 use base64::Engine;
 
@@ -6,7 +6,7 @@ use super::Tagging;
 use super::repr::BASE64;
 use super::repr::non_finite;
 use super::repr::with_display;
-use crate::Value;
+use crate::JsonValue;
 use crate::encode::EncodeError;
 use crate::encode::MapView;
 use crate::encode::RecordView;
@@ -20,16 +20,15 @@ use crate::shape::RecordShape;
 use crate::types::Map;
 use crate::types::Str;
 
-/// Callback receiving a view of a freeform value.
+/// Callback receiving a view of a JSON value.
 pub(super) type ViewFn<'f> = dyn FnMut(ValueView<'_>) -> Result<(), EncodeError> + 'f;
 
 /// Callback receiving an entry of a map.
 type EntryFn<'f> = dyn FnMut(&str, ValueView<'_>) -> Result<(), EncodeError> + 'f;
 
-/// Maps a typed view to a freeform view and passes it to `f`.
+/// Maps a typed view to a JSON value view and passes it to `f`.
 pub(super) fn view(view: &View<'_>, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
     match view {
-        View::Unit => f(ValueView::Null),
         View::Bool(value) => f(ValueView::Bool(*value)),
         View::I8(value) => f(ValueView::Int((*value).into())),
         View::I16(value) => f(ValueView::Int((*value).into())),
@@ -55,7 +54,7 @@ pub(super) fn view(view: &View<'_>, f: &mut ViewFn<'_>) -> Result<(), EncodeErro
         View::Map(map) => f(ValueView::Map(&MappedMap(*map))),
         View::Record(record) => f(ValueView::Map(&MappedRecord::new(*record, None)?)),
         View::Variant(variant) => self::variant(*variant, f),
-        View::Value(value) => self::value(value, f),
+        View::Json(value) => self::value(value, f),
     }
 }
 
@@ -154,21 +153,20 @@ fn variant(variant: &dyn VariantView, f: &mut ViewFn<'_>) -> Result<(), EncodeEr
     }
 }
 
-fn value(value: &Value, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
+fn value(value: &JsonValue, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
     match value {
-        Value::Null => f(ValueView::Null),
-        Value::Bool(value) => f(ValueView::Bool(*value)),
-        Value::Int(value) => f(ValueView::Int(*value)),
-        Value::Float(value) if value.is_finite() => f(ValueView::Float(*value)),
-        Value::Float(value) => {
+        JsonValue::Null => f(ValueView::Null),
+        JsonValue::Bool(value) => f(ValueView::Bool(*value)),
+        JsonValue::Int(value) => f(ValueView::Int(*value)),
+        JsonValue::Float(value) if value.is_finite() => f(ValueView::Float(*value)),
+        JsonValue::Float(value) => {
             Err(EncodeError::new(format_args!(
-                "freeform float {value} has no JSON representation"
+                "non-finite float {value} has no JSON representation"
             )))
         }
-        Value::String(value) => f(ValueView::String(value)),
-        Value::Bytes(value) => f(ValueView::String(&BASE64.encode(value))),
-        Value::Seq(items) => f(ValueView::Seq(&ValueSeq(items))),
-        Value::Map(entries) => f(ValueView::Map(&ValueMap(entries))),
+        JsonValue::String(value) => f(ValueView::String(value)),
+        JsonValue::Seq(items) => f(ValueView::Seq(&ValueSeq(items))),
+        JsonValue::Map(entries) => f(ValueView::Map(&ValueMap(entries))),
     }
 }
 
@@ -191,10 +189,10 @@ fn key(
         View::Uuid(key) => with_display(key, f),
         View::Timestamp(key) => with_display(key, f),
         View::Date(key) => with_display(key, f),
-        View::Value(key) => {
+        View::Json(key) => {
             match key.as_ref() {
-                Value::String(key) => f(key),
-                Value::Int(key) => with_display(key, f),
+                JsonValue::String(key) => f(key),
+                JsonValue::Int(key) => with_display(key, f),
                 _ => Err(EncodeError::new("map keys must be strings or integers")),
             }
         }
@@ -316,7 +314,7 @@ impl ValueMapView for Entries<'_> {
     }
 }
 
-struct ValueSeq<'a>(&'a [Value]);
+struct ValueSeq<'a>(&'a [JsonValue]);
 
 impl ValueSeqView for ValueSeq<'_> {
     fn size_hint(&self) -> Option<usize> {
@@ -328,7 +326,7 @@ impl ValueSeqView for ValueSeq<'_> {
     }
 }
 
-struct ValueMap<'a>(&'a Map<Str, Value>);
+struct ValueMap<'a>(&'a Map<Str, JsonValue>);
 
 impl ValueMapView for ValueMap<'_> {
     fn size_hint(&self) -> Option<usize> {

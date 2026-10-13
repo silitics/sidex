@@ -361,11 +361,8 @@ impl<'cx> JsonSchemaCtx<'cx> {
                         .with_additional_properties(Some(Box::new(type_schema.use_schema.into()))),
                 )));
             }
-            "::core::builtins::unit" => {
-                json_schema.set_allowed_types(Some(Type::Null.into()));
-            }
-            "::core::builtins::value" => {
-                // Anything goes — clear the inherited any-type constraints.
+            "::core::builtins::json" => {
+                // Any JSON value, so clear the inherited constraints.
                 json_schema.set_allowed_types(None);
             }
             "::core::builtins::bool" => {

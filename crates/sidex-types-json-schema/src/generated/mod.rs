@@ -951,7 +951,7 @@ pub mod schema {
         }
     }
     #[doc = "Any JSON value.\n"]
-    pub type Any = ::sidex::Value;
+    pub type Any = ::sidex::JsonValue;
     #[doc = "A reference to a JSON schema.\n"]
     #[derive(Clone, Debug)]
     pub struct SchemaRef(pub(crate) ::std::string::String);
@@ -1774,7 +1774,7 @@ pub mod schema {
         }
     }
     #[doc = "A JSON number.\n"]
-    pub type Number = ::sidex::Value;
+    pub type Number = ::sidex::JsonValue;
     #[doc = "Keywords applying to strings.\n"]
     #[derive(Clone, Debug)]
     pub struct StringKeywords {

@@ -17,7 +17,7 @@ pub use generated::attrs as raw;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::quote;
-use sidex::Value;
+use sidex::JsonValue;
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Result;
 use sidex_ir as ir;
@@ -27,7 +27,7 @@ const PLUGIN: &str = "rust";
 /// Pull the typed `rust` attributes off any IR node's `typed_attrs` map and
 /// deserialize them into the generated struct `T`. Returns `Ok(None)` if
 /// the node has no `rust` attrs.
-pub fn extract<T>(typed_attrs: &HashMap<String, Value>) -> Result<Option<T>>
+pub fn extract<T>(typed_attrs: &HashMap<String, JsonValue>) -> Result<Option<T>>
 where
     T: sidex::Decode,
 {

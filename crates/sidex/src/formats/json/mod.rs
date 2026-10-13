@@ -7,7 +7,7 @@
 //!
 //! JSON documents are written and read as text with [`to_string`] and
 //! [`from_str`], which require the default `json` feature, and held in memory as
-//! freeform values with [`to_value`] and [`from_value`]. Shapes carry the
+//! JSON values with [`to_value`] and [`from_value`]. Shapes carry the
 //! JSON-specific metadata of types as [`Field`], [`Case`], [`Tagging`], and
 //! [`Opaque`].
 //!
@@ -41,13 +41,13 @@
 //! | record | map from JSON field names to values | `null` for absent optional fields, unless `null` is a value of the field's type |
 //! | variant | depends on the tagging (see below) | |
 //! | wrapper | representation of the wrapped type | |
-//! | freeform value | the value itself, with bytes as Base64 strings | |
+//! | `json` | the value itself | |
 //!
 //! JavaScript represents numbers as 64-bit floats, which represent integers
 //! exactly only up to a magnitude of 2^53 − 1. Larger `i64` and `u64` values
 //! are decimal strings, which keeps them exact in every language. JSON has no
-//! representation of non-finite floats, so typed floats use strings for them. Non-finite
-//! freeform floats cannot be encoded.
+//! representation of non-finite floats, so typed floats use strings for them.
+//! JSON values cannot hold non-finite floats.
 //!
 //! Map keys may be strings, integers, UUIDs, timestamps, and dates. Keys use the
 //! text representation of their type, with integers in decimal.
@@ -101,7 +101,7 @@ pub use self::text::to_string;
 #[cfg(feature = "json")]
 pub use self::text::to_string_pretty;
 use super::view::ValueView;
-use crate::Value;
+use crate::JsonValue;
 use crate::decode::Decode;
 use crate::decode::DecodeError;
 use crate::encode::Encode;
@@ -125,33 +125,33 @@ pub(crate) fn encode<T: Encode + ?Sized>(
     encoding::view(&value.encode(), f)
 }
 
-/// Writes `value` as a JSON document held in a freeform value.
+/// Writes `value` as a JSON document held in a JSON value.
 ///
 /// ```
-/// use sidex::Value;
+/// use sidex::JsonValue;
 ///
 /// let value = sidex::formats::json::to_value(&vec![1_u64, 2]).unwrap();
-/// assert_eq!(value, Value::from(vec![1.into(), 2.into()]));
+/// assert_eq!(value, JsonValue::from(vec![1.into(), 2.into()]));
 /// ```
-pub fn to_value<T: Encode + ?Sized>(value: &T) -> Result<Value, EncodeError> {
-    let mut out = Value::Null;
+pub fn to_value<T: Encode + ?Sized>(value: &T) -> Result<JsonValue, EncodeError> {
+    let mut out = JsonValue::Null;
     encode(value, &mut |view| {
-        out = Value::from_view(view)?;
+        out = JsonValue::from_view(view)?;
         Ok(())
     })?;
     Ok(out)
 }
 
-/// Reads a value from a JSON document held in a freeform value.
+/// Reads a value from a JSON document held in a JSON value.
 ///
 /// ```
-/// use sidex::Value;
+/// use sidex::JsonValue;
 ///
-/// let value = Value::from(vec!["1".into(), 2.into()]);
+/// let value = JsonValue::from(vec!["1".into(), 2.into()]);
 /// let numbers: Vec<u64> = sidex::formats::json::from_value(&value).unwrap();
 /// assert_eq!(numbers, [1, 2]);
 /// ```
-pub fn from_value<T: Decode>(value: &Value) -> Result<T, DecodeError> {
+pub fn from_value<T: Decode>(value: &JsonValue) -> Result<T, DecodeError> {
     T::decode(&mut decoding::JsonDecoder::new(value, false))
 }
 
@@ -161,13 +161,13 @@ pub fn from_value<T: Decode>(value: &Value) -> Result<T, DecodeError> {
 /// unknown fields are likely typos.
 ///
 /// ```
-/// use sidex::Value;
+/// use sidex::JsonValue;
 /// use sidex::types::Map;
 ///
-/// let value = Value::from_iter([("thing", Value::from("x"))]);
+/// let value = JsonValue::from_iter([("thing", JsonValue::from("x"))]);
 /// let map: Map<String, String> = sidex::formats::json::from_value_strict(&value).unwrap();
 /// assert_eq!(map["thing"], "x");
 /// ```
-pub fn from_value_strict<T: Decode>(value: &Value) -> Result<T, DecodeError> {
+pub fn from_value_strict<T: Decode>(value: &JsonValue) -> Result<T, DecodeError> {
     T::decode(&mut decoding::JsonDecoder::new(value, true))
 }

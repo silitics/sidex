@@ -107,7 +107,7 @@ An opaque type can have a target-specific native mapping and a JSON shape. The `
 | Python     | Use `#[py(typ = "...")]` when provided; otherwise use JSON shape | Ignore the native mapping and use JSON shape            |
 | TypeScript | Use JSON shape                                                   | Currently the same as `native`                          |
 
-JSON lowering is useful for raw-value conformance tests. When no JSON shape is given, the fallback is `sidex::Value` in Rust, `pydantic.JsonValue` in Python, and `unknown` in TypeScript.
+JSON lowering is useful for raw-value conformance tests. When no JSON shape is given, the fallback is `sidex::JsonValue` in Rust, `pydantic.JsonValue` in Python, and `unknown` in TypeScript.
 
 ## IR and JSON Schema
 

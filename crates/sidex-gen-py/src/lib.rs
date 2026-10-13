@@ -91,11 +91,10 @@ impl TypesConfig {
             ("::core::builtins::f32", "_sidex.F32"),
             ("::core::builtins::f64", "_sidex.F64"),
             ("::core::builtins::bool", "_sidex.Bool"),
-            ("::core::builtins::unit", "None"),
             ("::core::builtins::uuid", "_sidex.Uuid"),
             ("::core::builtins::timestamp", "_sidex.Timestamp"),
             ("::core::builtins::date", "_sidex.Date"),
-            ("::core::builtins::value", "_sidex.Value"),
+            ("::core::builtins::json", "_sidex.Json"),
             ("::core::builtins::Sequence", "list"),
             ("::core::builtins::Map", "dict"),
         ] {

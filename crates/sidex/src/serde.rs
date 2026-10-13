@@ -35,12 +35,13 @@ use crate::Decode;
 use crate::DecodeError;
 use crate::Decoder;
 use crate::Encode;
+use crate::JsonValue;
 use crate::Shape;
 use crate::Shaped;
-use crate::Value;
 use crate::View;
 use crate::formats::bridge;
 use crate::formats::bridge::SerializeView;
+use crate::formats::bridge::Syntax;
 use crate::formats::json;
 use crate::formats::json::text::DeserializeValue;
 use crate::formats::json::text::ValueVisitor;
@@ -64,7 +65,7 @@ pub fn serialize<T: Encode + ?Sized, S: Serializer>(
 ) -> Result<S::Ok, S::Error> {
     let mut serializer = Some(serializer);
     let mut failure = None;
-    let result = bridge::encode(value, |view: &SerializeView<'_>| {
+    let result = bridge::encode(value, Syntax::Json, |view: &SerializeView<'_, '_>| {
         let serializer = serializer.take().ok_or("value serialized twice")?;
         view.serialize(serializer).map_err(|error| {
             failure = Some(error);
@@ -86,17 +87,16 @@ pub fn deserialize<'de, T: Shaped + Decode, D: Deserializer<'de>>(
     json::from_value(&value).map_err(D::Error::custom)
 }
 
-/// Reads a freeform value, using the shape as a hint for the deserializer.
+/// Reads a JSON value, using the shape as a hint for the deserializer.
 struct Guided(&'static Shape);
 
 impl<'de> DeserializeSeed<'de> for Guided {
-    type Value = Value;
+    type Value = JsonValue;
 
-    fn deserialize<D: Deserializer<'de>>(self, deserializer: D) -> Result<Value, D::Error> {
+    fn deserialize<D: Deserializer<'de>>(self, deserializer: D) -> Result<JsonValue, D::Error> {
         match &self.0.kind {
             ShapeKind::Scalar(scalar) => {
                 match scalar {
-                    Scalar::Unit => deserializer.deserialize_unit(ValueVisitor),
                     Scalar::Bool => deserializer.deserialize_bool(ValueVisitor),
                     Scalar::I8 | Scalar::I16 | Scalar::I32 => {
                         deserializer.deserialize_i64(ValueVisitor)
@@ -117,7 +117,7 @@ impl<'de> DeserializeSeed<'de> for Guided {
             ShapeKind::Map(_, value) => deserializer.deserialize_map(Entries::Map(value())),
             ShapeKind::Record(record) => deserializer.deserialize_map(Entries::Record(record)),
             ShapeKind::Wrapper(inner) => Guided(inner()).deserialize(deserializer),
-            ShapeKind::Variant(_) | ShapeKind::Opaque(_) | ShapeKind::Value => {
+            ShapeKind::Variant(_) | ShapeKind::Opaque(_) | ShapeKind::Json => {
                 deserializer.deserialize_any(ValueVisitor)
             }
         }
@@ -128,29 +128,29 @@ impl<'de> DeserializeSeed<'de> for Guided {
 struct Optional(&'static Shape);
 
 impl<'de> DeserializeSeed<'de> for Optional {
-    type Value = Value;
+    type Value = JsonValue;
 
-    fn deserialize<D: Deserializer<'de>>(self, deserializer: D) -> Result<Value, D::Error> {
+    fn deserialize<D: Deserializer<'de>>(self, deserializer: D) -> Result<JsonValue, D::Error> {
         deserializer.deserialize_option(self)
     }
 }
 
 impl<'de> Visitor<'de> for Optional {
-    type Value = Value;
+    type Value = JsonValue;
 
     fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "an optional value of `{}`", self.0)
     }
 
-    fn visit_none<E>(self) -> Result<Value, E> {
-        Ok(Value::Null)
+    fn visit_none<E>(self) -> Result<JsonValue, E> {
+        Ok(JsonValue::Null)
     }
 
-    fn visit_unit<E>(self) -> Result<Value, E> {
-        Ok(Value::Null)
+    fn visit_unit<E>(self) -> Result<JsonValue, E> {
+        Ok(JsonValue::Null)
     }
 
-    fn visit_some<D: Deserializer<'de>>(self, deserializer: D) -> Result<Value, D::Error> {
+    fn visit_some<D: Deserializer<'de>>(self, deserializer: D) -> Result<JsonValue, D::Error> {
         Guided(self.0).deserialize(deserializer)
     }
 }
@@ -159,18 +159,18 @@ impl<'de> Visitor<'de> for Optional {
 struct Items(&'static Shape);
 
 impl<'de> Visitor<'de> for Items {
-    type Value = Value;
+    type Value = JsonValue;
 
     fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "a sequence of `{}`", self.0)
     }
 
-    fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Value, A::Error> {
+    fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<JsonValue, A::Error> {
         let mut items = Vec::with_capacity(seq.size_hint().unwrap_or(0));
         while let Some(item) = seq.next_element_seed(Guided(self.0))? {
             items.push(item);
         }
-        Ok(Value::Seq(items.into()))
+        Ok(JsonValue::Seq(items.into()))
     }
 }
 
@@ -181,13 +181,13 @@ enum Entries {
 }
 
 impl<'de> Visitor<'de> for Entries {
-    type Value = Value;
+    type Value = JsonValue;
 
     fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter.write_str("a map")
     }
 
-    fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Value, A::Error> {
+    fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<JsonValue, A::Error> {
         let mut entries = Map::with_capacity(map.size_hint().unwrap_or(0));
         while let Some(key) = map.next_key::<String>()? {
             let value = match &self {
@@ -205,7 +205,7 @@ impl<'de> Visitor<'de> for Entries {
             };
             entries.insert(Str::from(key), value);
         }
-        Ok(Value::Map(entries))
+        Ok(JsonValue::Map(entries))
     }
 }
 
@@ -354,14 +354,14 @@ pub fn encode_serde<T: Serialize + ?Sized>(value: &T) -> View<'static> {
     let value = serde_json::to_value(value)
         .and_then(DeserializeValue::deserialize)
         .unwrap_or_else(|error| panic!("cannot serialize value as JSON: {error}"));
-    View::Value(Cow::Owned(value.0))
+    View::Json(Cow::Owned(value.0))
 }
 
 /// Decodes a Serde value from its `serde_json` representation.
 #[doc(hidden)]
 pub fn decode_serde<T: DeserializeOwned>(decoder: &mut dyn Decoder) -> Result<T, DecodeError> {
-    let value = decoder.value()?;
-    let value = bridge::encode(&value, |view: &SerializeView<'_>| {
+    let value = decoder.json()?;
+    let value = bridge::encode(&value, Syntax::Json, |view: &SerializeView<'_, '_>| {
         serde_json::to_value(view)
     })
     .map_err(DecodeError::new)?;
@@ -400,7 +400,7 @@ macro_rules! impl_serde {
 }
 
 impl_serde! {
-    [] Value,
+    [] JsonValue,
     [] Str,
     [] Bytes,
     [] Uuid,

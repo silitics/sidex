@@ -4,7 +4,7 @@
 /// attribute schema in the JSON representation of the schema's types.
 /// Producers and consumers communicate through this representation, validated
 /// at IR build time against the plugin's Sidex schema.
-alias Value: value
+alias Value: json
 
 /// Uniquely identifies a source in an IR.
 #[rust(derive(Copy, PartialEq, Eq, Hash))]

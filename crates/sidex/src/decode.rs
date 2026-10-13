@@ -6,14 +6,14 @@
 //! payload, so nested decoders live on the stack.
 //!
 //! Decoders are provided by formats, such as [`json`], which translate the
-//! requests into reads of a freeform value. Errors record the path to the offending
+//! requests into reads of a JSON value. Errors record the path to the offending
 //! item while they propagate through the callbacks.
 //!
 //! [`json`]: crate::formats::json
 
 use std::fmt;
 
-use crate::Value;
+use crate::JsonValue;
 use crate::shape::Shape;
 use crate::types::Date;
 use crate::types::Timestamp;
@@ -32,9 +32,6 @@ pub trait Decode: Sized {
 /// Each method decodes the value as the requested type. A decoder decodes at
 /// most one value.
 pub trait Decoder {
-    /// Decodes a `unit`.
-    fn unit(&mut self) -> Result<(), DecodeError>;
-
     /// Decodes a `bool`.
     fn bool(&mut self) -> Result<bool, DecodeError>;
 
@@ -128,8 +125,8 @@ pub trait Decoder {
         f: &mut dyn FnMut(usize, &mut dyn Decoder) -> Result<(), DecodeError>,
     ) -> Result<(), DecodeError>;
 
-    /// Decodes a freeform value.
-    fn value(&mut self) -> Result<Value, DecodeError>;
+    /// Decodes a JSON value.
+    fn json(&mut self) -> Result<JsonValue, DecodeError>;
 }
 
 /// Error decoding a value.

@@ -9,14 +9,14 @@ mod generated;
 
 pub use generated::attrs::*;
 use sidex::DecodeError;
-use sidex::Value;
+use sidex::JsonValue;
 use sidex_ir as ir;
 
 /// Pull the typed `py` attributes off any IR node's `typed_attrs` map and
 /// deserialize them into the typed struct `T`. Returns `Ok(None)` if the
 /// node has no `py` attrs.
 pub fn extract<T>(
-    typed_attrs: &std::collections::HashMap<String, Value>,
+    typed_attrs: &std::collections::HashMap<String, JsonValue>,
 ) -> Result<Option<T>, DecodeError>
 where
     T: sidex::Decode,

@@ -26,11 +26,6 @@ export type String = string
  */
 export type Bool = boolean
 
-/**
- * The unit type, represented as `null`.
- */
-export type Unit = null
-
 // ---- Small integers --------------------------------------------------------
 
 /**
@@ -355,9 +350,9 @@ export const Date = {
 // ---- Compound types --------------------------------------------------------
 
 /**
- * A freeform value.
+ * A JSON value.
  */
-export type Value = null | boolean | number | string | Value[] | { [key: string]: Value }
+export type Json = null | boolean | number | string | Json[] | { [key: string]: Json }
 
 /**
  * A sequence.

@@ -4,8 +4,8 @@ use std::collections::HashSet;
 
 use super::Tagging;
 use super::Type;
+use crate::JsonValue;
 use crate::Shape;
-use crate::Value;
 use crate::shape::RecordShape;
 use crate::shape::Scalar;
 use crate::shape::ShapeKind;
@@ -26,7 +26,7 @@ use crate::types::Str;
 /// let schema = sidex::formats::json::schema(<Vec<u64>>::SHAPE);
 /// assert_eq!(schema.get("type"), Some(&"array".into()));
 /// ```
-pub fn schema(shape: &'static Shape) -> Value {
+pub fn schema(shape: &'static Shape) -> JsonValue {
     let mut builder = Builder {
         defs: Map::new(),
         visiting: HashSet::from([shape.to_string()]),
@@ -39,9 +39,9 @@ pub fn schema(shape: &'static Shape) -> Value {
         builder.schema(pending);
     }
     if !builder.defs.is_empty()
-        && let Value::Map(entries) = &mut schema
+        && let JsonValue::Map(entries) = &mut schema
     {
-        entries.insert("$defs".into(), Value::Map(builder.defs));
+        entries.insert("$defs".into(), JsonValue::Map(builder.defs));
     }
     schema
 }
@@ -103,7 +103,7 @@ fn rewrite_refs(value: &mut serde_json::Value, prefix: &str) {
 
 /// Builds a schema and its definitions.
 struct Builder {
-    defs: Map<Str, Value>,
+    defs: Map<Str, JsonValue>,
     /// Names of the definitions under construction.
     visiting: HashSet<String>,
     /// Shapes referenced while under construction.
@@ -113,7 +113,7 @@ struct Builder {
 impl Builder {
     /// Returns a schema for values of the shape, referencing definitions of
     /// records and variants.
-    fn schema(&mut self, shape: &'static Shape) -> Value {
+    fn schema(&mut self, shape: &'static Shape) -> JsonValue {
         if !matches!(shape.kind, ShapeKind::Record(_) | ShapeKind::Variant(_)) {
             return self.describe(shape);
         }
@@ -132,7 +132,7 @@ impl Builder {
     }
 
     /// Returns a schema describing the shape in place.
-    fn describe(&mut self, shape: &'static Shape) -> Value {
+    fn describe(&mut self, shape: &'static Shape) -> JsonValue {
         let mut schema = match &shape.kind {
             ShapeKind::Scalar(scalar) => scalar_schema(*scalar),
             ShapeKind::Sequence(item) => {
@@ -152,15 +152,17 @@ impl Builder {
                     Some(types) => {
                         object([(
                             "type",
-                            Value::from(types.iter().map(|ty| type_name(*ty)).collect::<Vec<_>>()),
+                            JsonValue::from(
+                                types.iter().map(|ty| type_name(*ty)).collect::<Vec<_>>(),
+                            ),
                         )])
                     }
                     None => object([]),
                 }
             }
-            ShapeKind::Value => object([]),
+            ShapeKind::Json => object([]),
         };
-        if let Value::Map(entries) = &mut schema {
+        if let JsonValue::Map(entries) = &mut schema {
             if let Some(docs) = shape.docs {
                 entries.insert("description".into(), docs.trim().into());
             }
@@ -172,13 +174,13 @@ impl Builder {
     }
 
     /// Returns an object schema for the fields of the record.
-    fn record(&mut self, record: &'static RecordShape) -> Value {
+    fn record(&mut self, record: &'static RecordShape) -> JsonValue {
         let mut properties = Map::new();
         let mut required = Vec::new();
         self.fields(record, &mut properties, &mut required);
         let mut schema = object([("type", "object".into()), ("properties", properties.into())]);
         if !required.is_empty()
-            && let Value::Map(entries) = &mut schema
+            && let JsonValue::Map(entries) = &mut schema
         {
             entries.insert("required".into(), required.into());
         }
@@ -189,8 +191,8 @@ impl Builder {
     fn fields(
         &mut self,
         record: &'static RecordShape,
-        properties: &mut Map<Str, Value>,
-        required: &mut Vec<Value>,
+        properties: &mut Map<Str, JsonValue>,
+        required: &mut Vec<JsonValue>,
     ) {
         for field in record.fields {
             let shape = (field.shape)();
@@ -201,7 +203,7 @@ impl Builder {
                 continue;
             }
             let mut property = self.schema(shape);
-            if let Value::Map(entries) = &mut property {
+            if let JsonValue::Map(entries) = &mut property {
                 if let Some(docs) = field.docs {
                     entries.insert("description".into(), docs.trim().into());
                 }
@@ -217,10 +219,10 @@ impl Builder {
     }
 
     /// Returns a schema with one alternative per case.
-    fn variant(&mut self, variant: &'static VariantShape) -> Value {
+    fn variant(&mut self, variant: &'static VariantShape) -> JsonValue {
         let mut alternatives = Vec::new();
         for case in variant.cases {
-            let name = Value::from(case.json.name);
+            let name = JsonValue::from(case.json.name);
             let mut alternative = match (variant.json, case.payload) {
                 (Tagging::External | Tagging::Implicit, None) => object([("const", name)]),
                 (Tagging::External, Some(payload)) => {
@@ -228,16 +230,16 @@ impl Builder {
                         ("type", "object".into()),
                         (
                             "properties",
-                            Value::from_iter([(case.json.name, self.schema(payload()))]),
+                            JsonValue::from_iter([(case.json.name, self.schema(payload()))]),
                         ),
-                        ("required", Value::from(vec![name])),
+                        ("required", JsonValue::from(vec![name])),
                         ("additionalProperties", false.into()),
                     ])
                 }
                 (Tagging::Implicit, Some(payload)) => self.schema(payload()),
                 (Tagging::Internal { tag, .. } | Tagging::Adjacent { tag, .. }, payload) => {
                     let mut properties = Map::new();
-                    let mut required = vec![Value::from(tag)];
+                    let mut required = vec![JsonValue::from(tag)];
                     properties.insert(tag.into(), object([("const", name)]));
                     if let Some(payload) = payload {
                         let payload = payload();
@@ -259,7 +261,7 @@ impl Builder {
                     ])
                 }
             };
-            if let Value::Map(entries) = &mut alternative {
+            if let JsonValue::Map(entries) = &mut alternative {
                 if let Some(docs) = case.docs {
                     entries.insert("description".into(), docs.trim().into());
                 }
@@ -279,17 +281,16 @@ impl Builder {
 }
 
 /// Returns the schema of a scalar.
-fn scalar_schema(scalar: Scalar) -> Value {
+fn scalar_schema(scalar: Scalar) -> JsonValue {
     let integer = |min: i128, max: i128| {
         object([
             ("type", "integer".into()),
-            ("minimum", Value::Int(min)),
-            ("maximum", Value::Int(max)),
+            ("minimum", JsonValue::Int(min)),
+            ("maximum", JsonValue::Int(max)),
         ])
     };
     let string = |format: &str| object([("type", "string".into()), ("format", format.into())]);
     match scalar {
-        Scalar::Unit => object([("type", "null".into())]),
         Scalar::Bool => object([("type", "boolean".into())]),
         Scalar::I8 => integer(i8::MIN.into(), i8::MAX.into()),
         Scalar::I16 => integer(i16::MIN.into(), i16::MAX.into()),
@@ -297,25 +298,34 @@ fn scalar_schema(scalar: Scalar) -> Value {
         Scalar::U8 => integer(0, u8::MAX.into()),
         Scalar::U16 => integer(0, u16::MAX.into()),
         Scalar::U32 => integer(0, u32::MAX.into()),
-        Scalar::Idx => object([("type", "integer".into()), ("minimum", Value::Int(0))]),
+        Scalar::Idx => object([("type", "integer".into()), ("minimum", JsonValue::Int(0))]),
         // Integers, or decimal strings beyond 2^53 - 1.
         Scalar::I64 => {
             object([
-                ("type", Value::from(vec!["integer".into(), "string".into()])),
+                (
+                    "type",
+                    JsonValue::from(vec!["integer".into(), "string".into()]),
+                ),
                 ("pattern", "^-?[0-9]+$".into()),
             ])
         }
         Scalar::U64 => {
             object([
-                ("type", Value::from(vec!["integer".into(), "string".into()])),
-                ("minimum", Value::Int(0)),
+                (
+                    "type",
+                    JsonValue::from(vec!["integer".into(), "string".into()]),
+                ),
+                ("minimum", JsonValue::Int(0)),
                 ("pattern", "^[0-9]+$".into()),
             ])
         }
         // Non-finite floats are strings.
         Scalar::F32 | Scalar::F64 => {
             object([
-                ("type", Value::from(vec!["number".into(), "string".into()])),
+                (
+                    "type",
+                    JsonValue::from(vec!["number".into(), "string".into()]),
+                ),
                 ("pattern", "^(NaN|-?Infinity)$".into()),
             ])
         }
@@ -333,7 +343,7 @@ fn scalar_schema(scalar: Scalar) -> Value {
 }
 
 /// Returns the name of a JSON type in JSON Schema.
-fn type_name(ty: Type) -> Value {
+fn type_name(ty: Type) -> JsonValue {
     match ty {
         Type::Null => "null",
         Type::Boolean => "boolean",
@@ -346,8 +356,8 @@ fn type_name(ty: Type) -> Value {
 }
 
 /// Creates an object schema from entries.
-fn object<const N: usize>(entries: [(&str, Value); N]) -> Value {
-    Value::from_iter(entries)
+fn object<const N: usize>(entries: [(&str, JsonValue); N]) -> JsonValue {
+    JsonValue::from_iter(entries)
 }
 
 /// Escapes a definition name for use in a JSON pointer.
@@ -365,14 +375,17 @@ mod tests {
     fn scalars() {
         assert_eq!(
             schema(u64::SHAPE).get("pattern"),
-            Some(&Value::from("^[0-9]+$"))
+            Some(&JsonValue::from("^[0-9]+$"))
         );
-        assert_eq!(schema(u8::SHAPE).get("maximum"), Some(&Value::from(255)));
+        assert_eq!(
+            schema(u8::SHAPE).get("maximum"),
+            Some(&JsonValue::from(255))
+        );
         assert_eq!(
             schema(<Vec<String>>::SHAPE),
-            Value::from_iter([
-                ("type", Value::from("array")),
-                ("items", Value::from_iter([("type", "string")])),
+            JsonValue::from_iter([
+                ("type", JsonValue::from("array")),
+                ("items", JsonValue::from_iter([("type", "string")])),
             ])
         );
     }

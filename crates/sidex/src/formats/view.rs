@@ -1,15 +1,15 @@
 //! Borrowed views of values for writing.
 
-use crate::Value;
+use crate::JsonValue;
 use crate::encode::EncodeError;
 use crate::types::Map;
 use crate::types::Str;
 
-/// Borrowed view of a [`Value`] whose sequences and maps compute their items on
+/// Borrowed view of a [`JsonValue`] whose sequences and maps compute their items on
 /// demand.
 ///
 /// The JSON representation produces views, which formats write without
-/// building a [`Value`] first.
+/// building a [`JsonValue`] first.
 #[derive(Clone, Copy)]
 pub(crate) enum ValueView<'a> {
     /// Null.
@@ -52,30 +52,30 @@ pub(crate) trait ValueMapView {
     ) -> Result<(), EncodeError>;
 }
 
-impl Value {
+impl JsonValue {
     /// Builds a value from a [`ValueView`].
     pub(crate) fn from_view(view: ValueView<'_>) -> Result<Self, EncodeError> {
         Ok(match view {
-            ValueView::Null => Value::Null,
-            ValueView::Bool(value) => Value::Bool(value),
-            ValueView::Int(value) => Value::Int(value),
-            ValueView::Float(value) => Value::Float(value),
-            ValueView::String(value) => Value::String(value.into()),
+            ValueView::Null => JsonValue::Null,
+            ValueView::Bool(value) => JsonValue::Bool(value),
+            ValueView::Int(value) => JsonValue::Int(value),
+            ValueView::Float(value) => JsonValue::Float(value),
+            ValueView::String(value) => JsonValue::String(value.into()),
             ValueView::Seq(seq) => {
                 let mut items = Vec::with_capacity(seq.size_hint().unwrap_or(0));
                 seq.each(&mut |item| {
-                    items.push(Value::from_view(item)?);
+                    items.push(JsonValue::from_view(item)?);
                     Ok(())
                 })?;
-                Value::Seq(items.into())
+                JsonValue::Seq(items.into())
             }
             ValueView::Map(map) => {
                 let mut entries = Map::with_capacity(map.size_hint().unwrap_or(0));
                 map.each(&mut |key, item| {
-                    entries.insert(Str::from(key), Value::from_view(item)?);
+                    entries.insert(Str::from(key), JsonValue::from_view(item)?);
                     Ok(())
                 })?;
-                Value::Map(entries)
+                JsonValue::Map(entries)
             }
         })
     }

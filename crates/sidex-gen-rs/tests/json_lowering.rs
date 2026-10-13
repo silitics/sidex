@@ -63,8 +63,8 @@ fn json_mode_overrides_rust_typ_attribute() {
         "rust.typ should be ignored in JSON mode, but uuid::Uuid appeared:\n{out}"
     );
     assert!(
-        out.contains("type Uuid < > = :: sidex :: Value"),
-        "Uuid should alias to sidex::Value, got:\n{out}"
+        out.contains("type Uuid < > = :: sidex :: JsonValue"),
+        "Uuid should alias to sidex::JsonValue, got:\n{out}"
     );
 }
 
@@ -104,8 +104,8 @@ fn json_mode_lowers_any_to_value() {
     };
     let out = render_normalized(cfg);
     assert!(
-        out.contains("type Anything < > = :: sidex :: Value"),
-        "Anything should alias to sidex::Value, got:\n{out}"
+        out.contains("type Anything < > = :: sidex :: JsonValue"),
+        "Anything should alias to sidex::JsonValue, got:\n{out}"
     );
 }
 
@@ -117,7 +117,7 @@ fn json_mode_lowers_multi_union_to_value() {
     };
     let out = render_normalized(cfg);
     assert!(
-        out.contains("type StringOrNumber < > = :: sidex :: Value"),
-        "StringOrNumber should fall back to sidex::Value, got:\n{out}"
+        out.contains("type StringOrNumber < > = :: sidex :: JsonValue"),
+        "StringOrNumber should fall back to sidex::JsonValue, got:\n{out}"
     );
 }

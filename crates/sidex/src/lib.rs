@@ -2,7 +2,7 @@
 //!
 //! Sidex generates Rust types from schemas. This crate provides what those types
 //! need at runtime: descriptions of their structure, a dyn-safe way to encode and
-//! decode them, freeform values, and formats.
+//! decode them, JSON values, and formats.
 //!
 //! # Concepts
 //!
@@ -20,7 +20,7 @@
 //! converts typed values to and from it (see [`formats`]). The JSON format is
 //! the cross-language contract of Sidex.
 //!
-//! A freeform [`Value`] is self-describing data following a JSON-like data
+//! A [`JsonValue`] is self-describing data following the JSON data
 //! model (see [`value`]). Types use values for data without a schema, and the
 //! JSON format can hold documents in values.
 //!
@@ -38,7 +38,7 @@
 //! use sidex::encode::{RecordView, View};
 //! use sidex::formats::json;
 //! use sidex::shape::{FieldShape, RecordShape, ShapeKind, shape_of};
-//! use sidex::{Decode, DecodeError, Decoder, Encode, Shape, Shaped, Value};
+//! use sidex::{Decode, DecodeError, Decoder, Encode, Shape, Shaped, JsonValue};
 //!
 //! /// A device.
 //! struct Device {
@@ -100,7 +100,7 @@
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! let device = Device { id: 1 << 60, display_name: None };
 //! let value = json::to_value(&device)?;
-//! assert_eq!(value, Value::from_iter([("id", "1152921504606846976")]));
+//! assert_eq!(value, JsonValue::from_iter([("id", "1152921504606846976")]));
 //!
 //! let decoded: Device = json::from_value(&value)?;
 //! assert_eq!(decoded.id, device.id);
@@ -116,8 +116,8 @@
 //! - `serde-1`: Interoperability with Serde (see `serde`).
 //! - `indexmap-2`, `jiff-02`, `uuid-1`: Conversions to and from types of third-party
 //!   crates and, for their scalar types, implementations of the traits (see [`types`]).
-//! - `serde_json-1`: Conversions between [`Value`] and `serde_json::Value`, which also
-//!   implements the traits like [`Value`].
+//! - `serde_json-1`: Conversions between [`JsonValue`] and `serde_json::Value`, which
+//!   also implements the traits like [`JsonValue`].
 //! - `schemars-1`: Schemas for `schemars` (see [`formats::json`]).
 //! - `sqlx-08`, `rusqlite-037`: Storing strings in SQL databases with `sqlx` or
 //!   `rusqlite`.
@@ -143,7 +143,7 @@ pub use crate::encode::EncodeError;
 pub use crate::encode::View;
 pub use crate::shape::Shape;
 pub use crate::shape::Shaped;
-pub use crate::value::Value;
+pub use crate::value::JsonValue;
 
 /// Macro for including bundles build with [`sidex_build_rs`].
 ///

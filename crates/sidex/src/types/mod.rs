@@ -190,7 +190,7 @@ macro_rules! __impl_text {
         impl $crate::Encode for $ty {
             fn encode(&self) -> $crate::View<'_> {
                 let $value: &$ty = self;
-                $crate::View::Value(::std::borrow::Cow::Owned($crate::Value::String(
+                $crate::View::Json(::std::borrow::Cow::Owned($crate::JsonValue::String(
                     $crate::types::Str::from($to_text),
                 )))
             }
