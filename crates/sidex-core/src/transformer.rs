@@ -799,9 +799,8 @@ impl Transformer {
                 }
             }
             // Make the standard library implicitly available under its
-            // declared bundle name (currently "core") so user schemas can
-            // write `import core::attrs::*` etc. We also keep the legacy
-            // "std" alias for backwards compatibility with existing schemas.
+            // declared bundle name (`core`) so user schemas can write
+            // `import ::core::attrs::*` etc.
             let std_bundle_name = self.loaded[STD_BUNDLE.idx()]
                 .source
                 .manifest
@@ -809,7 +808,6 @@ impl Transformer {
                 .name
                 .clone();
             dependencies.insert(std_bundle_name, STD_BUNDLE);
-            dependencies.insert("std".to_owned(), STD_BUNDLE);
 
             for parsed in &loaded.schemas {
                 let mut resolver = Resolver {

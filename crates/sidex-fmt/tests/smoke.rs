@@ -42,9 +42,9 @@ record VeryLong {
 fn sorts_imports_and_groups_by_bundle() {
     let input = r#"
 import b::B
-import std::option::Option
+import ::core::attrs::Deprecated
 import a::A
-import std::result::{Result, Error}
+import ::core::builtins::{uuid, date}
 "#;
     let out = format(input).unwrap();
     insta::assert_snapshot!("sorted_imports", out);
@@ -52,17 +52,17 @@ import std::result::{Result, Error}
 
 #[test]
 fn sub_groups_external_by_bundle() {
-    // External imports from two different bundles (`std`, `other`) plus
+    // External imports from two different bundles (`core`, `other`) plus
     // internal imports. External should be split into per-bundle subgroups.
     let input = r#"
-import std::option::Option
+import ::core::attrs::Deprecated
 import ::other::Foo
 import schema::Bar
-import std::result::Result
+import ::core::builtins::uuid
 import ::other::{Baz, Quux}
 "#;
     let opts = sidex_fmt::FormatOptions {
-        external_bundles: vec!["std".to_owned(), "other".to_owned()],
+        external_bundles: vec!["core".to_owned(), "other".to_owned()],
         ..Default::default()
     };
     let out = sidex_fmt::format_with(input, &opts).unwrap();

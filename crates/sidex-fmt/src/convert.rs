@@ -451,7 +451,7 @@ fn is_external_import(import: &SyntaxNode, opts: &FormatOptions) -> bool {
         return true;
     }
     if let Some(first) = first_path_segment_text(&tree)
-        && (first == "std" || opts.external_bundles.iter().any(|b| b == &first))
+        && opts.external_bundles.iter().any(|b| b == &first)
     {
         return true;
     }

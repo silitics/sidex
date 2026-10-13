@@ -64,7 +64,7 @@ fn apply_fixes(
 
     let by_schema = lints::unused_imports_by_schema(&findings);
     let manifest = transformer.get_bundle_manifest(bundle_idx);
-    let mut external_bundles = vec!["std".to_owned()];
+    let mut external_bundles = Vec::new();
     for (name, _) in manifest.dependencies() {
         external_bundles.push(name.to_owned());
     }
