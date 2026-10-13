@@ -72,6 +72,12 @@ Map keys may be strings, integers, UUIDs, timestamps, and dates. A `[u64: string
 
 Records, variants, wrappers, and opaque types follow the rules below.
 
+## JSON Schema
+
+The Rust runtime and the JSON Schema generator share built-in schemas for JSON Schema 2020-12. Numeric format hints (`int32`, `uint32`, `int64`, and `uint64`) help OpenAPI client generators select types. UUIDs, timestamps, and dates use the `uuid`, `date-time`, and `date` formats. Bytes carry `contentEncoding: "base64"`.
+
+Schemas retain numeric bounds for 8-, 16-, and 32-bit integers and a minimum of zero for `u64`. The `idx` schema has a minimum of zero and no maximum, independent of the generating host. Simple patterns describe decimal strings for 64-bit integers and integer map keys, and the non-finite float strings. These patterns check spelling; Sidex readers enforce integer ranges. The schemas describe this wire mapping. Enable format validation when using a JSON Schema validator.
+
 ## Records and Optional Fields
 
 Record fields default to camelCase:

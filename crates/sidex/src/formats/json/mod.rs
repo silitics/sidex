@@ -26,7 +26,6 @@
 //!
 //! | Sidex type | Representation | Also accepted when decoding |
 //! | --- | --- | --- |
-//! | `unit` | `null` | |
 //! | `bool` | boolean | |
 //! | `i8` to `i32`, `u8` to `u32`, `idx` | integer | |
 //! | `i64`, `u64` | integer, or decimal string beyond ±(2^53 − 1) | decimal string |
@@ -87,6 +86,7 @@ pub use self::meta::Field;
 pub use self::meta::Opaque;
 pub use self::meta::Tagging;
 pub use self::meta::Type;
+pub use self::schema::map_key_schema;
 pub use self::schema::schema;
 #[cfg(feature = "schemars-1")]
 pub use self::schema::schemars_schema;

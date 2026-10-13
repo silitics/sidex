@@ -1,3 +1,5 @@
+//! JSON Schema 2020-12 generation from Sidex type definitions.
+
 use std::collections::BTreeSet;
 use std::collections::VecDeque;
 
@@ -6,6 +8,7 @@ use builder::VariantTypeSchemaBuilder;
 use indexmap::IndexMap;
 use serde::Deserialize;
 use serde::Serialize;
+use sidex::Shaped;
 use sidex::types::Map;
 use sidex_attrs_api::render_doc_prelude;
 use sidex_attrs_api::stability_of_def;
@@ -94,13 +97,6 @@ pub struct JsonSchemaCtx<'cx> {
     pub def_prefix: String,
     pub defs: IndexMap<String, TypeSchema>,
     pub config: JsonSchemaConfig,
-}
-
-/// Restricts strings to the given pattern.
-fn set_pattern(schema: &mut SchemaObject, pattern: &str) {
-    schema.set_string_keywords(Some(Box::new(
-        StringKeywords::new().with_pattern(Some(Pattern::new(pattern.to_owned()))),
-    )));
 }
 
 fn make_schema_ref<S: AsRef<str>>(string: S) -> SchemaObject {
@@ -342,6 +338,12 @@ impl<'cx> JsonSchemaCtx<'cx> {
             return Ok(json_schema);
         }
         let name = self.qualified_path(instance);
+        if let Some(shape) = builtin_shape(&name) {
+            return Ok(
+                sidex::formats::json::from_value_strict(&sidex::formats::json::schema(shape))
+                    .expect("built-in schemas use supported JSON Schema keywords"),
+            );
+        }
         match name.as_str() {
             "::core::builtins::Sequence" => {
                 let element_type = &instance.subst[0];
@@ -351,82 +353,41 @@ impl<'cx> JsonSchemaCtx<'cx> {
                 ))));
             }
             "::core::builtins::Map" => {
-                let _key_type = &instance.subst[0];
+                let key_type = &instance.subst[0];
                 let value_type = &instance.subst[1];
                 let type_schema = self.resolve(value_type)?;
-                // TODO: Check that key is string.
+                let mut keywords = ObjectKeywords::new()
+                    .with_additional_properties(Some(Box::new(type_schema.use_schema.into())));
+                if let Some(key_schema) = self.map_key_schema(key_type) {
+                    keywords.set_property_names(Some(Box::new(
+                        sidex::formats::json::from_value_strict(&key_schema)
+                            .expect("map key schemas use supported JSON Schema keywords"),
+                    )));
+                }
                 json_schema.set_allowed_types(Some(Type::Object.into()));
-                json_schema.set_object_keywords(Some(Box::new(
-                    ObjectKeywords::new()
-                        .with_additional_properties(Some(Box::new(type_schema.use_schema.into()))),
-                )));
-            }
-            "::core::builtins::json" => {
-                // Any JSON value, so clear the inherited constraints.
-                json_schema.set_allowed_types(None);
-            }
-            "::core::builtins::bool" => {
-                json_schema.set_allowed_types(Some(Type::Boolean.into()));
-            }
-            "::core::builtins::string" => {
-                json_schema.set_allowed_types(Some(Type::String.into()));
-            }
-            "::core::builtins::bytes" => {
-                json_schema.set_allowed_types(Some(Type::String.into()));
-            }
-            "::core::builtins::i8"
-            | "::core::builtins::i16"
-            | "::core::builtins::u8"
-            | "::core::builtins::u16"
-            | "::core::builtins::idx" => {
-                json_schema.set_allowed_types(Some(Type::Integer.into()));
-            }
-            "::core::builtins::i32" => {
-                json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some("int32".to_owned()));
-            }
-            "::core::builtins::u32" => {
-                json_schema
-                    .set_allowed_types(Some(Type::Integer.into()))
-                    .set_format(Some("uint32".to_owned()));
-            }
-            // 64-bit integers beyond 2^53 - 1 are decimal strings.
-            "::core::builtins::i64" => {
-                json_schema
-                    .set_allowed_types(Some(vec![Type::Integer, Type::String].into()))
-                    .set_format(Some("int64".to_owned()));
-                set_pattern(&mut json_schema, "^-?[0-9]+$");
-            }
-            "::core::builtins::u64" => {
-                json_schema
-                    .set_allowed_types(Some(vec![Type::Integer, Type::String].into()))
-                    .set_format(Some("uint64".to_owned()));
-                set_pattern(&mut json_schema, "^[0-9]+$");
-            }
-            // Non-finite floats are strings.
-            "::core::builtins::f32" | "::core::builtins::f64" => {
-                json_schema.set_allowed_types(Some(vec![Type::Number, Type::String].into()));
-                set_pattern(&mut json_schema, "^(NaN|[+-]?Infinity)$");
-            }
-            "::core::builtins::uuid" => {
-                json_schema
-                    .set_allowed_types(Some(Type::String.into()))
-                    .set_format(Some("uuid".to_owned()));
-            }
-            "::core::builtins::timestamp" => {
-                json_schema
-                    .set_allowed_types(Some(Type::String.into()))
-                    .set_format(Some("date-time".to_owned()));
-            }
-            "::core::builtins::date" => {
-                json_schema
-                    .set_allowed_types(Some(Type::String.into()))
-                    .set_format(Some("date".to_owned()));
+                json_schema.set_object_keywords(Some(Box::new(keywords)));
             }
             _ => {}
         }
         Ok(json_schema)
+    }
+
+    /// Resolves aliases and wrappers before describing built-in map keys.
+    fn map_key_schema(&self, typ: &ir::Type) -> Option<sidex::JsonValue> {
+        let mut typ = self.unit.resolve_aliases(typ);
+        loop {
+            let ir::TypeKind::Instance(instance) = &typ.kind else {
+                return None;
+            };
+            if let Some(shape) = builtin_shape(&self.qualified_path(instance)) {
+                return sidex::formats::json::map_key_schema(shape);
+            }
+            let def = self.unit.type_def(&typ)?;
+            let ir::DefKind::WrapperType(wrapper) = &def.kind else {
+                return None;
+            };
+            typ = self.unit.resolve_aliases(&wrapper.wrapped);
+        }
     }
 
     fn record_type_schema(
@@ -600,6 +561,31 @@ impl Generator for JsonSchemaGenerator {
 
         Ok(())
     }
+}
+
+/// Returns the runtime shape of a scalar built-in or `json`.
+fn builtin_shape(path: &str) -> Option<&'static sidex::Shape> {
+    Some(match path {
+        "::core::builtins::bool" => bool::SHAPE,
+        "::core::builtins::i8" => i8::SHAPE,
+        "::core::builtins::i16" => i16::SHAPE,
+        "::core::builtins::i32" => i32::SHAPE,
+        "::core::builtins::i64" => i64::SHAPE,
+        "::core::builtins::u8" => u8::SHAPE,
+        "::core::builtins::u16" => u16::SHAPE,
+        "::core::builtins::u32" => u32::SHAPE,
+        "::core::builtins::u64" => u64::SHAPE,
+        "::core::builtins::idx" => usize::SHAPE,
+        "::core::builtins::f32" => f32::SHAPE,
+        "::core::builtins::f64" => f64::SHAPE,
+        "::core::builtins::string" => String::SHAPE,
+        "::core::builtins::bytes" => sidex::types::Bytes::SHAPE,
+        "::core::builtins::uuid" => sidex::types::Uuid::SHAPE,
+        "::core::builtins::timestamp" => sidex::types::Timestamp::SHAPE,
+        "::core::builtins::date" => sidex::types::Date::SHAPE,
+        "::core::builtins::json" => sidex::JsonValue::SHAPE,
+        _ => return None,
+    })
 }
 
 /// Compute the set of def names transitively reachable from `root` via

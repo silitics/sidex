@@ -9,6 +9,37 @@ opaque Identifier
 #[json(type = "string|number")]
 opaque Scalar
 
+alias Key: u8
+wrapper WrappedKey: u16
+
+record Builtins {
+    boolean: bool,
+    signed8: i8,
+    signed16: i16,
+    signed32: i32,
+    signed64: i64,
+    unsigned8: u8,
+    unsigned16: u16,
+    unsigned32: u32,
+    unsigned64: u64,
+    index: idx,
+    float32: f32,
+    float64: f64,
+    text: string,
+    binary: bytes,
+    identifier: uuid,
+    instant: timestamp,
+    calendar: date,
+    arbitrary: json,
+    sequence: [u64],
+    map: [string: i64],
+    integer_keys: [u64: string],
+    signed_integer_keys: [i64: string],
+    aliased_keys: [Key: string],
+    wrapped_keys: [WrappedKey: string],
+    nested: [string: [json]],
+}
+
 record Event {
     at: Instant,
     id: Identifier,

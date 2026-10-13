@@ -207,7 +207,7 @@ fn schemas() {
     let schema = json::schema(<Located as Shaped>::SHAPE);
     assert_eq!(
         sidex::formats::json::to_string(&schema).unwrap(),
-        r#"{"type":"object","properties":{"name":{"type":"string"},"x":{"type":"integer","minimum":-2147483648,"maximum":2147483647},"y":{"type":"integer","minimum":-2147483648,"maximum":2147483647}},"required":["name","x","y"]}"#
+        r#"{"type":"object","properties":{"name":{"type":"string"},"x":{"type":"integer","format":"int32","minimum":-2147483648,"maximum":2147483647},"y":{"type":"integer","format":"int32","minimum":-2147483648,"maximum":2147483647}},"required":["name","x","y"]}"#
     );
     let schema = json::schema(<Position<Internal> as Shaped>::SHAPE);
     let alternatives = schema.get("oneOf").and_then(JsonValue::as_seq).unwrap();

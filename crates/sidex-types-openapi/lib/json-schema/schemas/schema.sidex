@@ -60,6 +60,10 @@ record SchemaObject {
     /// 
     /// See [JSON Schema Validation 7](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-vocabularies-for-semantic-c).
     format?: string,
+    /// Encoding of string contents.
+    ///
+    /// See JSON Schema Validation 8.3.
+    content_encoding?: string,
     /// The `$ref` keyword.
     #[json(name = "$ref")]
     #[rust(name = "reference")]

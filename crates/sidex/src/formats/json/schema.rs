@@ -46,6 +46,21 @@ pub fn schema(shape: &'static Shape) -> JsonValue {
     schema
 }
 
+/// Returns simple decimal-string constraints for integer map keys.
+///
+/// Returns `None` for other key types. Wrappers use their inner type.
+pub fn map_key_schema(shape: &'static Shape) -> Option<JsonValue> {
+    let pattern = match shape.kind {
+        ShapeKind::Scalar(Scalar::I8 | Scalar::I16 | Scalar::I32 | Scalar::I64) => "^-?[0-9]+$",
+        ShapeKind::Scalar(Scalar::U8 | Scalar::U16 | Scalar::U32 | Scalar::U64 | Scalar::Idx) => {
+            "^[0-9]+$"
+        }
+        ShapeKind::Wrapper(inner) => return map_key_schema(inner()),
+        _ => return None,
+    };
+    Some(object([("pattern", pattern.into())]))
+}
+
 /// Returns a [`schemars`](https://docs.rs/schemars) schema describing the JSON
 /// representation of values of the shape.
 ///
@@ -138,11 +153,15 @@ impl Builder {
             ShapeKind::Sequence(item) => {
                 object([("type", "array".into()), ("items", self.schema(item()))])
             }
-            ShapeKind::Map(_, value) => {
-                object([
-                    ("type", "object".into()),
-                    ("additionalProperties", self.schema(value())),
-                ])
+            ShapeKind::Map(key, value) => {
+                let mut entries = Map::from_iter([
+                    ("type".into(), "object".into()),
+                    ("additionalProperties".into(), self.schema(value())),
+                ]);
+                if let Some(key_schema) = map_key_schema(key()) {
+                    entries.insert("propertyNames".into(), key_schema);
+                }
+                JsonValue::Map(entries)
             }
             ShapeKind::Record(record) => self.record(record),
             ShapeKind::Variant(variant) => self.variant(variant),
@@ -294,18 +313,32 @@ fn scalar_schema(scalar: Scalar) -> JsonValue {
         Scalar::Bool => object([("type", "boolean".into())]),
         Scalar::I8 => integer(i8::MIN.into(), i8::MAX.into()),
         Scalar::I16 => integer(i16::MIN.into(), i16::MAX.into()),
-        Scalar::I32 => integer(i32::MIN.into(), i32::MAX.into()),
+        Scalar::I32 => {
+            object([
+                ("type", "integer".into()),
+                ("format", "int32".into()),
+                ("minimum", JsonValue::Int(i32::MIN.into())),
+                ("maximum", JsonValue::Int(i32::MAX.into())),
+            ])
+        }
         Scalar::U8 => integer(0, u8::MAX.into()),
         Scalar::U16 => integer(0, u16::MAX.into()),
-        Scalar::U32 => integer(0, u32::MAX.into()),
+        Scalar::U32 => {
+            object([
+                ("type", "integer".into()),
+                ("format", "uint32".into()),
+                ("minimum", JsonValue::Int(0)),
+                ("maximum", JsonValue::Int(u32::MAX.into())),
+            ])
+        }
         Scalar::Idx => object([("type", "integer".into()), ("minimum", JsonValue::Int(0))]),
-        // Integers, or decimal strings beyond 2^53 - 1.
         Scalar::I64 => {
             object([
                 (
                     "type",
                     JsonValue::from(vec!["integer".into(), "string".into()]),
                 ),
+                ("format", "int64".into()),
                 ("pattern", "^-?[0-9]+$".into()),
             ])
         }
@@ -315,18 +348,18 @@ fn scalar_schema(scalar: Scalar) -> JsonValue {
                     "type",
                     JsonValue::from(vec!["integer".into(), "string".into()]),
                 ),
+                ("format", "uint64".into()),
                 ("minimum", JsonValue::Int(0)),
                 ("pattern", "^[0-9]+$".into()),
             ])
         }
-        // Non-finite floats are strings.
         Scalar::F32 | Scalar::F64 => {
             object([
                 (
                     "type",
                     JsonValue::from(vec!["number".into(), "string".into()]),
                 ),
-                ("pattern", "^(NaN|-?Infinity)$".into()),
+                ("pattern", "^(NaN|[+-]?Infinity)$".into()),
             ])
         }
         Scalar::String => object([("type", "string".into())]),

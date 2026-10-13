@@ -289,6 +289,8 @@ pub mod schema {
         pub allowed_value: ::std::option::Option<Any>,
         #[doc = "The `format` keyword.\n\nSee [JSON Schema Validation 7](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-vocabularies-for-semantic-c).\n"]
         pub format: ::std::option::Option<::std::string::String>,
+        #[doc = "Encoding of string contents.\n\nSee JSON Schema Validation 8.3.\n"]
+        pub content_encoding: ::std::option::Option<::std::string::String>,
         #[doc = "The `$ref` keyword.\n"]
         pub reference: ::std::option::Option<SchemaRef>,
         #[doc = "The `$comment` keyword.\n"]
@@ -308,7 +310,7 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::sidex::Shaped for SchemaObject {
-        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json_schema::schema::SchemaObject" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("id" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("The `$id` keyword.\n\nSee [JSON Schema 8.2.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-id-keyword).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("$id") }] }]) . optional () . json_name ("$id") , :: sidex :: shape :: FieldShape :: new ("type" , :: sidex :: shape :: shape_of :: < MaybeArray < Type , > > ,) . with_docs ("The `type` keyword.\n\nSee [JSON Schema Validation 6.1.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-type).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("allowed_types") }] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("enum" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < Any , > > ,) . with_docs ("The `enum` keyword.\n\nSee [JSON Schema Validation 6.1.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-enum).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("allowed_values") }] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("const" , :: sidex :: shape :: shape_of :: < Any > ,) . with_docs ("The `const` keyword.\n\nSee [JSON Schema Validation 6.1.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-const).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("allowed_value") }] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("format" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("The `format` keyword.\n\nSee [JSON Schema Validation 7](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-vocabularies-for-semantic-c).\n") . optional () , :: sidex :: shape :: FieldShape :: new ("ref" , :: sidex :: shape :: shape_of :: < SchemaRef > ,) . with_docs ("The `$ref` keyword.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("$ref") }] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("reference") }] }]) . optional () . json_name ("$ref") , :: sidex :: shape :: FieldShape :: new ("comment" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("The `$comment` keyword.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("$comment") }] }]) . optional () . json_name ("$comment") , :: sidex :: shape :: FieldShape :: new ("metadata" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < Metadata > > ,) . with_docs ("Basic metadata annotations.\n\nSee [JSON Schema Validation 9](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-a-vocabulary-for-basic-meta).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_inline () , :: sidex :: shape :: FieldShape :: new ("subschema_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < SubschemaKeywords > > ,) . with_docs ("Keywords for combining and conditionally applying subschemas.\n\nSee [JSON Schema 10.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("subschemaKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("number_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < NumberKeywords > > ,) . with_docs ("Keywords applying to numbers.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("numberKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("string_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < StringKeywords > > ,) . with_docs ("Keywords applying to strings.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("stringKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("array_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < ArrayKeywords > > ,) . with_docs ("Keywords applying to arrays.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("arrayKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("object_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < ObjectKeywords > > ,) . with_docs ("Keywords applying to objects.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("objectKeywords") . json_inline ()]))) . with_docs ("A schema object.\n\nSee [JSON Schema 4.3.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-documents).\n") ;
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json_schema::schema::SchemaObject" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("id" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("The `$id` keyword.\n\nSee [JSON Schema 8.2.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-id-keyword).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("$id") }] }]) . optional () . json_name ("$id") , :: sidex :: shape :: FieldShape :: new ("type" , :: sidex :: shape :: shape_of :: < MaybeArray < Type , > > ,) . with_docs ("The `type` keyword.\n\nSee [JSON Schema Validation 6.1.1](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-type).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("allowed_types") }] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("enum" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < Any , > > ,) . with_docs ("The `enum` keyword.\n\nSee [JSON Schema Validation 6.1.2](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-enum).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("allowed_values") }] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("const" , :: sidex :: shape :: shape_of :: < Any > ,) . with_docs ("The `const` keyword.\n\nSee [JSON Schema Validation 6.1.3](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-const).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("allowed_value") }] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("format" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("The `format` keyword.\n\nSee [JSON Schema Validation 7](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-vocabularies-for-semantic-c).\n") . optional () , :: sidex :: shape :: FieldShape :: new ("content_encoding" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Encoding of string contents.\n\nSee JSON Schema Validation 8.3.\n") . optional () . json_name ("contentEncoding") , :: sidex :: shape :: FieldShape :: new ("ref" , :: sidex :: shape :: shape_of :: < SchemaRef > ,) . with_docs ("The `$ref` keyword.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("$ref") }] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("reference") }] }]) . optional () . json_name ("$ref") , :: sidex :: shape :: FieldShape :: new ("comment" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("The `$comment` keyword.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "name" , value : :: sidex :: shape :: AttrValue :: String ("$comment") }] }]) . optional () . json_name ("$comment") , :: sidex :: shape :: FieldShape :: new ("metadata" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < Metadata > > ,) . with_docs ("Basic metadata annotations.\n\nSee [JSON Schema Validation 9](https://json-schema.org/draft/2020-12/json-schema-validation.html#name-a-vocabulary-for-basic-meta).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_inline () , :: sidex :: shape :: FieldShape :: new ("subschema_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < SubschemaKeywords > > ,) . with_docs ("Keywords for combining and conditionally applying subschemas.\n\nSee [JSON Schema 10.2](https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc).\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("subschemaKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("number_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < NumberKeywords > > ,) . with_docs ("Keywords applying to numbers.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("numberKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("string_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < StringKeywords > > ,) . with_docs ("Keywords applying to strings.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("stringKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("array_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < ArrayKeywords > > ,) . with_docs ("Keywords applying to arrays.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("arrayKeywords") . json_inline () , :: sidex :: shape :: FieldShape :: new ("object_keywords" , :: sidex :: shape :: shape_of :: < :: std :: boxed :: Box < ObjectKeywords > > ,) . with_docs ("Keywords applying to objects.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Path ("inline")] } , :: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: Path ("box")] }]) . optional () . json_name ("objectKeywords") . json_inline ()]))) . with_docs ("A schema object.\n\nSee [JSON Schema 4.3.1](https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-documents).\n") ;
     }
     #[automatically_derived]
     impl ::sidex::Encode for SchemaObject {
@@ -346,41 +348,46 @@ pub mod schema {
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 5usize => {
-                    self.reference
+                    self.content_encoding
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 6usize => {
-                    self.comment
+                    self.reference
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 7usize => {
-                    self.metadata
+                    self.comment
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 8usize => {
-                    self.subschema_keywords
+                    self.metadata
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 9usize => {
-                    self.number_keywords
+                    self.subschema_keywords
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 10usize => {
-                    self.string_keywords
+                    self.number_keywords
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 11usize => {
-                    self.array_keywords
+                    self.string_keywords
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 12usize => {
+                    self.array_keywords
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                13usize => {
                     self.object_keywords
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
@@ -400,14 +407,15 @@ pub mod schema {
             let mut __field_2 = ::std::option::Option::<::std::vec::Vec<Any>>::None;
             let mut __field_3 = ::std::option::Option::<Any>::None;
             let mut __field_4 = ::std::option::Option::<::std::string::String>::None;
-            let mut __field_5 = ::std::option::Option::<SchemaRef>::None;
-            let mut __field_6 = ::std::option::Option::<::std::string::String>::None;
-            let mut __field_7 = ::std::option::Option::<::std::boxed::Box<Metadata>>::None;
-            let mut __field_8 = ::std::option::Option::<::std::boxed::Box<SubschemaKeywords>>::None;
-            let mut __field_9 = ::std::option::Option::<::std::boxed::Box<NumberKeywords>>::None;
-            let mut __field_10 = ::std::option::Option::<::std::boxed::Box<StringKeywords>>::None;
-            let mut __field_11 = ::std::option::Option::<::std::boxed::Box<ArrayKeywords>>::None;
-            let mut __field_12 = ::std::option::Option::<::std::boxed::Box<ObjectKeywords>>::None;
+            let mut __field_5 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_6 = ::std::option::Option::<SchemaRef>::None;
+            let mut __field_7 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_8 = ::std::option::Option::<::std::boxed::Box<Metadata>>::None;
+            let mut __field_9 = ::std::option::Option::<::std::boxed::Box<SubschemaKeywords>>::None;
+            let mut __field_10 = ::std::option::Option::<::std::boxed::Box<NumberKeywords>>::None;
+            let mut __field_11 = ::std::option::Option::<::std::boxed::Box<StringKeywords>>::None;
+            let mut __field_12 = ::std::option::Option::<::std::boxed::Box<ArrayKeywords>>::None;
+            let mut __field_13 = ::std::option::Option::<::std::boxed::Box<ObjectKeywords>>::None;
             decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
                 match index {
                     0usize => {
@@ -436,47 +444,52 @@ pub mod schema {
                     }
                     5usize => {
                         __field_5 = ::std::option::Option::Some(
-                            <SchemaRef as ::sidex::Decode>::decode(decoder)?,
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
                         )
                     }
                     6usize => {
                         __field_6 = ::std::option::Option::Some(
-                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                            <SchemaRef as ::sidex::Decode>::decode(decoder)?,
                         )
                     }
                     7usize => {
                         __field_7 = ::std::option::Option::Some(
-                            <::std::boxed::Box<Metadata> as ::sidex::Decode>::decode(decoder)?,
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
                         )
                     }
                     8usize => {
-                        __field_8 = ::std::option::Option::Some(<::std::boxed::Box<
+                        __field_8 = ::std::option::Option::Some(
+                            <::std::boxed::Box<Metadata> as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    9usize => {
+                        __field_9 = ::std::option::Option::Some(<::std::boxed::Box<
                             SubschemaKeywords,
                         > as ::sidex::Decode>::decode(
                             decoder
                         )?)
                     }
-                    9usize => {
-                        __field_9 = ::std::option::Option::Some(
-                            <::std::boxed::Box<NumberKeywords> as ::sidex::Decode>::decode(
-                                decoder,
-                            )?,
-                        )
-                    }
                     10usize => {
                         __field_10 = ::std::option::Option::Some(
-                            <::std::boxed::Box<StringKeywords> as ::sidex::Decode>::decode(
+                            <::std::boxed::Box<NumberKeywords> as ::sidex::Decode>::decode(
                                 decoder,
                             )?,
                         )
                     }
                     11usize => {
                         __field_11 = ::std::option::Option::Some(
-                            <::std::boxed::Box<ArrayKeywords> as ::sidex::Decode>::decode(decoder)?,
+                            <::std::boxed::Box<StringKeywords> as ::sidex::Decode>::decode(
+                                decoder,
+                            )?,
                         )
                     }
                     12usize => {
                         __field_12 = ::std::option::Option::Some(
+                            <::std::boxed::Box<ArrayKeywords> as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    13usize => {
+                        __field_13 = ::std::option::Option::Some(
                             <::std::boxed::Box<ObjectKeywords> as ::sidex::Decode>::decode(
                                 decoder,
                             )?,
@@ -492,14 +505,15 @@ pub mod schema {
                 allowed_values: __field_2,
                 allowed_value: __field_3,
                 format: __field_4,
-                reference: __field_5,
-                comment: __field_6,
-                metadata: __field_7,
-                subschema_keywords: __field_8,
-                number_keywords: __field_9,
-                string_keywords: __field_10,
-                array_keywords: __field_11,
-                object_keywords: __field_12,
+                content_encoding: __field_5,
+                reference: __field_6,
+                comment: __field_7,
+                metadata: __field_8,
+                subschema_keywords: __field_9,
+                number_keywords: __field_10,
+                string_keywords: __field_11,
+                array_keywords: __field_12,
+                object_keywords: __field_13,
             })
         }
     }
@@ -512,6 +526,7 @@ pub mod schema {
                 allowed_values: ::std::default::Default::default(),
                 allowed_value: ::std::default::Default::default(),
                 format: ::std::default::Default::default(),
+                content_encoding: ::std::default::Default::default(),
                 reference: ::std::default::Default::default(),
                 comment: ::std::default::Default::default(),
                 metadata: ::std::default::Default::default(),
@@ -588,6 +603,22 @@ pub mod schema {
         #[doc = "Sets the value of `format`."]
         pub fn with_format(mut self, format: ::std::option::Option<::std::string::String>) -> Self {
             self.format = format;
+            self
+        }
+        #[doc = "Sets the value of `content_encoding`."]
+        pub fn set_content_encoding(
+            &mut self,
+            content_encoding: ::std::option::Option<::std::string::String>,
+        ) -> &mut Self {
+            self.content_encoding = content_encoding;
+            self
+        }
+        #[doc = "Sets the value of `content_encoding`."]
+        pub fn with_content_encoding(
+            mut self,
+            content_encoding: ::std::option::Option<::std::string::String>,
+        ) -> Self {
+            self.content_encoding = content_encoding;
             self
         }
         #[doc = "Sets the value of `reference`."]
