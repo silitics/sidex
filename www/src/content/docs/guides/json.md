@@ -6,6 +6,37 @@ order: 0
 
 A _wire representation_ is the JSON shape applications exchange. Sidex's type structure does not depend on JSON, but its generators use `json` attributes to agree on field names, variant tags, and opaque representations.
 
+## Built-in Types
+
+Writers produce the canonical representation. Readers also accept the listed alternatives.
+
+| Type                      | Written as                                                                    | Also read       |
+| ------------------------- | ----------------------------------------------------------------------------- | --------------- |
+| `unit`                    | `null`                                                                        |                 |
+| `bool`                    | `true` or `false`                                                             |                 |
+| `i8`, `i16`, `i32`        | number                                                                        |                 |
+| `u8`, `u16`, `u32`, `idx` | number                                                                        |                 |
+| `i64`, `u64`              | number, or decimal string beyond ±(2^53 − 1)                                  | decimal string  |
+| `f32`, `f64`              | number, or `"NaN"`, `"Infinity"`, and `"-Infinity"`                           | `"+Infinity"`   |
+| `string`                  | string                                                                        |                 |
+| `bytes`                   | Base64 string with padding                                                    | missing padding |
+| `uuid`                    | lowercase hyphenated string, such as `"67e55044-10b1-426f-9247-bb680e5fe0c8"` | uppercase       |
+| `timestamp`               | RFC 3339 string in UTC, such as `"2026-10-12T08:30:00.25Z"`                   | any offset      |
+| `date`                    | `YYYY-MM-DD` string, such as `"2026-10-12"`                                   |                 |
+| `value`                   | the JSON value itself                                                         |                 |
+| `[T]`                     | array                                                                         |                 |
+| `[K: V]`                  | object with keys in their text representation                                 |                 |
+
+Readers reject other JSON types and values out of range. For instance, `1` is not a `bool`, `true` is not an integer, `"1"` is not a `u32`, and `300` is not a `u8`.
+
+JavaScript represents integers exactly only up to a magnitude of 2^53 − 1 (`Number.MAX_SAFE_INTEGER`). Larger `i64` and `u64` values are therefore decimal strings, such as `"9007199254740993"`, so they stay exact in every language. Typical values, such as sizes, counts, and timestamps in seconds, remain plain numbers.
+
+JSON has no non-finite numbers, so non-finite floats are strings. A `value` cannot hold non-finite floats.
+
+Map keys may be strings, integers, UUIDs, timestamps, and dates. A `[u64: string]` map is an object such as `{"42": "answer"}`.
+
+Records, variants, wrappers, and opaque types follow the rules below.
+
 ## Records and Optional Fields
 
 Record fields default to camelCase:
@@ -87,14 +118,6 @@ variant Position {
 The same payload under external tagging is `{"Coordinates":{"x":1,"y":2}}`; a case without a payload is just `"Unknown"`.
 
 Implicit tagging omits the tag. A payload is encoded directly and a case without a payload becomes its name. Readers pick the first case in declaration order that accepts the value. This can make cases ambiguous. Prefer explicit tags when multiple cases could accept the same JSON shape. For instance, readers accept 64-bit integers as decimal strings, so an `i64` case declared before a `string` case also accepts `"3"`.
-
-## Numbers and Bytes
-
-Integers are JSON numbers. JavaScript represents integers exactly only up to a magnitude of 2^53 − 1, so `i64` and `u64` values beyond are decimal strings, such as `"9007199254740993"`. Readers also accept decimal strings for smaller 64-bit integers.
-
-`f32` and `f64` are JSON numbers. JSON has no non-finite numbers, so these are the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
-
-`bytes` are Base64 strings.
 
 ## Wrappers and Opaque Values
 

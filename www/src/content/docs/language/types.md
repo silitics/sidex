@@ -107,7 +107,7 @@ record Inventory {
 }
 ```
 
-For interoperable JSON objects, use string keys. Read [numeric representations](/sidex/docs/guides/json/#numbers-and-bytes) before sharing 64-bit integers with JavaScript.
+For interoperable JSON objects, use string keys. The [JSON mapping](/sidex/docs/guides/json/#built-in-types) lists the representation of each built-in type.
 
 ## Generics
 

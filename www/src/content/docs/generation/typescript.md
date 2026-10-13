@@ -61,7 +61,7 @@ const kibibytes = U64.toNumber(size) / 1024;
 const exact = U64.toBigInt(size);
 ```
 
-See [numbers and bytes](/sidex/docs/guides/json/#numbers-and-bytes).
+See the [JSON representation of built-in types](/sidex/docs/guides/json/#built-in-types).
 
 Maps are objects. `entries` from `@sidex/types` lists the entries of a map with the map's key type, such as a nominal identifier type.
 
