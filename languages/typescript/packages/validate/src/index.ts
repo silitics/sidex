@@ -27,7 +27,11 @@ export type PathSegment =
  * keys. Fields appear under their JSON names. The root is the empty path.
  */
 export class Path {
-  private constructor(private readonly segments: readonly PathSegment[]) {}
+  private readonly segments: readonly PathSegment[]
+
+  private constructor(segments: readonly PathSegment[]) {
+    this.segments = segments
+  }
 
   static root(): Path {
     return new Path([])
@@ -259,7 +263,9 @@ export function eq<T>(
   message: string | null,
   path: Path,
 ): ValidationReport {
-  return equal(value, expected) ? ValidationReport.ok() : reportOne(path, code, message)
+  return equal(value, expected)
+    ? ValidationReport.ok()
+    : reportOne(path, code, message)
 }
 
 export function ne<T>(
@@ -269,7 +275,9 @@ export function ne<T>(
   message: string | null,
   path: Path,
 ): ValidationReport {
-  return !equal(value, forbidden) ? ValidationReport.ok() : reportOne(path, code, message)
+  return !equal(value, forbidden)
+    ? ValidationReport.ok()
+    : reportOne(path, code, message)
 }
 
 /** Comparison operator of a rule. */
@@ -279,7 +287,10 @@ export type CmpOp = "<" | "<=" | "==" | "!=" | ">=" | ">"
  * Checks a chained comparison, which holds if each comparison of adjacent
  * operands holds.
  */
-export function holds(operands: readonly unknown[], ops: readonly CmpOp[]): boolean {
+export function holds(
+  operands: readonly unknown[],
+  ops: readonly CmpOp[],
+): boolean {
   return ops.every((op, i) => {
     const a = operands[i] as any
     const b = operands[i + 1] as any

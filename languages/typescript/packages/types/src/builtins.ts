@@ -97,7 +97,10 @@ export interface SmallInt<T extends number> {
 
 function smallInt<T extends number>(min: number, max: number): SmallInt<T> {
   const is = (value: unknown): value is T =>
-    typeof value === "number" && Number.isInteger(value) && value >= min && value <= max
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= min &&
+    value <= max
   return {
     MIN: min as T,
     MAX: max as T,
@@ -168,13 +171,18 @@ export interface BigInt64<T extends number | string> {
   toNumber(value: T): number
 }
 
-function bigInt<T extends number | string>(min: bigint, max: bigint): BigInt64<T> {
+function bigInt<T extends number | string>(
+  min: bigint,
+  max: bigint,
+): BigInt64<T> {
   const inRange = (value: bigint) => value >= min && value <= max
   const fromBigInt = (value: bigint): T => {
     if (!inRange(value)) {
       throw new RangeError(`${value} is not in [${min}, ${max}]`)
     }
-    return (-MAX_SAFE <= value && value <= MAX_SAFE ? Number(value) : value.toString()) as T
+    return (
+      -MAX_SAFE <= value && value <= MAX_SAFE ? Number(value) : value.toString()
+    ) as T
   }
   return {
     MIN: fromBigInt(min),
@@ -183,7 +191,11 @@ function bigInt<T extends number | string>(min: bigint, max: bigint): BigInt64<T
       if (typeof value === "number") {
         return Number.isSafeInteger(value) && inRange(BigInt(value))
       }
-      return typeof value === "string" && /^-?[0-9]+$/.test(value) && inRange(BigInt(value))
+      return (
+        typeof value === "string" &&
+        (min < 0n ? /^-?[0-9]+$/ : /^[0-9]+$/).test(value) &&
+        inRange(BigInt(value))
+      )
     },
     fromBigInt,
     toBigInt(value: T): bigint {
@@ -206,7 +218,7 @@ function bigInt<T extends number | string>(min: bigint, max: bigint): BigInt64<T
 /**
  * Representations of non-finite floats.
  */
-export type NonFinite = "NaN" | "Infinity" | "-Infinity"
+export type NonFinite = "NaN" | "Infinity" | "+Infinity" | "-Infinity"
 
 /**
  * A 32-bit float, represented as a number or, if it is not finite, as a string.
@@ -226,7 +238,7 @@ export const F64 = float<F64>()
  * Operations of a float type.
  */
 export interface Float<T> {
-  /** Checks whether the value is a number or the string of a non-finite float. */
+  /** Checks whether the value is a finite number or an accepted non-finite string. */
   is(value: unknown): value is T
   /** Converts a number to the type. */
   fromNumber(value: number): T
@@ -238,9 +250,10 @@ function float<T>(): Float<T> {
   return {
     is(value: unknown): value is T {
       return (
-        typeof value === "number" ||
+        (typeof value === "number" && Number.isFinite(value)) ||
         value === "NaN" ||
         value === "Infinity" ||
+        value === "+Infinity" ||
         value === "-Infinity"
       )
     },
@@ -301,7 +314,9 @@ export const Uuid = {
   is(value: unknown): value is Uuid {
     return (
       typeof value === "string" &&
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(value)
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+        value,
+      )
     )
   },
   /**
@@ -342,9 +357,11 @@ export const Timestamp = {
 export type Date = Nominal<string, "::core::builtins::date">
 
 export const Date = {
-  /** Checks whether the value is a `YYYY-MM-DD` string. */
+  /** Checks whether the value is a YYYY-MM-DD string. */
   is(value: unknown): value is Date {
-    return typeof value === "string" && /^-?[0-9]{4,}-[0-9]{2}-[0-9]{2}$/.test(value)
+    return (
+      typeof value === "string" && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)
+    )
   },
 }
 
@@ -353,7 +370,8 @@ export const Date = {
 /**
  * A JSON value.
  */
-export type Json = null | boolean | number | string | Json[] | { [key: string]: Json }
+export type Json =
+  null | boolean | number | string | Json[] | { [key: string]: Json }
 
 /**
  * A sequence.

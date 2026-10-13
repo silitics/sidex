@@ -43,6 +43,21 @@ function firstError(report: ValidationReport): string | undefined {
 }
 ```
 
+## Tests
+
+Tests run against the TypeScript sources with Node's built-in test runner and
+type stripping. No build or dependency installation is required. From this
+package directory, use Node 22.18 or later:
+
+```sh
+npm test
+# Or with Nix:
+nix shell nixpkgs#nodejs_22 -c node --experimental-strip-types --test tests/*.test.ts
+```
+
+The tests cover exact comparisons of 64-bit decimal strings, mixed
+`number` and `bigint` operands after `numeric`, and non-finite floats.
+
 ## License
 
 Licensed under either of [Apache License, Version 2.0](./LICENSE-APACHE)
