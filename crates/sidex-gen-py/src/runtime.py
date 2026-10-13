@@ -86,6 +86,25 @@ def _encode_bytes(value: object) -> str:
     return base64.b64encode(value).decode("ascii")
 
 
+# Booleans and integers are strict, so that implicitly tagged variants select
+# the same case as in other languages: `1` is not a boolean, `true` and `"1"` are
+# not integers, and `300` is not a `u8`.
+Bool = Annotated[bool, pydantic.Strict()]
+
+I8 = Annotated[int, pydantic.Strict(), pydantic.Field(ge=-(2**7), le=2**7 - 1)]
+
+I16 = Annotated[int, pydantic.Strict(), pydantic.Field(ge=-(2**15), le=2**15 - 1)]
+
+I32 = Annotated[int, pydantic.Strict(), pydantic.Field(ge=-(2**31), le=2**31 - 1)]
+
+U8 = Annotated[int, pydantic.Strict(), pydantic.Field(ge=0, le=2**8 - 1)]
+
+U16 = Annotated[int, pydantic.Strict(), pydantic.Field(ge=0, le=2**16 - 1)]
+
+U32 = Annotated[int, pydantic.Strict(), pydantic.Field(ge=0, le=2**32 - 1)]
+
+Idx = Annotated[int, pydantic.Strict(), pydantic.Field(ge=0)]
+
 I64 = Annotated[
     int,
     pydantic.BeforeValidator(_integer),

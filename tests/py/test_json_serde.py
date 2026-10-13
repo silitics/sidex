@@ -242,3 +242,27 @@ class TestAny:
         adapter = TypeAdapter(data.Any)
         assert adapter.validate_json("3") == 3
         assert adapter.validate_json('"3"') == "3"
+
+
+class TestScalars:
+    """Booleans and integers up to 32 bits are strict and range checked."""
+
+    def test_bool_rejects_integers(self, data):
+        adapter = TypeAdapter(data._sidex.Bool)
+        assert adapter.validate_json("true") is True
+        with pytest.raises(ValueError):
+            adapter.validate_json("1")
+
+    def test_integers_reject_other_types(self, data):
+        adapter = TypeAdapter(data._sidex.U32)
+        assert adapter.validate_json("1") == 1
+        for raw in ("true", '"1"', "1.5"):
+            with pytest.raises(ValueError):
+                adapter.validate_json(raw)
+
+    def test_integers_are_range_checked(self, data):
+        adapter = TypeAdapter(data._sidex.U8)
+        assert adapter.validate_json("255") == 255
+        for raw in ("256", "-1"):
+            with pytest.raises(ValueError):
+                adapter.validate_json(raw)
