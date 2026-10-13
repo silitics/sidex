@@ -142,7 +142,41 @@ Bytes = Annotated[
 
 Uuid = uuid.UUID
 
-Timestamp = pydantic.AwareDatetime
+class _Timestamp(datetime.datetime):
+    """A datetime that retains the sub-microsecond digits of its wire value."""
+
+
+def _parse_timestamp(value, handler):
+    parsed = handler(value)
+    if not isinstance(value, str):
+        return parsed
+    fraction = re.search(r"[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}\.([0-9]+)", value)
+    if fraction and len(fraction[1]) > 9:
+        raise ValueError("timestamp precision exceeds nanoseconds")
+    nanoseconds = int(fraction[1].ljust(9, "0")) if fraction else 0
+    result = _Timestamp(
+        parsed.year, parsed.month, parsed.day, parsed.hour, parsed.minute,
+        parsed.second, parsed.microsecond, tzinfo=parsed.tzinfo, fold=parsed.fold,
+    )
+    result._sidex_nanosecond = nanoseconds
+    return result
+
+
+def _encode_timestamp(value):
+    if not isinstance(value, datetime.datetime):
+        raise pydantic_core.PydanticSerializationUnexpectedValue("expected a datetime")
+    nanoseconds = getattr(value, "_sidex_nanosecond", value.microsecond * 1000)
+    utc = value.astimezone(datetime.timezone.utc)
+    text = utc.isoformat(timespec="seconds").removesuffix("+00:00")
+    fraction = f"{nanoseconds:09d}".rstrip("0")
+    return text + ("." + fraction if fraction else "") + "Z"
+
+
+Timestamp = Annotated[
+    pydantic.AwareDatetime,
+    pydantic.WrapValidator(_parse_timestamp),
+    pydantic.PlainSerializer(_encode_timestamp, return_type=str, when_used="json"),
+]
 
 Date = datetime.date
 

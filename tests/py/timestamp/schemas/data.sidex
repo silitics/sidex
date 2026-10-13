@@ -1,0 +1,3 @@
+//! Timestamp regression fixture.
+
+wrapper Instant: timestamp

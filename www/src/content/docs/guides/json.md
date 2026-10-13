@@ -66,6 +66,8 @@ JavaScript represents integers exactly only up to a magnitude of 2^53 − 1 (`Nu
 
 JSON has no non-finite numbers, so non-finite floats are the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
 
+Timestamps retain up to nine fractional-second digits. Writers normalize them to UTC and remove trailing fractional zeroes. Python values read from JSON retain nanosecond precision; native Python `datetime` values have microsecond precision.
+
 A `json` value is written as is. Its integers remain numbers beyond 2^53 − 1, so data from other systems passes through unchanged, but JavaScript may lose their precision. A `json` value cannot hold non-finite floats.
 
 Map keys may be strings, integers, UUIDs, timestamps, and dates. A `[u64: string]` map is an object such as `{"42": "answer"}`.
