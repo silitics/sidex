@@ -83,6 +83,9 @@ impl From<Uuid> for uuid::Uuid {
     }
 }
 
+#[cfg(feature = "uuid-1")]
+impl_converted_scalar!(uuid::Uuid, Uuid, Uuid, uuid);
+
 fn hex_value(digit: u8) -> Option<u8> {
     char::from(digit).to_digit(16).map(|value| value as u8)
 }
@@ -105,5 +108,16 @@ mod tests {
         ] {
             assert!(invalid.parse::<Uuid>().is_err(), "{invalid}");
         }
+    }
+
+    /// UUIDs of the `uuid` crate are represented like [`Uuid`].
+    #[cfg(all(feature = "uuid-1", feature = "json"))]
+    #[test]
+    fn uuid_crate() {
+        use crate::formats::json;
+
+        let text = r#""67e55044-10b1-426f-9247-bb680e5fe0c8""#;
+        let uuid: uuid::Uuid = json::from_str(text).unwrap();
+        assert_eq!(json::to_string(&uuid).unwrap(), text);
     }
 }

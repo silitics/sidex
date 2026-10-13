@@ -96,6 +96,9 @@ impl From<Timestamp> for jiff::Timestamp {
     }
 }
 
+#[cfg(feature = "jiff-02")]
+impl_converted_scalar!(jiff::Timestamp, Timestamp, Timestamp, timestamp);
+
 /// Calendar date without a time zone.
 ///
 /// Supported years range from `-9999` to `9999`. The text representation is
@@ -171,6 +174,9 @@ impl From<Date> for jiff::civil::Date {
     }
 }
 
+#[cfg(feature = "jiff-02")]
+impl_converted_scalar!(jiff::civil::Date, Date, Date, date);
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -208,5 +214,21 @@ mod tests {
         let ancient = Date::new(-44, 3, 15).unwrap();
         assert_eq!(ancient.to_string(), "-000044-03-15");
         assert_eq!(ancient.to_string().parse::<Date>().unwrap(), ancient);
+    }
+
+    /// Jiff's types are represented like their counterparts.
+    #[cfg(all(feature = "jiff-02", feature = "json"))]
+    #[test]
+    fn jiff_types() {
+        use crate::formats::json;
+
+        let timestamp: jiff::Timestamp = json::from_str(r#""2026-10-12T10:30:00+02:00""#).unwrap();
+        assert_eq!(
+            json::to_string(&timestamp).unwrap(),
+            r#""2026-10-12T08:30:00Z""#
+        );
+        let date: jiff::civil::Date = json::from_str(r#""2026-10-12""#).unwrap();
+        assert_eq!(json::to_string(&date).unwrap(), r#""2026-10-12""#);
+        assert!(json::from_str::<jiff::civil::Date>(r#""2026-10-12T00:00""#).is_err());
     }
 }

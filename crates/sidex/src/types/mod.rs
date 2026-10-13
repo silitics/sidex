@@ -20,7 +20,8 @@
 //!
 //! - `indexmap-2`: [`Map`] and `indexmap::IndexMap`.
 //! - `jiff-02`: [`Timestamp`] and `jiff::Timestamp`, [`Date`] and `jiff::civil::Date`.
-//! - `uuid-1`: [`Uuid`] and `uuid::Uuid`.
+//!   Jiff's types also implement the traits, like their counterparts.
+//! - `uuid-1`: [`Uuid`] and `uuid::Uuid`. `uuid::Uuid` also implements the traits.
 //! - `sqlx-08`: [`Str`] in SQL databases, stored like `String`.
 //! - `rusqlite-037`: [`Str`] in SQLite databases, stored like `String`.
 //!
@@ -57,6 +58,29 @@ macro_rules! impl_scalar {
         impl $crate::Decode for $ty {
             fn decode(decoder: &mut dyn $crate::Decoder) -> Result<Self, $crate::DecodeError> {
                 decoder.$method()
+            }
+        }
+    };
+}
+
+/// Implements the traits for a third-party `Copy` type by converting it to and
+/// from the built-in type with the same representation.
+#[cfg(any(feature = "jiff-02", feature = "uuid-1"))]
+macro_rules! impl_converted_scalar {
+    ($ty:ty, $builtin:ty, $scalar:ident, $method:ident) => {
+        impl $crate::Shaped for $ty {
+            const SHAPE: &'static $crate::Shape = <$builtin as $crate::Shaped>::SHAPE;
+        }
+
+        impl $crate::Encode for $ty {
+            fn encode(&self) -> $crate::View<'_> {
+                $crate::View::$scalar(<$builtin>::from(*self))
+            }
+        }
+
+        impl $crate::Decode for $ty {
+            fn decode(decoder: &mut dyn $crate::Decoder) -> Result<Self, $crate::DecodeError> {
+                decoder.$method().map(Self::from)
             }
         }
     };
