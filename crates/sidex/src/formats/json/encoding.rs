@@ -115,6 +115,7 @@ fn variant(variant: &dyn VariantView, f: &mut ViewFn<'_>) -> Result<(), EncodeEr
         }
         Tagging::Implicit => {
             return match variant.payload() {
+                Some(payload) if case.json.number => number(&payload, f),
                 Some(payload) => self::view(&payload, f),
                 None => f(ValueView::String(name)),
             };

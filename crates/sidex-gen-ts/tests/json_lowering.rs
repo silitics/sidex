@@ -120,3 +120,13 @@ fn number_fields_are_numbers() {
         "other 64-bit integers should stay strings, got:\n{out}"
     );
 }
+
+/// Payloads of implicitly tagged cases declared as 64-bit integers are numbers.
+#[test]
+fn implicit_integer_cases_are_numbers() {
+    let out = render(serde_json::json!({}));
+    assert!(
+        out.contains("export type Reading = (number | __sidex_types.builtins.String);"),
+        "the `i64` case should be `number`, got:\n{out}"
+    );
+}

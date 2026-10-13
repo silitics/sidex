@@ -70,18 +70,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for Schema {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for Schema {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -261,18 +261,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for RootSchema {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for RootSchema {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -720,18 +720,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for SchemaObject {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for SchemaObject {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -821,18 +821,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for Type {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for Type {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -935,18 +935,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl<T: ::sidex::Shaped + ::sidex::Encode> ::serde::Serialize for MaybeArray<T> {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de, T: ::sidex::Shaped + ::sidex::Decode> ::serde::Deserialize<'de> for MaybeArray<T> {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -986,18 +986,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for SchemaRef {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for SchemaRef {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -1243,18 +1243,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for Metadata {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for Metadata {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -1550,18 +1550,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for SubschemaKeywords {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for SubschemaKeywords {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -1758,18 +1758,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for NumberKeywords {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for NumberKeywords {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -1906,18 +1906,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for StringKeywords {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for StringKeywords {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -1955,18 +1955,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for Pattern {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for Pattern {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -2280,18 +2280,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for ArrayKeywords {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for ArrayKeywords {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }
@@ -2651,18 +2651,18 @@ pub mod schema {
     }
     #[automatically_derived]
     impl ::serde::Serialize for ObjectKeywords {
-        fn serialize<S: ::serde::Serializer>(
+        fn serialize<__S: ::serde::Serializer>(
             &self,
-            serializer: S,
-        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer: __S,
+        ) -> ::std::result::Result<__S::Ok, __S::Error> {
             ::sidex::serde::serialize(self, serializer)
         }
     }
     #[automatically_derived]
     impl<'de> ::serde::Deserialize<'de> for ObjectKeywords {
-        fn deserialize<D: ::serde::Deserializer<'de>>(
-            deserializer: D,
-        ) -> ::std::result::Result<Self, D::Error> {
+        fn deserialize<__D: ::serde::Deserializer<'de>>(
+            deserializer: __D,
+        ) -> ::std::result::Result<Self, __D::Error> {
             ::sidex::serde::deserialize(deserializer)
         }
     }

@@ -17,3 +17,10 @@ record Event {
     #[json(number)]
     expires: u64,
 }
+
+/// Reading that is a count or a label.
+#[json(tagged = implicitly)]
+variant Reading {
+    Count: i64,
+    Label: string,
+}

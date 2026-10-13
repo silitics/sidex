@@ -96,6 +96,9 @@ pub struct Case {
     /// Field holding the payload of an internally or adjacently tagged case,
     /// replacing the content field of the tagging.
     pub content: Option<&'static str>,
+    /// Indicates whether a 64-bit integer payload is a number instead of a
+    /// string.
+    pub number: bool,
 }
 
 impl Case {
@@ -103,6 +106,7 @@ impl Case {
         Self {
             name,
             content: None,
+            number: false,
         }
     }
 

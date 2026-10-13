@@ -81,7 +81,9 @@ impl Plugin for Types {
                         field_names.push(Code::from(ts_string_literal(&field_name)));
                         field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
                         field_types.push(
-                            if json_attrs.number && is_wide_integer(ctx, &field.typ) {
+                            if json_attrs.number
+                                && ctx.bundle_ctx.unit.wide_integer(&field.typ).is_some()
+                            {
                                 Code::from("number")
                             } else {
                                 ctx.resolve_type(def, &field.typ).0
@@ -111,6 +113,12 @@ impl Plugin for Types {
                             JsonTaggedAttr::Externally => {
                                 variant_ts_types
                                     .push(TypeExpr(quote!("{ @variant_name: @inner }")));
+                            }
+                            // Implicitly tagged cases represent 64-bit integers as numbers.
+                            JsonTaggedAttr::Implicitly
+                                if ctx.bundle_ctx.unit.wide_integer(typ_).is_some() =>
+                            {
+                                variant_ts_types.push(TypeExpr(Code::from("number")));
                             }
                             JsonTaggedAttr::Implicitly => {
                                 variant_ts_types.push(inner);
@@ -231,19 +239,6 @@ impl Plugin for Types {
             .collect();
         Ok(quote!("@(@exports)*"))
     }
-}
-
-/// Indicates whether the type is `i64` or `u64`, whose JSON representation is
-/// a string unless their field is a JSON number.
-fn is_wide_integer(ctx: &SchemaCtx, typ: &ir::Type) -> bool {
-    let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ);
-    let ir::TypeKind::Instance(instance) = &resolved.kind else {
-        return false;
-    };
-    let unit = &ctx.bundle_ctx.unit;
-    unit[instance.def.bundle].metadata.name == "core"
-        && unit[instance.def.schema].name == "builtins"
-        && matches!(unit[instance.def].name.as_str(), "i64" | "u64")
 }
 
 fn ts_string_literal(s: &str) -> String {

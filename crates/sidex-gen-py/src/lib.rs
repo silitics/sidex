@@ -608,22 +608,11 @@ fn generate_record_field(
     }
 }
 
-/// Returns the type of an `i64` or `u64` field represented as a JSON number.
+/// Returns the type of an `i64` or `u64` represented as a JSON number.
 fn number_type(ctx: &SchemaCtx, typ: &ir::Type) -> Option<&'static str> {
-    let unit = ctx.bundle_ctx.unit;
-    let resolved = unit.resolve_aliases(typ);
-    let ir::TypeKind::Instance(instance) = &resolved.kind else {
-        return None;
-    };
-    if unit[instance.def.bundle].metadata.name != "core"
-        || unit[instance.def.schema].name != "builtins"
-    {
-        return None;
-    }
-    match unit[instance.def].name.as_str() {
+    match ctx.bundle_ctx.unit.wide_integer(typ)? {
         "i64" => Some("_sidex.I64Number"),
-        "u64" => Some("_sidex.U64Number"),
-        _ => None,
+        _ => Some("_sidex.U64Number"),
     }
 }
 
@@ -648,7 +637,11 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
         match ty_json.tagged {
             JsonTaggedAttr::Implicitly => {
                 if let Some(typ) = &variant.typ {
-                    union_members.push(ctx.resolve_type(def, typ));
+                    // Implicitly tagged cases represent 64-bit integers as numbers.
+                    union_members.push(match number_type(ctx, typ) {
+                        Some(number) => number.to_owned(),
+                        None => ctx.resolve_type(def, typ),
+                    });
                 } else {
                     let gen_bases = generic_bases_for(&used_vars);
                     let subscript = subscript_for(&used_vars);

@@ -8,6 +8,22 @@ use base64::engine::DecodePaddingMode;
 use base64::engine::GeneralPurpose;
 use base64::engine::GeneralPurposeConfig;
 
+use crate::Shape;
+use crate::shape::Scalar;
+use crate::shape::ShapeKind;
+
+/// Returns the scalar of a 64-bit integer shape, looking through wrappers.
+///
+/// Such integers are strings, unless a field is marked as a number or the
+/// integer is the payload of an implicitly tagged case.
+pub(super) fn wide_integer(shape: &Shape) -> Option<Scalar> {
+    match &shape.kind {
+        ShapeKind::Scalar(scalar @ (Scalar::I64 | Scalar::U64)) => Some(*scalar),
+        ShapeKind::Wrapper(inner) => wide_integer(inner()),
+        _ => None,
+    }
+}
+
 /// Standard Base64 with padding, accepting input with or without padding.
 pub(super) const BASE64: GeneralPurpose = GeneralPurpose::new(
     &alphabet::STANDARD,

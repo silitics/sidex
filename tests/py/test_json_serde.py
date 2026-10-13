@@ -236,3 +236,9 @@ class TestAny:
     def test_roundtrip(self, data, name, path):
         expected, actual = _roundtrip(TypeAdapter(data.Any), path)
         assert actual == expected
+
+    def test_integer_case_is_a_number(self, data):
+        """The ``i64`` case accepts numbers, so strings select the string case."""
+        adapter = TypeAdapter(data.Any)
+        assert adapter.validate_json("3") == 3
+        assert adapter.validate_json('"3"') == "3"

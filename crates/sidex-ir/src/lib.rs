@@ -219,6 +219,26 @@ impl Ir {
         }
     }
 
+    /// Returns `"i64"` or `"u64"` if the type is a built-in 64-bit integer
+    /// type after resolving aliases.
+    ///
+    /// The JSON representation of these integers depends on their position:
+    /// they are numbers for fields marked as such and payloads of implicitly
+    /// tagged cases, and strings otherwise.
+    pub fn wide_integer(&self, typ: &Type) -> Option<&str> {
+        let resolved = self.resolve_aliases(typ);
+        let TypeKind::Instance(instance) = &resolved.kind else {
+            return None;
+        };
+        if self[instance.def.bundle].metadata.name != "core"
+            || self[instance.def.schema].name != "builtins"
+        {
+            return None;
+        }
+        let name = self[instance.def].name.as_str();
+        matches!(name, "i64" | "u64").then_some(name)
+    }
+
     pub fn type_def(&self, typ: &Type) -> Option<&Def> {
         self.type_def_ref(typ).map(|def_ref| &self[def_ref])
     }

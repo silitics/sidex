@@ -397,6 +397,8 @@ fn internal_tag_position_and_unknown_cases() {
 }
 
 /// Implicit tagging selects the first case that matches, in declaration order.
+/// 64-bit integer cases only match numbers, so that they are distinct from
+/// string cases.
 #[test]
 fn implicit_tagging_selects_first_match() {
     /// Variant `Either { Number: u64, Text: string }` with implicit tagging.
@@ -411,7 +413,7 @@ fn implicit_tagging_selects_first_match() {
             "::tests::Either",
             ShapeKind::Variant(
                 VariantShape::new(&[
-                    CaseShape::new("Number", Some(shape_of::<u64>)),
+                    CaseShape::new("Number", Some(shape_of::<u64>)).json_number(),
                     CaseShape::new("Text", Some(shape_of::<String>)),
                 ])
                 .json_tagging(json::Tagging::Implicit),
@@ -434,7 +436,8 @@ fn implicit_tagging_selects_first_match() {
     }
 
     let decode = |text| json::from_value::<Either>(&parse(text));
-    assert_eq!(decode(r#""42""#).unwrap(), Either::Number(42));
+    assert_eq!(decode("42").unwrap(), Either::Number(42));
+    assert_eq!(decode(r#""42""#).unwrap(), Either::Text("42".to_owned()));
     assert_eq!(
         decode(r#""forty-two""#).unwrap(),
         Either::Text("forty-two".to_owned())
@@ -442,8 +445,7 @@ fn implicit_tagging_selects_first_match() {
     assert_eq!(
         decode("true").unwrap_err().to_string(),
         "no case of `::tests::Either` matches a boolean \
-         (`Number`: expected a 64-bit unsigned integer, found a boolean; \
-         `Text`: expected a string, found a boolean)"
+         (`Number`: expected a number; `Text`: expected a string, found a boolean)"
     );
 }
 

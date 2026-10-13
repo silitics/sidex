@@ -248,11 +248,9 @@ impl<'a> Walker<'a> {
             }
             let name = attrs.field_name(field, &field_attrs);
             let mut value = self.gen_value(&field_typ, source)?;
-            if field_attrs.number && self.is_wide_integer(&field_typ) {
+            if field_attrs.number && self.ir.wide_integer(&field_typ).is_some() {
                 // The field represents its 64-bit integer as a number.
-                if let Value::String(text) = &value {
-                    value = Value::Number(text.parse().expect("integers are decimal"));
-                }
+                value = into_number(value);
             }
             // For optional fields under the `Undefined` repr, an absent field
             // is the canonical encoding of "no value". A `null` here would
@@ -265,18 +263,6 @@ impl<'a> Walker<'a> {
         }
         self.depth -= 1;
         Ok(())
-    }
-
-    /// Indicates whether the type is `i64` or `u64`.
-    fn is_wide_integer(&self, typ: &ir::Type) -> bool {
-        let resolved = self.ir.resolve_aliases(typ);
-        let ir::TypeKind::Instance(instance) = &resolved.kind else {
-            return false;
-        };
-        matches!(
-            qualified_path(self.ir, instance).as_str(),
-            "::core::builtins::i64" | "::core::builtins::u64"
-        )
     }
 
     fn inline_record_into(
@@ -403,10 +389,28 @@ impl<'a> Walker<'a> {
             JsonTaggedAttr::Implicitly => {
                 match payload_type {
                     None => Ok(Value::String(case_name.to_owned())),
-                    Some(typ) => self.gen_value(&typ, source),
+                    Some(typ) => {
+                        let value = self.gen_value(&typ, source)?;
+                        // Cases declared with a 64-bit integer payload are
+                        // numbers. Generic payloads keep their representation.
+                        let declared = case.typ.as_ref().expect("the case has a payload");
+                        if self.ir.wide_integer(declared).is_some() {
+                            Ok(into_number(value))
+                        } else {
+                            Ok(value)
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+/// Converts the decimal string of a 64-bit integer into a number.
+fn into_number(value: Value) -> Value {
+    match value {
+        Value::String(text) => Value::Number(text.parse().expect("integers are decimal")),
+        value => value,
     }
 }
 

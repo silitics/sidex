@@ -15,3 +15,10 @@ record Claims {
     exp: u64,
     sequence: u64,
 }
+
+/// Reading that is a count or a label.
+#[json(tagged = implicitly)]
+variant Reading {
+    Count: i64,
+    Label: string,
+}

@@ -4,6 +4,7 @@ use std::collections::HashSet;
 
 use super::Tagging;
 use super::Type;
+use super::repr::wide_integer;
 use crate::Shape;
 use crate::Value;
 use crate::shape::RecordShape;
@@ -200,13 +201,8 @@ impl Builder {
                 self.fields(inner, properties, required);
                 continue;
             }
-            let mut property = match shape.kind {
-                ShapeKind::Scalar(Scalar::I64) if field.json.number => {
-                    object([("type", "integer".into())])
-                }
-                ShapeKind::Scalar(Scalar::U64) if field.json.number => {
-                    object([("type", "integer".into()), ("minimum", Value::Int(0))])
-                }
+            let mut property = match wide_integer(shape) {
+                Some(scalar) if field.json.number => number_schema(scalar),
                 _ => self.schema(shape),
             };
             if let Value::Map(entries) = &mut property {
@@ -242,7 +238,12 @@ impl Builder {
                         ("additionalProperties", false.into()),
                     ])
                 }
-                (Tagging::Implicit, Some(payload)) => self.schema(payload()),
+                (Tagging::Implicit, Some(payload)) => {
+                    match wide_integer(payload()) {
+                        Some(scalar) if case.json.number => number_schema(scalar),
+                        _ => self.schema(payload()),
+                    }
+                }
                 (Tagging::Internal { tag, .. } | Tagging::Adjacent { tag, .. }, payload) => {
                     let mut properties = Map::new();
                     let mut required = vec![Value::from(tag)];
@@ -283,6 +284,14 @@ impl Builder {
             _ => "oneOf",
         };
         object([(combinator, alternatives.into())])
+    }
+}
+
+/// Returns the schema of a 64-bit integer represented as a number.
+fn number_schema(scalar: Scalar) -> Value {
+    match scalar {
+        Scalar::U64 => object([("type", "integer".into()), ("minimum", Value::Int(0))]),
+        _ => object([("type", "integer".into())]),
     }
 }
 

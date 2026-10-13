@@ -86,11 +86,23 @@ variant Position {
 
 The same payload under external tagging is `{"Coordinates":{"x":1,"y":2}}`; a case without a payload is just `"Unknown"`.
 
-Implicit tagging omits the tag. A payload is encoded directly and a case without a payload becomes its name. This can make cases ambiguous. Prefer explicit tags when multiple cases could accept the same JSON shape.
+Implicit tagging omits the tag. A payload is encoded directly and a case without a payload becomes its name. Readers pick the first case in declaration order that accepts the value. This can make cases ambiguous. Prefer explicit tags when multiple cases could accept the same JSON shape.
+
+A case declared with an `i64` or `u64` payload is a JSON number, so that it stays distinct from string cases:
+
+```sidex
+#[json(tagged = implicitly)]
+variant Reading {
+    Count: i64,
+    Label: string,
+}
+```
+
+`Count(3)` is `3` and `Label("3")` is `"3"`. This only applies to the declared payload type. A generic payload, such as `T` instantiated with `u64`, keeps the string representation.
 
 ## Numbers and Bytes
 
-Integers up to 32 bits and `idx` are JSON numbers. JavaScript and many other JSON implementations cannot represent all 64-bit integers exactly, so `i64` and `u64` are decimal strings, such as `"9007199254740993"`. Readers also accept JSON numbers.
+Integers up to 32 bits and `idx` are JSON numbers. JavaScript and many other JSON implementations cannot represent all 64-bit integers exactly, so `i64` and `u64` are decimal strings, such as `"9007199254740993"`. Readers also accept JSON numbers. Payloads of implicitly tagged cases are the exception (see [Variant Tagging](#variant-tagging)).
 
 `f32` and `f64` are JSON numbers. JSON has no non-finite numbers, so these are the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
 

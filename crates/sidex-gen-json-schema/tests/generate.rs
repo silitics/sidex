@@ -77,3 +77,15 @@ fn integers() {
         serde_json::json!({ "type": "integer", "format": "uint64" })
     );
 }
+
+/// Payloads of implicitly tagged cases declared as 64-bit integers are JSON
+/// numbers.
+#[test]
+fn implicit_integer_cases() {
+    let cases = &generate()["json_schema_fixture.types.Reading"]["anyOf"];
+    assert_eq!(
+        cases[0],
+        serde_json::json!({ "type": "integer", "format": "int64" })
+    );
+    assert_eq!(cases[1], serde_json::json!({ "type": "string" }));
+}

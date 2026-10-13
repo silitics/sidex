@@ -29,6 +29,12 @@ def _integer(value: object) -> object:
     return value
 
 
+def _number(value: object) -> object:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ValueError("expected an integer number")
+    return value
+
+
 def _decimal(value: object) -> str:
     if not isinstance(value, int) or isinstance(value, bool):
         raise pydantic_core.PydanticSerializationUnexpectedValue("expected an integer")
@@ -42,6 +48,29 @@ def _float(value: object) -> float | str:
         return "NaN"
     if math.isinf(value):
         return "Infinity" if value > 0 else "-Infinity"
+    return value
+
+
+# Sidex 0.2 wrote `+Infinity`.
+_NON_FINITE = {
+    "NaN": math.nan,
+    "Infinity": math.inf,
+    "+Infinity": math.inf,
+    "-Infinity": -math.inf,
+}
+
+
+def _parse_float(value: object) -> object:
+    # Only non-finite floats are strings, so that strings select string cases
+    # of implicitly tagged variants.
+    if isinstance(value, bool):
+        raise ValueError("expected a number")
+    if isinstance(value, str):
+        if value not in _NON_FINITE:
+            raise ValueError(
+                "expected a number or one of `NaN`, `Infinity`, and `-Infinity`"
+            )
+        return _NON_FINITE[value]
     return value
 
 
@@ -71,22 +100,32 @@ U64 = Annotated[
     pydantic.PlainSerializer(_decimal, return_type=str, when_used="json"),
 ]
 
-# 64-bit integers of fields represented as JSON numbers.
+# 64-bit integers represented as JSON numbers, in marked fields and as payloads
+# of implicitly tagged cases. Rejecting strings keeps such cases distinct from
+# string cases.
 I64Number = Annotated[
     int,
-    pydantic.BeforeValidator(_integer),
+    pydantic.BeforeValidator(_number),
     pydantic.Field(ge=-(2**63), le=2**63 - 1),
 ]
 
 U64Number = Annotated[
     int,
-    pydantic.BeforeValidator(_integer),
+    pydantic.BeforeValidator(_number),
     pydantic.Field(ge=0, le=2**64 - 1),
 ]
 
-F32 = Annotated[float, pydantic.PlainSerializer(_float, when_used="json")]
+F32 = Annotated[
+    float,
+    pydantic.BeforeValidator(_parse_float),
+    pydantic.PlainSerializer(_float, when_used="json"),
+]
 
-F64 = Annotated[float, pydantic.PlainSerializer(_float, when_used="json")]
+F64 = Annotated[
+    float,
+    pydantic.BeforeValidator(_parse_float),
+    pydantic.PlainSerializer(_float, when_used="json"),
+]
 
 Bytes = Annotated[
     bytes,

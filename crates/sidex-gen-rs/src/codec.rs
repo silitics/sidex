@@ -223,6 +223,12 @@ pub fn impl_traits(ctx: &SchemaCtx, def: &ir::Def, ty: &RsType) -> Result<TokenS
                 if let Some(content) = &case.json_attrs.content {
                     case_builders.extend(quote! { .json_content(#content) });
                 }
+                if matches!(variant.json_attrs.tagged, JsonTaggedAttr::Implicitly)
+                    && let Some(payload) = &case_def.typ
+                    && ctx.bundle_ctx.unit.wide_integer(payload).is_some()
+                {
+                    case_builders.extend(quote! { .json_number() });
+                }
                 match &case.ty {
                     Some(payload_ty) => {
                         cases.push(quote! {

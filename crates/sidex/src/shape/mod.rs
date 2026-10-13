@@ -481,4 +481,20 @@ impl CaseShape {
             ..self
         }
     }
+
+    /// Represents the 64-bit integer payload of an implicitly tagged case as a
+    /// JSON number instead of a string.
+    ///
+    /// Generated code uses this for cases whose declared payload type is a
+    /// 64-bit integer, so that they remain distinct from string cases.
+    /// Decoding such a case accepts numbers only.
+    pub const fn json_number(self) -> Self {
+        Self {
+            json: json::Case {
+                number: true,
+                ..self.json
+            },
+            ..self
+        }
+    }
 }

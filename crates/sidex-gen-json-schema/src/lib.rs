@@ -9,6 +9,7 @@ use serde::Serialize;
 use sidex::types::Map;
 use sidex_attrs_api::render_doc_prelude;
 use sidex_attrs_api::stability_of_def;
+use sidex_attrs_json::JsonTaggedAttr;
 use sidex_attrs_json::field_attrs;
 use sidex_attrs_json::opaque_type_attrs;
 use sidex_attrs_json::record_type_attrs;
@@ -432,20 +433,15 @@ impl<'cx> JsonSchemaCtx<'cx> {
         Ok(json_schema)
     }
 
-    /// Returns the schema of a 64-bit integer field represented as a JSON
-    /// number, if `number` is set and the field has such a type.
+    /// Returns the schema of a 64-bit integer represented as a JSON number, if
+    /// `number` is set and the type is such an integer.
     fn number_schema(&self, typ: &ir::Type, number: bool) -> Option<TypeSchema> {
         if !number {
             return None;
         }
-        let resolved = self.unit.resolve_aliases(typ);
-        let ir::TypeKind::Instance(instance) = &resolved.kind else {
-            return None;
-        };
-        let format = match self.qualified_path(instance).as_str() {
-            "::core::builtins::i64" => "int64",
-            "::core::builtins::u64" => "uint64",
-            _ => return None,
+        let format = match self.unit.wide_integer(typ)? {
+            "i64" => "int64",
+            _ => "uint64",
         };
         let mut schema = SchemaObject::new();
         schema
@@ -509,7 +505,12 @@ impl<'cx> JsonSchemaCtx<'cx> {
             // let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
             if let Some(typ) = &variant.typ {
                 let content_field = json_type_attrs.content_field_name(&json_variant_attrs);
-                let type_schema = self.resolve(typ)?;
+                // Implicitly tagged cases represent 64-bit integers as numbers.
+                let number = json_type_attrs.tagged == JsonTaggedAttr::Implicitly;
+                let type_schema = match self.number_schema(typ, number) {
+                    Some(schema) => schema,
+                    None => self.resolve(typ)?,
+                };
                 let may_inline = self.unit.record_type(typ).is_some();
                 // idl_variant.set_type_ref(Some(type_schema.name.clone()));
                 builder.add_data_variant(&content_field, &variant_name, type_schema, may_inline);
