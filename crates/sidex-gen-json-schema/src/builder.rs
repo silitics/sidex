@@ -266,9 +266,15 @@ pub fn object_tag(tag_field: &str, variant_name: &str) -> SchemaObject {
 pub fn externally_tagged(variant_name: &str, content_schema: SchemaObject) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(ObjectKeywords::new().with_properties(Some(
-            Map::from_iter([(variant_name.to_owned(), content_schema.into())]),
-        )))))
+        .with_object_keywords(Some(Box::new(
+            ObjectKeywords::new()
+                .with_properties(Some(Map::from_iter([(
+                    variant_name.to_owned(),
+                    content_schema.into(),
+                )])))
+                .with_required(Some(vec![variant_name.to_owned()]))
+                .with_additional_properties(Some(Box::new(Schema::Bool(false)))),
+        )))
 }
 
 pub fn adjacently_tagged(
@@ -279,15 +285,17 @@ pub fn adjacently_tagged(
 ) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(ObjectKeywords::new().with_properties(Some(
-            Map::from_iter([
-                (
-                    tag_field.to_owned(),
-                    make_schema_string(variant_name).into(),
-                ),
-                (content_field.to_owned(), content_schema.into()),
-            ]),
-        )))))
+        .with_object_keywords(Some(Box::new(
+            ObjectKeywords::new()
+                .with_properties(Some(Map::from_iter([
+                    (
+                        tag_field.to_owned(),
+                        make_schema_string(variant_name).into(),
+                    ),
+                    (content_field.to_owned(), content_schema.into()),
+                ])))
+                .with_required(Some(vec![tag_field.to_owned(), content_field.to_owned()])),
+        )))
 }
 
 pub fn internally_tagged(

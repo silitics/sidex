@@ -131,3 +131,18 @@ fn builtin_schema_parity() {
         assert_eq!(properties[name]["format"], format, "format of {name}");
     }
 }
+
+/// Tagged variants require the fields that carry the tag and payload.
+#[test]
+fn tagged_variants() {
+    let defs = generate();
+    let external = &defs["json_schema_fixture.types.External"]["oneOf"];
+    assert_eq!(external[1]["required"], serde_json::json!(["Text"]));
+    assert_eq!(external[1]["additionalProperties"], false);
+    assert_eq!(external[2]["required"], serde_json::json!(["Number"]));
+    let adjacent = &defs["json_schema_fixture.types.Adjacent"]["oneOf"];
+    assert_eq!(
+        adjacent[1]["required"],
+        serde_json::json!(["tag", "content"])
+    );
+}

@@ -46,3 +46,16 @@ record Event {
     scalar: Scalar,
     sequence: u64,
 }
+
+#[json(tagged = externally)]
+variant External {
+    Empty,
+    Text: string,
+    Number: u8,
+}
+
+#[json(tagged = adjacently)]
+variant Adjacent {
+    Empty,
+    Text: string,
+}
