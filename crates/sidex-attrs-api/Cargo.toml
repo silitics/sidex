@@ -1,6 +1,7 @@
 [package]
 name = "sidex-attrs-api"
-version = "0.1.0"
+description = "Typed attributes for API stability and lifecycle in Sidex schemas."
+version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true

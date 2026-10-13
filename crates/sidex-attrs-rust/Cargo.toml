@@ -1,6 +1,7 @@
 [package]
 name = "sidex-attrs-rust"
-version = "0.1.0"
+description = "Typed attributes of Sidex's Rust code generation."
+version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
