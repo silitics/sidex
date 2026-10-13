@@ -51,7 +51,18 @@ wrapper UserId: string
 
 This prevents assigning a `TaskId` where a `UserId` is expected. A brand supplies type safety; it does not change the JSON value or validate it at runtime.
 
-Built-in numeric types also use brands in `@sidex/types`. Review that package's numeric representations before introducing numeric fields. In particular, 64-bit values need an explicit cross-language policy; see [numbers and bytes](/sidex/docs/guides/json/#numbers-and-bytes).
+Built-in numeric types also use brands in `@sidex/types`. Like their JSON representation, `I64` and `U64` are decimal strings, so values beyond 2^53 stay exact. Convert them explicitly:
+
+```ts
+import { U64 } from "@sidex/types";
+
+const size = U64.fromNumber(1024);
+const kibibytes = U64.toNumber(size) / 1024;
+```
+
+Fields marked with `#[json(number)]` and integer payloads of implicitly tagged cases are plain `number`s; see [numbers and bytes](/sidex/docs/guides/json/#numbers-and-bytes).
+
+Maps are objects. `entries` from `@sidex/types` lists the entries of a map with the map's key type, such as a nominal identifier type.
 
 ## Enable Validation
 

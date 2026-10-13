@@ -61,8 +61,8 @@ A custom Rust integration can implement the generator or plugin traits and consu
 | `crates/sidex-ir` and `lib/meta` | IR model                                                 |
 | `crates/sidex-gen-*`             | Code generation backends                                 |
 | `crates/sidex-attrs-*`           | Typed attribute access                                   |
-| `crates/sidex-serde`             | Rust serialization support                               |
-| `crates/sidex-validate*`         | Validation runtime and expression engine                 |
+| `crates/sidex`                   | Rust runtime: shapes, formats, and validation            |
+| `crates/sidex-validate-expr`     | Validation expression engine shared by the generators    |
 | `languages/typescript/packages`  | TypeScript runtime packages                              |
 
 The [source repository](https://github.com/silitics/sidex) contains the implementation and examples. Run the repository's relevant checks with `mise` when changing compiler or generator behavior.

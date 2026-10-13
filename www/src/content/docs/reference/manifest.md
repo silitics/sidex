@@ -30,7 +30,7 @@ Each dependency has a local `path`, resolved relative to the manifest's director
 ```toml
 [backend.rust]
 derive = ["Debug", "Clone"]
-plugins = ["builder", "serde", "validate"]
+plugins = ["builder", "serde"]
 opaque_lowering = "native"
 
 [backend.rust.external]
@@ -38,23 +38,17 @@ identity = "::identity_models"
 
 [backend.rust.types.table]
 "::core::builtins::Map" = "::std::collections::BTreeMap"
-
-[backend.rust.plugin.serde]
-sidex_serde_path = "::sidex::serde"
-
-[backend.rust.plugin.validate]
-sidex_validate_path = "::sidex_validate"
 ```
 
-| Key                                   | Default            | Meaning                                            |
-| ------------------------------------- | ------------------ | -------------------------------------------------- |
-| `derive`                              | `[]`               | Native derives on generated types                  |
-| `plugins`                             | `[]`               | Additional plugins: `builder`, `serde`, `validate` |
-| `external`                            | `{}`               | Bundle name to Rust module path                    |
-| `types.table`                         | Built-in mappings  | Fully qualified Sidex path to Rust type            |
-| `opaque_lowering`                     | `native`           | Opaque representation strategy                     |
-| `plugin.serde.sidex_serde_path`       | `::sidex::serde`   | Serialization runtime path                         |
-| `plugin.validate.sidex_validate_path` | `::sidex_validate` | Validation runtime path                            |
+| Key               | Default           | Meaning                                 |
+| ----------------- | ----------------- | --------------------------------------- |
+| `derive`          | `[]`              | Native derives on generated types       |
+| `plugins`         | `[]`              | Additional plugins: `builder`, `serde`  |
+| `external`        | `{}`              | Bundle name to Rust module path         |
+| `types.table`     | Built-in mappings | Fully qualified Sidex path to Rust type |
+| `opaque_lowering` | `native`          | Opaque representation strategy          |
+
+Generated types always carry their validation rules, so Rust has no `validate` plugin.
 
 The `types` plugin is automatically enabled. User mappings take precedence over built-in defaults.
 
@@ -113,7 +107,7 @@ An opaque type can have a target-specific native mapping and a JSON shape. The `
 | Python     | Use `#[py(typ = "...")]` when provided; otherwise use JSON shape | Ignore the native mapping and use JSON shape            |
 | TypeScript | Use JSON shape                                                   | Currently the same as `native`                          |
 
-JSON lowering is useful for raw-value conformance tests. When no JSON shape is given, the fallback is `serde_json::Value` in Rust, `pydantic.JsonValue` in Python, and `unknown` in TypeScript.
+JSON lowering is useful for raw-value conformance tests. When no JSON shape is given, the fallback is `sidex::Value` in Rust, `pydantic.JsonValue` in Python, and `unknown` in TypeScript.
 
 ## IR and JSON Schema
 
