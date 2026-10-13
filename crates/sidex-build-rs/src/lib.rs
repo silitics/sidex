@@ -102,26 +102,25 @@ impl Generator {
 
         let mut transformer = Transformer::new();
 
-        let bundle_indices = match self
-            .bundles
-            .iter()
-            .map(|bundle| {
-                ctx.exec(|| transformer.load_bundle_recursive(&self.root_path.join(&bundle.path)))
-            })
-            .collect::<Result<Vec<_>, _>>()
-        {
-            Ok(indices) => indices,
-            Err(err) => {
-                ctx.report().eprint(&transformer.sources);
-                return Err(Box::new(err));
-            }
-        };
-
-        let root = bundle_indices
-            .first()
-            .copied()
-            .unwrap_or(sidex_core::ir::STD_BUNDLE_IDX);
-        let unit = transformer.transform(root);
+        let loaded = ctx.exec(|| {
+            let bundle_indices = self
+                .bundles
+                .iter()
+                .map(|bundle| transformer.load_bundle_recursive(&self.root_path.join(&bundle.path)))
+                .collect::<Result<Vec<_>, _>>()?;
+            let root = bundle_indices
+                .first()
+                .copied()
+                .unwrap_or(sidex_core::ir::STD_BUNDLE_IDX);
+            let unit = transformer.transform(root);
+            Ok::<_, sidex_core::transformer::Error>((bundle_indices, unit))
+        });
+        let report = ctx.report();
+        report.eprint(&transformer.sources);
+        let (bundle_indices, unit) = loaded?;
+        if report.has_error() {
+            return Err("the Sidex bundles have errors".into());
+        }
 
         for (bundle_idx, bundle) in bundle_indices.iter().zip(&self.bundles) {
             let null = serde_json::Value::Null;
