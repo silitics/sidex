@@ -117,8 +117,8 @@ export class ValidationReport {
   }
 
   /** Drain `other`'s errors into this report. */
-  merge(other: ValidationReport): void {
-    for (const e of other._errors) this._errors.push(e)
+  merge(other: { readonly errors: readonly ValidationError[] }): void {
+    for (const e of other.errors) this._errors.push(e)
   }
 
   toString(): string {

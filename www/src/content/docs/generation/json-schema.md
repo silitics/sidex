@@ -37,6 +37,8 @@ Load the schema document for the type you expect and pass it to a validator supp
 
 Validation of shape is separate from application constraints. The backend does not currently translate `#[validate(...)]` rules into JSON Schema.
 
+In TypeScript, the generated [`is` and `check` methods](/sidex/docs/generation/typescript/#check-incoming-data) check incoming JSON without a JSON Schema validator.
+
 ## Opaque Types
 
 Declare an opaque type's JSON representation:

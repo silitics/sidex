@@ -1,0 +1,5 @@
+//! External identity types.
+record User<T> {
+    id: uuid,
+    value: T,
+}

@@ -1,6 +1,6 @@
 ---
 title: TypeScript
-description: Use generated JSON-shaped types and optional runtime validation.
+description: Generate JSON-shaped types, structural checks, and optional validation rules.
 order: 1
 ---
 
@@ -30,15 +30,62 @@ const json = JSON.stringify(task);
 
 No separate conversion is needed to serialize a value already matching the JSON representation.
 
-## Type Checking and Incoming Data
+## Check Incoming Data
 
-TypeScript type checking runs before execution. A type annotation or assertion does not validate JSON received at runtime:
+A type annotation does not check JSON received at runtime. For this, every generated type has a companion object with the same name. Its `is` method narrows an unknown value, and its `check` method reports every structural error:
 
 ```ts
+import { Task } from "./generated/task";
+
 const input: unknown = JSON.parse(responseText);
+if (Task.is(input)) {
+  console.log(input.title); // input is Task
+}
+
+const report = Task.check(input);
+for (const error of report.errors) {
+  console.log(error.path, error.code, error.message);
+}
 ```
 
-Use a runtime JSON Schema validator to check the structure of `input` against the [generated JSON Schema](/sidex/docs/generation/json-schema/). Once a value has a known shape, generated [validation rules](/sidex/docs/guides/validation/) can check application constraints.
+Checks accept what the Rust reader accepts. They enforce built-in ranges and formats, field names, and variant tags. Unknown record fields are ignored, so older clients accept data with added fields. `null` in an optional field counts as absent, so optional properties include `null` in their TypeScript type. Checks do not convert or copy values.
+
+Each error has a `path` with wire names, such as `items[2].title`, a `code`, and a `message`. The codes are `type`, `missing`, `case`, and `key`. The `segments` of an error distinguish a key containing a dot from nested keys.
+
+Checks do not run `#[validate]` rules. After `Task.is(input)` succeeds, call `Task.validate(input)` when the [validate plugin](/sidex/docs/guides/validation/) is enabled.
+
+### Generic Types
+
+A generic type takes a checker for each type argument:
+
+```sidex
+record Page<T> {
+    items: [T],
+}
+
+alias Tasks: Page<Task>
+```
+
+```ts
+import { Page, Task, Tasks } from "./generated/task";
+
+if (Page.is(input, Task)) {
+  const page: Page<Task> = input;
+}
+const report = Page.check(input, Task);
+const taskPage = Page.checker(Task);
+taskPage.is(input);
+
+Tasks.is(input);
+```
+
+Types from external bundles must be generated with checks as well.
+
+### Limitations
+
+Checks see values after `JSON.parse`. It turns `1`, `1.0`, and `1e0` into the same number, so checks accept all three for integer types, while the Rust reader accepts only `1`. `JSON.parse` also rounds integers beyond `Number.MAX_SAFE_INTEGER`. Sidex writers send such 64-bit integers as decimal strings, which checks verify exactly.
+
+The `idx` range is that of a 64-bit Rust target. An opaque type is checked against its declared JSON type only; its Rust implementation may impose further constraints.
 
 ## Nominal Types
 
@@ -106,6 +153,6 @@ Type mappings use fully qualified Sidex paths:
 "::core::builtins::timestamp" = "string"
 ```
 
-A mapping changes a generated type expression. It does not add a serializer or make other applications adopt the same wire representation.
+A mapping changes a generated type expression. It does not add a serializer or make other applications adopt the same wire representation. Checks still verify the Sidex wire representation: mapping `timestamp` to `string` still rejects an invalid timestamp. Map only to types that match the wire representation, such as `string` for `timestamp`, or `is` narrows to a type the value does not have.
 
 Supplying a `types.table` replaces the default mapping table. Include every built-in mapping your model requires. See the [manifest reference](/sidex/docs/reference/manifest/#typescript-backend) before applying a custom table.

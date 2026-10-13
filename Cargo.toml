@@ -43,6 +43,8 @@ sidex-syntax = { path = "crates/sidex-syntax", version = "=0.3.0" }
 sidex-types-json-schema = { path = "crates/sidex-types-json-schema", version = "=0.3.0" }
 sidex-types-openapi = { path = "crates/sidex-types-openapi", version = "=0.3.0" }
 
+sidex-serde-tests = { path = "crates/sidex-serde-tests" }
+
 # External crates.
 anyhow = "1"
 ariadne = "0.1"

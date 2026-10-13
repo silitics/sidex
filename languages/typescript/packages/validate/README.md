@@ -6,7 +6,7 @@ extension. The TypeScript codegen emits calls into this package for every
 
 ## Usage
 
-This package is consumed by code generated from `.sidex` schemas — you
+This package is consumed by code generated from `.sidex` schemas. You
 typically don't import it directly. Schema authors declare validation
 rules in `.sidex` files, and the codegen emits validators that import
 from `@sidex/validate`:
@@ -21,14 +21,26 @@ if (report.errors.length > 0) {
 ```
 
 A field-level validator returns a `ValidationReport` of zero or more
-`{ path, code, message }` errors rather than throwing — multiple errors
+`{ path, code, message }` errors rather than throwing. Multiple errors
 per call surface every problem at once, which is what UI forms want.
 The shape of `ValidationError`, the helper signatures, and the
 default-message vocabulary mirror the Rust runtime in `sidex-validate`
 exactly: a `(code, path)` tuple from a TypeScript driver and a Rust
 driver are byte-for-byte comparable.
 
-## Adapting to UI form libraries
+Validators expect a typed value. Check incoming JSON first with the generated
+`is` or `check` methods, which use `@sidex/types`:
+
+```ts
+const input: unknown = JSON.parse(responseText)
+if (CreateUserAction.is(input)) {
+  console.log(CreateUserAction.validate(input).errors)
+} else {
+  console.log(CreateUserAction.check(input).errors)
+}
+```
+
+## Adapting to UI Form Libraries
 
 Most form libraries expect a field validator that returns either
 `undefined` (valid) or a `string` (the error message). Collapse the

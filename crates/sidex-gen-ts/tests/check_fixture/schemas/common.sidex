@@ -1,0 +1,5 @@
+//! Types shared with the data schema.
+record Position {
+    x: i32,
+    y: i32,
+}

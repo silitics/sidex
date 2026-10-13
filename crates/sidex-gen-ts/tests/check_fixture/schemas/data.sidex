@@ -1,0 +1,96 @@
+//! Structural check fixtures.
+import common::Position
+import ::identity::users::User
+
+record Task {
+    #[validate({ 1 <= _.size })]
+    title: string,
+    done: bool,
+    note?: string,
+}
+
+record Scalars {
+    signed_8: i8,
+    signed_16: i16,
+    signed_32: i32,
+    signed_64: i64,
+    unsigned_8: u8,
+    unsigned_16: u16,
+    unsigned_32: u32,
+    unsigned_64: u64,
+    index: idx,
+    single: f32,
+    double: f64,
+    blob: bytes,
+    id: uuid,
+    instant: timestamp,
+    day: date,
+    anything: json,
+}
+
+record Empty {}
+wrapper Id: u64
+alias Ids: [Id]
+record Page<T> { items: [T], next?: Page<T> }
+alias Tasks: Page<Task>
+wrapper Wrapped<T>: Page<T>
+wrapper Located: Position
+alias Location: Located
+
+#[json(rename_all = "kebab-case")]
+record Inline {
+    #[json(inline)]
+    position: Position,
+    #[json(name = "display.label")]
+    label: string,
+    optional_value?: Id,
+    #[json(rename = "UPPERCASE")]
+    custom_name?: bool,
+}
+
+#[json(rename_all = "snake_case", tag = "kind", content = "value")]
+variant Internal<T> {
+    NoValue,
+    Record: Location,
+    Parameter: T,
+    #[json(content = "payload")]
+    Renamed: Position,
+}
+#[json(tagged = adjacently, tag = "kind", content = "value")]
+variant Adjacent { Empty, Point: Position }
+#[json(tagged = externally, rename_all = "kebab-case")]
+variant External { NoValue, Point: Position, List: Tasks }
+#[json(tagged = implicitly)]
+variant Implicit { None, Point: Position, Number: i8 }
+
+#[json(type = "string|null")]
+opaque Nullable
+#[json(type = "object|array")]
+opaque Container
+opaque Unknown
+#[json(type = "number|boolean")]
+opaque Primitive
+alias NullableList: [Nullable]
+record Opaques { nullable: Nullable, container: Container, unknown: Unknown, primitive: Primitive }
+record Maps {
+    signed: [i8: Task],
+    unsigned: [u64: string],
+    wrapped: [Id: bool],
+    identifiers: [uuid: timestamp],
+}
+record OtherBundle { user: User<Task> }
+record Forward { later: Later }
+record Later { previous?: Forward }
+
+record Validated<T> {
+    value: T,
+    #[json(name = "display-name")]
+    #[validate({ 1 <= _.size })]
+    display_name?: string,
+}
+
+#[validate({ 1 <= _.size })]
+wrapper ValidatedList<T>: [T]
+
+record Dictionary<K, V> { entries: [K: V] }
+alias Table: Dictionary<Id, Task>

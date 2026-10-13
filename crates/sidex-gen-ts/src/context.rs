@@ -142,6 +142,31 @@ impl<'cx> SchemaCtx<'cx> {
                     instance_def.name.as_str()
                 );
 
+                // Inline the default sequence and map mappings. TypeScript rejects
+                // recursive type aliases through the generic `ObjectMap` alias.
+                let mapping = self
+                    .bundle_ctx
+                    .cfg
+                    .types
+                    .table
+                    .get(&qualified_path)
+                    .map(|path| path.replace(' ', ""));
+                match mapping.as_deref() {
+                    Some("__sidex_types.builtins.Sequence") => {
+                        return self.resolve_type(def, &instance.subst[0]).array();
+                    }
+                    Some("__sidex_types.builtins.ObjectMap") => {
+                        let key = self.resolve_type(def, &instance.subst[0]);
+                        let value = self.resolve_type(def, &instance.subst[1]);
+                        if key.0.to_string().replace(' ', "") == "__sidex_types.builtins.String" {
+                            return TypeExpr(quote!("{ [key: string]: @value }"));
+                        }
+                        return TypeExpr(quote!(
+                            "{ [key in __sidex_types.builtins.MapKey<@key>]?: @value }"
+                        ));
+                    }
+                    _ => {}
+                }
                 let base = if let Some(path) = self.bundle_ctx.cfg.types.table.get(&qualified_path)
                 {
                     Code::from(path.as_str())

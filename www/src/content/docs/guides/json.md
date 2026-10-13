@@ -95,7 +95,7 @@ record User {
 { "displayName": "Ada" }
 ```
 
-An absent optional field is omitted. Its underlying type does not automatically include `null`. Readers treat `null` for an optional field as absent, also if `null` is a value of the field's type, because many languages cannot tell an absent value from `null`. Use the generated JSON Schema to define the shape you require at a boundary.
+An absent optional field is omitted. Its underlying type does not automatically include `null`. Readers treat `null` for an optional field as absent, also if `null` is a value of the field's type, because many languages cannot tell an absent value from `null`. Generated TypeScript `is` and `check` methods follow these reader rules. Unknown record fields are accepted so older readers can consume data with added fields. Use JSON Schema when a boundary requires a different policy.
 
 Change names at the record or field level:
 

@@ -83,7 +83,22 @@ impl Generator for TsGenerator {
                         .iter()
                         .map(|plugin| plugin.visit_def(&schema_ctx, def))
                         .collect::<diagnostics::Result<Vec<Code>>>()?;
-                    Ok(quote!("@(@parts)*"))
+                    let members = generator
+                        .plugins
+                        .iter()
+                        .map(|plugin| plugin.visit_def_value(&schema_ctx, def))
+                        .collect::<diagnostics::Result<Vec<Code>>>()?;
+                    let name = def.name.as_str();
+                    Ok(quote!(
+                        r#"
+                        @(@parts)*
+
+                        export const @name = {
+                            @(@members)*
+                        };
+
+                        "#
+                    ))
                 })
                 .collect::<diagnostics::Result<Vec<_>>>()?;
 

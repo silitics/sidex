@@ -8,11 +8,18 @@ use sidex_gen::ir;
 use crate::context::BundleCtx;
 use crate::context::SchemaCtx;
 
+pub mod check;
 pub mod types;
 pub mod validate;
 
 pub trait Plugin {
     fn visit_def(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<Code>;
+
+    /// Object members attached to the generated type name.
+    #[allow(unused_variables)]
+    fn visit_def_value(&self, ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
+        Ok(Code::new())
+    }
 
     #[allow(unused_variables)]
     fn visit_bundle(&self, ctx: &BundleCtx) -> Result<Code> {

@@ -13,6 +13,7 @@
  */
 
 import type { Nominal } from "./nominal.js"
+import { isDate, isTimestamp } from "./temporal.js"
 
 /**
  * A string.
@@ -21,10 +22,24 @@ import type { Nominal } from "./nominal.js"
  */
 export type String = string
 
+export const String = {
+  /** Checks a JSON string without coercion. */
+  is(value: unknown): value is String {
+    return typeof value === "string"
+  },
+}
+
 /**
  * A boolean.
  */
 export type Bool = boolean
+
+export const Bool = {
+  /** Checks a JSON boolean without coercion. */
+  is(value: unknown): value is Bool {
+    return typeof value === "boolean"
+  },
+}
 
 // ---- Small integers --------------------------------------------------------
 
@@ -71,11 +86,11 @@ export type U32 = Nominal<number, "::core::builtins::u32">
 export const U32 = smallInt<U32>(0, 4_294_967_295)
 
 /**
- * An index into a sequence.
+ * An index into a sequence on a 64-bit target. Numbers beyond 2^53 lose precision.
  */
 export type Idx = Nominal<number, "::core::builtins::idx">
 
-export const Idx = smallInt<Idx>(0, Number.MAX_SAFE_INTEGER)
+export const Idx = smallInt<Idx>(0, 18_446_744_073_709_549_568)
 
 /**
  * Operations of an integer type represented as a JavaScript number.
@@ -144,7 +159,7 @@ export interface BigInt64<T extends number | string> {
   /** The largest value. */
   readonly MAX: T
   /**
-   * Checks whether the value is a safe integer or a decimal string in the
+   * Checks whether the value is an integer number or a decimal string in the
    * range of the type.
    */
   is(value: unknown): value is T
@@ -189,11 +204,11 @@ function bigInt<T extends number | string>(
     MAX: fromBigInt(max),
     is(value: unknown): value is T {
       if (typeof value === "number") {
-        return Number.isSafeInteger(value) && inRange(BigInt(value))
+        return Number.isInteger(value) && inRange(BigInt(value))
       }
       return (
         typeof value === "string" &&
-        (min < 0n ? /^-?[0-9]+$/ : /^[0-9]+$/).test(value) &&
+        (min < 0n ? /^[+-]?[0-9]+$/ : /^\+?[0-9]+$/).test(value) &&
         inRange(BigInt(value))
       )
     },
@@ -288,15 +303,36 @@ function float<T>(): Float<T> {
 export type Bytes = Nominal<string, "::core::builtins::bytes">
 
 export const Bytes = {
+  /** Checks standard Base64, with optional padding and zero trailing bits. */
+  is(value: unknown): value is Bytes {
+    if (
+      typeof value !== "string" ||
+      !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}={0,2}|[A-Za-z0-9+/]{3}=?)?$/.test(
+        value,
+      )
+    )
+      return false
+    const text = value.replace(/=+$/, "")
+    const remainder = text.length % 4
+    const digit =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".indexOf(
+        text[text.length - 1] ?? "A",
+      )
+    return (
+      remainder === 0 ||
+      (remainder === 2 ? (digit & 15) === 0 : (digit & 3) === 0)
+    )
+  },
   /** Encodes bytes. */
   fromUint8Array(bytes: Uint8Array): Bytes {
     let binary = ""
-    for (const byte of bytes) binary += String.fromCharCode(byte)
+    for (const byte of bytes) binary += globalThis.String.fromCharCode(byte)
     return btoa(binary) as Bytes
   },
   /** Decodes bytes. */
   toUint8Array(value: Bytes): Uint8Array {
-    const binary = atob(value)
+    if (!Bytes.is(value)) throw new TypeError(`${value} is not Base64`)
+    const binary = atob(value.replace(/=+$/, ""))
     const bytes = new Uint8Array(binary.length)
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
     return bytes
@@ -338,6 +374,10 @@ export const Uuid = {
 export type Timestamp = Nominal<string, "::core::builtins::timestamp">
 
 export const Timestamp = {
+  /** Checks a timestamp accepted by the Rust JSON reader. */
+  is(value: unknown): value is Timestamp {
+    return isTimestamp(value)
+  },
   /** Converts a JavaScript date. */
   fromDate(date: globalThis.Date): Timestamp {
     return date.toISOString() as Timestamp
@@ -358,11 +398,9 @@ export const Timestamp = {
 export type Date = Nominal<string, "::core::builtins::date">
 
 export const Date = {
-  /** Checks whether the value is a YYYY-MM-DD string. */
+  /** Checks a valid calendar date accepted by the Rust JSON reader. */
   is(value: unknown): value is Date {
-    return (
-      typeof value === "string" && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)
-    )
+    return isDate(value)
   },
 }
 
@@ -374,20 +412,29 @@ export const Date = {
 export type Json =
   null | boolean | number | string | Json[] | { [key: string]: Json }
 
+export const Json = {
+  /** Checks JSON values, rejecting cycles and JavaScript-only values. */
+  is(value: unknown): value is Json {
+    return isJsonValue(value)
+  },
+}
+
 /**
  * A sequence.
  */
 export type Sequence<T> = T[]
 
 /**
- * A map, represented as an object with keys in their text representation.
+ * The text representation of a map key.
  *
- * Maps with keys from a finite set, such as the cases of a string enum, may
- * lack keys. Maps with arbitrary string keys have an index signature.
+ * Integer keys are decimal strings; string key brands retain their identity.
  */
-export type ObjectMap<K extends string, V> = string extends K
+export type MapKey<K> = K extends number ? `${K}` : K extends string ? K : never
+
+/** A JSON map with optional entries for finite key types. */
+export type ObjectMap<K, V> = string extends K
   ? { [key: string]: V }
-  : { [key in K]?: V }
+  : { [key in MapKey<K>]?: V }
 
 /**
  * Returns the entries of a map.
@@ -401,4 +448,28 @@ export function entries<K extends string, V>(
   return (Object.entries(map) as [K, V][]).filter(
     (entry): entry is [K, Exclude<V, undefined>] => entry[1] !== undefined,
   )
+}
+
+/** Checks containers without requiring a JSON serialization round trip. */
+function isJsonValue(
+  value: unknown,
+  ancestors = new Set<object>(),
+): value is Json {
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return true
+  if (typeof value === "number") return Number.isFinite(value)
+  if (
+    typeof value !== "object" ||
+    (!Array.isArray(value) &&
+      Object.getPrototypeOf(value) !== Object.prototype &&
+      Object.getPrototypeOf(value) !== null)
+  )
+    return false
+  if (ancestors.has(value)) return false
+  ancestors.add(value)
+  const valid = (
+    Array.isArray(value) ? Array.from(value) : Object.values(value)
+  ).every((item) => isJsonValue(item, ancestors))
+  ancestors.delete(value)
+  return valid
 }

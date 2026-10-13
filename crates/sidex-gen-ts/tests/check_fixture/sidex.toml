@@ -1,0 +1,5 @@
+[bundle]
+name = "check_fixture"
+version = "0.0.0"
+[dependencies.identity]
+path = "identity"

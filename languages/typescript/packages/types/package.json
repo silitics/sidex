@@ -34,7 +34,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test": "tsc && node --experimental-strip-types --test tests/*.test.ts",
     "clean": "rm -rf dist",
     "prepare": "npm run build",
     "prepublishOnly": "npm run clean && npm run build"

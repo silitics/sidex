@@ -110,8 +110,8 @@ An optional field permits absence. It does not make `null` a valid value for a `
 Choose a guide to connect the output to your application:
 
 - [Rust](/sidex/docs/generation/rust/): generate during a Cargo build and use Serde.
-- [TypeScript](/sidex/docs/generation/typescript/): import JSON-shaped types.
+- [TypeScript](/sidex/docs/generation/typescript/): import JSON-shaped types and check incoming data.
 - [Python](/sidex/docs/generation/python/): parse and serialize with Pydantic.
-- [JSON Schema](/sidex/docs/generation/json-schema/): validate the structure of incoming JSON.
+- [JSON Schema](/sidex/docs/generation/json-schema/): describe JSON for validators and other tooling.
 
 The complete [manifest](/sidex/examples/tasks/sidex.toml) and [schema](/sidex/examples/tasks/schemas/task.sidex) are available to download. To extend the model, continue with [types](/sidex/docs/language/types/) and [validation](/sidex/docs/guides/validation/).

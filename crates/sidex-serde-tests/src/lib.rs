@@ -1,4 +1,6 @@
-sidex::include_bundle!(json_test_bundle as generated);
+//! Shared JSON fixtures and Rust representation tests.
+
+sidex::include_bundle!(pub json_test_bundle as generated);
 
 #[cfg(test)]
 mod tests {
