@@ -8,29 +8,63 @@ A _wire representation_ is the JSON shape applications exchange. Sidex's type st
 
 ## Built-in Types
 
-Writers produce the canonical representation. Readers also accept the listed alternatives.
+| Type                      | JSON                                    |
+| ------------------------- | --------------------------------------- |
+| `bool`                    | boolean                                 |
+| `i8`, `i16`, `i32`        | number                                  |
+| `u8`, `u16`, `u32`, `idx` | number                                  |
+| `i64`, `u64`              | number, or string beyond ±(2^53 − 1)    |
+| `f32`, `f64`              | number, or string if not finite         |
+| `string`                  | string                                  |
+| `bytes`                   | Base64 string with padding              |
+| `uuid`                    | lowercase hyphenated string             |
+| `timestamp`               | RFC 3339 string in UTC                  |
+| `date`                    | `YYYY-MM-DD` string                     |
+| `json`                    | the value itself                        |
+| `[T]`                     | array                                   |
+| `[K: V]`                  | object with keys in text representation |
 
-| Type                      | Written as                                                                    | Also read       |
-| ------------------------- | ----------------------------------------------------------------------------- | --------------- |
-| `bool`                    | `true` or `false`                                                             |                 |
-| `i8`, `i16`, `i32`        | number                                                                        |                 |
-| `u8`, `u16`, `u32`, `idx` | number                                                                        |                 |
-| `i64`, `u64`              | number, or decimal string beyond ±(2^53 − 1)                                  | decimal string  |
-| `f32`, `f64`              | number, or `"NaN"`, `"Infinity"`, and `"-Infinity"`                           | `"+Infinity"`   |
-| `string`                  | string                                                                        |                 |
-| `bytes`                   | Base64 string with padding                                                    | missing padding |
-| `uuid`                    | lowercase hyphenated string, such as `"67e55044-10b1-426f-9247-bb680e5fe0c8"` | uppercase       |
-| `timestamp`               | RFC 3339 string in UTC, such as `"2026-10-12T08:30:00.25Z"`                   | any offset      |
-| `date`                    | `YYYY-MM-DD` string, such as `"2026-10-12"`                                   |                 |
-| `json`                    | the JSON value itself                                                         |                 |
-| `[T]`                     | array                                                                         |                 |
-| `[K: V]`                  | object with keys in their text representation                                 |                 |
+For example:
+
+```sidex
+record Release {
+    downloads: u32,
+    size: u64,
+    checksum: u64,
+    ratio: f64,
+    signature: bytes,
+    id: uuid,
+    published_at: timestamp,
+    released_on: date,
+}
+```
+
+```json
+{
+  "downloads": 42,
+  "size": 1791847993,
+  "checksum": "18446744073709551615",
+  "ratio": 0.5,
+  "signature": "AAH/",
+  "id": "67e55044-10b1-426f-9247-bb680e5fe0c8",
+  "publishedAt": "2026-10-12T08:30:00.25Z",
+  "releasedOn": "2026-10-12"
+}
+```
+
+Readers also accept:
+
+- decimal strings for all `i64` and `u64` values
+- `"+Infinity"` for floats
+- Base64 without padding
+- uppercase UUIDs
+- timestamps with any offset
 
 Readers reject other JSON types and values out of range. For instance, `1` is not a `bool`, `true` is not an integer, `"1"` is not a `u32`, and `300` is not a `u8`.
 
 JavaScript represents integers exactly only up to a magnitude of 2^53 − 1 (`Number.MAX_SAFE_INTEGER`). Larger `i64` and `u64` values are therefore decimal strings, such as `"9007199254740993"`, so they stay exact in every language. Typical values, such as sizes, counts, and timestamps in seconds, remain plain numbers.
 
-JSON has no non-finite numbers, so non-finite floats are strings.
+JSON has no non-finite numbers, so non-finite floats are the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
 
 A `json` value is written as is. Its integers remain numbers beyond 2^53 − 1, so data from other systems passes through unchanged, but JavaScript may lose their precision. A `json` value cannot hold non-finite floats.
 

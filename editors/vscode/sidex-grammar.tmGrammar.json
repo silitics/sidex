@@ -389,7 +389,7 @@
             "comment": "Primitive Types",
             "patterns": [
                 {
-                    "match": "\\b(i8|i16|i32|i64|u8|u16|u32|u64|f32|f64)\\b",
+                    "match": "\\b(i8|i16|i32|i64|u8|u16|u32|u64|idx|f32|f64)\\b",
                     "captures": {
                         "1": {
                             "name": "entity.name.type.primitive.sidex"
@@ -397,7 +397,7 @@
                     }
                 },
                 {
-                    "match": "\\b(string|bytes|bool|unit)\\b",
+                    "match": "\\b(string|bytes|bool|uuid|timestamp|date|json)\\b",
                     "captures": {
                         "1": {
                             "name": "entity.name.type.primitive.sidex"
