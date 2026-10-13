@@ -332,6 +332,7 @@ fn scalar_schema(scalar: Scalar) -> JsonValue {
             ])
         }
         Scalar::Idx => object([("type", "integer".into()), ("minimum", JsonValue::Int(0))]),
+        // Integers, or decimal strings beyond 2^53 - 1.
         Scalar::I64 => {
             object([
                 (
@@ -353,6 +354,7 @@ fn scalar_schema(scalar: Scalar) -> JsonValue {
                 ("pattern", "^[0-9]+$".into()),
             ])
         }
+        // Non-finite floats are strings.
         Scalar::F32 | Scalar::F64 => {
             object([
                 (
