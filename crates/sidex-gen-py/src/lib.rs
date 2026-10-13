@@ -561,8 +561,8 @@ fn generate_record_field(
     let json_attrs = json_field_attrs(field)?;
     let py_name = sanitize_py_name(&to_snake_case(field.name.as_str()));
     let json_name = ty_json.field_name(field, &json_attrs);
-    let field_type = match number_type(ctx, &field.typ) {
-        Some(number) if json_attrs.number => number.to_owned(),
+    let field_type = match number_type(ctx, def, &field.typ) {
+        Some(number) if json_attrs.number => number,
         _ => ctx.resolve_type(def, &field.typ),
     };
     let needs_alias = py_name != json_name;
@@ -608,11 +608,22 @@ fn generate_record_field(
     }
 }
 
-/// Returns the type of an `i64` or `u64` represented as a JSON number.
-fn number_type(ctx: &SchemaCtx, typ: &ir::Type) -> Option<&'static str> {
-    match ctx.bundle_ctx.unit.wide_integer(typ)? {
-        "i64" => Some("_sidex.I64Number"),
-        _ => Some("_sidex.U64Number"),
+/// Returns the type of values whose 64-bit integers, also those in sequences
+/// and map values, are JSON numbers, or `None` if the type has no such integers.
+fn number_type(ctx: &SchemaCtx, def: &ir::Def, typ: &ir::Type) -> Option<String> {
+    let (name, args) = ctx.bundle_ctx.unit.builtin(typ)?;
+    match name {
+        "i64" => Some("_sidex.I64Number".to_owned()),
+        "u64" => Some("_sidex.U64Number".to_owned()),
+        "Sequence" => Some(format!("list[{}]", number_type(ctx, def, &args[0])?)),
+        "Map" => {
+            let values = number_type(ctx, def, &args[1])?;
+            Some(format!(
+                "dict[{}, {values}]",
+                ctx.resolve_type(def, &args[0])
+            ))
+        }
+        _ => None,
     }
 }
 
@@ -638,9 +649,9 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
             JsonTaggedAttr::Implicitly => {
                 if let Some(typ) = &variant.typ {
                     // Implicitly tagged cases represent 64-bit integers as numbers.
-                    union_members.push(match number_type(ctx, typ) {
-                        Some(number) => number.to_owned(),
-                        None => ctx.resolve_type(def, typ),
+                    union_members.push(match number_type(ctx, def, typ) {
+                        Some(number) if ctx.bundle_ctx.unit.wide_integer(typ).is_some() => number,
+                        _ => ctx.resolve_type(def, typ),
                     });
                 } else {
                     let gen_bases = generic_bases_for(&used_vars);

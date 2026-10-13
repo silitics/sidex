@@ -14,6 +14,8 @@ record Claims {
     #[json(number)]
     exp: u64,
     sequence: u64,
+    #[json(number)]
+    audiences: [u64],
 }
 
 /// Reading that is a count or a label.

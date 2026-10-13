@@ -76,6 +76,13 @@ fn integers() {
         properties["expires"],
         serde_json::json!({ "type": "integer", "format": "uint64" })
     );
+    assert_eq!(
+        properties["counts"],
+        serde_json::json!({
+            "type": "array",
+            "items": { "type": "integer", "format": "uint64" },
+        })
+    );
 }
 
 /// Payloads of implicitly tagged cases declared as 64-bit integers are JSON

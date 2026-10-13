@@ -51,19 +51,42 @@ pub(super) fn view(view: &View<'_>, f: &mut ViewFn<'_>) -> Result<(), EncodeErro
         View::Uuid(value) => with_display(value, |text| f(ValueView::String(text))),
         View::Timestamp(value) => with_display(value, |text| f(ValueView::String(text))),
         View::Date(value) => with_display(value, |text| f(ValueView::String(text))),
-        View::Seq(seq) => f(ValueView::Seq(&MappedSeq(*seq))),
-        View::Map(map) => f(ValueView::Map(&MappedMap(*map))),
+        View::Seq(seq) => {
+            f(ValueView::Seq(&MappedSeq {
+                seq: *seq,
+                numbers: false,
+            }))
+        }
+        View::Map(map) => {
+            f(ValueView::Map(&MappedMap {
+                map: *map,
+                numbers: false,
+            }))
+        }
         View::Record(record) => f(ValueView::Map(&MappedRecord::new(*record, None)?)),
         View::Variant(variant) => self::variant(*variant, f),
         View::Value(value) => self::value(value, f),
     }
 }
 
-/// Maps a typed view like [`view`], but 64-bit integers to numbers.
+/// Maps a typed view like [`view`], but 64-bit integers, also those in
+/// sequences and map values, to numbers.
 fn number(view: &View<'_>, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
     match view {
         View::I64(value) => f(ValueView::Int((*value).into())),
         View::U64(value) => f(ValueView::Int((*value).into())),
+        View::Seq(seq) => {
+            f(ValueView::Seq(&MappedSeq {
+                seq: *seq,
+                numbers: true,
+            }))
+        }
+        View::Map(map) => {
+            f(ValueView::Map(&MappedMap {
+                map: *map,
+                numbers: true,
+            }))
+        }
         _ => self::view(view, f),
     }
 }
@@ -203,29 +226,47 @@ fn key(
     }
 }
 
-struct MappedSeq<'a>(&'a dyn SeqView);
+/// Sequence whose items are mapped with [`view`] or, if `numbers` is set,
+/// with [`number`].
+struct MappedSeq<'a> {
+    seq: &'a dyn SeqView,
+    numbers: bool,
+}
 
 impl ValueSeqView for MappedSeq<'_> {
     fn size_hint(&self) -> Option<usize> {
-        Some(self.0.len())
+        Some(self.seq.len())
     }
 
     fn each(&self, f: &mut ViewFn<'_>) -> Result<(), EncodeError> {
-        self.0.each(&mut |item| view(&item, f))
+        if self.numbers {
+            self.seq.each(&mut |item| number(&item, f))
+        } else {
+            self.seq.each(&mut |item| view(&item, f))
+        }
     }
 }
 
-struct MappedMap<'a>(&'a dyn MapView);
+/// Map whose values are mapped with [`view`] or, if `numbers` is set, with
+/// [`number`].
+struct MappedMap<'a> {
+    map: &'a dyn MapView,
+    numbers: bool,
+}
 
 impl ValueMapView for MappedMap<'_> {
     fn size_hint(&self) -> Option<usize> {
-        Some(self.0.len())
+        Some(self.map.len())
     }
 
     fn each(&self, f: &mut EntryFn<'_>) -> Result<(), EncodeError> {
-        self.0.each(&mut |map_key, map_value| {
+        self.map.each(&mut |map_key, map_value| {
             key(&map_key, &mut |text| {
-                view(&map_value, &mut |item| f(text, item))
+                if self.numbers {
+                    number(&map_value, &mut |item| f(text, item))
+                } else {
+                    view(&map_value, &mut |item| f(text, item))
+                }
             })
         })
     }

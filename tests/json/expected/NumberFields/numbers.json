@@ -1,5 +1,7 @@
 {
     "expires": 1791847993,
     "offset": -5,
-    "sequence": "7"
+    "sequence": "7",
+    "counts": [1, 18446744073709551615],
+    "totals": { "a": -3 }
 }

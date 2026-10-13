@@ -115,6 +115,10 @@ record NumberFields {
     #[json(number)]
     offset?: i64,
     sequence: u64,
+    #[json(number)]
+    counts?: [u64],
+    #[json(number)]
+    totals?: [string: i64],
 }
 
 /// Record whose type variables share names with those of generated code.

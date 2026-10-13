@@ -4,7 +4,6 @@ use std::collections::HashSet;
 
 use super::Tagging;
 use super::Type;
-use super::repr::wide_integer;
 use crate::Shape;
 use crate::Value;
 use crate::shape::RecordShape;
@@ -201,8 +200,8 @@ impl Builder {
                 self.fields(inner, properties, required);
                 continue;
             }
-            let mut property = match wide_integer(shape) {
-                Some(scalar) if field.json.number => number_schema(scalar),
+            let mut property = match number_schema(shape) {
+                Some(schema) if field.json.number => schema,
                 _ => self.schema(shape),
             };
             if let Value::Map(entries) = &mut property {
@@ -239,8 +238,8 @@ impl Builder {
                     ])
                 }
                 (Tagging::Implicit, Some(payload)) => {
-                    match wide_integer(payload()) {
-                        Some(scalar) if case.json.number => number_schema(scalar),
+                    match number_schema(payload()) {
+                        Some(schema) if case.json.number => schema,
                         _ => self.schema(payload()),
                     }
                 }
@@ -287,11 +286,30 @@ impl Builder {
     }
 }
 
-/// Returns the schema of a 64-bit integer represented as a number.
-fn number_schema(scalar: Scalar) -> Value {
-    match scalar {
-        Scalar::U64 => object([("type", "integer".into()), ("minimum", Value::Int(0))]),
-        _ => object([("type", "integer".into())]),
+/// Returns the schema of values whose 64-bit integers, also those in sequences
+/// and map values, are numbers, or `None` if the values have no such integers.
+fn number_schema(shape: &'static Shape) -> Option<Value> {
+    match &shape.kind {
+        ShapeKind::Scalar(Scalar::I64) => Some(object([("type", "integer".into())])),
+        ShapeKind::Scalar(Scalar::U64) => {
+            Some(object([
+                ("type", "integer".into()),
+                ("minimum", Value::Int(0)),
+            ]))
+        }
+        ShapeKind::Wrapper(inner) => number_schema(inner()),
+        ShapeKind::Sequence(item) => {
+            let items = number_schema(item())?;
+            Some(object([("type", "array".into()), ("items", items)]))
+        }
+        ShapeKind::Map(_, value) => {
+            let values = number_schema(value())?;
+            Some(object([
+                ("type", "object".into()),
+                ("additionalProperties", values),
+            ]))
+        }
+        _ => None,
     }
 }
 

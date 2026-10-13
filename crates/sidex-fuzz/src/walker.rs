@@ -248,9 +248,8 @@ impl<'a> Walker<'a> {
             }
             let name = attrs.field_name(field, &field_attrs);
             let mut value = self.gen_value(&field_typ, source)?;
-            if field_attrs.number && self.ir.wide_integer(&field_typ).is_some() {
-                // The field represents its 64-bit integer as a number.
-                value = into_number(value);
+            if field_attrs.number {
+                value = self.numbers(&field_typ, value);
             }
             // For optional fields under the `Undefined` repr, an absent field
             // is the canonical encoding of "no value". A `null` here would
@@ -263,6 +262,31 @@ impl<'a> Walker<'a> {
         }
         self.depth -= 1;
         Ok(())
+    }
+
+    /// Represents the 64-bit integers of a value of the type, also those in
+    /// sequences and map values, as numbers.
+    fn numbers(&self, typ: &ir::Type, value: Value) -> Value {
+        match (self.ir.builtin(typ), value) {
+            (Some(("i64" | "u64", _)), value) => into_number(value),
+            (Some(("Sequence", args)), Value::Array(items)) => {
+                Value::Array(
+                    items
+                        .into_iter()
+                        .map(|item| self.numbers(&args[0], item))
+                        .collect(),
+                )
+            }
+            (Some(("Map", args)), Value::Object(entries)) => {
+                Value::Object(
+                    entries
+                        .into_iter()
+                        .map(|(key, item)| (key, self.numbers(&args[1], item)))
+                        .collect(),
+                )
+            }
+            (_, value) => value,
+        }
     }
 
     fn inline_record_into(

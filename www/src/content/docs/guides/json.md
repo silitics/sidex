@@ -108,7 +108,7 @@ Integers up to 32 bits and `idx` are JSON numbers. JavaScript and many other JSO
 
 `bytes` are Base64 strings.
 
-Formats defined by others may require 64-bit integers to be JSON numbers. For instance, the `exp` claim of a JSON Web Token is a number. Mark such fields with `number`:
+Formats defined by others, or read by software that predates this representation, may require 64-bit integers to be JSON numbers. For instance, the `exp` claim of a JSON Web Token is a number. Mark such fields with `number`:
 
 ```sidex
 record Claims {
@@ -121,6 +121,8 @@ record Claims {
 ```json
 { "sub": "device-1", "exp": 1791847993 }
 ```
+
+`number` also applies to the integers in sequences and map values of the field, such as `[u64]` or `[string: i64]`.
 
 Only use `number` when the format requires it. Readers that parse JSON numbers as floating-point numbers lose precision beyond 2^53.
 

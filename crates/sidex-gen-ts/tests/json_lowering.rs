@@ -119,6 +119,10 @@ fn number_fields_are_numbers() {
         out.contains("\"sequence\": __sidex_types.builtins.U64"),
         "other 64-bit integers should stay strings, got:\n{out}"
     );
+    assert!(
+        out.contains("\"audiences\": __sidex_types.builtins.Sequence<number>"),
+        "sequences of `#[json(number)]` fields should hold numbers, got:\n{out}"
+    );
 }
 
 /// Payloads of implicitly tagged cases declared as 64-bit integers are numbers.

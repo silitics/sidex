@@ -226,8 +226,15 @@ impl Ir {
     /// they are numbers for fields marked as such and payloads of implicitly
     /// tagged cases, and strings otherwise.
     pub fn wide_integer(&self, typ: &Type) -> Option<&str> {
+        let (name, _) = self.builtin(typ)?;
+        matches!(name, "i64" | "u64").then_some(name)
+    }
+
+    /// Returns the name and type arguments of the built-in type that the type
+    /// denotes after resolving aliases, such as `"u64"` or `"Sequence"`.
+    pub fn builtin(&self, typ: &Type) -> Option<(&str, Vec<Type>)> {
         let resolved = self.resolve_aliases(typ);
-        let TypeKind::Instance(instance) = &resolved.kind else {
+        let TypeKind::Instance(instance) = resolved.kind else {
             return None;
         };
         if self[instance.def.bundle].metadata.name != "core"
@@ -235,8 +242,7 @@ impl Ir {
         {
             return None;
         }
-        let name = self[instance.def].name.as_str();
-        matches!(name, "i64" | "u64").then_some(name)
+        Some((self[instance.def].name.as_str(), instance.subst))
     }
 
     pub fn type_def(&self, typ: &Type) -> Option<&Def> {

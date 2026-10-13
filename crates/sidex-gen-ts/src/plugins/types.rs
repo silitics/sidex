@@ -80,15 +80,10 @@ impl Plugin for Types {
                         field_jsdocs.push(Code::from(render_jsdoc(field_docs, &stability)));
                         field_names.push(Code::from(ts_string_literal(&field_name)));
                         field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
-                        field_types.push(
-                            if json_attrs.number
-                                && ctx.bundle_ctx.unit.wide_integer(&field.typ).is_some()
-                            {
-                                Code::from("number")
-                            } else {
-                                ctx.resolve_type(def, &field.typ).0
-                            },
-                        );
+                        field_types.push(match number_type(ctx, def, &field.typ) {
+                            Some(number) if json_attrs.number => number,
+                            _ => ctx.resolve_type(def, &field.typ).0,
+                        });
                     }
                     TypeExpr(quote!(
                         "{ @(@field_jsdocs@field_names@field_opts: @field_types), + }"
@@ -238,6 +233,25 @@ impl Plugin for Types {
             })
             .collect();
         Ok(quote!("@(@exports)*"))
+    }
+}
+
+/// Returns the type of values whose 64-bit integers, also those in sequences
+/// and map values, are numbers, or `None` if the type has no such integers.
+fn number_type(ctx: &SchemaCtx, def: &ir::Def, typ: &ir::Type) -> Option<Code> {
+    let (name, args) = ctx.bundle_ctx.unit.builtin(typ)?;
+    match name {
+        "i64" | "u64" => Some(Code::from("number")),
+        "Sequence" => {
+            let items = number_type(ctx, def, &args[0])?;
+            Some(quote!("__sidex_types.builtins.Sequence<@items>"))
+        }
+        "Map" => {
+            let values = number_type(ctx, def, &args[1])?;
+            let keys = ctx.resolve_type(def, &args[0]).0;
+            Some(quote!("__sidex_types.builtins.ObjectMap<@keys, @values>"))
+        }
+        _ => None,
     }
 }
 

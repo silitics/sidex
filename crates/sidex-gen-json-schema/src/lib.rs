@@ -433,26 +433,52 @@ impl<'cx> JsonSchemaCtx<'cx> {
         Ok(json_schema)
     }
 
-    /// Returns the schema of a 64-bit integer represented as a JSON number, if
-    /// `number` is set and the type is such an integer.
+    /// Returns the schema of values whose 64-bit integers, also those in
+    /// sequences and map values, are JSON numbers, if `number` is set and the
+    /// type has such integers.
     fn number_schema(&self, typ: &ir::Type, number: bool) -> Option<TypeSchema> {
         if !number {
             return None;
         }
-        let format = match self.unit.wide_integer(typ)? {
-            "i64" => "int64",
-            _ => "uint64",
-        };
-        let mut schema = SchemaObject::new();
-        schema
-            .set_allowed_types(Some(Type::Integer.into()))
-            .set_format(Some(format.to_owned()));
+        let schema = self.number_object(typ)?;
         Some(TypeSchema {
-            name: format.to_owned(),
+            name: "number".to_owned(),
             use_schema: schema.clone(),
             def_schema: None,
             inline_schema: Some(schema),
         })
+    }
+
+    fn number_object(&self, typ: &ir::Type) -> Option<SchemaObject> {
+        let (name, args) = self.unit.builtin(typ)?;
+        let mut schema = SchemaObject::new();
+        match name {
+            "i64" | "u64" => {
+                let format = if name == "i64" { "int64" } else { "uint64" };
+                schema
+                    .set_allowed_types(Some(Type::Integer.into()))
+                    .set_format(Some(format.to_owned()));
+            }
+            "Sequence" => {
+                let items = self.number_object(&args[0])?;
+                schema
+                    .set_allowed_types(Some(Type::Array.into()))
+                    .set_array_keywords(Some(Box::new(
+                        ArrayKeywords::new().with_items(Some(Box::new(items.into()))),
+                    )));
+            }
+            "Map" => {
+                let values = self.number_object(&args[1])?;
+                schema
+                    .set_allowed_types(Some(Type::Object.into()))
+                    .set_object_keywords(Some(Box::new(
+                        ObjectKeywords::new()
+                            .with_additional_properties(Some(Box::new(values.into()))),
+                    )));
+            }
+            _ => return None,
+        }
+        Some(schema)
     }
 
     fn record_type_schema(
