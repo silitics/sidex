@@ -141,12 +141,17 @@ Bytes = Annotated[
 
 Uuid = uuid.UUID
 
+
 class _Timestamp(datetime.datetime):
     """A datetime that retains the sub-microsecond digits of its wire value."""
 
+    _sidex_nanosecond: int
 
-def _parse_timestamp(value, handler):
-    parsed = handler(value)
+
+def _parse_timestamp(
+    value: object, handler: pydantic.ValidatorFunctionWrapHandler
+) -> datetime.datetime:
+    parsed: datetime.datetime = handler(value)
     if not isinstance(value, str):
         return parsed
     fraction = re.search(r"[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}\.([0-9]+)", value)
@@ -154,14 +159,21 @@ def _parse_timestamp(value, handler):
         raise ValueError("timestamp precision exceeds nanoseconds")
     nanoseconds = int(fraction[1].ljust(9, "0")) if fraction else 0
     result = _Timestamp(
-        parsed.year, parsed.month, parsed.day, parsed.hour, parsed.minute,
-        parsed.second, parsed.microsecond, tzinfo=parsed.tzinfo, fold=parsed.fold,
+        parsed.year,
+        parsed.month,
+        parsed.day,
+        parsed.hour,
+        parsed.minute,
+        parsed.second,
+        parsed.microsecond,
+        tzinfo=parsed.tzinfo,
+        fold=parsed.fold,
     )
     result._sidex_nanosecond = nanoseconds
     return result
 
 
-def _encode_timestamp(value):
+def _encode_timestamp(value: object) -> str:
     if not isinstance(value, datetime.datetime):
         raise pydantic_core.PydanticSerializationUnexpectedValue("expected a datetime")
     nanoseconds = getattr(value, "_sidex_nanosecond", value.microsecond * 1000)
