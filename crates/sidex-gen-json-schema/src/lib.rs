@@ -438,7 +438,8 @@ impl<'cx> JsonSchemaCtx<'cx> {
             if let Some(typ) = &variant.typ {
                 let content_field = json_type_attrs.content_field_name(&json_variant_attrs);
                 let type_schema = self.resolve(typ)?;
-                let may_inline = self.unit.record_type(typ).is_some();
+                let may_inline =
+                    json_variant_attrs.content.is_none() && self.unit.record_type(typ).is_some();
                 // idl_variant.set_type_ref(Some(type_schema.name.clone()));
                 builder.add_data_variant(&content_field, &variant_name, type_schema, may_inline);
             } else {
@@ -458,7 +459,13 @@ pub struct JsonSchemaGenerator;
 impl Generator for JsonSchemaGenerator {
     fn generate(&self, job: sidex_gen::Job) -> diagnostics::Result<()> {
         // let config = Config::deserialize(job.config.clone().into_deserializer())?;
-        let mut ctx = JsonSchemaCtx::new(job.unit, Default::default());
+        let mut ctx = JsonSchemaCtx::new(
+            job.unit,
+            JsonSchemaConfig {
+                emit_ids: false,
+                ..Default::default()
+            },
+        );
         // ctx.set_def_prefix("");
         for (bundle_idx, bundle) in job.unit.bundles.iter().enumerate() {
             if bundle.is_internal {
@@ -490,17 +497,12 @@ impl Generator for JsonSchemaGenerator {
             let reachable = transitive_def_refs(name, schema, &defs);
             let mut filtered_defs = defs
                 .iter()
-                .filter(|(def_name, _)| *def_name != name && reachable.contains(*def_name))
-                .map(|(name, schema)| {
-                    (
-                        name.clone(),
-                        schema.clone().with_id(Some(name.clone())).into(),
-                    )
-                })
+                .filter(|(def_name, _)| reachable.contains(*def_name))
+                .map(|(name, schema)| (name.clone(), schema.clone().into()))
                 .collect::<Vec<_>>();
             filtered_defs.sort_by(|(a, _), (b, _)| a.cmp(b));
             let filtered_defs = filtered_defs.into_iter().collect::<Map<_, _>>();
-            let root_schema = RootSchema::new(schema.clone())
+            let root_schema = RootSchema::new(schema.clone().with_id(Some(name.clone())))
                 .with_meta_schema(Some(
                     "https://json-schema.org/draft/2020-12/schema".to_owned(),
                 ))
@@ -589,8 +591,8 @@ fn builtin_shape(path: &str) -> Option<&'static sidex::Shape> {
 }
 
 /// Compute the set of def names transitively reachable from `root` via
-/// `#/$defs/...` references, looking up further refs in `defs`. The root's own
-/// name is excluded from the result.
+/// `#/$defs/...` references, looking up further refs in `defs`. Includes the
+/// root's name when recursion references it.
 fn transitive_def_refs(
     root_name: &str,
     root_schema: &SchemaObject,
@@ -617,7 +619,6 @@ fn transitive_def_refs(
             }
         }
     }
-    reachable.remove(root_name);
     reachable
 }
 

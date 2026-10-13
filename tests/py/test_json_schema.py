@@ -168,3 +168,37 @@ def test_containers_and_json(builtin_schemas):
     for value in [None, True, 2**64 - 1, 0.5, "text", [], {"anything": None}]:
         assert arbitrary.is_valid(value)
         assert nested.is_valid({"key": [value]})
+
+
+def test_nested_and_recursive_references(sidex_bin, tmp_path):
+    """Sibling definitions and recursive roots resolve under JSON Schema 2020-12."""
+    (tmp_path / "sidex.toml").write_text(
+        '[bundle]\nname = "references"\nversion = "0.1.0"\n'
+    )
+    schemas = tmp_path / "schemas"
+    schemas.mkdir()
+    (schemas / "data.sidex").write_text(
+        "wrapper Id: string\n"
+        "record Node { id: Id, children: [Node] }\n"
+        "record Envelope { node: Node }\n"
+        '#[json(tag = "result")]\n'
+        'variant Response { #[json(content = "node")] Ok: Node, Failed }\n'
+    )
+    output = tmp_path / "output"
+    subprocess.run(
+        [str(sidex_bin), "generate", "json-schema", str(output)],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+    )
+    node = {"id": "root", "children": [{"id": "child", "children": []}]}
+    for name, sample in [
+        ("Node", node),
+        ("Envelope", {"node": node}),
+        ("Response", {"result": "Ok", "node": node}),
+    ]:
+        schema = json.loads(
+            (output / f"references.data.{name}.schema.json").read_text()
+        )
+        Draft202012Validator.check_schema(schema)
+        Draft202012Validator(schema).validate(sample)
