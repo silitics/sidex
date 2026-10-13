@@ -574,7 +574,7 @@ const UUID_TABLE: &[&str] = &[
 const TIMESTAMP_TABLE: &[&str] = &[
     "1970-01-01T00:00:00Z",
     "2024-02-29T12:34:56.789Z",
-    "9999-12-31T23:59:59.999999999Z",
+    "9999-12-30T22:00:00.999999999Z",
 ];
 
 const DATE_TABLE: &[&str] = &["1970-01-01", "2024-02-29", "9999-12-31"];
@@ -662,4 +662,18 @@ fn json_f64(value: f64) -> Value {
     serde_json::Number::from_f64(value)
         .map(Value::Number)
         .unwrap_or(Value::Null)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TIMESTAMP_TABLE;
+
+    /// Timestamp samples fit the runtime's range and use its canonical spelling.
+    #[test]
+    fn timestamp_samples_roundtrip() {
+        for sample in TIMESTAMP_TABLE {
+            let timestamp: sidex::types::Timestamp = sample.parse().unwrap();
+            assert_eq!(timestamp.to_string(), *sample);
+        }
+    }
 }

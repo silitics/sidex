@@ -17,6 +17,7 @@ rand.workspace = true
 rand_chacha.workspace = true
 
 [dev-dependencies]
+sidex.workspace = true
 sidex-core.workspace = true
 
 [lints]

@@ -1398,6 +1398,7 @@ dependencies = [
  "rand",
  "rand_chacha",
  "serde_json",
+ "sidex",
  "sidex-attrs-json",
  "sidex-core",
  "sidex-diagnostics",
