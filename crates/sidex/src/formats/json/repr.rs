@@ -16,8 +16,8 @@ pub(super) const BASE64: GeneralPurpose = GeneralPurpose::new(
 
 /// Representation of `NaN`.
 pub(super) const NAN: &str = "NaN";
-/// Representation of positive infinity.
-pub(super) const INFINITY: &str = "Infinity";
+/// Representation of positive infinity, as Sidex 0.2 wrote it.
+pub(super) const INFINITY: &str = "+Infinity";
 /// Representation of negative infinity.
 pub(super) const NEG_INFINITY: &str = "-Infinity";
 
@@ -36,8 +36,7 @@ pub(super) fn non_finite(value: f64) -> &'static str {
 pub(super) fn parse_non_finite(text: &str) -> Option<f64> {
     match text {
         NAN => Some(f64::NAN),
-        // Sidex 0.2 wrote `+Infinity`.
-        INFINITY | "+Infinity" => Some(f64::INFINITY),
+        INFINITY | "Infinity" => Some(f64::INFINITY),
         NEG_INFINITY => Some(f64::NEG_INFINITY),
         _ => None,
     }

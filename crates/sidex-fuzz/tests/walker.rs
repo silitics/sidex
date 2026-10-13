@@ -56,7 +56,7 @@ fn is_float(value: &Value) -> bool {
     value.is_f64()
         || value.is_i64()
         || value.is_u64()
-        || matches!(value.as_str(), Some("NaN" | "Infinity" | "-Infinity"))
+        || matches!(value.as_str(), Some("NaN" | "+Infinity" | "-Infinity"))
 }
 
 #[test]
@@ -105,7 +105,10 @@ fn float_table_emits_nan_and_inf_as_strings() {
         }
     }
     assert!(seen.contains("NaN"), "expected NaN string, saw {seen:?}");
-    assert!(seen.contains("Infinity"), "expected Infinity, saw {seen:?}");
+    assert!(
+        seen.contains("+Infinity"),
+        "expected +Infinity, saw {seen:?}"
+    );
     assert!(
         seen.contains("-Infinity"),
         "expected -Infinity, saw {seen:?}"

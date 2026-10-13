@@ -117,7 +117,7 @@ for (const [name, helper] of [
     }
     for (const [number, text] of [
       [NaN, "NaN"],
-      [Infinity, "Infinity"],
+      [Infinity, "+Infinity"],
       [-Infinity, "-Infinity"],
     ] as const) {
       const encoded = helper.fromNumber(number)
@@ -126,9 +126,9 @@ for (const [name, helper] of [
       assert.equal(helper.toNumber(encoded), number)
       assert.equal(helper.is(number), false)
     }
-    const legacyInfinity = "+Infinity"
-    assert.ok(helper.is(legacyInfinity))
-    assert.equal(helper.toNumber(legacyInfinity), Infinity)
+    const unsignedInfinity = "Infinity"
+    assert.ok(helper.is(unsignedInfinity))
+    assert.equal(helper.toNumber(unsignedInfinity), Infinity)
     for (const value of [
       null,
       true,

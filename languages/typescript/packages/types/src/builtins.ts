@@ -5,7 +5,7 @@
  * Sidex implementation. 64-bit integers beyond `Number.MAX_SAFE_INTEGER` are
  * decimal strings, because JavaScript numbers cannot represent them exactly.
  * Non-finite floats are the strings
- * `"NaN"`, `"Infinity"`, and `"-Infinity"`, because JSON numbers cannot
+ * `"NaN"`, `"+Infinity"`, and `"-Infinity"`, because JSON numbers cannot
  * represent them. The companion objects convert between these representations
  * and JavaScript values.
  *
@@ -216,9 +216,10 @@ function bigInt<T extends number | string>(
 // ---- Floats ----------------------------------------------------------------
 
 /**
- * Representations of non-finite floats.
+ * Representations of non-finite floats. Writers use `"+Infinity"`, and
+ * readers also accept `"Infinity"`.
  */
-export type NonFinite = "NaN" | "Infinity" | "+Infinity" | "-Infinity"
+export type NonFinite = "NaN" | "+Infinity" | "Infinity" | "-Infinity"
 
 /**
  * A 32-bit float, represented as a number or, if it is not finite, as a string.
@@ -260,7 +261,7 @@ function float<T>(): Float<T> {
     fromNumber(value: number): T {
       if (Number.isFinite(value)) return value as T
       if (Number.isNaN(value)) return "NaN" as T
-      return (value > 0 ? "Infinity" : "-Infinity") as T
+      return (value > 0 ? "+Infinity" : "-Infinity") as T
     },
     toNumber(value: T): number {
       if (typeof value === "number") return value

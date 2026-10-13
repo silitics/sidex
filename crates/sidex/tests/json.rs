@@ -93,6 +93,15 @@ fn int64_safe_range() {
     assert_roundtrip(&(MAX_SAFE as u64 + 1), r#""9007199254740992""#);
 }
 
+/// Non-finite floats are strings, with positive infinity spelled as Sidex 0.2
+/// wrote it.
+#[test]
+fn non_finite_floats() {
+    assert_roundtrip(&f64::INFINITY, r#""+Infinity""#);
+    assert_roundtrip(&f64::NEG_INFINITY, r#""-Infinity""#);
+    assert!(json::to_value(&f64::NAN).unwrap() == parse(r#""NaN""#));
+}
+
 /// Decoding accepts the alternative inputs listed in the representation.
 #[test]
 fn lenient_inputs() {
@@ -101,7 +110,7 @@ fn lenient_inputs() {
             "signed": "-5",
             "unsigned": "5",
             "single": 1,
-            "double": "+Infinity",
+            "double": "Infinity",
             "bytes": "AAE",
             "uuid": "67E55044-10B1-426F-9247-BB680E5FE0C8",
             "timestamp": "2026-10-12T10:30:00+02:00"

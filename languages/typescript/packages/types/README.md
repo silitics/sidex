@@ -6,8 +6,8 @@ built-in types in their JSON representation.
 `I64` and `U64` use numbers up to a magnitude of `Number.MAX_SAFE_INTEGER`
 and decimal strings beyond it. Use `toBigInt` for exact arithmetic;
 `toNumber` rounds large values to the nearest JavaScript number.
-Float helpers encode non-finite values as strings and also read the legacy
-`"+Infinity"` spelling.
+Float helpers encode non-finite values as the strings `"NaN"`, `"+Infinity"`,
+and `"-Infinity"`, and also read `"Infinity"`.
 
 ```ts
 import { Bytes, U64, Uuid } from "@sidex/types"

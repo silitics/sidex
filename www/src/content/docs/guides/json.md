@@ -55,7 +55,7 @@ record Release {
 Readers also accept:
 
 - decimal strings for all `i64` and `u64` values
-- `"+Infinity"` for floats
+- `"Infinity"` for floats
 - Base64 without padding
 - uppercase UUIDs
 - timestamps with any offset
@@ -64,7 +64,7 @@ Readers reject other JSON types and values out of range. For instance, `1` is no
 
 JavaScript represents integers exactly only up to a magnitude of 2^53 − 1 (`Number.MAX_SAFE_INTEGER`). Larger `i64` and `u64` values are therefore decimal strings, such as `"9007199254740993"`, so they stay exact in every language. Typical values, such as sizes, counts, and timestamps in seconds, remain plain numbers.
 
-JSON has no non-finite numbers, so non-finite floats are the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
+JSON has no non-finite numbers, so non-finite floats are the strings `"NaN"`, `"+Infinity"`, and `"-Infinity"`.
 
 Timestamps retain up to nine fractional-second digits. Writers normalize them to UTC and remove trailing fractional zeroes. Python values read from JSON retain nanosecond precision; native Python `datetime` values have microsecond precision.
 

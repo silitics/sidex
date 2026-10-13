@@ -29,7 +29,7 @@
 //! | `bool` | boolean | |
 //! | `i8` to `i32`, `u8` to `u32`, `idx` | integer | |
 //! | `i64`, `u64` | integer, or decimal string beyond ±(2^53 − 1) | decimal string |
-//! | `f32`, `f64` | number, or `"NaN"`, `"Infinity"`, and `"-Infinity"` | integer, `"+Infinity"` |
+//! | `f32`, `f64` | number, or `"NaN"`, `"+Infinity"`, and `"-Infinity"` | integer, `"Infinity"` |
 //! | `string` | string | |
 //! | `bytes` | Base64 string with padding | missing padding |
 //! | `uuid` | hyphenated lowercase string | uppercase |

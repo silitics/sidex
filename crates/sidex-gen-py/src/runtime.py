@@ -4,7 +4,7 @@
 
 64-bit integers beyond a magnitude of 2**53 - 1 are decimal strings in JSON,
 because JavaScript cannot represent them exactly as numbers. Non-finite floats
-are the strings ``"NaN"``, ``"Infinity"``, and ``"-Infinity"``. Bytes are
+are the strings ``"NaN"``, ``"+Infinity"``, and ``"-Infinity"``. Bytes are
 Base64 strings with padding. Decoding also accepts decimal strings for all
 64-bit integers.
 """
@@ -48,15 +48,14 @@ def _float(value: object) -> float | str:
     if math.isnan(value):
         return "NaN"
     if math.isinf(value):
-        return "Infinity" if value > 0 else "-Infinity"
+        return "+Infinity" if value > 0 else "-Infinity"
     return value
 
 
-# Sidex 0.2 wrote `+Infinity`.
 _NON_FINITE = {
     "NaN": math.nan,
-    "Infinity": math.inf,
     "+Infinity": math.inf,
+    "Infinity": math.inf,
     "-Infinity": -math.inf,
 }
 
@@ -69,7 +68,7 @@ def _parse_float(value: object) -> object:
     if isinstance(value, str):
         if value not in _NON_FINITE:
             raise ValueError(
-                "expected a number or one of `NaN`, `Infinity`, and `-Infinity`"
+                "expected a number or one of `NaN`, `+Infinity`, and `-Infinity`"
             )
         return _NON_FINITE[value]
     return value

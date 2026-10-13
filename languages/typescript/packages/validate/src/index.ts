@@ -178,8 +178,8 @@ function reportOne(
  * Converts the JSON representation of a number into a comparable value.
  *
  * 64-bit integers beyond `Number.MAX_SAFE_INTEGER` are decimal strings and
- * become `bigint`s, so comparisons stay exact. Non-finite floats are the strings `"NaN"`, `"Infinity"`, and
- * `"-Infinity"`. Other values are returned unchanged.
+ * become `bigint`s, so comparisons stay exact. Non-finite floats are the strings `"NaN"`, `"+Infinity"`, and
+ * `"-Infinity"`, or `"Infinity"`. Other values are returned unchanged.
  */
 export function numeric(value: unknown): unknown {
   if (typeof value !== "string") return value

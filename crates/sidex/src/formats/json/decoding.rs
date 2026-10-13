@@ -120,7 +120,7 @@ impl<'v> JsonDecoder<'v> {
     }
 
     fn float(&self) -> Result<f64, DecodeError> {
-        const EXPECTED: &str = "a number or one of `NaN`, `Infinity`, and `-Infinity`";
+        const EXPECTED: &str = "a number or one of `NaN`, `+Infinity`, and `-Infinity`";
         match self.item {
             Item::Value(JsonValue::Float(value)) => Ok(*value),
             // Precision loss is inherent to floats.

@@ -505,7 +505,7 @@ const FLOAT_F32_FINITE_TABLE: &[f32] = &[
 ];
 
 /// Float values that aren't valid JSON numbers, represented as strings.
-const FLOAT_SPECIAL_TABLE: &[&str] = &["NaN", "Infinity", "-Infinity"];
+const FLOAT_SPECIAL_TABLE: &[&str] = &["NaN", "+Infinity", "-Infinity"];
 
 /// Base64 representations of byte sequences.
 const BYTES_TABLE: &[&str] = &["", "AA==", "AQID", "/w==", "aGVsbG8="];
