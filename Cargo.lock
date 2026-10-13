@@ -1363,6 +1363,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sidex",
+ "sidex-attrs-json",
  "sidex-diagnostics",
  "sidex-ir",
  "sidex-syntax",

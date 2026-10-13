@@ -935,6 +935,7 @@ impl Transformer {
                                                     ir::Ident::new(field.name.as_str().to_owned()),
                                                     resolver.resolve_type_expr(ast_def, &field.typ),
                                                 )
+                                                .with_span(Some(field.name.span().clone()))
                                                 .with_docs(docs_or_none(&field.docs.to_string()))
                                                 .with_attrs(transform_attrs(&field.attrs))
                                                 .with_is_optional(field.is_optional)
@@ -986,6 +987,7 @@ impl Transformer {
         // Phase 5: discover plugin attribute schemas and parse typed attrs.
         let registry = crate::attrs_meta::PluginRegistry::build(&ir);
         crate::attrs_parser::populate_typed_attrs(&mut ir, &registry);
+        sidex_attrs_json::check(&ir);
 
         ir
     }
@@ -1044,6 +1046,55 @@ mod tests {
             errors("import ::core::builtins::uuid::*\n"),
             ["Definitions have no members to import with `*`."]
         );
+    }
+
+    /// JSON inline fields reject nonrecords before any generator runs.
+    #[test]
+    fn rejects_nonrecord_json_inline_fields() {
+        for typ in [
+            "string",
+            "json",
+            "[string]",
+            "[string: json]",
+            "Choice",
+            "Native",
+            "Alias<string>",
+            "Wrapped<Alias<string>>",
+            "T",
+        ] {
+            let source = format!(
+                "alias Alias<T>: T\nwrapper Wrapped<T>: T\n\
+                 variant Choice {{ Case: string }}\nopaque Native\n\
+                 record Envelope<T> {{ #[json(inline)] payload: {typ} }}\n"
+            );
+            assert_eq!(
+                errors(&source),
+                ["`#[json(inline)]` requires a record type, or an alias or wrapper of a record."],
+                "{typ}"
+            );
+        }
+    }
+
+    /// Inline fields accept records through aliases and wrappers with substituted
+    /// arguments.
+    #[test]
+    fn accepts_record_json_inline_fields() {
+        let source = r#"
+            record Payload<T> { value: T }
+            alias Alias<T>: T
+            wrapper Wrapped<T>: T
+            record Envelope<T> {
+                #[json(inline)]
+                direct: Payload<T>,
+                #[json(inline)]
+                aliased: Alias<Payload<string>>,
+                #[json(inline)]
+                wrapped: Wrapped<Alias<Wrapped<Payload<T>>>>,
+                #[json(inline)]
+                optional?: Payload<T>,
+            }
+        "#;
+        assert_eq!(errors(source), Vec::<String>::new());
     }
 
     #[test]

@@ -12,7 +12,7 @@ Attributes precede the element they annotate. Use `#[...]` for definitions, fiel
 | ------------ | ---------------------------------------------------------------------- | -------------------------------------------------------- |
 | Opaque type  | `type = "..."`, `schema = "..."`                                       | JSON shape and optional JSON Schema reference            |
 | Record       | `rename_all = "..."`                                                   | Default field naming                                     |
-| Field        | `name = "..."`, `rename = "..."`, `inline`                             | Explicit name, naming convention, or flattening metadata |
+| Field        | `name = "..."`, `rename = "..."`, `inline`                             | Explicit name, naming convention, or inlined record      |
 | Variant      | `rename_all = "..."`, `tagged = ...`, `tag = "..."`, `content = "..."` | Case naming and tagging                                  |
 | Variant case | `name = "..."`, `rename = "..."`, `content = "..."`                    | Case name and content field override                     |
 
@@ -22,7 +22,7 @@ Naming conventions are `none`, `lowercase`, `UPPERCASE`, `camelCase`, `PascalCas
 
 Tagging values are unquoted paths: `internally`, `adjacently`, `externally`, and `implicitly`. Defaults are internal tagging, `tag` for the tag key, `content` for the payload key, camelCase record fields, and unchanged case names.
 
-The parser accepts `inline` metadata, but flattening support is not uniform across current backends. Prefer an explicit record structure when sharing models between languages. See [JSON mapping](/sidex/docs/guides/json/) for supported tagging examples.
+An `inline` field merges the entries of its record into the surrounding object. Its type must be a record or resolve to one through aliases and wrappers. See [JSON mapping](/sidex/docs/guides/json/) for examples.
 
 ## Rust
 

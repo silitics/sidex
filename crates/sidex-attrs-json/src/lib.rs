@@ -5,8 +5,10 @@
 //! IR's `typed_attrs["json"]` map and adapted into the higher-level wrapper
 //! types in this module — the wrappers parse string-shaped fields (e.g.
 //! `rename_all = "PascalCase"`) into the [`RenameFunction`] / [`JsonUnionType`]
-//! / [`JsonTaggedAttr`] enums codegens want to consume.
+//! / [`JsonTaggedAttr`] enums codegens want to consume. [`check`] validates
+//! JSON field types after typed attributes and type references are resolved.
 
+mod check;
 mod generated;
 
 use std::collections::HashMap;
@@ -19,6 +21,7 @@ use sidex_ir as ir;
 
 pub mod types;
 
+pub use check::check;
 pub use generated::attrs as raw;
 
 use crate::types::JsonUnionType;
