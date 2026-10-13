@@ -94,6 +94,8 @@ pub use self::text::from_slice;
 #[cfg(feature = "json")]
 pub use self::text::from_str;
 #[cfg(feature = "json")]
+pub use self::text::from_str_strict;
+#[cfg(feature = "json")]
 pub use self::text::to_string;
 #[cfg(feature = "json")]
 pub use self::text::to_string_pretty;

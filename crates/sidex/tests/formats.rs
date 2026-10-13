@@ -20,6 +20,16 @@ fn json_text() {
     assert!(json::from_str::<Device>("{").is_err());
 }
 
+/// Strict JSON reading rejects unknown fields.
+#[test]
+fn json_strict() {
+    let text = r#"{"id":"1","color":"red"}"#;
+    assert!(json::from_str::<Device>(text).is_ok());
+    let error = json::from_str_strict::<Device>(text).unwrap_err();
+    assert!(error.is_unknown_field());
+    assert_eq!(error.path().to_string(), "color");
+}
+
 /// TOML text follows the JSON representation and round-trips.
 #[test]
 fn toml_text() {
