@@ -124,6 +124,16 @@ if (data.Task.is(input)) {
 assert(data.Page.is({ items: [input] }, data.Task), "generic is")
 assert(data.Page.check({ items: [input] }, data.Task).isOk(), "generic check")
 
+// @ts-expect-error A wrapper requires its path's brand.
+const unbranded: data.Id = 42
+assert(unbranded === 42, "brands leave runtime values unchanged")
+const identifier: unknown = 42
+if (data.Id.is(identifier)) {
+  // @ts-expect-error Different paths remain distinct with the same representation.
+  const other: data.OtherId = identifier
+  assert(other === 42, "nominal checks do not convert values")
+}
+
 const genericValue: unknown = { value: input, "display-name": "" }
 if (data.Validated.is(genericValue, data.Task)) {
   assert(data.Validated.validate(genericValue).isErr(), "generic rule methods")

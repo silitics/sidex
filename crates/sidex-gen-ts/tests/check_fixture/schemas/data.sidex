@@ -30,6 +30,9 @@ record Scalars {
 
 record Empty {}
 wrapper Id: u64
+wrapper OtherId: u64
+alias Instant: timestamp
+alias Day: date
 alias Ids: [Id]
 record Page<T> { items: [T], next?: Page<T> }
 alias Tasks: Page<Task>
