@@ -1265,7 +1265,12 @@ fn sanitize_py_name(name: &str) -> String {
 }
 
 fn escape_docstring(s: &str) -> String {
-    s.replace('\\', "\\\\").replace("\"\"\"", "\\\"\\\"\\\"")
+    let escaped = s.replace('\\', "\\\\").replace("\"\"\"", "\\\"\\\"\\\"");
+    // A quote right before the closing quotes would end the docstring early.
+    match escaped.strip_suffix('"') {
+        Some(rest) => format!("{rest}\\\""),
+        None => escaped,
+    }
 }
 
 fn escape_string_literal(s: &str) -> String {
@@ -1360,5 +1365,22 @@ fn optional_block(code: Code) -> Vec<Code> {
         Vec::new()
     } else {
         vec![code]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Docstrings keep backslashes, triple quotes, and a final quote inside
+    /// the docstring.
+    #[test]
+    fn docstring_escaping() {
+        assert_eq!(escape_docstring(r#"a \ b"#), r#"a \\ b"#);
+        assert_eq!(escape_docstring(r#"a """ b"#), r#"a \"\"\" b"#);
+        assert_eq!(
+            escape_docstring(r#"the signal "no replica.""#),
+            r#"the signal "no replica.\""#
+        );
     }
 }
