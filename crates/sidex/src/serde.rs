@@ -276,24 +276,96 @@ impl<T> Shaped for Serde<T> {
 
 impl<T: Serialize> Encode for Serde<T> {
     fn encode(&self) -> View<'_> {
-        let value = serde_json::to_value(&self.0)
-            .and_then(DeserializeValue::deserialize)
-            .unwrap_or_else(|error| panic!("cannot serialize value as JSON: {error}"));
-        View::Value(Cow::Owned(value.0))
+        encode_serde(&self.0)
     }
 }
 
 impl<T: DeserializeOwned> Decode for Serde<T> {
     fn decode(decoder: &mut dyn Decoder) -> Result<Self, DecodeError> {
-        let value = decoder.value()?;
-        let value = bridge::encode(&value, |view: &SerializeView<'_>| {
-            serde_json::to_value(view)
-        })
-        .map_err(DecodeError::new)?;
-        serde_json::from_value(value)
-            .map(Self)
-            .map_err(DecodeError::new)
+        decode_serde(decoder).map(Self)
     }
+}
+
+/// Implements [`Shaped`], [`Encode`], and [`Decode`] for a Serde type.
+///
+/// Like with [`Serde`], values are represented as Serde serializes them with
+/// [`serde_json`](https://docs.rs/serde_json), and the shape is opaque, with
+/// a path made of the module path and the name of the type. Use this for the
+/// Rust types of opaque types, so that their values need no wrapper.
+///
+/// ```
+/// use serde::Deserialize;
+/// use serde::Serialize;
+///
+/// /// Reading of a sensor, either a number or a fault description.
+/// #[derive(Debug, PartialEq, Serialize, Deserialize)]
+/// #[serde(untagged)]
+/// enum Reading {
+///     Value(f64),
+///     Fault(String),
+/// }
+///
+/// sidex::serde::impl_opaque!(Reading);
+///
+/// let text = sidex::formats::json::to_string(&Reading::Value(1.5)).unwrap();
+/// assert_eq!(text, "1.5");
+/// let reading: Reading = sidex::formats::json::from_str(r#""overheated""#).unwrap();
+/// assert_eq!(reading, Reading::Fault("overheated".to_owned()));
+/// ```
+///
+/// # Panics
+///
+/// Encoding panics if a value cannot be serialized as JSON, for instance,
+/// because a map has non-string keys.
+#[doc(inline)]
+pub use crate::__impl_serde_opaque as impl_opaque;
+
+/// Implementation of [`impl_opaque`].
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_serde_opaque {
+    ($ty:ty) => {
+        impl $crate::Shaped for $ty {
+            const SHAPE: &'static $crate::Shape = &$crate::Shape::new(
+                ::std::concat!("::", ::std::module_path!(), "::", ::std::stringify!($ty)),
+                $crate::shape::ShapeKind::Opaque($crate::shape::OpaqueShape::new()),
+            );
+        }
+
+        impl $crate::Encode for $ty {
+            fn encode(&self) -> $crate::View<'_> {
+                $crate::serde::encode_serde(self)
+            }
+        }
+
+        impl $crate::Decode for $ty {
+            fn decode(
+                decoder: &mut dyn $crate::Decoder,
+            ) -> ::std::result::Result<Self, $crate::DecodeError> {
+                $crate::serde::decode_serde(decoder)
+            }
+        }
+    };
+}
+
+/// Encodes a Serde value as Serde serializes it with `serde_json`.
+#[doc(hidden)]
+pub fn encode_serde<T: Serialize + ?Sized>(value: &T) -> View<'static> {
+    let value = serde_json::to_value(value)
+        .and_then(DeserializeValue::deserialize)
+        .unwrap_or_else(|error| panic!("cannot serialize value as JSON: {error}"));
+    View::Value(Cow::Owned(value.0))
+}
+
+/// Decodes a Serde value from its `serde_json` representation.
+#[doc(hidden)]
+pub fn decode_serde<T: DeserializeOwned>(decoder: &mut dyn Decoder) -> Result<T, DecodeError> {
+    let value = decoder.value()?;
+    let value = bridge::encode(&value, |view: &SerializeView<'_>| {
+        serde_json::to_value(view)
+    })
+    .map_err(DecodeError::new)?;
+    serde_json::from_value(value).map_err(DecodeError::new)
 }
 
 impl<T: Serialize> Serialize for Serde<T> {
