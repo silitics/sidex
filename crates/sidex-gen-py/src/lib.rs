@@ -532,7 +532,7 @@ fn generate_record(ctx: &SchemaCtx, def: &ir::Def, rec: &ir::RecordTypeDef) -> R
     let fields: Vec<Code> = rec
         .fields
         .iter()
-        .map(|f| generate_record_field(ctx, def, f, &ty_json))
+        .map(|f| generate_record_field(ctx, def, f, &ty_json, false))
         .collect::<Result<Vec<_>>>()?;
 
     // Empty body needs a `pass` only when there's no docstring AND no fields,
@@ -556,9 +556,10 @@ fn generate_record_field(
     def: &ir::Def,
     field: &ir::Field,
     ty_json: &JsonRecordTypeAttrs,
+    variant_case: bool,
 ) -> Result<Code> {
     let json_attrs = json_field_attrs(field)?;
-    let py_name = sanitize_py_name(&to_snake_case(field.name.as_str()));
+    let py_name = record_field_name(field, variant_case);
     let json_name = ty_json.field_name(field, &json_attrs);
     let field_type = ctx.resolve_type(def, &field.typ);
     let needs_alias = py_name != json_name;
@@ -595,12 +596,27 @@ fn generate_record_field(
     } else {
         field_type
     };
+    let field_factory = if json_attrs.inline {
+        "_sidex.inline"
+    } else {
+        "pydantic.Field"
+    };
 
-    if field_args.is_empty() {
+    if field_args.is_empty() && !json_attrs.inline {
         Ok(quote!("@py_name: @type_str"))
     } else {
         let args = field_args.join(", ");
-        Ok(quote!("@py_name: @type_str = pydantic.Field(@args)"))
+        Ok(quote!("@py_name: @type_str = @field_factory(@args)"))
+    }
+}
+
+/// Keeps the case's payload accessor available when a record has a payload field.
+fn record_field_name(field: &ir::Field, variant_case: bool) -> String {
+    let name = sanitize_py_name(&to_snake_case(field.name.as_str()));
+    if variant_case && name == "payload" {
+        "payload_".to_owned()
+    } else {
+        name
     }
 }
 
@@ -790,9 +806,18 @@ fn generate_internally_tagged_variant(
             let inlined_fields: Vec<Code> = target_record
                 .fields
                 .iter()
-                .map(|f| generate_record_field(ctx, target_def, f, &target_ty_json))
+                .map(|f| {
+                    let mut field = f.clone();
+                    field.typ = ctx
+                        .bundle_ctx
+                        .unit
+                        .apply_subst(&f.typ, &resolved_inst.subst);
+                    generate_record_field(ctx, def, &field, &target_ty_json, true)
+                })
                 .collect::<Result<Vec<_>>>()?;
-            let payload_method = inlined_payload_method(ctx, target_def_ref, target_record);
+            let payload_type = ctx.resolve_type(def, &resolved);
+            let payload_method =
+                inlined_payload_method(ctx, target_def_ref, target_record, &payload_type);
             Ok(quote!(
                 r#"
 
@@ -913,74 +938,44 @@ fn content_field_line(py_name: &str, json_name: &str, type_expr: &str, needs_ali
     }
 }
 
-/// Translation method for an inlined flat-record variant case. Emits a
-/// `payload(self) -> "Base"` returning a freshly constructed instance of the
-/// base record. The kwargs use the Python field names on both sides
-/// (`field=self.field`); pydantic accepts the Python attribute name
-/// regardless of any JSON alias.
-///
-/// Cross-schema references go through a method-local `from . import` so the
-/// translation works even when the variant module is imported standalone
-/// (i.e., before the bundle's `__init__.py` has wired up the
-/// `_schema_<name>` aliases).
+/// Constructs the original record from a flattened variant case, preserving
+/// its type arguments and translating field names that collide with payload().
+/// Cross-schema imports also support standalone imports of the variant module.
 fn inlined_payload_method(
     ctx: &SchemaCtx,
     target_def_ref: ir::DefRef,
     target_record: &ir::RecordTypeDef,
+    payload_type: &str,
 ) -> Code {
-    let unit = ctx.bundle_ctx.unit;
-    let bundle = &unit[target_def_ref.bundle];
-    let schema = &unit[target_def_ref.schema];
-    let target_def = &unit[target_def_ref];
-    let class_name = target_def.name.as_str();
-
     let kwargs = target_record
         .fields
         .iter()
         .map(|f| {
-            let py = sanitize_py_name(&to_snake_case(f.name.as_str()));
-            format!("{py}=self.{py}")
+            let py = record_field_name(f, false);
+            let member = record_field_name(f, true);
+            format!("{py}=self.{member}")
         })
         .collect::<Vec<_>>()
         .join(", ");
 
-    let same_bundle = target_def_ref.bundle == ctx.bundle_ctx.bundle_idx;
-    let same_schema = same_bundle && target_def_ref.schema == ctx.schema_idx;
-
-    if same_schema {
-        quote!(
-            r#"
-            def payload(self) -> "@class_name":
-                return @class_name(@kwargs)
-            "#
-        )
-    } else if same_bundle {
+    let import = if target_def_ref.bundle == ctx.bundle_ctx.bundle_idx
+        && target_def_ref.schema != ctx.schema_idx
+    {
+        let schema = &ctx.bundle_ctx.unit[target_def_ref.schema];
         let module = sanitize_py_name(schema.name.as_str());
         let alias = format!("_schema_{}", schema.name);
-        quote!(
-            r#"
-            def payload(self) -> "@alias.@class_name":
-                from . import @module as @alias
-                return @alias.@class_name(@kwargs)
-            "#
-        )
+        vec![quote!("from . import @module as @alias")]
     } else {
-        let ext = ctx
-            .bundle_ctx
-            .cfg
-            .external
-            .get(&bundle.metadata.name)
-            .cloned()
-            .unwrap_or_else(|| bundle.metadata.name.clone());
-        let module_schema = sanitize_py_name(schema.name.as_str());
-        let qualified = format!("{ext}.{module_schema}.{class_name}");
-        quote!(
-            r#"
-            def payload(self) -> "@qualified":
-                return @qualified(@kwargs)
-            "#
-        )
-    }
+        Vec::new()
+    };
+
+    quote!(
+        r#"
+        def payload(self) -> "@payload_type":
+            @(@import)*
+            return @payload_type(@kwargs)
+        "#
+    )
 }
 
 /// Translation method for a variant case whose payload is held in a single

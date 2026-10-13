@@ -39,6 +39,27 @@ Booleans and integers require their JSON types, and integers must fit the declar
 
 Python models use Python field identifiers. JSON aliases follow Sidex's naming rules, which default to camelCase. Do not assume that Python's field name is also the wire key.
 
+## Inline Fields
+
+An `#[json(inline)]` field holds a record, directly or through aliases and wrappers. Its nested Python model shares its JSON object with the enclosing record:
+
+```sidex
+record Payload { value: string, note?: string }
+record Envelope { #[json(inline)] payload: Payload }
+```
+
+With these definitions in `messages.sidex`:
+
+```python
+from task_models.messages import Envelope
+
+envelope = Envelope.model_validate_json('{"value":"x"}')
+assert envelope.payload.value == "x"
+assert envelope.model_dump_json(by_alias=True) == '{"value":"x"}'
+```
+
+Nested inline records, aliases, and wrappers of records use the same representation. Absent optional payload fields are omitted. Optional inline fields also read the surrounding object, so required fields of their payload must be present. Unknown fields are ignored by default.
+
 ## Variants and Wrappers
 
 Use Pydantic's `TypeAdapter` for a generated variant type:
@@ -68,7 +89,7 @@ The adapter applies the wire representation specified by the schema. For wrapper
 
 Generated cases with a payload provide a `payload()` method. For an internally
 tagged record case, the fields are inlined in the case model. `payload()`
-constructs a fresh instance of the original record:
+constructs a fresh instance of the original record. A record field named `payload` becomes `payload_` in a case model to keep the method available:
 
 ```sidex
 record Point {

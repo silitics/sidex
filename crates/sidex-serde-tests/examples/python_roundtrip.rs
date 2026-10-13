@@ -7,6 +7,7 @@ use sidex::Decode;
 use sidex::Encode;
 use sidex::formats::json;
 use sidex::types::JsonValue;
+use sidex_serde_tests::generated::inline;
 use sidex_serde_tests::generated::serialization;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -21,6 +22,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         "Adjacent" => roundtrip::<serialization::Adjacent>(&text)?,
         "External" => roundtrip::<serialization::External>(&text)?,
         "Implicit" => roundtrip::<serialization::Implicit>(&text)?,
+        "InlineEnvelope" => roundtrip::<inline::Envelope>(&text)?,
+        "InlineNested" => roundtrip::<inline::Nested>(&text)?,
+        "InlineOptional" => roundtrip::<inline::Optional>(&text)?,
+        "InlineOptionalEmpty" => roundtrip::<inline::OptionalEmpty>(&text)?,
+        "InlineWrapped" => roundtrip::<inline::WrappedEnvelope>(&text)?,
+        "InlineGeneric" => roundtrip::<inline::InlineRecord<inline::Payload>>(&text)?,
+        "InlineGenericWrapped" => roundtrip::<inline::InlineRecord<inline::PayloadAlias>>(&text)?,
+        "InlineGenericCase" => roundtrip::<inline::GenericCase<inline::Payload>>(&text)?,
+        "InlineCrossSchema" => roundtrip::<inline::CrossSchema>(&text)?,
+        "InlineCollision" => roundtrip::<inline::Collision>(&text)?,
+        "InlineInternal" => roundtrip::<inline::Internal>(&text)?,
+        "InlineAdjacent" => roundtrip::<inline::Adjacent>(&text)?,
+        "InlineExternal" => roundtrip::<inline::External>(&text)?,
+        "InlineImplicit" => roundtrip::<inline::Implicit>(&text)?,
         _ => return Err(format!("unknown fixture type `{typ}`").into()),
     };
     println!("{encoded}");

@@ -1,7 +1,6 @@
 """Check optional-field omission and null preservation through Python and Rust."""
 
 import json
-import subprocess
 from pathlib import Path
 
 import pydantic
@@ -20,34 +19,6 @@ PAYLOAD = {
 def models(generate):
     """Generate the shared serialization fixture with deferred model building."""
     return generate(REPO_ROOT / "tests/json", "optional_serialization").serialization
-
-
-@pytest.fixture(scope="module")
-def rust_roundtrip():
-    """Read Python's output with generated Rust types and encode it again."""
-    subprocess.run(
-        [
-            "cargo",
-            "build",
-            "-p",
-            "sidex-serde-tests",
-            "--example",
-            "python_roundtrip",
-            "--locked",
-        ],
-        cwd=REPO_ROOT,
-        check=True,
-        capture_output=True,
-    )
-    binary = REPO_ROOT / "target/debug/examples/python_roundtrip"
-
-    def run(typ, text):
-        result = subprocess.run(
-            [str(binary), typ], input=text, text=True, check=True, capture_output=True
-        )
-        return json.loads(result.stdout)
-
-    return run
 
 
 def _assert_serialization(model, adapter, expected, rust_roundtrip, typ):
