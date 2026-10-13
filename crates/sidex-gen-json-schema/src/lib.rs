@@ -437,7 +437,20 @@ impl<'cx> JsonSchemaCtx<'cx> {
             // let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
             if let Some(typ) = &variant.typ {
                 let content_field = json_type_attrs.content_field_name(&json_variant_attrs);
-                let type_schema = self.resolve(typ)?;
+                let mut type_schema = self.resolve(typ)?;
+                if type_schema.inline_schema.is_none() {
+                    // The payload is still being resolved because the types are recursive.
+                    let unit = self.unit;
+                    type_schema.inline_schema = Some(match unit.type_def(typ) {
+                        Some(
+                            def @ ir::Def {
+                                kind: ir::DefKind::RecordType(record),
+                                ..
+                            },
+                        ) => self.record_type_schema(def, record)?.1,
+                        _ => type_schema.use_schema.clone(),
+                    });
+                }
                 let may_inline =
                     json_variant_attrs.content.is_none() && self.unit.record_type(typ).is_some();
                 // idl_variant.set_type_ref(Some(type_schema.name.clone()));

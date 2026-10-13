@@ -146,3 +146,23 @@ fn tagged_variants() {
         serde_json::json!(["tag", "content"])
     );
 }
+
+/// Recursive records are inlined into internally and implicitly tagged variants.
+#[test]
+fn recursive_variants() {
+    let defs = generate();
+    let section = &defs["json_schema_fixture.types.Block"]["oneOf"][0];
+    assert_eq!(
+        section["required"],
+        serde_json::json!(["tag", "title", "blocks"])
+    );
+    assert_eq!(
+        section["properties"]["blocks"]["items"]["$ref"],
+        "#/components/schemas/json_schema_fixture.types.Block"
+    );
+    let branch = &defs["json_schema_fixture.types.Tree"]["anyOf"][1];
+    assert_eq!(
+        branch["properties"]["children"]["items"]["$ref"],
+        "#/components/schemas/json_schema_fixture.types.Tree"
+    );
+}
