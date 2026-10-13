@@ -137,6 +137,7 @@ pub trait Decoder {
 pub struct DecodeError {
     path: Path,
     message: String,
+    unknown_field: bool,
 }
 
 impl DecodeError {
@@ -145,12 +146,34 @@ impl DecodeError {
         Self {
             path: Path::default(),
             message: message.to_string(),
+            unknown_field: false,
         }
     }
 
     /// Creates an error for an item of the wrong kind.
     pub fn unexpected(found: &str, expected: &str) -> Self {
         Self::new(format_args!("expected {expected}, found {found}"))
+    }
+
+    /// Creates an error for a field that the record does not define.
+    ///
+    /// The error's path points to the field.
+    pub fn unknown_field(key: &str) -> Self {
+        Self {
+            unknown_field: true,
+            ..Self::new(format_args!("unknown field `{key}`"))
+        }
+        .within(PathSegment::Key(key.into()))
+    }
+
+    /// Indicates whether the error rejects a field unknown to a record.
+    ///
+    /// Other messages may quote offending input. The path and message of an
+    /// unknown field error only contain keys and indices, so applications can
+    /// show them without revealing values, such as secrets in configuration
+    /// files.
+    pub fn is_unknown_field(&self) -> bool {
+        self.unknown_field
     }
 
     /// Prepends a segment to the error's path.

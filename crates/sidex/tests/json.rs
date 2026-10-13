@@ -169,6 +169,10 @@ fn strict_decoding() {
         json::from_value_strict::<Fleet>(&parse(r#"{"devices":[{"id":"1","color":"red"}]}"#))
             .unwrap_err();
     assert_eq!(error.to_string(), "devices[0].color: unknown field `color`");
+    assert!(error.is_unknown_field());
+    let error =
+        json::from_value_strict::<Fleet>(&parse(r#"{"devices":[{"id":"x"}]}"#)).unwrap_err();
+    assert!(!error.is_unknown_field());
 
     json::from_value_strict::<Located>(&parse(r#"{"name":"home","x":1,"y":2}"#)).unwrap();
     let error = json::from_value_strict::<Located>(&parse(r#"{"name":"home","x":1,"y":2,"z":3}"#))

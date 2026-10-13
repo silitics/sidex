@@ -440,8 +440,7 @@ fn reject_unknown_fields(
     }
     for key in entries.keys() {
         if Some(key.as_str()) != claimed && !known.contains(&key.as_str()) {
-            return Err(DecodeError::new(format_args!("unknown field `{key}`"))
-                .within(PathSegment::Key(key.clone())));
+            return Err(DecodeError::unknown_field(key));
         }
     }
     Ok(())
