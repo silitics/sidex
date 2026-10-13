@@ -95,7 +95,7 @@ record User {
 { "displayName": "Ada" }
 ```
 
-An absent optional field is omitted. Its underlying type does not automatically include `null`. Readers treat `null` for an optional field as absent, also if `null` is a value of the field's type, because many languages cannot tell an absent value from `null`. Generated TypeScript `is` and `check` methods follow these reader rules. Unknown record fields are accepted so older readers can consume data with added fields. Use JSON Schema when a boundary requires a different policy.
+An absent optional field is omitted. Its underlying type does not automatically include `null`. Rust and Python readers treat `null` for an optional field as absent, also if `null` is a value of the field's type, because many languages cannot tell an absent value from `null`. Generated TypeScript types define the canonical data model: `is` and `check` reject a present `null` unless the field's type admits it. Unknown record fields are accepted so older readers can consume data with added fields. Use JSON Schema when a boundary requires a different policy.
 
 Change names at the record or field level:
 

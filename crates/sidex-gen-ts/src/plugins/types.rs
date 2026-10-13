@@ -85,12 +85,7 @@ impl Plugin for Types {
                         field_jsdocs.push(Code::from(render_jsdoc(field_docs, &stability)));
                         field_names.push(Code::from(ts_string_literal(&field_name)));
                         field_opts.push(Code::from(if field.is_optional { "?" } else { "" }));
-                        let field_type = ctx.resolve_type(def, &field.typ);
-                        field_types.push(if field.is_optional {
-                            TypeExpr::union([field_type, TypeExpr::null()]).0
-                        } else {
-                            field_type.0
-                        });
+                        field_types.push(ctx.resolve_type(def, &field.typ).0);
                     }
                     let own = TypeExpr(quote!(
                         "{ @(@field_jsdocs@field_names@field_opts: @field_types), + }"

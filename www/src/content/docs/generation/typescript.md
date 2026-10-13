@@ -48,7 +48,7 @@ for (const error of report.errors) {
 }
 ```
 
-Checks accept what the Rust reader accepts. They enforce built-in ranges and formats, field names, and variant tags. Unknown record fields are ignored, so older clients accept data with added fields. `null` in an optional field counts as absent, so optional properties include `null` in their TypeScript type. Checks do not convert or copy values.
+Generated TypeScript types define the canonical data model. Checks enforce built-in ranges and formats, field names, and variant tags. Unknown record fields are ignored, so older clients accept data with added fields. Optional fields are generated as `field?: T`; a present `null` is rejected unless `T` itself admits `null`, such as `json` or a nullable opaque type. Rust and Python readers may accept `null` as absent when decoding. Checks do not convert or copy values.
 
 Each error has a `path` with wire names, such as `items[2].title`, a `code`, and a `message`. The codes are `type`, `missing`, `case`, and `key`. The `segments` of an error distinguish a key containing a dot from nested keys.
 
@@ -96,7 +96,7 @@ wrapper TaskId: string
 wrapper UserId: string
 ```
 
-This prevents assigning a `TaskId` where a `UserId` is expected. A brand supplies type safety; it does not change the JSON value or validate it at runtime.
+This prevents assigning a `TaskId` where a `UserId` is expected. A brand supplies type safety; it does not change the JSON value or validate it at runtime. Nullable opaque types retain `null` even when their other values carry a brand.
 
 Built-in numeric types also use brands in `@sidex/types`. Like their JSON representation, `I64` and `U64` are numbers or, beyond `Number.MAX_SAFE_INTEGER`, decimal strings, so all values stay exact. Convert them explicitly:
 

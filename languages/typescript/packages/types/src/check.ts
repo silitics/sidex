@@ -161,7 +161,7 @@ export function record(
       return fail(report, path, "type", "Expected an object.")
     for (const [name, check, optional] of fields) {
       const present = hasOwn(value, name)
-      if (optional && (!present || value[name] === null)) continue
+      if (optional && !present) continue
       if (!present)
         fail(report, path.key(name), "missing", `Missing field '${name}'.`)
       else check(value[name], path.key(name), report, false)

@@ -48,49 +48,49 @@ export const Bool = {
  */
 export type I8 = Nominal<number, "::core::builtins::i8">
 
-export const I8 = smallInt<I8>(-128, 127)
+export const I8: SmallInt<I8> = smallInt<I8>(-128, 127)
 
 /**
  * A 16-bit signed integer.
  */
 export type I16 = Nominal<number, "::core::builtins::i16">
 
-export const I16 = smallInt<I16>(-32_768, 32_767)
+export const I16: SmallInt<I16> = smallInt<I16>(-32_768, 32_767)
 
 /**
  * A 32-bit signed integer.
  */
 export type I32 = Nominal<number, "::core::builtins::i32">
 
-export const I32 = smallInt<I32>(-2_147_483_648, 2_147_483_647)
+export const I32: SmallInt<I32> = smallInt<I32>(-2_147_483_648, 2_147_483_647)
 
 /**
  * An 8-bit unsigned integer.
  */
 export type U8 = Nominal<number, "::core::builtins::u8">
 
-export const U8 = smallInt<U8>(0, 255)
+export const U8: SmallInt<U8> = smallInt<U8>(0, 255)
 
 /**
  * A 16-bit unsigned integer.
  */
 export type U16 = Nominal<number, "::core::builtins::u16">
 
-export const U16 = smallInt<U16>(0, 65_535)
+export const U16: SmallInt<U16> = smallInt<U16>(0, 65_535)
 
 /**
  * A 32-bit unsigned integer.
  */
 export type U32 = Nominal<number, "::core::builtins::u32">
 
-export const U32 = smallInt<U32>(0, 4_294_967_295)
+export const U32: SmallInt<U32> = smallInt<U32>(0, 4_294_967_295)
 
 /**
  * An index into a sequence on a 64-bit target. Numbers beyond 2^53 lose precision.
  */
 export type Idx = Nominal<number, "::core::builtins::idx">
 
-export const Idx = smallInt<Idx>(0, 18_446_744_073_709_549_568)
+export const Idx: SmallInt<Idx> = smallInt<Idx>(0, 18_446_744_073_709_549_568)
 
 /**
  * Operations of an integer type represented as a JavaScript number.

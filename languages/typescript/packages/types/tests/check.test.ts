@@ -17,7 +17,7 @@ import {
 } from "../dist/index.js"
 
 // Checks siblings and all map/sequence entries while preserving wire paths.
-test("structural reports collect every error, ignore unknowns, and accept optional null", () => {
+test("structural reports collect every error and ignore unknown fields", () => {
   const task = checker(() =>
     record([
       ["name", builtin("string"), false],
@@ -26,7 +26,7 @@ test("structural reports collect every error, ignore unknowns, and accept option
       ["map", map(builtin("i8"), builtin("bool")), false],
     ]),
   )
-  assert.ok(task.is({ name: "a", note: null, numbers: [], map: {}, extra: 1 }))
+  assert.ok(task.is({ name: "a", numbers: [], map: {}, extra: 1 }))
   const report = task.check({
     name: 1,
     numbers: [256, -1],
@@ -50,6 +50,42 @@ test("structural reports collect every error, ignore unknowns, and accept option
     { kind: "key", key: "a.b" },
     { kind: "key", key: "name" },
   ])
+})
+
+// Optional fields check present values without adding null to the field's type.
+test("optional fields accept absence and report null as a type error", () => {
+  const task = checker(() => record([["note", builtin("string"), true]]))
+  assert.ok(task.is({}))
+  assert.ok(task.check({}).isOk())
+  assert.ok(task.is({ note: "text" }))
+  assert.equal(task.is({ note: null }), false)
+  assert.deepEqual(task.check({ note: null }, Path.root().key("task")).errors, [
+    {
+      path: "task.note",
+      code: "type",
+      message: "Expected string.",
+      segments: [
+        { kind: "key", key: "task" },
+        { kind: "key", key: "note" },
+      ],
+    },
+  ])
+})
+
+// Null remains a value of nullable opaque types and the built-in JSON type.
+test("optional fields accept null when their type admits it", () => {
+  const nullable = checker(() =>
+    record([
+      ["nullable", jsonShape(["null", "string"]), true],
+      ["nullOnly", jsonShape(["null"]), true],
+      ["anything", builtin("json"), true],
+    ]),
+  )
+  const value = { nullable: null, nullOnly: null, anything: null }
+  assert.ok(nullable.is(value))
+  assert.ok(nullable.check(value).isOk())
+  assert.ok(nullable.is({}))
+  assert.equal(nullable.is({ nullOnly: "text" }), false)
 })
 
 // Matches exactly one external entry and selects implicit cases without leaked errors.

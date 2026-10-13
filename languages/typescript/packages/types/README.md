@@ -37,8 +37,10 @@ for (const error of Task.check(input).errors) {
 }
 ```
 
-Checks follow the Rust reader: unknown record fields are ignored and optional
-`null` values count as absent. Generic types take a checker per type argument,
+Checks follow the canonical TypeScript types and ignore unknown record fields.
+Optional fields use `field?: T` and reject a present `null` unless `T` admits it,
+such as `json` or a nullable opaque type. Rust and Python readers may accept
+`null` as absent when decoding. Generic types take a checker per type argument,
 such as `Page.is(input, Task)`. See the
 [TypeScript guide](https://oss.silitics.com/sidex/docs/generation/typescript/)
 for details.

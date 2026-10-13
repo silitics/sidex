@@ -65,6 +65,9 @@ variant Implicit { None, Point: Position, Number: i8 }
 
 #[json(type = "string|null")]
 opaque Nullable
+#[json(type = "null")]
+opaque Null
+record OptionalNulls { nullable?: Nullable, null_only?: Null, anything?: json }
 #[json(type = "object|array")]
 opaque Container
 opaque Unknown

@@ -13,6 +13,7 @@ const integer = runtime.checker<runtime.I32>(() => runtime.builtin("i32"))
 const unsigned = runtime.checker<runtime.U64>(() => runtime.builtin("u64"))
 const checks: Record<string, Checker<unknown>> = {
   Task: data.Task,
+  VariantTestRecord: wire.VariantTestRecord,
   Scalars: data.Scalars,
   Empty: data.Empty,
   Ids: data.Ids,
@@ -78,9 +79,43 @@ for (const { typ, text, accepted } of documents) {
   )
 }
 
-const input: unknown = { title: "", done: false, note: null }
+// Optional fields permit absence, while present values must have the field's type.
+const input: unknown = { title: "", done: false }
+assert(data.Task.is(input), "absent optional field is accepted")
+assert(data.Task.check(input).isOk(), "absent optional field has no errors")
+const nullTask = { title: "a", done: false, note: null }
+assert(!data.Task.is(nullTask), "optional string rejects null")
+const nullErrors = data.Task.check(nullTask).errors
+assert(
+  nullErrors.length === 1 &&
+    nullErrors[0]?.path === "note" &&
+    nullErrors[0]?.code === "type",
+  "optional null is a type error at the field path",
+)
+const nullNext = data.Tasks.check({ items: [], next: null }).errors
+assert(
+  nullNext.length === 1 &&
+    nullNext[0]?.path === "next" &&
+    nullNext[0]?.code === "type",
+  "optional record rejects null at the field path",
+)
+const nullable: data.OptionalNulls = {
+  nullable: null,
+  nullOnly: null,
+  anything: null,
+}
+assert(
+  data.OptionalNulls.is(nullable),
+  "nullable optional field types accept null",
+)
+assert(
+  data.OptionalNulls.check(nullable).isOk(),
+  "nullable optional fields have no errors",
+)
 if (data.Task.is(input)) {
   const task: data.Task = input
+  const note: string | undefined = task.note
+  assert(note === undefined, "narrowed optional field type excludes null")
   assert(
     data.Task.validate(task).isErr(),
     "structural acceptance must not run validation rules",

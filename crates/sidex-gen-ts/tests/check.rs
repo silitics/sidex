@@ -200,13 +200,18 @@ fn documents(root: &Path) -> Vec<Document> {
             true,
             vec![
                 r#"{"title":"a","done":true}"#,
-                r#"{"title":"","done":false,"note":null,"future":42}"#,
+                r#"{"title":"","done":false,"note":"text","future":42}"#,
             ],
         ),
         (
             "Task",
             false,
-            vec![r#"{"title":1,"done":"false","note":2}"#, r#"{}"#, r#"[]"#],
+            vec![
+                r#"{"title":1,"done":"false","note":2}"#,
+                r#"{"title":"a","done":false,"note":null}"#,
+                r#"{}"#,
+                r#"[]"#,
+            ],
         ),
         ("Empty", true, vec![r#"{"unknown":1}"#]),
         (
@@ -218,12 +223,15 @@ fn documents(root: &Path) -> Vec<Document> {
         (
             "Tasks",
             true,
-            vec![r#"{"items":[{"title":"x","done":false}],"next":null}"#],
+            vec![r#"{"items":[{"title":"x","done":false}]}"#],
         ),
         (
             "Tasks",
             false,
-            vec![r#"{"items":[{},{"title":1,"done":null}],"next":{"items":false}}"#],
+            vec![
+                r#"{"items":[{},{"title":1,"done":null}],"next":{"items":false}}"#,
+                r#"{"items":[],"next":null}"#,
+            ],
         ),
         (
             "Wrapped",
@@ -233,12 +241,15 @@ fn documents(root: &Path) -> Vec<Document> {
         (
             "Inline",
             true,
-            vec![r#"{"x":1,"y":2,"display.label":"here","optional-value":null,"future":true}"#],
+            vec![r#"{"x":1,"y":2,"display.label":"here","future":true}"#],
         ),
         (
             "Inline",
             false,
-            vec![r#"{"position":{"x":1,"y":2},"display.label":1}"#],
+            vec![
+                r#"{"position":{"x":1,"y":2},"display.label":1}"#,
+                r#"{"x":1,"y":2,"display.label":"here","optional-value":null}"#,
+            ],
         ),
         (
             "Internal",
@@ -350,6 +361,19 @@ fn documents(root: &Path) -> Vec<Document> {
                 accepted,
             }
         }));
+    }
+    // Rust decodes optional null as absent; TypeScript checks the canonical field type.
+    for (accepted, text) in [
+        (true, r#"{"a":1}"#),
+        (true, r#"{"a":1,"b":"text"}"#),
+        (false, r#"{"a":1,"b":null}"#),
+    ] {
+        assert!(json::from_str::<VariantTestRecord>(text).is_ok());
+        docs.push(Document {
+            typ: "VariantTestRecord".into(),
+            text: text.into(),
+            accepted,
+        });
     }
     scalar_documents(&mut docs);
     scalar_cases::<VariantInternallyTagged<Point>>(
