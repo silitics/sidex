@@ -121,8 +121,9 @@ impl<'a> Walker<'a> {
 
     fn gen_from_union(&mut self, union: &JsonUnionType, source: &mut Source) -> Result<Value> {
         // Pick one member of the declared union, then generate a value of that
-        // JSON type. For `any`, fall through to a depth-budgeted free draw.
-        let members: Vec<JsonType> = union.types.iter().copied().collect();
+        // JSON type. For `any`, fall through to a depth-budgeted free draw. The
+        // members are sorted, so that seeds reproduce samples.
+        let members = union.types_sorted();
         let chosen = members[source.draw_choice(members.len())];
         Ok(match chosen {
             // Opaques declared as `Number` give no width — assume the wider
