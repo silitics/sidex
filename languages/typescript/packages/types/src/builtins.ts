@@ -362,3 +362,17 @@ export type Sequence<T> = T[]
 export type ObjectMap<K extends string, V> = string extends K
   ? { [key: string]: V }
   : { [key in K]?: V }
+
+/**
+ * Returns the entries of a map.
+ *
+ * Unlike `Object.entries`, the entries keep the map's key type, such as a
+ * nominal identifier type, and omit absent keys.
+ */
+export function entries<K extends string, V>(
+  map: ObjectMap<K, V>,
+): [K, Exclude<V, undefined>][] {
+  return (Object.entries(map) as [K, V][]).filter(
+    (entry): entry is [K, Exclude<V, undefined>] => entry[1] !== undefined,
+  )
+}
