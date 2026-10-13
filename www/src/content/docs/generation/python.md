@@ -58,7 +58,7 @@ assert envelope.payload.value == "x"
 assert envelope.model_dump_json(by_alias=True) == '{"value":"x"}'
 ```
 
-Nested inline records, aliases, and wrappers of records use the same representation. Absent optional payload fields are omitted. Optional inline fields also read the surrounding object, so required fields of their payload must be present. Unknown fields are ignored by default.
+Nested inline records, aliases, and wrappers of records use the same representation. Inline fields must be required, and JSON names must be unique across the flattened object. Fields within an inline record may be optional; absent values are omitted. Unknown fields are ignored by default.
 
 ## Variants and Wrappers
 

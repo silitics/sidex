@@ -114,7 +114,7 @@ record Settings {
 
 `name` sets an explicit name. `rename` applies a naming convention to one field. `rename_all` changes the default for a record's fields or a variant's cases. Supported naming conventions are listed in the [attribute reference](/sidex/docs/reference/attributes/#json).
 
-An `#[json(inline)]` field merges the entries of its record into the surrounding object. Its type must be a record or resolve to one through aliases and wrappers.
+An `#[json(inline)]` field merges the entries of its record into the surrounding object. It must be required, and its type must be a record or resolve to one through aliases and wrappers. JSON field names must be unique after renaming and flattening nested inline records, including the tag of an internally tagged variant.
 
 ## Variant Tagging
 

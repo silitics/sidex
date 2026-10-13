@@ -26,14 +26,9 @@ record Nested {
     outer_note?: string,
 }
 
-record Optional {
+record EmptyEnvelope {
     #[json(inline)]
-    payload?: Payload,
-}
-
-record OptionalEmpty {
-    #[json(inline)]
-    extras?: Extras,
+    extras: Extras,
 }
 
 wrapper Wrapped: Payload
@@ -57,9 +52,10 @@ record CrossSchema {
     payload: Box<json>,
 }
 
-record Collision {
+record RenamedEnvelope {
     #[json(inline)]
     payload: Payload,
+    #[json(name = "outerValue")]
     value: string,
 }
 

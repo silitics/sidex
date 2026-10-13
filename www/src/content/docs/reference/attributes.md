@@ -22,7 +22,7 @@ Naming conventions are `none`, `lowercase`, `UPPERCASE`, `camelCase`, `PascalCas
 
 Tagging values are unquoted paths: `internally`, `adjacently`, `externally`, and `implicitly`. Defaults are internal tagging, `tag` for the tag key, `content` for the payload key, camelCase record fields, and unchanged case names.
 
-An `inline` field merges the entries of its record into the surrounding object. Its type must be a record or resolve to one through aliases and wrappers. See [JSON mapping](/sidex/docs/guides/json/) for examples.
+An `inline` field merges the entries of its record into the surrounding object. It must be required, and its type must be a record or resolve to one through aliases and wrappers. JSON field names must be unique after renaming and flattening nested inline records, including the tag of an internally tagged variant. See [JSON mapping](/sidex/docs/guides/json/) for examples.
 
 ## Rust
 

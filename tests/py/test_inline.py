@@ -104,32 +104,23 @@ def test_cross_schema_inline(models, rust_roundtrip):
     )
 
 
-def test_optional_inline(models, rust_roundtrip):
-    """Optional inline records are decoded even when their own field name is absent."""
-    model = models.Optional.model_validate_json('{"value":"x","payload":null}')
-    assert model.payload is not None
+def test_empty_inline(models, rust_roundtrip):
+    """Read and write an empty object when every inlined record field is optional."""
+    empty = models.EmptyEnvelope.model_validate_json("{}")
     _assert_roundtrip(
-        model, models.Optional, {"value": "x"}, rust_roundtrip, "InlineOptional"
+        empty, models.EmptyEnvelope, {}, rust_roundtrip, "InlineEmptyEnvelope"
     )
-    empty = models.OptionalEmpty.model_validate_json("{}")
-    assert empty.extras is not None
-    _assert_roundtrip(
-        empty, models.OptionalEmpty, {}, rust_roundtrip, "InlineOptionalEmpty"
-    )
-    model.payload = None
-    assert model.model_dump() == {}
-    assert json.loads(model.model_dump_json()) == {}
 
 
 @pytest.mark.parametrize(
     "raw", ["{}", '{"payload":{"value":"nested"}}', '{"value":null}']
 )
-def test_optional_inline_requires_payload_fields(models, rust_roundtrip, raw):
-    """Optional inline fields still reject missing or invalid required payload fields."""
+def test_inline_requires_payload_fields(models, rust_roundtrip, raw):
+    """Inline fields reject missing or invalid required payload fields."""
     with pytest.raises(pydantic.ValidationError):
-        models.Optional.model_validate_json(raw)
+        models.WrappedEnvelope.model_validate_json(raw)
     with pytest.raises(subprocess.CalledProcessError):
-        rust_roundtrip("InlineOptional", raw)
+        rust_roundtrip("InlineWrapped", raw)
 
 
 def test_native_construction(models, rust_roundtrip):
@@ -205,9 +196,12 @@ def test_case_payload_field_name(models):
     assert model.payload().payload == "x"
 
 
-def test_inline_collision_order(models, rust_roundtrip):
-    """Let later declared fields overwrite earlier inline entries, matching Rust's JSON reader."""
-    model = models.Collision(payload=models.Payload(value="inline"), value="outer")
-    expected = {"value": "outer"}
-    assert model.model_dump() == expected
-    assert rust_roundtrip("InlineCollision", model.model_dump_json()) == expected
+def test_renamed_inline_fields(models, rust_roundtrip):
+    """Preserve both values when renaming separates outer and inline wire names."""
+    model = models.RenamedEnvelope(
+        payload=models.Payload(value="inline"), value="outer"
+    )
+    expected = {"value": "inline", "outerValue": "outer"}
+    _assert_roundtrip(
+        model, models.RenamedEnvelope, expected, rust_roundtrip, "InlineRenamed"
+    )

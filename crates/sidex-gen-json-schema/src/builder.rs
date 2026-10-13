@@ -29,11 +29,11 @@ impl RecordTypeSchemaBuilder {
         Self {
             json_schema: SchemaObject::new()
                 .with_allowed_types(Some(Type::Object.into()))
-                .with_object_keywords(Some(Box::new(
+                .with_object_keywords(Box::new(
                     ObjectKeywords::new()
                         .with_properties(Some(Default::default()))
                         .with_required(Some(Default::default())),
-                ))),
+                )),
             inline_schemas: Vec::new(),
         }
     }
@@ -63,20 +63,17 @@ impl RecordTypeSchemaBuilder {
 
     pub fn build(mut self) -> SchemaObject {
         if !self.inline_schemas.is_empty() {
-            self.json_schema.set_subschema_keywords(Some(Box::new(
+            self.json_schema.set_subschema_keywords(Box::new(
                 SubschemaKeywords::new().with_all_of(Some(
                     self.inline_schemas.into_iter().map(Into::into).collect(),
                 )),
-            )));
+            ));
         }
         self.json_schema
     }
 
     fn object_keywords_mut(&mut self) -> &mut ObjectKeywords {
-        self.json_schema
-            .object_keywords
-            .as_mut()
-            .expect("invariant violation: object keywords should be initialized")
+        &mut self.json_schema.object_keywords
     }
 
     fn properties_mut(&mut self) -> &mut Map<String, Schema> {
@@ -184,7 +181,7 @@ impl VariantTypeSchemaBuilder {
                     .collect(),
             ))
         } else {
-            SchemaObject::new().with_subschema_keywords(Some(Box::new(
+            SchemaObject::new().with_subschema_keywords(Box::new(
                 if matches!(self.tagged, JsonTaggedAttr::Implicitly) {
                     // As there is no explicit tag, the variants may overlap, hence, we use `anyOf`.
                     SubschemaKeywords::new().with_any_of(Some(self.variants))
@@ -192,7 +189,7 @@ impl VariantTypeSchemaBuilder {
                     // The explicit tag uniquely identifies the variant, hence, we use `oneOf`.
                     SubschemaKeywords::new().with_one_of(Some(self.variants))
                 },
-            )))
+            ))
         }
     }
 }
@@ -208,12 +205,8 @@ pub fn inline_object(target: &mut SchemaObject, other: &SchemaObject) {
         Some(Type::Object.into()),
         "invalid `other` schema {other:#?}"
     );
-    let Some(target_object_keywords) = &mut target.object_keywords else {
-        panic!("`target` must have object keywords");
-    };
-    let Some(other_object_keywords) = &other.object_keywords else {
-        panic!("`other` must have object keywords");
-    };
+    let target_object_keywords = &mut target.object_keywords;
+    let other_object_keywords = &other.object_keywords;
     if let Some(other_properties) = &other_object_keywords.properties {
         let target_properties = target_object_keywords
             .properties
@@ -253,20 +246,20 @@ pub fn pure_tag(variant_name: &str) -> SchemaObject {
 pub fn object_tag(tag_field: &str, variant_name: &str) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(
+        .with_object_keywords(Box::new(
             ObjectKeywords::new()
                 .with_properties(Some(Map::from_iter([(
                     tag_field.to_owned(),
                     make_schema_string(variant_name).into(),
                 )])))
                 .with_required(Some(vec![tag_field.to_owned()])),
-        )))
+        ))
 }
 
 pub fn externally_tagged(variant_name: &str, content_schema: SchemaObject) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(
+        .with_object_keywords(Box::new(
             ObjectKeywords::new()
                 .with_properties(Some(Map::from_iter([(
                     variant_name.to_owned(),
@@ -274,7 +267,7 @@ pub fn externally_tagged(variant_name: &str, content_schema: SchemaObject) -> Sc
                 )])))
                 .with_required(Some(vec![variant_name.to_owned()]))
                 .with_additional_properties(Some(Box::new(Schema::Bool(false)))),
-        )))
+        ))
 }
 
 pub fn adjacently_tagged(
@@ -285,7 +278,7 @@ pub fn adjacently_tagged(
 ) -> SchemaObject {
     SchemaObject::new()
         .with_allowed_types(Some(Type::Object.into()))
-        .with_object_keywords(Some(Box::new(
+        .with_object_keywords(Box::new(
             ObjectKeywords::new()
                 .with_properties(Some(Map::from_iter([
                     (
@@ -295,7 +288,7 @@ pub fn adjacently_tagged(
                     (content_field.to_owned(), content_schema.into()),
                 ])))
                 .with_required(Some(vec![tag_field.to_owned(), content_field.to_owned()])),
-        )))
+        ))
 }
 
 pub fn internally_tagged(
@@ -313,10 +306,10 @@ pub fn internally_tagged(
 /// https://github.com/OAI/OpenAPI-Specification/issues/348#issuecomment-336194030
 pub fn oas_enum_variant(name: &str, description: &str, value: Any) -> SchemaObject {
     SchemaObject::new()
-        .with_metadata(Some(Box::new(
+        .with_metadata(Box::new(
             Metadata::new()
                 .with_title(Some(name.to_owned()))
                 .with_description(Some(description.to_owned())),
-        )))
+        ))
         .with_allowed_value(Some(value))
 }

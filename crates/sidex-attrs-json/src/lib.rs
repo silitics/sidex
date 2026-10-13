@@ -6,7 +6,8 @@
 //! types in this module — the wrappers parse string-shaped fields (e.g.
 //! `rename_all = "PascalCase"`) into the [`RenameFunction`] / [`JsonUnionType`]
 //! / [`JsonTaggedAttr`] enums codegens want to consume. [`check`] validates
-//! JSON field types after typed attributes and type references are resolved.
+//! JSON inline fields and wire names after typed attributes and type references
+//! are resolved.
 
 mod check;
 mod generated;

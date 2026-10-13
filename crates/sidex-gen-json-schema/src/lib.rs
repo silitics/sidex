@@ -281,12 +281,12 @@ impl<'cx> JsonSchemaCtx<'cx> {
                     } else {
                         Some(format!("{prelude}{body}"))
                     };
-                    def_schema.set_metadata(Some(Box::new(
+                    def_schema.set_metadata(Box::new(
                         Metadata::new()
                             // .with_title(Some(typ_def.name.as_str().to_owned()))
                             .with_description(description)
                             .with_deprecated(stability.deprecated.as_ref().map(|_| true)),
-                    )));
+                    ));
                     if self.config.emit_ids {
                         def_schema.set_id(Some(def_name.clone()));
                     }
@@ -348,8 +348,8 @@ impl<'cx> JsonSchemaCtx<'cx> {
             "::core::builtins::Sequence" => {
                 let element_type = &instance.subst[0];
                 json_schema.set_allowed_types(Some(Type::Array.into()));
-                json_schema.set_array_keywords(Some(Box::new(ArrayKeywords::new().with_items(
-                    Some(Box::new(self.resolve(element_type)?.use_schema.into())),
+                json_schema.set_array_keywords(Box::new(ArrayKeywords::new().with_items(Some(
+                    Box::new(self.resolve(element_type)?.use_schema.into()),
                 ))));
             }
             "::core::builtins::Map" => {
@@ -365,7 +365,7 @@ impl<'cx> JsonSchemaCtx<'cx> {
                     )));
                 }
                 json_schema.set_allowed_types(Some(Type::Object.into()));
-                json_schema.set_object_keywords(Some(Box::new(keywords)));
+                json_schema.set_object_keywords(Box::new(keywords));
             }
             _ => {}
         }
