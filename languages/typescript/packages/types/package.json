@@ -1,6 +1,6 @@
 {
   "name": "@sidex/types",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Types of Sidex's built-in types in their JSON representation.",
   "author": "Silitics GmbH <info@silitics.com>",
   "license": "MIT OR Apache-2.0",
