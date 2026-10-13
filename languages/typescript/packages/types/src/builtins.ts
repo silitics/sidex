@@ -113,6 +113,9 @@ function smallInt<T extends number>(min: number, max: number): SmallInt<T> {
 
 // ---- 64-bit integers -------------------------------------------------------
 
+// Declared before `I64` and `U64`, whose construction reads it.
+const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER)
+
 /**
  * A 64-bit signed integer, represented as a number or, if its magnitude exceeds
  * `Number.MAX_SAFE_INTEGER`, as a decimal string.
@@ -164,8 +167,6 @@ export interface BigInt64<T extends number | string> {
    */
   toNumber(value: T): number
 }
-
-const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER)
 
 function bigInt<T extends number | string>(min: bigint, max: bigint): BigInt64<T> {
   const inRange = (value: bigint) => value >= min && value <= max
