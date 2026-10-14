@@ -95,7 +95,7 @@ fn generated_checks_are_always_present() {
     assert!(!source.contains("@sidex/validate"));
 }
 
-/// Runs all structural cases under Node, including Rust reader acceptance and paths.
+/// Emits declarations in composite mode and runs structural cases against Rust readers.
 #[test]
 fn generated_checks_run_under_node() {
     if std::env::var_os("SIDEX_SKIP_NODE_TESTS").is_some() {
@@ -113,6 +113,7 @@ fn generated_checks_run_under_node() {
     config
         .external
         .insert("identity".into(), "../identity".into());
+    generate(&unit, bundle, &work.path().join("defaults"), &config);
     config
         .types
         .table
@@ -167,7 +168,8 @@ fn generated_checks_run_under_node() {
         work.path().join("tsconfig.json"),
         r#"{
         "compilerOptions": { "target": "es2020", "module": "commonjs", "strict": true,
-          "noUncheckedIndexedAccess": true, "outDir": "./out", "lib": ["es2020", "dom"] },
+          "noUncheckedIndexedAccess": true, "declaration": true, "composite": true,
+          "rootDir": ".", "outDir": "./out", "lib": ["es2020", "dom"] },
         "include": ["**/*.ts"]
     }"#,
     )

@@ -15,6 +15,8 @@ sidex generate ts src/generated
 npm install @sidex/types
 ```
 
+Generated code supports TypeScript declaration emit (`declaration: true`) and composite projects (`composite: true`).
+
 Each schema produces a `.ts` file. `index.ts` exports schema modules. Import a type directly:
 
 ```ts

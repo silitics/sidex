@@ -7,4 +7,5 @@ dependencies = [
     "pydantic>=2.5",
     "pytest>=8",
     "jsonschema>=4.26",
+    "mypy>=1.0",
 ]

@@ -1,0 +1,9 @@
+//! Opaque Python type-checking fixtures.
+
+#[json(type = "string")]
+opaque Identifier
+
+#[json(type = "number")]
+opaque Number
+
+record Values { identifier: Identifier, number: Number }

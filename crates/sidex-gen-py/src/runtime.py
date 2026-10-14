@@ -16,15 +16,18 @@ import datetime
 import math
 import re
 import uuid
-from typing import Annotated, ClassVar
+from typing import Annotated, Any, ClassVar, cast
 
 import pydantic
 import pydantic_core
 
 
-def inline(**kwargs):
-    """Declare a field that shares its surrounding object's entries."""
-    field = pydantic.Field(**kwargs)
+def inline(**kwargs: Any) -> Any:
+    """Declare a field that shares its surrounding object's entries.
+
+    Return Any like pydantic.Field so this can initialize typed model fields.
+    """
+    field: pydantic.fields.FieldInfo = pydantic.Field(**kwargs)
     field.metadata.append(Inline)
     return field
 
@@ -40,7 +43,7 @@ class Model(pydantic.BaseModel):
     _sidex_inline: ClassVar[tuple[tuple[str, str, str], ...]] = ()
 
     @classmethod
-    def __pydantic_init_subclass__(cls, **kwargs):
+    def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
         super().__pydantic_init_subclass__(**kwargs)
         # Only optional Sidex fields have a None default.
         cls._sidex_optional = tuple(
@@ -48,15 +51,20 @@ class Model(pydantic.BaseModel):
             for name, field in cls.model_fields.items()
             if field.default is None
         )
+        # Sidex generates only string validation aliases.
         cls._sidex_inline = tuple(
-            (name, field.validation_alias or name, field.serialization_alias or name)
+            (
+                name,
+                cast(str, field.validation_alias or name),
+                field.serialization_alias or name,
+            )
             for name, field in cls.model_fields.items()
             if Inline in field.metadata
         )
 
     @pydantic.model_validator(mode="before")
     @classmethod
-    def _sidex_read(cls, value: object):
+    def _sidex_read(cls, value: object) -> object:
         if not isinstance(value, dict) or not cls._sidex_inline:
             return value
         result = value.copy()
@@ -72,8 +80,8 @@ class Model(pydantic.BaseModel):
         self,
         handler: pydantic.SerializerFunctionWrapHandler,
         info: pydantic.SerializationInfo,
-    ):
-        result = handler(self)
+    ) -> dict[str, Any]:
+        result: dict[str, Any] = handler(self)
         by_alias = info.by_alias
         if by_alias is None:
             by_alias = self.model_config.get("serialize_by_alias", False)
@@ -83,7 +91,7 @@ class Model(pydantic.BaseModel):
         if not self._sidex_inline:
             return result
         inline = {alias if by_alias else name for name, _, alias in self._sidex_inline}
-        flattened = {}
+        flattened: dict[str, Any] = {}
         for key, value in result.items():
             if key in inline:
                 flattened.update(value)

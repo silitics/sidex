@@ -3,14 +3,18 @@
  */
 declare const SIDEX_PATH_SYMBOL: unique symbol
 
-// This type improves error messages.
-type N<P extends string> = { [SIDEX_PATH_SYMBOL]: { [key in P]: null } }
+/**
+ * The compile-time brand for a Sidex path, named for declaration emit.
+ */
+export type NominalBrand<P extends string> = {
+  [SIDEX_PATH_SYMBOL]: { [key in P]: null }
+}
 
 /**
  * A nominal type based on `T` and identified by its Sidex path `P`.
  * Null is preserved because it cannot carry a brand.
  */
-export type Nominal<T, P extends string> = T & (N<P> | null)
+export type Nominal<T, P extends string> = T & (NominalBrand<P> | null)
 
 /**
  * The structural type of a nominal type `T`.

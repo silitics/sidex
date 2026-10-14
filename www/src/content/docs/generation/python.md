@@ -15,6 +15,8 @@ sidex generate py task_models
 python -m pip install "pydantic>=2.5"
 ```
 
+Generated model modules and their vendored `_sidex.py` runtime support `mypy --strict` without module exclusions.
+
 Use Python 3.12 or newer, as used by Sidex's Python integration tests. Run your application from a directory where `task_models` is importable.
 
 ## Parse and Serialize a Record
