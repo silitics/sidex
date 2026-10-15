@@ -12,8 +12,8 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@silitics/astro-docs':
-        specifier: ^0.6.5
-        version: 0.6.5(@silitics/astro-theme@0.6.6(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))(tailwindcss@4.3.3))(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))
+        specifier: ^0.6.6
+        version: 0.6.6(@silitics/astro-theme@0.6.6(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))(tailwindcss@4.3.3))(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))
       '@silitics/astro-theme':
         specifier: ^0.6.6
         version: 0.6.6(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))(tailwindcss@4.3.3)
@@ -699,8 +699,8 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@silitics/astro-docs@0.6.5':
-    resolution: {integrity: sha512-jrrc8nVq4502LNLYIl6Cume8v1Gx60QduPGwo3vAy2sLTxdKIBHBppE4svl2s+qDflqXYaLNXJdUJAkgkFIH/Q==}
+  '@silitics/astro-docs@0.6.6':
+    resolution: {integrity: sha512-1VCf3L+OyJ1riWkseP6/2yDwZaXJ8rF11rE3cz2MhY4c7vn9rFfW7+2O6Z2bHEfACWKbWpm+iMHBZNT1Eie5PA==}
     peerDependencies:
       '@silitics/astro-theme': ^0.6.6
       astro: ^7.0.0
@@ -3329,7 +3329,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@silitics/astro-docs@0.6.5(@silitics/astro-theme@0.6.6(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))(tailwindcss@4.3.3))(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))':
+  '@silitics/astro-docs@0.6.6(@silitics/astro-theme@0.6.6(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))(tailwindcss@4.3.3))(astro@7.3.8(@astrojs/markdown-remark@7.3.2)(jiti@2.7.0)(yaml@2.9.1))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
