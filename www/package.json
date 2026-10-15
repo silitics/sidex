@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
-    "@silitics/astro-docs": "^0.6.5",
+    "@silitics/astro-docs": "^0.6.6",
     "@silitics/astro-theme": "^0.6.6",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.2.0",
