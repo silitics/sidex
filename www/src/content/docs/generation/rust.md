@@ -111,6 +111,8 @@ let settings = Settings::new("demo")
     .with_description(Some("Development settings".into()));
 ```
 
+When `new()` takes no arguments, the `builder` plugin also implements `Default` by calling `Self::new()`. This includes empty records and records whose fields are all optional or marked `#[default]`. No explicit `Default` derive is needed.
+
 A constructor supplies defaults; it does not check validation rules. Call `sidex::validation::validate` explicitly.
 
 ## Native Types and Derives

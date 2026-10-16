@@ -1,0 +1,21 @@
+//! Records for Rust constructor and default tests.
+
+record Empty {}
+
+record OptionalFields<T> {
+    value?: T,
+}
+
+record Defaults {
+    #[default]
+    enabled: bool,
+    #[default]
+    items: [string],
+    #[default]
+    nested: OptionalFields<Required>,
+}
+
+record Required {
+    value: i32,
+    note?: string,
+}
