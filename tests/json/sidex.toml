@@ -6,4 +6,4 @@ authors = ["Silitics GmbH <info@silitics.com>"]
 
 [backend.rust]
 derive = ["Clone", "Debug"]
-plugins = ["serde"]
+plugins = ["serde", "builder"]
