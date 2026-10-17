@@ -1,7 +1,7 @@
 /* GENERATED WITH SIDEX. DO NOT MODIFY! */
 
 pub mod attrs {
-    #![doc = "Typed attributes for API stability and lifecycle.\n\nThree plugins describe a definition's lifecycle:\n\n- `#[deprecated(...)]` — the item is deprecated; use something else.\n- `#[unstable(...)]`   — the item's contract may change between versions.\n- `#[since(...)]`      — the version in which the item was introduced.\n\nEach plugin applies to a definition (record / variant / wrapper / opaque /\nalias), a record field, a variant case, and a schema. Codegens propagate\nthe result to the target language (Rust `#[deprecated]`, TSDoc `@deprecated`\n/ `@experimental` / `@since`, PEP 702 `@typing.deprecated`, JSON-Schema\n`deprecated` keyword) and prepend a stability prelude to the rendered doc\ncomment.\n"]
+    #![doc = "Typed attributes for API stability and lifecycle.\n\nThree plugins describe a definition's lifecycle:\n\n- `#[deprecated(...)]` — the item is deprecated; use something else.\n- `#[unstable(...)]`   — the item's contract may change between versions.\n- `#[since(...)]`      — the version in which the item was introduced.\n\nEach plugin applies to a definition (record / variant / wrapper / opaque /\nalias), a record field, a variant case, and a schema. Codegens propagate\nthe result to the target language (Rust `#[deprecated]`, TSDoc `@deprecated`\n/ `@experimental` / `@since`, PEP 702 `@typing.deprecated`, JSON-Schema\n`deprecated` keyword) and prepend a stability prelude to the rendered doc\ncomment.\n\nA fourth plugin, `#[group(...)]`, assigns a definition to a group declared\nin the bundle manifest. Codegens prepend the group descriptions to the\nrendered doc comment.\n"]
     #![allow(
         clippy::all,
         clippy::pedantic,
@@ -1208,6 +1208,58 @@ pub mod attrs {
             ::std::result::Result::Ok(Self {
                 version: __field_0
                     .ok_or_else(|| ::sidex::DecodeError::new("missing field `version`"))?,
+            })
+        }
+    }
+    #[doc = "`#[group]` on a top-level definition.\n\nSource form:\n\n```sidex\n#[group(name = \"device\")]\n```\n\nRepeat the attribute to assign a definition to multiple groups.\n"]
+    #[derive(Clone, Debug)]
+    pub struct DefGroup {
+        #[doc = "Name of a group declared in the bundle manifest.\n"]
+        pub name: ::std::string::String,
+    }
+    #[automatically_derived]
+    impl ::sidex::Shaped for DefGroup {
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::api::attrs::DefGroup" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Name of a group declared in the bundle manifest.\n")]))) . with_docs ("`#[group]` on a top-level definition.\n\nSource form:\n\n```sidex\n#[group(name = \"device\")]\n```\n\nRepeat the attribute to assign a definition to multiple groups.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("group") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("def") } , :: sidex :: shape :: Attr :: Path ("repeated")] }]) ;
+    }
+    #[automatically_derived]
+    impl ::sidex::Encode for DefGroup {
+        fn encode(&self) -> ::sidex::View<'_> {
+            ::sidex::View::Record(self)
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::encode::RecordView for DefGroup {
+        fn shape(&self) -> &'static ::sidex::Shape {
+            <Self as ::sidex::Shaped>::SHAPE
+        }
+        fn field(&self, index: usize) -> ::std::option::Option<::sidex::View<'_>> {
+            match index {
+                0usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.name)),
+                _ => ::std::option::Option::None,
+            }
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::Decode for DefGroup {
+        fn decode(
+            decoder: &mut dyn ::sidex::Decoder,
+        ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
+            let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
+            decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
+                match index {
+                    0usize => {
+                        __field_0 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    _ => {}
+                }
+                ::std::result::Result::Ok(())
+            })?;
+            ::std::result::Result::Ok(Self {
+                name: __field_0.ok_or_else(|| ::sidex::DecodeError::new("missing field `name`"))?,
             })
         }
     }

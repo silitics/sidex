@@ -1,4 +1,5 @@
 use sidex_attrs_api::Stability;
+use sidex_attrs_api::render_group_prelude;
 use sidex_attrs_api::stability_of_def;
 use sidex_attrs_api::stability_of_field;
 use sidex_attrs_json::JsonTaggedAttr;
@@ -187,8 +188,12 @@ impl Plugin for Types {
         };
 
         let def_stability = stability_of_def(def);
-        let def_docs = def.docs.as_ref().map(|d| d.as_str()).unwrap_or_default();
-        let def_jsdoc = Code::from(render_jsdoc(def_docs, &def_stability));
+        let def_docs = format!(
+            "{}{}",
+            render_group_prelude(ctx.bundle_ctx.unit, def),
+            def.docs.as_ref().map(|d| d.as_str()).unwrap_or_default()
+        );
+        let def_jsdoc = Code::from(render_jsdoc(&def_docs, &def_stability));
 
         Ok(quote!(
             "@def_jsdoc export type @name@vars_clause = @type_expr;"

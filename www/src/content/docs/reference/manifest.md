@@ -1,10 +1,10 @@
 ---
 title: Manifest Reference
-description: Bundle metadata, local dependencies, and backend configuration in sidex.toml.
+description: Bundle metadata, local dependencies, groups, and backend configuration in sidex.toml.
 order: 1
 ---
 
-A `sidex.toml` file identifies a bundle and configures its generators. Schema files live in a flat `schemas` directory next to the manifest.
+A `sidex.toml` file identifies a bundle, declares its dependencies and groups, and configures its generators. Schema files live in a flat `schemas` directory next to the manifest.
 
 ## Bundle Metadata
 
@@ -25,6 +25,15 @@ path = "../identity"
 
 Each dependency has a local `path`, resolved relative to the manifest's directory. Use the bundle name as the dependency key and import its types with an absolute path such as `::identity::users::UserId`.
 
+## Groups
+
+```toml
+[groups.mobile]
+description = "Used by released mobile apps. Keep changes backward compatible for at least 12 months."
+```
+
+Each table declares a group that the bundle's definitions can join with `#[group(name = "...")]`. The table key is the group name. The required `description` appears in the generated documentation of every member. See [API groups](/sidex/docs/guides/api-groups/).
+
 ## Rust Backend
 
 ```toml
@@ -32,21 +41,27 @@ Each dependency has a local `path`, resolved relative to the manifest's director
 derive = ["Debug", "Clone"]
 plugins = ["builder", "serde"]
 opaque_lowering = "native"
+group_traits = ["mobile"]
 
 [backend.rust.external]
 identity = "::identity_models"
 
 [backend.rust.types.table]
 "::core::builtins::Map" = "::std::collections::BTreeMap"
+
+[backend.rust.group_trait_names]
+mobile = "MobileApi"
 ```
 
-| Key               | Default           | Meaning                                 |
-| ----------------- | ----------------- | --------------------------------------- |
-| `derive`          | `[]`              | Native derives on generated types       |
-| `plugins`         | `[]`              | Additional plugins: `builder`, `serde`  |
-| `external`        | `{}`              | Bundle name to Rust module path         |
-| `types.table`     | Built-in mappings | Fully qualified Sidex path to Rust type |
-| `opaque_lowering` | `native`          | Opaque representation strategy          |
+| Key                 | Default           | Meaning                                                                       |
+| ------------------- | ----------------- | ----------------------------------------------------------------------------- |
+| `derive`            | `[]`              | Native derives on generated types                                             |
+| `plugins`           | `[]`              | Additional plugins: `builder`, `serde`                                        |
+| `external`          | `{}`              | Bundle name to Rust module path                                               |
+| `types.table`       | Built-in mappings | Fully qualified Sidex path to Rust type                                       |
+| `opaque_lowering`   | `native`          | Opaque representation strategy                                                |
+| `group_traits`      | `[]`              | Groups with [marker traits](/sidex/docs/generation/rust/#group-marker-traits) |
+| `group_trait_names` | `{}`              | Group name to marker trait name, overriding `<Group>GroupMarker`              |
 
 Generated types always carry their validation rules, so Rust has no `validate` plugin.
 

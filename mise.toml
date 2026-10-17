@@ -75,6 +75,13 @@ run = [
     "cargo +nightly-2026-07-14 fmt",
 ]
 
+[tasks."regenerate:api-attrs"]
+description = "Regenerate the API plugin attribute Rust types."
+run = [
+    "cd crates/sidex-core/lib/api && cargo run -p sidex-cli --bin sidex -- generate rust ../../../sidex-attrs-api/src/generated",
+    "cargo +nightly-2026-07-14 fmt",
+]
+
 [tasks."reset:ir"]
 description = "Discard local changes to the generated IR Rust code."
 run = "git checkout crates/sidex-ir/src/generated/mod.rs"

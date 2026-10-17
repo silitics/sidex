@@ -77,6 +77,20 @@ These attributes target definitions, fields, cases, and schemas:
 
 See [API lifecycle](/sidex/docs/guides/api-lifecycle/) for lint behavior and migration examples.
 
+## Groups
+
+`group` applies to definitions and requires `name = "..."`, the name of a group declared in the [manifest](/sidex/docs/reference/manifest/#groups). An undeclared name is an error. Repeat the attribute to assign several groups, here assuming that the manifest declares `mobile` and `web`:
+
+```sidex
+#[group(name = "mobile")]
+#[group(name = "web")]
+record CreateOrder {
+    items: [OrderItem],
+}
+```
+
+Definitions of the same bundle that a group member uses also belong to the group. See [API groups](/sidex/docs/guides/api-groups/) for the membership rules.
+
 ## Requests
 
 `request` applies to a request definition and requires:

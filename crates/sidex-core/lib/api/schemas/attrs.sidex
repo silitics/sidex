@@ -12,6 +12,10 @@
 //! / `@experimental` / `@since`, PEP 702 `@typing.deprecated`, JSON-Schema
 //! `deprecated` keyword) and prepend a stability prelude to the rendered doc
 //! comment.
+//!
+//! A fourth plugin, `#[group(...)]`, assigns a definition to a group declared
+//! in the bundle manifest. Codegens prepend the group descriptions to the
+//! rendered doc comment.
 
 import ::core::attrs::*
 
@@ -155,4 +159,21 @@ record VariantSince {
 #[attrs(plugin = "since", target = schema)]
 record SchemaSince {
     version: string,
+}
+
+// ---- #[group] ------------------------------------------------------------
+
+/// `#[group]` on a top-level definition.
+///
+/// Source form:
+///
+/// ```sidex
+/// #[group(name = "device")]
+/// ```
+///
+/// Repeat the attribute to assign a definition to multiple groups.
+#[attrs(plugin = "group", target = def, repeated)]
+record DefGroup {
+    /// Name of a group declared in the bundle manifest.
+    name: string,
 }

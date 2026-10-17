@@ -1,0 +1,19 @@
+//! Definitions for Rust group marker trait tests.
+
+record Page<T> {
+    items: [T],
+}
+
+record Item {}
+
+wrapper ItemId: string
+
+variant Change {
+    Added: Item,
+    Removed: ItemId,
+}
+
+#[group(name = "client")]
+record SyncChanges {
+    changes: Page<Change>,
+}

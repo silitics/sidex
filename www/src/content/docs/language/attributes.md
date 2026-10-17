@@ -55,6 +55,7 @@ Several attributes can apply to one element. Repeated `validate` attributes crea
 | `validate`                        | Runtime constraints                                     | [Validation](/sidex/docs/guides/validation/)                                      |
 | `deprecated`, `unstable`, `since` | API lifecycle metadata                                  | [API lifecycle](/sidex/docs/guides/api-lifecycle/)                                |
 | `request`                         | Request name and response type                          | [Requests](/sidex/docs/guides/requests/)                                          |
+| `group`                           | Membership in a group declared in the manifest          | [API groups](/sidex/docs/guides/api-groups/)                                      |
 | `default`                         | Default a field in a generated Rust constructor         | [Rust generation](/sidex/docs/generation/rust/#constructors-and-field-visibility) |
 
 The [attribute reference](/sidex/docs/reference/attributes/) lists accepted arguments and targets. For custom metadata, see [extending Sidex](/sidex/docs/guides/extending-sidex/).

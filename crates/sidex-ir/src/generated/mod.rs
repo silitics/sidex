@@ -637,10 +637,12 @@ pub mod ir {
         pub schemas: ::std::vec::Vec<SchemaIdx>,
         #[doc = "Whether the bundle is internal to the compiler.\n\nInternal bundles (the standard library, plugin attribute schemas\nauto-loaded by the compiler) are loaded automatically alongside any\nuser bundle so that the typed-attrs parser can validate plugin\nattributes. Code generators should usually skip them since their\ndefs are not part of the user's API surface.\n"]
         pub is_internal: bool,
+        #[doc = "The groups declared by the bundle, keyed by name.\n"]
+        pub groups: ::std::collections::HashMap<::std::string::String, Group>,
     }
     #[automatically_derived]
     impl ::sidex::Shaped for Bundle {
-        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::meta::ir::Bundle" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("metadata" , :: sidex :: shape :: shape_of :: < Metadata > ,) . with_docs ("The metadata of the bundle.\n") , :: sidex :: shape :: FieldShape :: new ("schemas" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < SchemaIdx , > > ,) . with_docs ("The schemas of the bundle.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) , :: sidex :: shape :: FieldShape :: new ("is_internal" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether the bundle is internal to the compiler.\n\nInternal bundles (the standard library, plugin attribute schemas\nauto-loaded by the compiler) are loaded automatically alongside any\nuser bundle so that the typed-attrs parser can validate plugin\nattributes. Code generators should usually skip them since their\ndefs are not part of the user's API surface.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) . json_name ("isInternal")]))) . with_docs ("A bundle is a flat collection of schemas evolving together.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: List { path : "attr" , args : & [:: sidex :: shape :: Attr :: Path ("non_exhaustive")] }] }]) ;
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::meta::ir::Bundle" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("metadata" , :: sidex :: shape :: shape_of :: < Metadata > ,) . with_docs ("The metadata of the bundle.\n") , :: sidex :: shape :: FieldShape :: new ("schemas" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < SchemaIdx , > > ,) . with_docs ("The schemas of the bundle.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) , :: sidex :: shape :: FieldShape :: new ("is_internal" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether the bundle is internal to the compiler.\n\nInternal bundles (the standard library, plugin attribute schemas\nauto-loaded by the compiler) are loaded automatically alongside any\nuser bundle so that the typed-attrs parser can validate plugin\nattributes. Code generators should usually skip them since their\ndefs are not part of the user's API surface.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) . json_name ("isInternal") , :: sidex :: shape :: FieldShape :: new ("groups" , :: sidex :: shape :: shape_of :: < :: std :: collections :: HashMap < :: std :: string :: String , Group , > > ,) . with_docs ("The groups declared by the bundle, keyed by name.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")])]))) . with_docs ("A bundle is a flat collection of schemas evolving together.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: List { path : "attr" , args : & [:: sidex :: shape :: Attr :: Path ("non_exhaustive")] }] }]) ;
     }
     #[automatically_derived]
     impl ::sidex::Encode for Bundle {
@@ -659,6 +661,7 @@ pub mod ir {
                 0usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.metadata)),
                 1usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.schemas)),
                 2usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.is_internal)),
+                3usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.groups)),
                 _ => ::std::option::Option::None,
             }
         }
@@ -672,6 +675,9 @@ pub mod ir {
             let mut __field_0 = ::std::option::Option::<Metadata>::None;
             let mut __field_1 = ::std::option::Option::<::std::vec::Vec<SchemaIdx>>::None;
             let mut __field_2 = ::std::option::Option::<bool>::None;
+            let mut __field_3 = ::std::option::Option::<
+                ::std::collections::HashMap<::std::string::String, Group>,
+            >::None;
             decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
                 match index {
                     0usize => {
@@ -688,6 +694,14 @@ pub mod ir {
                         __field_2 =
                             ::std::option::Option::Some(<bool as ::sidex::Decode>::decode(decoder)?)
                     }
+                    3usize => {
+                        __field_3 = ::std::option::Option::Some(<::std::collections::HashMap<
+                            ::std::string::String,
+                            Group,
+                        > as ::sidex::Decode>::decode(
+                            decoder
+                        )?)
+                    }
                     _ => {}
                 }
                 ::std::result::Result::Ok(())
@@ -699,6 +713,8 @@ pub mod ir {
                     .ok_or_else(|| ::sidex::DecodeError::new("missing field `schemas`"))?,
                 is_internal: __field_2
                     .ok_or_else(|| ::sidex::DecodeError::new("missing field `isInternal`"))?,
+                groups: __field_3
+                    .ok_or_else(|| ::sidex::DecodeError::new("missing field `groups`"))?,
             })
         }
     }
@@ -709,6 +725,7 @@ pub mod ir {
                 metadata: metadata,
                 schemas: ::std::default::Default::default(),
                 is_internal: ::std::default::Default::default(),
+                groups: ::std::default::Default::default(),
             }
         }
         #[doc = "Sets the value of `metadata`."]
@@ -739,6 +756,117 @@ pub mod ir {
         #[doc = "Sets the value of `is_internal`."]
         pub fn with_is_internal(mut self, is_internal: bool) -> Self {
             self.is_internal = is_internal;
+            self
+        }
+        #[doc = "Sets the value of `groups`."]
+        pub fn set_groups(
+            &mut self,
+            groups: ::std::collections::HashMap<::std::string::String, Group>,
+        ) -> &mut Self {
+            self.groups = groups;
+            self
+        }
+        #[doc = "Sets the value of `groups`."]
+        pub fn with_groups(
+            mut self,
+            groups: ::std::collections::HashMap<::std::string::String, Group>,
+        ) -> Self {
+            self.groups = groups;
+            self
+        }
+    }
+    #[doc = "A named set of definitions, typically sharing a compatibility promise.\n"]
+    #[derive(Clone, Debug)]
+    #[non_exhaustive]
+    pub struct Group {
+        #[doc = "The description of the group, e.g., its compatibility promise.\n"]
+        pub description: ::std::string::String,
+    }
+    #[automatically_derived]
+    impl ::sidex::Shaped for Group {
+        const SHAPE: &'static ::sidex::Shape = &::sidex::Shape::new(
+            "::meta::ir::Group",
+            ::sidex::shape::ShapeKind::Record(::sidex::shape::RecordShape::new(&[
+                ::sidex::shape::FieldShape::new(
+                    "description",
+                    ::sidex::shape::shape_of::<::std::string::String>,
+                )
+                .with_docs("The description of the group, e.g., its compatibility promise.\n"),
+            ])),
+        )
+        .with_docs("A named set of definitions, typically sharing a compatibility promise.\n")
+        .with_attrs(&[::sidex::shape::Attr::List {
+            path: "rust",
+            args: &[::sidex::shape::Attr::List {
+                path: "attr",
+                args: &[::sidex::shape::Attr::Path("non_exhaustive")],
+            }],
+        }]);
+    }
+    #[automatically_derived]
+    impl ::sidex::Encode for Group {
+        fn encode(&self) -> ::sidex::View<'_> {
+            ::sidex::View::Record(self)
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::encode::RecordView for Group {
+        fn shape(&self) -> &'static ::sidex::Shape {
+            <Self as ::sidex::Shaped>::SHAPE
+        }
+        fn field(&self, index: usize) -> ::std::option::Option<::sidex::View<'_>> {
+            match index {
+                0usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.description)),
+                _ => ::std::option::Option::None,
+            }
+        }
+    }
+    #[automatically_derived]
+    #[allow(deprecated)]
+    impl ::sidex::Decode for Group {
+        fn decode(
+            decoder: &mut dyn ::sidex::Decoder,
+        ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
+            let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
+            decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
+                match index {
+                    0usize => {
+                        __field_0 = ::std::option::Option::Some(
+                            <::std::string::String as ::sidex::Decode>::decode(decoder)?,
+                        )
+                    }
+                    _ => {}
+                }
+                ::std::result::Result::Ok(())
+            })?;
+            ::std::result::Result::Ok(Self {
+                description: __field_0
+                    .ok_or_else(|| ::sidex::DecodeError::new("missing field `description`"))?,
+            })
+        }
+    }
+    impl Group {
+        #[doc = "Creates a new [`Group`]."]
+        pub fn new(description: impl ::std::convert::Into<::std::string::String>) -> Self {
+            Self {
+                description: description.into(),
+            }
+        }
+        #[doc = "Sets the value of `description`."]
+        pub fn set_description(
+            &mut self,
+            description: impl ::std::convert::Into<::std::string::String>,
+        ) -> &mut Self {
+            self.description = description.into();
+            self
+        }
+        #[doc = "Sets the value of `description`."]
+        pub fn with_description(
+            mut self,
+            description: impl ::std::convert::Into<::std::string::String>,
+        ) -> Self {
+            self.description = description.into();
             self
         }
     }
@@ -1498,59 +1626,16 @@ pub mod ir {
         pub attrs: ::std::vec::Vec<Attr>,
         #[doc = "The parsed, schema-validated attributes, keyed by plugin id.\n"]
         pub typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
+        #[doc = "The names of the groups the definition belongs to, sorted.\n\nIncludes the groups assigned with `#[group(...)]` and the groups of\nall definitions of the same bundle that use this definition.\n"]
+        pub groups: ::std::vec::Vec<::std::string::String>,
         #[doc = "The kind of the definition.\n"]
         pub kind: DefKind,
-        #[doc = "The optional span of the definition.\n"]
+        #[doc = "The optional span of the definition's name.\n"]
         pub span: ::std::option::Option<Span>,
     }
     #[automatically_derived]
     impl ::sidex::Shaped for Def {
-        const SHAPE: &'static ::sidex::Shape = &::sidex::Shape::new(
-            "::meta::ir::Def",
-            ::sidex::shape::ShapeKind::Record(::sidex::shape::RecordShape::new(&[
-                ::sidex::shape::FieldShape::new("schema", ::sidex::shape::shape_of::<SchemaIdx>)
-                    .with_docs("The schema the definition belongs to.\n"),
-                ::sidex::shape::FieldShape::new("name", ::sidex::shape::shape_of::<Ident>)
-                    .with_docs("The name of the definition.\n"),
-                ::sidex::shape::FieldShape::new("docs", ::sidex::shape::shape_of::<Docs>)
-                    .with_docs("The documentation of the definition.\n")
-                    .optional(),
-                ::sidex::shape::FieldShape::new(
-                    "vars",
-                    ::sidex::shape::shape_of::<::std::vec::Vec<TypeVar>>,
-                )
-                .with_docs("The type variables of the definition.\n")
-                .with_attrs(&[::sidex::shape::Attr::Path("default")]),
-                ::sidex::shape::FieldShape::new(
-                    "attrs",
-                    ::sidex::shape::shape_of::<::std::vec::Vec<Attr>>,
-                )
-                .with_docs("The attributes of the definition.\n")
-                .with_attrs(&[::sidex::shape::Attr::Path("default")]),
-                ::sidex::shape::FieldShape::new(
-                    "typed_attrs",
-                    ::sidex::shape::shape_of::<
-                        ::std::collections::HashMap<::std::string::String, Value>,
-                    >,
-                )
-                .with_docs("The parsed, schema-validated attributes, keyed by plugin id.\n")
-                .with_attrs(&[::sidex::shape::Attr::Path("default")])
-                .json_name("typedAttrs"),
-                ::sidex::shape::FieldShape::new("kind", ::sidex::shape::shape_of::<DefKind>)
-                    .with_docs("The kind of the definition.\n"),
-                ::sidex::shape::FieldShape::new("span", ::sidex::shape::shape_of::<Span>)
-                    .with_docs("The optional span of the definition.\n")
-                    .optional(),
-            ])),
-        )
-        .with_docs("A definition.\n")
-        .with_attrs(&[::sidex::shape::Attr::List {
-            path: "rust",
-            args: &[::sidex::shape::Attr::List {
-                path: "attr",
-                args: &[::sidex::shape::Attr::Path("non_exhaustive")],
-            }],
-        }]);
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::meta::ir::Def" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("schema" , :: sidex :: shape :: shape_of :: < SchemaIdx > ,) . with_docs ("The schema the definition belongs to.\n") , :: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < Ident > ,) . with_docs ("The name of the definition.\n") , :: sidex :: shape :: FieldShape :: new ("docs" , :: sidex :: shape :: shape_of :: < Docs > ,) . with_docs ("The documentation of the definition.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("vars" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < TypeVar , > > ,) . with_docs ("The type variables of the definition.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) , :: sidex :: shape :: FieldShape :: new ("attrs" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < Attr , > > ,) . with_docs ("The attributes of the definition.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) , :: sidex :: shape :: FieldShape :: new ("typed_attrs" , :: sidex :: shape :: shape_of :: < :: std :: collections :: HashMap < :: std :: string :: String , Value , > > ,) . with_docs ("The parsed, schema-validated attributes, keyed by plugin id.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) . json_name ("typedAttrs") , :: sidex :: shape :: FieldShape :: new ("groups" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < :: std :: string :: String , > > ,) . with_docs ("The names of the groups the definition belongs to, sorted.\n\nIncludes the groups assigned with `#[group(...)]` and the groups of\nall definitions of the same bundle that use this definition.\n") . with_attrs (& [:: sidex :: shape :: Attr :: Path ("default")]) , :: sidex :: shape :: FieldShape :: new ("kind" , :: sidex :: shape :: shape_of :: < DefKind > ,) . with_docs ("The kind of the definition.\n") , :: sidex :: shape :: FieldShape :: new ("span" , :: sidex :: shape :: shape_of :: < Span > ,) . with_docs ("The optional span of the definition's name.\n") . optional ()]))) . with_docs ("A definition.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "rust" , args : & [:: sidex :: shape :: Attr :: List { path : "attr" , args : & [:: sidex :: shape :: Attr :: Path ("non_exhaustive")] }] }]) ;
     }
     #[automatically_derived]
     impl ::sidex::Encode for Def {
@@ -1576,8 +1661,9 @@ pub mod ir {
                 3usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.vars)),
                 4usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.attrs)),
                 5usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.typed_attrs)),
-                6usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.kind)),
-                7usize => {
+                6usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.groups)),
+                7usize => ::std::option::Option::Some(::sidex::Encode::encode(&self.kind)),
+                8usize => {
                     self.span
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
@@ -1600,8 +1686,10 @@ pub mod ir {
             let mut __field_5 = ::std::option::Option::<
                 ::std::collections::HashMap<::std::string::String, Value>,
             >::None;
-            let mut __field_6 = ::std::option::Option::<DefKind>::None;
-            let mut __field_7 = ::std::option::Option::<Span>::None;
+            let mut __field_6 =
+                ::std::option::Option::<::std::vec::Vec<::std::string::String>>::None;
+            let mut __field_7 = ::std::option::Option::<DefKind>::None;
+            let mut __field_8 = ::std::option::Option::<Span>::None;
             decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
                 match index {
                     0usize => {
@@ -1637,12 +1725,19 @@ pub mod ir {
                         )?)
                     }
                     6usize => {
-                        __field_6 = ::std::option::Option::Some(
+                        __field_6 = ::std::option::Option::Some(<::std::vec::Vec<
+                            ::std::string::String,
+                        > as ::sidex::Decode>::decode(
+                            decoder
+                        )?)
+                    }
+                    7usize => {
+                        __field_7 = ::std::option::Option::Some(
                             <DefKind as ::sidex::Decode>::decode(decoder)?,
                         )
                     }
-                    7usize => {
-                        __field_7 =
+                    8usize => {
+                        __field_8 =
                             ::std::option::Option::Some(<Span as ::sidex::Decode>::decode(decoder)?)
                     }
                     _ => {}
@@ -1659,8 +1754,10 @@ pub mod ir {
                     .ok_or_else(|| ::sidex::DecodeError::new("missing field `attrs`"))?,
                 typed_attrs: __field_5
                     .ok_or_else(|| ::sidex::DecodeError::new("missing field `typedAttrs`"))?,
-                kind: __field_6.ok_or_else(|| ::sidex::DecodeError::new("missing field `kind`"))?,
-                span: __field_7,
+                groups: __field_6
+                    .ok_or_else(|| ::sidex::DecodeError::new("missing field `groups`"))?,
+                kind: __field_7.ok_or_else(|| ::sidex::DecodeError::new("missing field `kind`"))?,
+                span: __field_8,
             })
         }
     }
@@ -1675,6 +1772,7 @@ pub mod ir {
                 vars: ::std::default::Default::default(),
                 attrs: ::std::default::Default::default(),
                 typed_attrs: ::std::default::Default::default(),
+                groups: ::std::default::Default::default(),
                 span: ::std::default::Default::default(),
             }
         }
@@ -1742,6 +1840,16 @@ pub mod ir {
             typed_attrs: ::std::collections::HashMap<::std::string::String, Value>,
         ) -> Self {
             self.typed_attrs = typed_attrs;
+            self
+        }
+        #[doc = "Sets the value of `groups`."]
+        pub fn set_groups(&mut self, groups: ::std::vec::Vec<::std::string::String>) -> &mut Self {
+            self.groups = groups;
+            self
+        }
+        #[doc = "Sets the value of `groups`."]
+        pub fn with_groups(mut self, groups: ::std::vec::Vec<::std::string::String>) -> Self {
+            self.groups = groups;
             self
         }
         #[doc = "Sets the value of `kind`."]

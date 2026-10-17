@@ -1,0 +1,9 @@
+[bundle]
+name = "groups_fixture"
+version = "0.0.0"
+
+[groups.device]
+description = "Used by deployed devices."
+
+[groups.admin]
+description = "Used by the admin console."

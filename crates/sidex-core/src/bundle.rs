@@ -24,6 +24,10 @@ pub struct Manifest {
     #[serde(default)]
     #[serde(skip_serializing_if = "HashMap::is_empty")]
     dependencies: HashMap<String, Dependency>,
+    /// Groups declared by the bundle, keyed by name.
+    #[serde(default, with = "sidex::serde")]
+    #[serde(skip_serializing_if = "HashMap::is_empty")]
+    pub groups: HashMap<String, ir::Group>,
     /// Generator-specific configurations.
     #[serde(default)]
     #[serde(skip_serializing_if = "HashMap::is_empty")]
@@ -36,6 +40,7 @@ impl Manifest {
         Self {
             metadata,
             dependencies: Default::default(),
+            groups: Default::default(),
             backend: Default::default(),
         }
     }

@@ -1,7 +1,7 @@
 ---
 title: Extending Sidex
 description: Build tools from the resolved model and define typed attribute plugins.
-order: 5
+order: 6
 ---
 
 Sidex separates parsing and resolution from code generation. The compiler builds an intermediate representation, or _IR_, containing bundles, schemas, definitions, references, documentation, and attributes. Generators consume that model.

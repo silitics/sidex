@@ -11,6 +11,7 @@ use serde::Serialize;
 use sidex::Shaped;
 use sidex::types::Map;
 use sidex_attrs_api::render_doc_prelude;
+use sidex_attrs_api::render_group_prelude;
 use sidex_attrs_api::stability_of_def;
 use sidex_attrs_json::field_attrs;
 use sidex_attrs_json::opaque_type_attrs;
@@ -264,7 +265,11 @@ impl<'cx> JsonSchemaCtx<'cx> {
                     // inline_schema.set_extension("x-idl-type-ref", &def_name);
                     // def_schema.set_extension("x-idl-type-def", &def_name);
                     let stability = stability_of_def(own_def);
-                    let prelude = render_doc_prelude(&stability);
+                    let prelude = format!(
+                        "{}{}",
+                        render_doc_prelude(&stability),
+                        render_group_prelude(self.unit, own_def)
+                    );
                     let body = own_def
                         .docs
                         .as_ref()

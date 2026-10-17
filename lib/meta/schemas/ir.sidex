@@ -91,6 +91,16 @@ record Bundle {
     /// defs are not part of the user's API surface.
     #[default]
     is_internal: bool,
+    /// The groups declared by the bundle, keyed by name.
+    #[default]
+    groups: [string: Group],
+}
+
+/// A named set of definitions, typically sharing a compatibility promise.
+#[rust(attr(non_exhaustive))]
+record Group {
+    /// The description of the group, e.g., its compatibility promise.
+    description: string,
 }
 
 /// Metadata of a bundle.
@@ -184,9 +194,15 @@ record Def {
     /// The parsed, schema-validated attributes, keyed by plugin id.
     #[default]
     typed_attrs: [string: Value],
+    /// The names of the groups the definition belongs to, sorted.
+    ///
+    /// Includes the groups assigned with `#[group(...)]` and the groups of
+    /// all definitions of the same bundle that use this definition.
+    #[default]
+    groups: [string],
     /// The kind of the definition.
     kind: DefKind,
-    /// The optional span of the definition.
+    /// The optional span of the definition's name.
     span?: Span,
 }
 

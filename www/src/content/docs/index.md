@@ -31,7 +31,7 @@ A [record](/sidex/docs/language/types/#records) groups named fields. A [variant]
 
 A schema's type structure and its JSON representation are related but separate. Read [JSON mapping](/sidex/docs/guides/json/) before exchanging data between languages. [Validation rules](/sidex/docs/guides/validation/) add application constraints such as size limits or numeric ranges.
 
-For an existing API, [lifecycle attributes](/sidex/docs/guides/api-lifecycle/) record when items were introduced and how they should be retired. [Request metadata](/sidex/docs/guides/requests/) pairs a request with its response type for custom tooling.
+For an existing API, [lifecycle attributes](/sidex/docs/guides/api-lifecycle/) record when items were introduced and how they should be retired. [Request metadata](/sidex/docs/guides/requests/) pairs a request with its response type for custom tooling. [API groups](/sidex/docs/guides/api-groups/) document which definitions share a compatibility promise, such as definitions used by clients you cannot update.
 
 ## Find a Specific Setting
 
