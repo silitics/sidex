@@ -48,16 +48,20 @@ identity = "::identity_models"
 
 [backend.rust.types.table]
 "::core::builtins::Map" = "::std::collections::BTreeMap"
+
+[backend.rust.group_trait_names]
+mobile = "MobileApi"
 ```
 
-| Key               | Default           | Meaning                                                                       |
-| ----------------- | ----------------- | ----------------------------------------------------------------------------- |
-| `derive`          | `[]`              | Native derives on generated types                                             |
-| `plugins`         | `[]`              | Additional plugins: `builder`, `serde`                                        |
-| `external`        | `{}`              | Bundle name to Rust module path                                               |
-| `types.table`     | Built-in mappings | Fully qualified Sidex path to Rust type                                       |
-| `opaque_lowering` | `native`          | Opaque representation strategy                                                |
-| `group_traits`    | `[]`              | Groups with [marker traits](/sidex/docs/generation/rust/#group-marker-traits) |
+| Key                 | Default           | Meaning                                                                       |
+| ------------------- | ----------------- | ----------------------------------------------------------------------------- |
+| `derive`            | `[]`              | Native derives on generated types                                             |
+| `plugins`           | `[]`              | Additional plugins: `builder`, `serde`                                        |
+| `external`          | `{}`              | Bundle name to Rust module path                                               |
+| `types.table`       | Built-in mappings | Fully qualified Sidex path to Rust type                                       |
+| `opaque_lowering`   | `native`          | Opaque representation strategy                                                |
+| `group_traits`      | `[]`              | Groups with [marker traits](/sidex/docs/generation/rust/#group-marker-traits) |
+| `group_trait_names` | `{}`              | Group name to marker trait name, overriding `<Group>GroupMarker`              |
 
 Generated types always carry their validation rules, so Rust has no `validate` plugin.
 

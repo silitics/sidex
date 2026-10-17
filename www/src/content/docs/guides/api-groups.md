@@ -78,6 +78,6 @@ pub struct OrderItem {
 
 The other generators use the same wording in TypeScript JSDoc, Python docstrings and comments, and JSON Schema descriptions. If the definition has lifecycle attributes, the lifecycle notice comes before the group paragraphs, except in TypeScript, which renders lifecycle information as JSDoc tags after the text.
 
-In Rust, the compiler can also check membership. The Rust generator can define a marker trait for a group, such as `MobileGroup`, that the group's records, variants, and wrappers implement. Code can then use it as a bound to accept only types of the group. See [group marker traits](/sidex/docs/generation/rust/#group-marker-traits).
+In Rust, the compiler can also check membership. The Rust generator can define a marker trait for a group, such as `MobileGroupMarker`, that the group's records, variants, and wrappers implement. Code can then use it as a bound to accept only types of the group. See [group marker traits](/sidex/docs/generation/rust/#group-marker-traits).
 
 Custom tools can read membership from Sidex's [intermediate representation (IR)](/sidex/docs/guides/extending-sidex/#start-with-exported-ir). The `groups` field of a bundle maps each declared group name to an object with its `description`. The `groups` field of a definition is a sorted list of the names of the groups it belongs to, including membership through use.

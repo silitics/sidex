@@ -21,6 +21,9 @@ pub struct Config {
     /// Groups for which to generate and implement marker traits.
     #[serde(default)]
     pub group_traits: Vec<String>,
+    /// Trait names overriding the default `<Group>GroupMarker`, keyed by group.
+    #[serde(default)]
+    pub group_trait_names: HashMap<String, String>,
 }
 
 /// Strategy for lowering opaque definitions in the generated Rust code.
