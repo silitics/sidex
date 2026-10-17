@@ -1,0 +1,12 @@
+[bundle]
+name = "groups"
+version = "1.0.0"
+
+[dependencies.shared]
+path = "../shared"
+
+[groups.device]
+description = "Used by deployed devices."
+
+[groups.admin]
+description = "Used by the admin console."

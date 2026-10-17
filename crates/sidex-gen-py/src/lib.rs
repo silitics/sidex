@@ -6,6 +6,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use sidex_attrs_api::Stability;
 use sidex_attrs_api::render_doc_prelude;
+use sidex_attrs_api::render_group_prelude;
 use sidex_attrs_api::stability_of_def;
 use sidex_attrs_api::stability_of_field;
 use sidex_attrs_json::JsonRecordTypeAttrs;
@@ -457,7 +458,7 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
             let name = def.name.as_str();
             let params = generic_params(def);
             let aliased = ctx.resolve_type(def, &alias.aliased);
-            let docs_lines = doc_comment_lines(def);
+            let docs_lines = doc_comment_lines(ctx.bundle_ctx.unit, def);
             quote!(
                 r#"
 
@@ -469,7 +470,7 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
         }
         ir::DefKind::OpaqueType(_) => {
             match resolve_opaque_type(ctx.bundle_ctx.cfg, def)? {
-                Some(resolved) => generate_opaque(def, &resolved),
+                Some(resolved) => generate_opaque(ctx, def, &resolved),
                 None => Code::new(),
             }
         }
@@ -479,7 +480,7 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
             let name = def.name.as_str();
             let params = generic_params(def);
             let wrapped = ctx.resolve_type(def, &wrap.wrapped);
-            let docs_lines = doc_comment_lines(def);
+            let docs_lines = doc_comment_lines(ctx.bundle_ctx.unit, def);
             quote!(
                 r#"
 
@@ -492,11 +493,11 @@ fn generate_def(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
     })
 }
 
-fn generate_opaque(def: &ir::Def, resolved: &OpaqueResolvedType) -> Code {
+fn generate_opaque(ctx: &SchemaCtx, def: &ir::Def, resolved: &OpaqueResolvedType) -> Code {
     let name = def.name.as_str();
     match resolved {
         OpaqueResolvedType::Wrapper(base) => {
-            let docstring_block = optional_block(docstring(def));
+            let docstring_block = optional_block(docstring(ctx.bundle_ctx.unit, def));
             quote!(
                 r#"
 
@@ -510,7 +511,7 @@ fn generate_opaque(def: &ir::Def, resolved: &OpaqueResolvedType) -> Code {
             )
         }
         OpaqueResolvedType::Alias(aliased) => {
-            let docs_lines = doc_comment_lines(def);
+            let docs_lines = doc_comment_lines(ctx.bundle_ctx.unit, def);
             quote!(
                 r#"
 
@@ -528,7 +529,7 @@ fn generate_record(ctx: &SchemaCtx, def: &ir::Def, rec: &ir::RecordTypeDef) -> R
     let generics = generic_bases(def);
     let ty_json = json_record_type_attrs(def)?;
 
-    let docstring_block = optional_block(docstring(def));
+    let docstring_block = optional_block(docstring(ctx.bundle_ctx.unit, def));
     let fields: Vec<Code> = rec
         .fields
         .iter()
@@ -732,7 +733,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
             JsonTaggedAttr::Internally | JsonTaggedAttr::Adjacently
         );
 
-    let docs_lines = doc_comment_lines(def);
+    let docs_lines = doc_comment_lines(ctx.bundle_ctx.unit, def);
     // Like the other languages, implicitly tagged variants decode the first
     // case that matches.
     let first_match = union_members.len() > 1 && ty_json.tagged == JsonTaggedAttr::Implicitly;
@@ -990,33 +991,34 @@ fn field_payload_method(field_py: &str, type_expr: &str) -> Code {
     )
 }
 
-fn doc_comment_lines(def: &ir::Def) -> Vec<Code> {
-    let stability = stability_of_def(def);
-    let body = def
-        .docs
-        .as_ref()
-        .map(|d| d.text.as_str())
-        .unwrap_or_default();
-    let text = combined_doc_text(&stability, body);
+fn doc_comment_lines(unit: &ir::Ir, def: &ir::Def) -> Vec<Code> {
+    let text = def_doc_text(unit, def);
     if text.is_empty() {
         return Vec::new();
     }
     text.lines().map(|l| quote!("# @l")).collect()
 }
 
-fn docstring(def: &ir::Def) -> Code {
-    let stability = stability_of_def(def);
-    let body = def
-        .docs
-        .as_ref()
-        .map(|d| d.text.as_str())
-        .unwrap_or_default();
-    let text = combined_doc_text(&stability, body);
+fn docstring(unit: &ir::Ir, def: &ir::Def) -> Code {
+    let text = def_doc_text(unit, def);
     if text.is_empty() {
         return Code::new();
     }
     let escaped = escape_docstring(&text);
     Code::from(format!("\"\"\"{escaped}\"\"\""))
+}
+
+/// Doc text of `def`, including its stability and group preludes.
+fn def_doc_text(unit: &ir::Ir, def: &ir::Def) -> String {
+    let body = format!(
+        "{}{}",
+        render_group_prelude(unit, def),
+        def.docs
+            .as_ref()
+            .map(|d| d.text.as_str())
+            .unwrap_or_default()
+    );
+    combined_doc_text(&stability_of_def(def), &body)
 }
 
 fn combined_doc_text(stability: &Stability, body: &str) -> String {

@@ -166,3 +166,30 @@ record Node {
 These change the Rust representation without adding a JSON nesting level.
 
 Map external bundles with `backend.rust.external` and override resolved types with `backend.rust.types.table`. See the [manifest reference](/sidex/docs/reference/manifest/#rust-backend) for syntax.
+
+## Group Marker Traits
+
+The generator can turn [group](/sidex/docs/guides/api-groups/) membership into a trait, so that the compiler checks it. Select the groups in `sidex.toml`:
+
+```toml
+[backend.rust]
+group_traits = ["mobile"]
+```
+
+For each selected group, the generator defines a marker trait at the root of the bundle module, next to the schema modules. The trait's name is the group name in PascalCase followed by `Group`, for example `MobileGroup` for `mobile` or `MobileAppGroup` for `mobile-app`. Its documentation repeats the group's description. Every record, variant, and wrapper in the group implements the trait, including the definitions that belong to the group through use.
+
+Use the trait as a bound to accept only types that the group's promise covers. For example, with a bundle named `shop`, a server can make sure that it only sends values of such types to mobile apps:
+
+```rust
+use sidex::Encode;
+
+sidex::include_bundle!(pub shop);
+
+fn send_to_mobile_app<T: shop::MobileGroup + Encode>(value: &T) {
+    // ...
+}
+```
+
+Passing a value of a type outside the group fails to compile. Because membership extends through use, the bound accepts every type the group's members use, not only the definitions with a `group` attribute. For example, it cannot distinguish a request from its response type.
+
+A generic definition implements the trait for all type arguments, so `Page<T>` satisfies the bound even if `T` is outside the group. Aliases and opaque types do not implement the trait because they have no Rust type of their own. A value of an alias type satisfies the bound only if the aliased type is a record, variant, or wrapper of the group. Selecting a group that the bundle does not declare, or two groups with the same trait name, is an error.

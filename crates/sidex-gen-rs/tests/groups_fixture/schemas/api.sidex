@@ -1,0 +1,18 @@
+record Page<T> {
+    items: [T],
+}
+
+record Event {}
+
+#[group(name = "device")]
+alias Events: [Event]
+
+#[group(name = "device")]
+record PublishEvents {
+    events: Page<Event>,
+}
+
+#[group(name = "admin")]
+record QueryAuditLog {}
+
+record Unrelated {}

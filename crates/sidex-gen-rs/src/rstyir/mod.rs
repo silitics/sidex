@@ -8,6 +8,7 @@ use quote::format_ident;
 use quote::quote;
 use sidex_attrs_api::Stability;
 use sidex_attrs_api::render_doc_prelude;
+use sidex_attrs_api::render_group_prelude;
 use sidex_attrs_api::stability_of_def;
 use sidex_attrs_api::stability_of_field;
 use sidex_attrs_api::stability_of_variant;
@@ -140,10 +141,14 @@ pub fn rs_type_from_def(ctx: &SchemaCtx, def: &Def) -> Result<Option<RsType>> {
     let stability = stability_of_def(def);
     let docs = with_stability_prelude(
         &stability,
-        def.docs
-            .as_ref()
-            .map(|docs| docs.as_str())
-            .unwrap_or_default(),
+        &format!(
+            "{}{}",
+            render_group_prelude(ctx.bundle_ctx.unit, def),
+            def.docs
+                .as_ref()
+                .map(|docs| docs.as_str())
+                .unwrap_or_default()
+        ),
     );
     let attrs = rust_type_attrs(def)?;
     let mut derive = ctx

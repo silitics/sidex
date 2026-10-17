@@ -18,6 +18,9 @@ pub struct Config {
     /// How opaque types are lowered into Rust types.
     #[serde(default)]
     pub opaque_lowering: OpaqueLowering,
+    /// Groups for which to generate and implement marker traits.
+    #[serde(default)]
+    pub group_traits: Vec<String>,
 }
 
 /// Strategy for lowering opaque definitions in the generated Rust code.

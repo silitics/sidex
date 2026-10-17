@@ -1,29 +1,39 @@
-//! Typed attributes for API stability and lifecycle.
+//! Typed attributes for API stability, lifecycle, and groups.
 //!
-//! Three plugins drive this crate:
+//! Four plugins drive this crate:
 //!
 //! - `#[deprecated(...)]` — the item is deprecated.
 //! - `#[unstable(...)]`   — the item's contract may still change.
 //! - `#[since(...)]`      — the version in which the item was introduced.
+//! - `#[group(...)]`      — the definition belongs to a group declared in the bundle
+//!   manifest.
 //!
 //! The schema for each plugin lives in
 //! [`lib/api/schemas/attrs.sidex`](https://github.com/silitics/sidex/blob/main/crates/sidex-core/lib/api/schemas/attrs.sidex).
 //! The compiler validates source attributes against that schema and stores the
 //! parsed result on the IR node's `typed_attrs` map. This crate exposes
 //! convenience extractors that pull values back out of `typed_attrs` and a
-//! [`Stability`] rollup that combines all three for a single position.
+//! [`Stability`] rollup that combines the lifecycle attributes for a single
+//! position.
 //!
 //! Codegens additionally call [`render_doc_prelude`] to prepend a stability
 //! summary to the rendered doc comment. The prelude is intentionally
 //! identical across targets so consumers see consistent wording.
+//!
+//! The compiler calls [`assign_groups`] to record each definition's groups on
+//! the IR. Codegens call [`render_group_prelude`] to prepend the group
+//! descriptions to a definition's doc comment.
 
 mod check;
 mod generated;
+mod groups;
 
 use std::collections::HashMap;
 
 pub use check::check;
 pub use generated::attrs as raw;
+pub use groups::assign_groups;
+pub use groups::render_group_prelude;
 use sidex::formats::json;
 use sidex::types::JsonValue;
 use sidex_ir as ir;

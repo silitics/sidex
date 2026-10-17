@@ -1,0 +1,49 @@
+import ::shared::common::Timestamp
+
+wrapper DeviceId: string
+
+record Event {
+    kind: EventKind,
+    at: Timestamp,
+}
+
+variant EventKind {
+    Boot,
+    Custom: Payload,
+}
+
+record Payload {}
+
+record Page<T> {
+    items: [T],
+}
+
+record Device {
+    id: DeviceId,
+}
+
+#[group(name = "device")]
+#[request(name = "PublishEvents", response = PublishEventsOutput)]
+record PublishEvents {
+    device: DeviceId,
+    events: [Event],
+}
+
+record PublishEventsOutput {}
+
+#[group(name = "admin")]
+record ListDevices {
+    page: Page<Device>,
+}
+
+record Unused {}
+
+record Category {
+    children: [Category],
+}
+
+#[group(name = "admin")]
+#[group(name = "device")]
+record GetCatalog {
+    root: Category,
+}

@@ -23,6 +23,7 @@ use sidex_gen::ir;
 mod codec;
 pub mod config;
 pub mod context;
+mod group_traits;
 pub mod plugins;
 pub mod rstyir;
 

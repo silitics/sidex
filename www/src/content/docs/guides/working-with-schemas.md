@@ -1,7 +1,7 @@
 ---
 title: Working with Schemas
 description: Check, format, generate samples, and keep generated output reproducible.
-order: 4
+order: 5
 ---
 
 Schema changes affect every application using the model. A useful workflow checks the definition, keeps source formatting consistent, regenerates code, and tests the resulting wire values.

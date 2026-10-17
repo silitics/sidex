@@ -826,9 +826,12 @@ impl Transformer {
         // Phase 1: allocate bundles in load order so that BundleIdx values
         // match the transformer's internal indices.
         for loaded in &self.loaded {
-            let metadata = loaded.source.manifest.metadata.clone();
-            ir.bundles
-                .push(ir::Bundle::new(metadata).with_is_internal(loaded.is_internal));
+            let manifest = &loaded.source.manifest;
+            ir.bundles.push(
+                ir::Bundle::new(manifest.metadata.clone())
+                    .with_is_internal(loaded.is_internal)
+                    .with_groups(manifest.groups.clone()),
+            );
         }
 
         // Phase 2: allocate schemas globally and record the mapping.
@@ -981,14 +984,17 @@ impl Transformer {
                         .collect();
                     def.attrs = transform_attrs(&ast_def.attrs);
                     def.docs = docs_or_none(&ast_def.docs.to_string());
+                    def.span = Some(ast_def.name.span().clone());
                 }
             }
         }
 
-        // Phase 5: discover plugin attribute schemas and parse typed attrs.
+        // Phase 5: discover plugin attribute schemas, parse typed attrs, and
+        // derive group membership from them.
         let registry = crate::attrs_meta::PluginRegistry::build(&ir);
         crate::attrs_parser::populate_typed_attrs(&mut ir, &registry);
         sidex_attrs_json::check(&ir);
+        sidex_attrs_api::assign_groups(&mut ir);
 
         ir
     }
@@ -1265,6 +1271,16 @@ mod tests {
         assert_eq!(
             errors("import ::core::builtins\nrecord A { x: builtins }\n"),
             ["`builtins` is a schema, not a type."]
+        );
+    }
+
+    /// Assigning a definition to a group the manifest does not declare is an
+    /// error.
+    #[test]
+    fn reports_undeclared_groups() {
+        assert_eq!(
+            errors("#[group(name = \"device\")]\nrecord A {}\n"),
+            ["Group `device` is not declared in the manifest of bundle `demo`."]
         );
     }
 }
