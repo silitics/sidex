@@ -69,7 +69,7 @@ jobs:
       - name: Prepare output directory for the container build
         run: mkdir -p dist/python
       - name: Build Python wheel and native binary
-        uses: PyO3/maturin-action@3e2bdf6ba6453a61e649744019b8a2d906c7eb38 # v1.51.0
+        uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
         with:
           maturin-version: "1.15.0"
           rust-toolchain: "1.99.0"
