@@ -8,7 +8,7 @@ members = ["crates/*"]
 
 [workspace.package]
 # All crates share the release version and depend on each other exactly.
-version = "0.4.1"
+version = "0.5.0"
 edition = "2024"
 authors = ["Silitics GmbH <info@silitics.com>"]
 license = "MIT OR Apache-2.0"
@@ -17,31 +17,31 @@ homepage = "https://oss.silitics.com/sidex"
 
 [workspace.dependencies]
 # Internal crates.
-sidex = { path = "crates/sidex", version = "=0.4.1" }
-sidex-attrs-json = { path = "crates/sidex-attrs-json", version = "=0.4.1" }
-sidex-attrs-py = { path = "crates/sidex-attrs-py", version = "=0.4.1" }
-sidex-attrs-rust = { path = "crates/sidex-attrs-rust", version = "=0.4.1" }
-sidex-attrs-api = { path = "crates/sidex-attrs-api", version = "=0.4.1" }
-sidex-attrs-validate = { path = "crates/sidex-attrs-validate", version = "=0.4.1" }
-sidex-validate-expr = { path = "crates/sidex-validate-expr", version = "=0.4.1" }
-sidex-build-rs = { path = "crates/sidex-build-rs", version = "=0.4.1" }
-sidex-codegen = { path = "crates/sidex-codegen", version = "=0.4.1" }
-sidex-codegen-macros = { path = "crates/sidex-codegen-macros", version = "=0.4.1" }
-sidex-codegen-syntax = { path = "crates/sidex-codegen-syntax", version = "=0.4.1" }
-sidex-core = { path = "crates/sidex-core", version = "=0.4.1" }
-sidex-diagnostics = { path = "crates/sidex-diagnostics", version = "=0.4.1" }
-sidex-fmt = { path = "crates/sidex-fmt", version = "=0.4.1" }
-sidex-fuzz = { path = "crates/sidex-fuzz", version = "=0.4.1" }
-sidex-gen = { path = "crates/sidex-gen", version = "=0.4.1" }
-sidex-gen-ir = { path = "crates/sidex-gen-ir", version = "=0.4.1" }
-sidex-gen-json-schema = { path = "crates/sidex-gen-json-schema", version = "=0.4.1" }
-sidex-gen-py = { path = "crates/sidex-gen-py", version = "=0.4.1" }
-sidex-gen-rs = { path = "crates/sidex-gen-rs", version = "=0.4.1" }
-sidex-gen-ts = { path = "crates/sidex-gen-ts", version = "=0.4.1" }
-sidex-ir = { path = "crates/sidex-ir", version = "=0.4.1" }
-sidex-syntax = { path = "crates/sidex-syntax", version = "=0.4.1" }
-sidex-types-json-schema = { path = "crates/sidex-types-json-schema", version = "=0.4.1" }
-sidex-types-openapi = { path = "crates/sidex-types-openapi", version = "=0.4.1" }
+sidex = { path = "crates/sidex", version = "=0.5.0" }
+sidex-attrs-json = { path = "crates/sidex-attrs-json", version = "=0.5.0" }
+sidex-attrs-py = { path = "crates/sidex-attrs-py", version = "=0.5.0" }
+sidex-attrs-rust = { path = "crates/sidex-attrs-rust", version = "=0.5.0" }
+sidex-attrs-api = { path = "crates/sidex-attrs-api", version = "=0.5.0" }
+sidex-attrs-validate = { path = "crates/sidex-attrs-validate", version = "=0.5.0" }
+sidex-validate-expr = { path = "crates/sidex-validate-expr", version = "=0.5.0" }
+sidex-build-rs = { path = "crates/sidex-build-rs", version = "=0.5.0" }
+sidex-codegen = { path = "crates/sidex-codegen", version = "=0.5.0" }
+sidex-codegen-macros = { path = "crates/sidex-codegen-macros", version = "=0.5.0" }
+sidex-codegen-syntax = { path = "crates/sidex-codegen-syntax", version = "=0.5.0" }
+sidex-core = { path = "crates/sidex-core", version = "=0.5.0" }
+sidex-diagnostics = { path = "crates/sidex-diagnostics", version = "=0.5.0" }
+sidex-fmt = { path = "crates/sidex-fmt", version = "=0.5.0" }
+sidex-fuzz = { path = "crates/sidex-fuzz", version = "=0.5.0" }
+sidex-gen = { path = "crates/sidex-gen", version = "=0.5.0" }
+sidex-gen-ir = { path = "crates/sidex-gen-ir", version = "=0.5.0" }
+sidex-gen-json-schema = { path = "crates/sidex-gen-json-schema", version = "=0.5.0" }
+sidex-gen-py = { path = "crates/sidex-gen-py", version = "=0.5.0" }
+sidex-gen-rs = { path = "crates/sidex-gen-rs", version = "=0.5.0" }
+sidex-gen-ts = { path = "crates/sidex-gen-ts", version = "=0.5.0" }
+sidex-ir = { path = "crates/sidex-ir", version = "=0.5.0" }
+sidex-syntax = { path = "crates/sidex-syntax", version = "=0.5.0" }
+sidex-types-json-schema = { path = "crates/sidex-types-json-schema", version = "=0.5.0" }
+sidex-types-openapi = { path = "crates/sidex-types-openapi", version = "=0.5.0" }
 
 sidex-serde-tests = { path = "crates/sidex-serde-tests" }
 
