@@ -587,9 +587,24 @@ fn generate_record_field(
     if let Some(desc) = &description {
         field_args.push(format!("description=\"{desc}\""));
     }
+    if !json_attrs.aliases.is_empty() {
+        let choices = std::iter::once(&json_name)
+            .chain(&json_attrs.aliases)
+            .map(|name| format!("\"{}\"", escape_string_literal(name)))
+            .collect::<Vec<_>>()
+            .join(", ");
+        field_args.push(format!("validation_alias=pydantic.AliasChoices({choices})"));
+    } else if needs_alias {
+        field_args.push(format!(
+            "validation_alias=\"{}\"",
+            escape_string_literal(&json_name)
+        ));
+    }
     if needs_alias {
-        field_args.push(format!("validation_alias=\"{json_name}\""));
-        field_args.push(format!("serialization_alias=\"{json_name}\""));
+        field_args.push(format!(
+            "serialization_alias=\"{}\"",
+            escape_string_literal(&json_name)
+        ));
     }
 
     let type_str = if field.is_optional {

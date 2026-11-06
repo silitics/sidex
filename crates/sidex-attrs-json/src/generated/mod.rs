@@ -142,12 +142,14 @@ pub mod attrs {
         pub name: ::std::option::Option<::std::string::String>,
         #[doc = "Apply a rename function to the field name.\n"]
         pub rename: ::std::option::Option<::std::string::String>,
+        #[doc = "Additional JSON keys accepted when reading. Lists accumulate across attributes.\n"]
+        pub alias: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
         #[doc = "Whether to inline the field's contents into the enclosing object.\n"]
         pub inline: ::std::option::Option<bool>,
     }
     #[automatically_derived]
     impl ::sidex::Shaped for FieldAttrs {
-        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::FieldAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON key with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the field name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("inline" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether to inline the field's contents into the enclosing object.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline)]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("field") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::FieldAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON key with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the field name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("alias" , :: sidex :: shape :: shape_of :: < :: std :: vec :: Vec < :: std :: string :: String , > > ,) . with_docs ("Additional JSON keys accepted when reading. Lists accumulate across attributes.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attr" , args : & [:: sidex :: shape :: Attr :: Path ("string_literals")] }]) . optional () , :: sidex :: shape :: FieldShape :: new ("inline" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether to inline the field's contents into the enclosing object.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a record `field`.\n\nSource form: `#[json(name = \"explicit\", rename = \"camelCase\", inline)]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("field") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
     impl ::sidex::Encode for FieldAttrs {
@@ -174,6 +176,11 @@ pub mod attrs {
                         .map(|value| ::sidex::Encode::encode(value))
                 }
                 2usize => {
+                    self.alias
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
+                3usize => {
                     self.inline
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
@@ -190,7 +197,9 @@ pub mod attrs {
         ) -> ::std::result::Result<Self, ::sidex::DecodeError> {
             let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
             let mut __field_1 = ::std::option::Option::<::std::string::String>::None;
-            let mut __field_2 = ::std::option::Option::<bool>::None;
+            let mut __field_2 =
+                ::std::option::Option::<::std::vec::Vec<::std::string::String>>::None;
+            let mut __field_3 = ::std::option::Option::<bool>::None;
             decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
                 match index {
                     0usize => {
@@ -204,7 +213,14 @@ pub mod attrs {
                         )
                     }
                     2usize => {
-                        __field_2 =
+                        __field_2 = ::std::option::Option::Some(<::std::vec::Vec<
+                            ::std::string::String,
+                        > as ::sidex::Decode>::decode(
+                            decoder
+                        )?)
+                    }
+                    3usize => {
+                        __field_3 =
                             ::std::option::Option::Some(<bool as ::sidex::Decode>::decode(decoder)?)
                     }
                     _ => {}
@@ -214,7 +230,8 @@ pub mod attrs {
             ::std::result::Result::Ok(Self {
                 name: __field_0,
                 rename: __field_1,
-                inline: __field_2,
+                alias: __field_2,
+                inline: __field_3,
             })
         }
     }

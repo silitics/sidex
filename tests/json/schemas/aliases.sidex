@@ -1,0 +1,16 @@
+//! Record field aliases for backward-compatible JSON reads.
+record Thread {
+    #[json(alias("chatId", "conversationId"))]
+    thread_id: string,
+    #[json(name = "title", alias("chatName"))]
+    #[json(alias("oldTitle"))]
+    display_name?: string,
+}
+record Envelope<T> {
+    #[json(inline)]
+    thread: Thread,
+    value: T,
+}
+variant Event {
+    Updated: Thread,
+}

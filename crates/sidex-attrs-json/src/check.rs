@@ -1,6 +1,7 @@
 //! Schema checks for JSON attributes after type references are resolved.
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 use sidex_diagnostics::Diagnostic;
 use sidex_diagnostics::Label;
@@ -29,10 +30,31 @@ pub fn check(unit: &ir::Ir) {
 
 /// Checks inline restrictions locally and names across the entire flattened record.
 fn check_record(unit: &ir::Ir, idx: ir::DefIdx, record: &ir::RecordTypeDef) -> Result<()> {
+    let record_attrs = record_type_attrs(&unit[idx])?;
     for field in &record.fields {
         let attrs = field_attrs(field).map_err(|error| error.with_span(field.span.clone()))?;
         if !attrs.inline {
+            let mut names = HashSet::new();
+            names.insert(record_attrs.field_name(field, &attrs));
+            for alias in &attrs.aliases {
+                if !names.insert(alias.clone()) {
+                    field_error(
+                        field,
+                        &format!(
+                            "JSON field alias `{alias}` repeats the field's name or another alias."
+                        ),
+                        "duplicate JSON alias",
+                    );
+                }
+            }
             continue;
+        }
+        if !attrs.aliases.is_empty() {
+            field_error(
+                field,
+                "`#[json(alias(...))]` cannot be used on an inline field.",
+                "inline field has no JSON key",
+            );
         }
         if field.is_optional {
             field_error(
@@ -148,13 +170,17 @@ fn flattened_fields(
                 }
             }
         } else {
-            fields.push(JsonField {
-                name: attrs.field_name(field, &field_attrs),
-                path: field_path,
-                span: field.span.clone(),
-                introducer,
-                introducer_span: field.span.clone(),
-            });
+            for name in
+                std::iter::once(attrs.field_name(field, &field_attrs)).chain(field_attrs.aliases)
+            {
+                fields.push(JsonField {
+                    name,
+                    path: field_path.clone(),
+                    span: field.span.clone(),
+                    introducer,
+                    introducer_span: field.span.clone(),
+                });
+            }
         }
     }
     active.pop();

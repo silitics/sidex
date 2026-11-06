@@ -1158,6 +1158,31 @@ mod tests {
         }
     }
 
+    /// Aliases must be unique across all keys in a flattened object.
+    #[test]
+    fn rejects_invalid_json_aliases() {
+        for source in [
+            r#"record R { #[json(alias("threadId"))] thread_id: string }"#,
+            r#"record R { #[json(name = "id", alias("id"))] thread_id: string }"#,
+            r#"record R { #[json(alias("old", "old"))] id: string }"#,
+            r#"record R { #[json(alias("old"))] id: string, old: string }"#,
+            r#"record R { old: string, #[json(alias("old"))] id: string }"#,
+            r#"record R { #[json(alias("old"))] id: string, #[json(alias("old"))] other: string }"#,
+            r#"record P { #[json(alias("old"))] id: string } record R { old: string, #[json(inline)] p: P }"#,
+            r#"record P { old: string } record R { #[json(alias("old"))] id: string, #[json(inline)] p: P }"#,
+            r#"record P<T> { #[json(alias("old"))] id: T } wrapper W<T>: P<T> record R { #[json(inline)] a: W<string>, #[json(inline)] b: W<string> }"#,
+            r#"record P { id: string } record R { #[json(inline, alias("old"))] p: P }"#,
+            r#"record P { #[json(alias("tag"))] id: string } variant V { Case: P }"#,
+            r#"#[json(rename_all = "snake_case")] record R { #[json(alias("thread_id"))] thread_id: string }"#,
+            r#"record R { #[json(alias("old"))] #[json(alias("old"))] id: string }"#,
+            r#"record R { #[json(alias = "old")] id: string }"#,
+            r#"record R { #[json(alias(123))] id: string }"#,
+            r#"record R { #[json(alias(old))] id: string }"#,
+        ] {
+            assert!(!errors(source).is_empty(), "{source}");
+        }
+    }
+
     /// Inline fields accept substituted generics and reuse across separate objects.
     #[test]
     fn accepts_record_json_inline_fields() {

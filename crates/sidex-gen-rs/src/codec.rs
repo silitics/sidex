@@ -104,6 +104,10 @@ pub fn impl_traits(ctx: &SchemaCtx, def: &ir::Def, ty: &RsType) -> Result<TokenS
                     let json_name = &field.json_name;
                     field_builders.extend(quote! { .json_name(#json_name) });
                 }
+                if !field.json_attrs.aliases.is_empty() {
+                    let aliases = &field.json_attrs.aliases;
+                    field_builders.extend(quote! { .json_aliases(&[#(#aliases),*]) });
+                }
                 if field.json_attrs.inline {
                     field_builders.extend(quote! { .json_inline() });
                 }
