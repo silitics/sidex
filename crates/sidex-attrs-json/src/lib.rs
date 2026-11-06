@@ -119,6 +119,8 @@ pub struct JsonFieldAttrs {
     pub rename: Option<RenameFunction>,
     /// Whether to inline the field's contents into the enclosing object.
     pub inline: bool,
+    /// Additional JSON keys accepted when reading.
+    pub aliases: Vec<String>,
 }
 
 /// Read the `JsonFieldAttrs` for `field` from its `typed_attrs["json"]`.
@@ -130,6 +132,7 @@ pub fn field_attrs(field: &ir::Field) -> Result<JsonFieldAttrs> {
         name: raw.name,
         rename: parse_rename(raw.rename)?,
         inline: raw.inline.unwrap_or(false),
+        aliases: raw.alias.unwrap_or_default(),
     })
 }
 

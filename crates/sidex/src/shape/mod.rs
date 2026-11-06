@@ -353,6 +353,17 @@ impl FieldShape {
         }
     }
 
+    /// Sets additional JSON keys accepted when decoding. Encoding uses the main name.
+    pub const fn json_aliases(self, aliases: &'static [&'static str]) -> Self {
+        Self {
+            json: json::Field {
+                aliases,
+                ..self.json
+            },
+            ..self
+        }
+    }
+
     /// Merges the fields of the field's record into the enclosing JSON map.
     pub const fn json_inline(self) -> Self {
         Self {

@@ -46,6 +46,9 @@ record FieldAttrs {
     name?: string,
     /// Apply a rename function to the field name.
     rename?: string,
+    /// Additional JSON keys accepted when reading. Lists accumulate across attributes.
+    #[attr(string_literals)]
+    alias?: [string],
     /// Whether to inline the field's contents into the enclosing object.
     inline?: bool,
 }

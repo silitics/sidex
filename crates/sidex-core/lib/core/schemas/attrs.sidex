@@ -82,6 +82,10 @@ record AttrName {
     name: string,
 }
 
+/// Makes a `[string]` attribute field accept only string literals in its list,
+/// storing their values instead of source tokens. Source: `#[attr(string_literals)]`.
+record AttrStringLiterals {}
+
 /// A resolved reference to a Sidex definition, carried as the value of an
 /// attribute field.
 ///

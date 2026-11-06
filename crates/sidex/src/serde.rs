@@ -221,7 +221,7 @@ fn find_field(record: &'static RecordShape, name: &str) -> Option<&'static Field
                 .as_record()
                 .and_then(|inner| find_field(inner, name))
         } else {
-            (field.json.name == name).then_some(field)
+            (field.json.name == name || field.json.aliases.contains(&name)).then_some(field)
         }
     })
 }

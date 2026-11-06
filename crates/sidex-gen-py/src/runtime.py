@@ -51,7 +51,7 @@ class Model(pydantic.BaseModel):
             for name, field in cls.model_fields.items()
             if field.default is None
         )
-        # Sidex generates only string validation aliases.
+        # Inline container fields have only string validation aliases.
         cls._sidex_inline = tuple(
             (
                 name,

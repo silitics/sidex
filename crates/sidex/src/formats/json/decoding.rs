@@ -322,8 +322,17 @@ impl Decoder for JsonDecoder<'_, '_> {
                 f(index, &mut decoder)?;
                 continue;
             }
-            let name = field.json.name;
-            match entries.get(name) {
+            let keys = std::iter::once(field.json.name).chain(field.json.aliases.iter().copied());
+            let mut present = keys.filter_map(|key| entries.get(key).map(|value| (key, value)));
+            let entry = present.next();
+            if present.next().is_some() {
+                return Err(DecodeError::new(format_args!(
+                    "duplicate field `{}`",
+                    field.json.name
+                )));
+            }
+            let name = entry.map_or(field.json.name, |(key, _)| key);
+            match entry.map(|(_, value)| value) {
                 // Like Serde's `Option`, `null` is absent, also if the type admits
                 // `null`. Many languages cannot tell the two apart.
                 None | Some(JsonValue::Null) if field.optional => {}
@@ -512,6 +521,7 @@ fn known_fields(record: &RecordShape, known: &mut Vec<&'static str>) -> bool {
     for field in record.fields {
         if !field.json.inline {
             known.push(field.json.name);
+            known.extend_from_slice(field.json.aliases);
             continue;
         }
         match (field.shape)().as_record() {

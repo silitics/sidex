@@ -853,6 +853,7 @@ fn field_is_string_sequence(field: &ir::Field, ir: &ir::Ir) -> bool {
 /// Parse a `[string]` field. Source must be `name(item1, item2, ...)` where
 /// each item is convertible to a string. Bare paths and lists are stringified
 /// (so `attr(non_exhaustive)` and `attr(serde(transparent))` both work).
+/// Fields marked `#[attr(string_literals)]` instead require literal string values.
 fn parse_string_sequence_field(
     arg: &ir::Attr,
     field: &ir::Field,
@@ -867,9 +868,31 @@ fn parse_string_sequence_field(
             .with_span(arg.span.clone()),
         ));
     };
+    let string_literals = field.attrs.iter().any(|attr| {
+        let ir::AttrKind::List(list) = &attr.kind else {
+            return false;
+        };
+        list.path == "attr"
+            && list.args.iter().any(
+                |arg| matches!(&arg.kind, ir::AttrKind::Path(path) if path == "string_literals"),
+            )
+    });
     let mut items = Vec::with_capacity(list.args.len());
     for inner in &list.args {
-        items.push(Value::String(attr_to_string(inner)?));
+        let value = if string_literals {
+            match &inner.kind {
+                ir::AttrKind::Value(ir::AttrValue::String(value)) => value.clone(),
+                _ => {
+                    return Err(Box::new(
+                        Diagnostic::error("Expected a string literal.")
+                            .with_span(inner.span.clone()),
+                    ));
+                }
+            }
+        } else {
+            attr_to_string(inner)?
+        };
+        items.push(Value::String(value));
     }
     Ok(Value::Array(items))
 }

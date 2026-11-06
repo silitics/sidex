@@ -42,6 +42,8 @@ pub enum Type {
 pub struct Field {
     /// Name of the field in JSON objects.
     pub name: &'static str,
+    /// Additional keys accepted when decoding this field.
+    pub aliases: &'static [&'static str],
     /// Indicates whether the fields of the field's record are merged into the
     /// enclosing map.
     pub inline: bool,
@@ -51,6 +53,7 @@ impl Field {
     pub(crate) const fn new(name: &'static str) -> Self {
         Self {
             name,
+            aliases: &[],
             inline: false,
         }
     }

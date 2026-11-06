@@ -12,7 +12,7 @@ Attributes precede the element they annotate. Use `#[...]` for definitions, fiel
 | ------------ | ---------------------------------------------------------------------- | -------------------------------------------------------- |
 | Opaque type  | `type = "..."`, `schema = "..."`                                       | JSON shape and optional JSON Schema reference            |
 | Record       | `rename_all = "..."`                                                   | Default field naming                                     |
-| Field        | `name = "..."`, `rename = "..."`, `inline`                             | Explicit name, naming convention, or inlined record      |
+| Field        | `name = "..."`, `rename = "..."`, `alias("...")`, `inline`                             | Explicit name, naming convention, or inlined record      |
 | Variant      | `rename_all = "..."`, `tagged = ...`, `tag = "..."`, `content = "..."` | Case naming and tagging                                  |
 | Variant case | `name = "..."`, `rename = "..."`, `content = "..."`                    | Case name and content field override                     |
 
@@ -21,6 +21,10 @@ JSON shape names are `number`, `boolean`, `string`, `null`, `object`, `array`, a
 Naming conventions are `none`, `lowercase`, `UPPERCASE`, `camelCase`, `PascalCase`, `snake_case`, `SCREAMING_SNAKE_CASE`, `kebab-case`, and `SCREAMING-KEBAB-CASE`.
 
 Tagging values are unquoted paths: `internally`, `adjacently`, `externally`, and `implicitly`. Defaults are internal tagging, `tag` for the tag key, `content` for the payload key, camelCase record fields, and unchanged case names.
+
+`alias("oldName", "olderName")` adds read-only keys to a record field. Lists accumulate across `#[json(...)]` attributes. Aliases are literal strings and do not undergo renaming. An alias must differ from the field's main JSON name and every other name or alias in the flattened record, including an internal variant tag. Inline container fields and variant case names do not support aliases.
+
+Rust's native JSON decoder and Serde bridge, and Python's Pydantic models, accept aliases. Serialization, JSON Schema, OpenAPI, and TypeScript types and checks use only the main name. Rust rejects input containing multiple spellings of one field; Python chooses the main name first, then aliases in declaration order.
 
 An `inline` field merges the entries of its record into the surrounding object. It must be required, and its type must be a record or resolve to one through aliases and wrappers. JSON field names must be unique after renaming and flattening nested inline records, including the tag of an internally tagged variant. See [JSON mapping](/sidex/docs/guides/json/) for examples.
 
