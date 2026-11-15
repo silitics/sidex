@@ -645,7 +645,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
     let tag_needs_alias = tag_py != tag_json;
 
     let mut variant_classes: Vec<Code> = Vec::new();
-    let mut union_members: Vec<String> = Vec::new();
+    let mut members: Vec<UnionMember> = Vec::new();
 
     for variant in &var_def.variants {
         let json_attrs = json_variant_attrs(variant)?;
@@ -654,57 +654,39 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
         let class_name = format!("{name}_{variant_ident}");
         let used_vars = variant_used_vars(def, variant.typ.as_ref());
 
-        match ty_json.tagged {
-            JsonTaggedAttr::Implicitly => {
-                if let Some(typ) = &variant.typ {
-                    union_members.push(ctx.resolve_type(def, typ));
-                } else {
-                    let gen_bases = generic_bases_for(&used_vars);
-                    let subscript = subscript_for(&used_vars);
-                    variant_classes.push(quote!(
-                        r#"
-
-
-                        class @class_name(pydantic.RootModel[Literal["@json_name"]]@gen_bases):
-                            pass
-                        "#
-                    ));
-                    union_members.push(format!("{class_name}{subscript}"));
+        match (ty_json.tagged, &variant.typ) {
+            (JsonTaggedAttr::Implicitly | JsonTaggedAttr::Externally, None) => {
+                // Cases without payloads encode as bare strings, so they become
+                // string literals. Adding a case keeps the existing ones.
+                let value = format!("\"{}\"", escape_string_literal(&json_name));
+                match members.last_mut() {
+                    Some(UnionMember::Literal(values)) => values.push(value),
+                    _ => members.push(UnionMember::Literal(vec![value])),
                 }
             }
-            JsonTaggedAttr::Externally => {
+            (JsonTaggedAttr::Implicitly, Some(typ)) => {
+                members.push(UnionMember::Type(ctx.resolve_type(def, typ)));
+            }
+            (JsonTaggedAttr::Externally, Some(typ)) => {
                 let gen_bases = generic_bases_for(&used_vars);
                 let subscript = subscript_for(&used_vars);
-
-                if let Some(typ) = &variant.typ {
-                    let inner = ctx.resolve_type(def, typ);
-                    let payload_method = field_payload_method("value", &inner);
-                    variant_classes.push(quote!(
-                        r#"
+                let inner = ctx.resolve_type(def, typ);
+                let payload_method = field_payload_method("value", &inner);
+                variant_classes.push(quote!(
+                    r#"
 
 
-                        class @class_name(_sidex.Model@gen_bases):
-                            model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
+                    class @class_name(_sidex.Model@gen_bases):
+                        model_config = pydantic.ConfigDict(populate_by_name=True, serialize_by_alias=True, defer_build=True)
 
-                            value: @inner = pydantic.Field(validation_alias="@json_name", serialization_alias="@json_name")
+                        value: @inner = pydantic.Field(validation_alias="@json_name", serialization_alias="@json_name")
 
-                            @payload_method
-                        "#
-                    ));
-                } else {
-                    variant_classes.push(quote!(
-                        r#"
-
-
-                        class @class_name(pydantic.RootModel[Literal["@json_name"]]@gen_bases):
-                            pass
-                        "#
-                    ));
-                }
-
-                union_members.push(format!("{class_name}{subscript}"));
+                        @payload_method
+                    "#
+                ));
+                members.push(UnionMember::Type(format!("{class_name}{subscript}")));
             }
-            JsonTaggedAttr::Internally => {
+            (JsonTaggedAttr::Internally, _) => {
                 variant_classes.push(generate_internally_tagged_variant(
                     ctx,
                     def,
@@ -719,9 +701,9 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
                     tag_needs_alias,
                 )?);
                 let subscript = subscript_for(&used_vars);
-                union_members.push(format!("{class_name}{subscript}"));
+                members.push(UnionMember::Type(format!("{class_name}{subscript}")));
             }
-            JsonTaggedAttr::Adjacently => {
+            (JsonTaggedAttr::Adjacently, _) => {
                 variant_classes.push(generate_adjacently_tagged_variant(
                     ctx,
                     def,
@@ -736,11 +718,20 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
                     tag_needs_alias,
                 )?);
                 let subscript = subscript_for(&used_vars);
-                union_members.push(format!("{class_name}{subscript}"));
+                members.push(UnionMember::Type(format!("{class_name}{subscript}")));
             }
         }
     }
 
+    let union_members: Vec<String> = members
+        .into_iter()
+        .map(|member| {
+            match member {
+                UnionMember::Literal(values) => format!("Literal[{}]", values.join(", ")),
+                UnionMember::Type(typ) => typ,
+            }
+        })
+        .collect();
     let union_expr = union_members.join(" | ");
     let use_discriminator = union_members.len() > 1
         && matches!(
@@ -765,6 +756,16 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
     // Each variant class needs two blank lines before it. The variant template
     // bodies already include their own leading "\n\n"; the alias_decl follows
     // the last variant class with the same spacing.
+    if variant_classes.is_empty() {
+        return Ok(quote!(
+            r#"
+
+
+            @(@docs_lines)*
+            @alias_decl
+            "#
+        ));
+    }
     Ok(quote!(
         r#"
         @(@variant_classes)*
@@ -774,6 +775,14 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
         @alias_decl
         "#
     ))
+}
+
+/// Member of the union that a variant type is generated as.
+enum UnionMember {
+    /// String values of adjacent cases without payloads.
+    Literal(Vec<String>),
+    /// Type of a case with a payload or of a case model.
+    Type(String),
 }
 
 #[allow(clippy::too_many_arguments)]

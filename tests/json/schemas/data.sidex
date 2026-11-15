@@ -36,6 +36,14 @@ variant VariantExternallyTagged<T> {
     D: T,
 }
 
+/// Exercises a variant whose cases have no payloads.
+#[json(tagged = externally)]
+variant Enumeration {
+    First,
+    #[json(name = "second")]
+    Second,
+}
+
 #[json(
     tagged = adjacently,
     tag = "tagFieldName",

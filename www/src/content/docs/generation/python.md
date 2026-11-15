@@ -4,7 +4,7 @@ description: Parse and serialize shared models with Pydantic.
 order: 2
 ---
 
-The Python generator produces a typed package built on Pydantic 2. Records become models, wrappers become root models, and variants get case models and JSON adapters. It also emits a `py.typed` marker for type checkers.
+The Python generator produces a typed package built on Pydantic 2. Records become models, wrappers become root models, variants get case models and JSON adapters. Variant cases that encode as bare strings become string literals. It also emits a `py.typed` marker for type checkers.
 
 ## Generate a Package
 
@@ -115,6 +115,36 @@ position = TypeAdapter(Position).validate_json('{"tag":"Known","x":3,"y":4}')
 point = position.payload()
 assert isinstance(point, Point)
 assert (point.x, point.y) == (3, 4)
+```
+
+## Match Cases Without Payloads
+
+In externally and implicitly tagged variants, cases without payloads encode as bare strings. They become string literals, while cases with payloads keep their case models:
+
+```sidex
+#[json(tagged = externally)]
+variant Progress {
+    Pending,
+    Running,
+    Done: string,
+}
+```
+
+This generates `type Progress = Literal["Pending", "Running"] | Progress_Done`, and a variant whose cases all lack payloads becomes a single `Literal`. Values of cases without payloads are plain strings, and adding a case keeps the representation of the existing ones:
+
+```python
+from pydantic import TypeAdapter
+from task_models.outcomes import Progress, Progress_Done
+
+progress = TypeAdapter(Progress).validate_json('"Pending"')
+assert progress == "Pending"
+
+match progress:
+    case "Pending" | "Running":
+        summary = "in progress"
+    case Progress_Done(value=result):
+        summary = result
+assert summary == "in progress"
 ```
 
 ## Map Native Opaque Types
