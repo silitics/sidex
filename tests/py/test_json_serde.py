@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 import pytest
-from pydantic import TypeAdapter
+from pydantic import TypeAdapter, ValidationError
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 FIXTURES = REPO_ROOT / "tests" / "json" / "expected"
@@ -124,6 +124,20 @@ class TestVariantExternallyTagged:
         obj = adapter.validate_json('{"B": 42}')
         assert isinstance(obj, data.VariantExternallyTagged_B)
         assert obj.value == 42
+
+
+class TestEnumeration:
+    """Variant whose cases have no payloads, which is a `Literal` of the JSON names."""
+
+    def test_cases_are_strings(self, data):
+        adapter = TypeAdapter(data.Enumeration)
+        assert adapter.validate_json('"First"') == "First"
+        assert adapter.validate_json('"second"') == "second"
+        assert adapter.dump_json("First") == b'"First"'
+
+    def test_unknown_case_is_rejected(self, data):
+        with pytest.raises(ValidationError):
+            TypeAdapter(data.Enumeration).validate_json('"Third"')
 
 
 class TestVariantAdjacentlyTagged:

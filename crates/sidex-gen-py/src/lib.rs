@@ -644,6 +644,32 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
     let tag_py = sanitize_py_name(&to_snake_case(&tag_json));
     let tag_needs_alias = tag_py != tag_json;
 
+    // Variants whose cases all lack payloads encode as bare strings and become
+    // `Literal` types, like enumerations in other Python libraries.
+    let is_enumeration = !var_def.variants.is_empty()
+        && var_def.variants.iter().all(|variant| variant.typ.is_none())
+        && matches!(
+            ty_json.tagged,
+            JsonTaggedAttr::Externally | JsonTaggedAttr::Implicitly
+        );
+    if is_enumeration {
+        let mut values = Vec::new();
+        for variant in &var_def.variants {
+            let json_name = ty_json.variant_name(variant, &json_variant_attrs(variant)?);
+            values.push(format!("\"{}\"", escape_string_literal(&json_name)));
+        }
+        let values = values.join(", ");
+        let docs_lines = doc_comment_lines(ctx.bundle_ctx.unit, def);
+        return Ok(quote!(
+            r#"
+
+
+            @(@docs_lines)*
+            type @name@params = Literal[@values]
+            "#
+        ));
+    }
+
     let mut variant_classes: Vec<Code> = Vec::new();
     let mut union_members: Vec<String> = Vec::new();
 

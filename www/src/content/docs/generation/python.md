@@ -4,7 +4,7 @@ description: Parse and serialize shared models with Pydantic.
 order: 2
 ---
 
-The Python generator produces a typed package built on Pydantic 2. Records become models, wrappers become root models, and variants get case models and JSON adapters. It also emits a `py.typed` marker for type checkers.
+The Python generator produces a typed package built on Pydantic 2. Records become models, wrappers become root models, variants get case models and JSON adapters, and enumerations become `Literal` types. It also emits a `py.typed` marker for type checkers.
 
 ## Generate a Package
 
@@ -86,6 +86,18 @@ encoded = adapter.dump_json(value, by_alias=True)
 ```
 
 The adapter applies the wire representation specified by the schema. For wrappers, access the wrapped value through the Pydantic root model's `root` property.
+
+An externally or implicitly tagged variant whose cases have no payloads is an enumeration. It encodes as a bare string and becomes a `Literal` type of the JSON names:
+
+```sidex
+#[json(tagged = externally)]
+variant Priority {
+    Low,
+    High,
+}
+```
+
+This generates `type Priority = Literal["Low", "High"]`, so values are plain strings, such as `task.priority == "High"`.
 
 ## Access a Case Payload
 
