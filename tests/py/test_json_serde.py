@@ -113,11 +113,10 @@ class TestVariantExternallyTagged:
         expected, actual = _roundtrip(self._adapter(self.data), path)
         assert actual == expected
 
-    def test_variant_a_is_model(self, data):
+    def test_variant_a_is_string(self, data):
         adapter = self._adapter(data)
-        obj = adapter.validate_json('"A"')
-        assert isinstance(obj, data.VariantExternallyTagged_A)
-        assert obj.root == "A"
+        assert adapter.validate_json('"A"') == "A"
+        assert adapter.dump_json("A") == b'"A"'
 
     def test_variant_b_value_field(self, data):
         adapter = self._adapter(data)

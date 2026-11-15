@@ -4,7 +4,7 @@ description: Parse and serialize shared models with Pydantic.
 order: 2
 ---
 
-The Python generator produces a typed package built on Pydantic 2. Records become models, wrappers become root models, variants get case models and JSON adapters, and enumerations become `Literal` types. It also emits a `py.typed` marker for type checkers.
+The Python generator produces a typed package built on Pydantic 2. Records become models, wrappers become root models, variants get case models and JSON adapters. Variant cases that encode as bare strings become string literals. It also emits a `py.typed` marker for type checkers.
 
 ## Generate a Package
 
@@ -87,18 +87,6 @@ encoded = adapter.dump_json(value, by_alias=True)
 
 The adapter applies the wire representation specified by the schema. For wrappers, access the wrapped value through the Pydantic root model's `root` property.
 
-An externally or implicitly tagged variant whose cases have no payloads is an enumeration. It encodes as a bare string and becomes a `Literal` type of the JSON names:
-
-```sidex
-#[json(tagged = externally)]
-variant Priority {
-    Low,
-    High,
-}
-```
-
-This generates `type Priority = Literal["Low", "High"]`, so values are plain strings, such as `task.priority == "High"`.
-
 ## Access a Case Payload
 
 Generated cases with a payload provide a `payload()` method. For an internally
@@ -127,6 +115,36 @@ position = TypeAdapter(Position).validate_json('{"tag":"Known","x":3,"y":4}')
 point = position.payload()
 assert isinstance(point, Point)
 assert (point.x, point.y) == (3, 4)
+```
+
+## Match Cases Without Payloads
+
+In externally and implicitly tagged variants, cases without payloads encode as bare strings. They become string literals, while cases with payloads keep their case models:
+
+```sidex
+#[json(tagged = externally)]
+variant Progress {
+    Pending,
+    Running,
+    Done: string,
+}
+```
+
+This generates `type Progress = Literal["Pending", "Running"] | Progress_Done`, and a variant whose cases all lack payloads becomes a single `Literal`. Values of cases without payloads are plain strings, and adding a case keeps the representation of the existing ones:
+
+```python
+from pydantic import TypeAdapter
+from task_models.outcomes import Progress, Progress_Done
+
+progress = TypeAdapter(Progress).validate_json('"Pending"')
+assert progress == "Pending"
+
+match progress:
+    case "Pending" | "Running":
+        summary = "in progress"
+    case Progress_Done(value=result):
+        summary = result
+assert summary == "in progress"
 ```
 
 ## Map Native Opaque Types
