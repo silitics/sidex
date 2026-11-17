@@ -75,7 +75,8 @@ record VariantTypeAttrs {
 
 /// JSON-specific attributes that may be applied to a single variant case.
 ///
-/// Source form: `#[json(name = "explicit", rename = "kebab-case")]`.
+/// Source form: `#[json(name = "explicit", rename = "kebab-case")]` or
+/// `#[json(fallback)]`.
 #[attrs(plugin = "json", target = variant_case)]
 #[json(rename_all = "snake_case")]
 record VariantAttrs {
@@ -86,4 +87,7 @@ record VariantAttrs {
     /// Override the per-case content field name (only meaningful with
     /// `adjacently` tagging).
     content?: string,
+    /// Whether the case holds values that select no other case. Its payload
+    /// is the entire value, which is also written as is.
+    fallback?: bool,
 }

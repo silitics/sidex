@@ -132,7 +132,8 @@ fn builtin_schema_parity() {
     }
 }
 
-/// Tagged variants require the fields that carry the tag and payload.
+/// Tagged variants require the fields that carry the tag and payload. Fallback
+/// cases are an alternative to all other cases.
 #[test]
 fn tagged_variants() {
     let defs = generate();
@@ -144,6 +145,10 @@ fn tagged_variants() {
     assert_eq!(
         adjacent[1]["required"],
         serde_json::json!(["tag", "content"])
+    );
+    assert_eq!(
+        defs["json_schema_fixture.types.Open"]["anyOf"],
+        serde_json::json!([{ "enum": ["Empty"] }, { "type": "string" }]),
     );
 }
 

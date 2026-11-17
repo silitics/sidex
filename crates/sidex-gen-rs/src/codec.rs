@@ -224,6 +224,9 @@ pub fn impl_traits(ctx: &SchemaCtx, def: &ir::Def, ty: &RsType) -> Result<TokenS
                 if let Some(content) = &case.json_attrs.content {
                     case_builders.extend(quote! { .json_content(#content) });
                 }
+                if case.json_attrs.fallback {
+                    case_builders.extend(quote! { .json_fallback() });
+                }
                 match &case.ty {
                     Some(payload_ty) => {
                         cases.push(quote! {

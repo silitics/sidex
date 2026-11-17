@@ -56,6 +56,8 @@ Each error has a `path` with wire names, such as `items[2].title`, a `code`, and
 
 Checks do not run `#[validate]` rules. After `Task.is(input)` succeeds, call `Task.validate(input)` when the [validate plugin](/sidex/docs/guides/validation/) is enabled.
 
+A variant with a [fallback case](/sidex/docs/guides/json/#unknown-cases) includes the fallback payload type in its union. If the variant has other cases, its checker also provides `isKnown`, which narrows a value to them. Generic variants take checkers for their type arguments, as for `is`.
+
 ### Generic Types
 
 A generic type takes a checker for each type argument:

@@ -116,6 +116,40 @@ test("variant checks enforce tagging and discard unsuccessful implicit attempts"
   assert.equal(implicit.check({ x: true }).errors.length, 3)
 })
 
+// Fallback payloads hold values that select no case, but not invalid known cases.
+test("variant checks accept unselected values with fallback payloads", () => {
+  const internal = checker(() =>
+    variant(
+      "internal",
+      "kind",
+      [["count", builtin("u8"), ["value"]]],
+      builtin("json"),
+    ),
+  )
+  for (const value of [{ kind: "other" }, { kind: 1 }, { value: 1 }, "text"])
+    assert.ok(internal.is(value), JSON.stringify(value))
+  assert.equal(internal.is({ kind: "count", value: "x" }), false)
+  const external = checker(() =>
+    variant("external", "", [["none", null, null]], builtin("string")),
+  )
+  assert.ok(external.is("other"))
+  assert.equal(external.is({ none: 1 }), false)
+  assert.deepEqual(
+    external.check({ other: 1 }).errors.map((error) => error.code),
+    ["type"],
+  )
+  const implicit = checker(() =>
+    variant(
+      "implicit",
+      "",
+      [["number", builtin("i8"), null]],
+      builtin("string"),
+    ),
+  )
+  assert.ok(implicit.is("text"))
+  assert.equal(implicit.check(true).errors.length, 3)
+})
+
 // Format guards check calendar values, offsets, Base64 trailing bits, and annotations.
 test("scalar formats accept Rust reader spellings and reject malformed values", () => {
   for (const value of ["", "AA", "AA=", "AA==", "AP8", "AP8=", "AAH/"])

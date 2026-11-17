@@ -211,6 +211,9 @@ pub struct JsonVariantAttrs {
     pub rename: Option<RenameFunction>,
     /// Override the per-case content field name.
     pub content: Option<String>,
+    /// Whether the case holds values that select no other case. Its payload is
+    /// the entire value, which is also written as is, without a tag.
+    pub fallback: bool,
 }
 
 /// Read the `JsonVariantAttrs` for `variant` from its `typed_attrs["json"]`.
@@ -222,6 +225,7 @@ pub fn variant_attrs(variant: &ir::Variant) -> Result<JsonVariantAttrs> {
         name: raw.name,
         rename: parse_rename(raw.rename)?,
         content: raw.content,
+        fallback: raw.fallback.unwrap_or(false),
     })
 }
 

@@ -237,12 +237,15 @@ impl Builder {
         }
     }
 
-    /// Returns a schema with one alternative per case.
+    /// Returns a schema combining the cases and, as an alternative to them, the
+    /// fallback case's payload.
     fn variant(&mut self, variant: &'static VariantShape) -> JsonValue {
         let mut alternatives = Vec::new();
+        let mut fallback = None;
         for case in variant.cases {
             let name = JsonValue::from(case.json.name);
             let mut alternative = match (variant.json, case.payload) {
+                (_, Some(payload)) if case.json.fallback => self.schema(payload()),
                 (Tagging::External | Tagging::Implicit, None) => object([("const", name)]),
                 (Tagging::External, Some(payload)) => {
                     object([
@@ -288,14 +291,23 @@ impl Builder {
                     entries.insert("deprecated".into(), true.into());
                 }
             }
-            alternatives.push(alternative);
+            if case.json.fallback {
+                fallback = Some(alternative);
+            } else {
+                alternatives.push(alternative);
+            }
         }
         let combinator = match variant.json {
             // Decoding takes the first case that matches.
             Tagging::Implicit => "anyOf",
             _ => "oneOf",
         };
-        object([(combinator, alternatives.into())])
+        let known = object([(combinator, alternatives.into())]);
+        match fallback {
+            // Values of other cases may also match the fallback's payload.
+            Some(fallback) => object([("anyOf", JsonValue::from(vec![known, fallback]))]),
+            None => known,
+        }
     }
 }
 

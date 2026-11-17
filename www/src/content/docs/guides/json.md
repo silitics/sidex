@@ -173,7 +173,53 @@ variant Position {
 
 The same payload under external tagging is `{"Coordinates":{"x":1,"y":2}}`; a case without a payload is just `"Unknown"`.
 
-Implicit tagging omits the tag. A payload is encoded directly and a case without a payload becomes its name. Readers pick the first case in declaration order that accepts the value. This can make cases ambiguous. Prefer explicit tags when multiple cases could accept the same JSON shape. For instance, readers accept 64-bit integers as decimal strings, so an `i64` case declared before a `string` case also accepts `"3"`.
+Implicit tagging omits the tag. A payload is encoded directly and a case without a payload becomes its name. Readers pick the first case in declaration order that accepts the value, except for a [fallback case](#unknown-cases), which they try last. This can make cases ambiguous. Prefer explicit tags when multiple cases could accept the same JSON shape. For instance, readers accept 64-bit integers as decimal strings, so an `i64` case declared before a `string` case also accepts `"3"`.
+
+## Unknown Cases
+
+A reader rejects a case that its schema does not define. Adding a case therefore breaks older readers. A _fallback case_ lets a variant accept cases added in later versions. It holds every value that selects no other case, and its payload is the entire value, including the tag:
+
+```sidex
+#[json(tag = "type")]
+variant Event {
+    Created: Device,
+    Deleted: DeviceId,
+    /// Event unknown to this version.
+    #[json(fallback)]
+    Other: json,
+}
+```
+
+A reader of this version decodes `{"type":"Renamed","name":"x"}` as `Other` with that object as its payload. Writers write the payload as is, so the value passes through unchanged.
+
+A value selects no other case if:
+
+- with internal or adjacent tagging, it is not an object, or its tag is absent, not a string, or names no case
+- with external tagging, it is not a string or an object with one entry, or the string or key names no case
+- with implicit tagging, no other case accepts it
+
+A value whose tag names a case is not a fallback value, even if its payload is invalid. Readers reject `{"type":"Created"}` without the fields of a `Device`.
+
+The payload type decides which unknown values a reader accepts:
+
+- `json` accepts any value and preserves it.
+- `string` accepts unknown names of externally tagged cases without payloads, such as `"Riscv64"` for a variant with cases `Amd64` and `Arm64`, and rejects objects.
+- A record extracts the fields that all unknown cases share. Readers ignore other fields, unless they reject unknown fields, so writers do not reproduce the original value.
+
+A fallback case needs a payload and cannot set `name`, `rename`, or `content`, because no tag names it. A variant has at most one fallback case. Readers try it last, wherever it is declared.
+
+A constructed fallback value may select another case when read back. For example, `Other({"type":"Created",...})` reads back as `Created`, or fails to read if its payload is invalid.
+
+Rust represents the fallback case as an enum case. Python generates a root model, such as `Event_Other`, whose `payload()` returns the value. TypeScript adds the payload type to the union. With a `json` payload, the union no longer narrows by tag, so generated checkers provide `isKnown`:
+
+```ts
+if (Event.isKnown(event)) {
+  switch (event.type) {
+    case "Created":
+      // ...
+  }
+}
+```
 
 ## Wrappers and Opaque Values
 

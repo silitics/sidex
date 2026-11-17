@@ -61,6 +61,61 @@ mod tests {
         test::<MaybeRef<u64>>("MaybeRefInteger");
         test::<MaybeRef<Point>>("MaybeRefPoint");
         test::<Any>("Any");
+        test!(FallbackInternallyTagged);
+        test!(FallbackExternallyTagged);
+        test!(FallbackAdjacentlyTagged);
+        test!(FallbackImplicitlyTagged);
+    }
+
+    /// Known cases take precedence over fallback cases, which also round-trip
+    /// the values of known cases. Values that select no case only decode as
+    /// fallback cases, so the fixtures cover them.
+    #[test]
+    fn test_fallback_cases() {
+        use sidex::types::JsonValue;
+
+        assert!(matches!(
+            json::from_str(r#"{"kind":"B","content":42}"#).unwrap(),
+            FallbackInternallyTagged::B(42)
+        ));
+        assert!(matches!(
+            json::from_str("42").unwrap(),
+            FallbackImplicitlyTagged::Number(42)
+        ));
+
+        // Known cases with invalid payloads do not fall back.
+        let error = json::from_str::<FallbackInternallyTagged>(r#"{"kind":"B","content":"x"}"#)
+            .unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "content: expected a 64-bit unsigned integer, found `x`"
+        );
+        // Values that the fallback's payload does not admit fail with both reasons.
+        let error = json::from_str::<FallbackExternallyTagged>(r#"{"C":1}"#).unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "unknown case `C` of `::json_test_bundle::data::FallbackExternallyTagged`, and \
+             fallback case `Other` does not match: expected a string, found a map"
+        );
+        // The tag of a record fallback is not an unknown field.
+        let error = json::from_str_strict::<FallbackAdjacentlyTagged>(
+            r#"{"tag":"C","content":1,"extra":2}"#,
+        )
+        .unwrap_err();
+        assert!(
+            error.to_string().ends_with("unknown field `extra`"),
+            "{error}"
+        );
+
+        // Schemas offer the fallback's payload as an alternative to the other cases.
+        let schema = json::schema(<FallbackExternallyTagged as sidex::Shaped>::SHAPE);
+        let alternatives = schema.get("anyOf").and_then(JsonValue::as_seq).unwrap();
+        let known = alternatives[0].get("oneOf").and_then(JsonValue::as_seq);
+        assert_eq!(known.map(|known| known.len()), Some(2));
+        assert_eq!(
+            alternatives[1],
+            json::from_str::<JsonValue>(r#"{"type":"string"}"#).unwrap()
+        );
     }
 
     #[test]

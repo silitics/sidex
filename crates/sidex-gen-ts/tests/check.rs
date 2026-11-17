@@ -448,6 +448,26 @@ fn documents(root: &Path) -> Vec<Document> {
         root,
         "RecordFieldNamesScreamingSnake",
     );
+    rust_fixtures::<FallbackInternallyTagged>(&mut docs, root, "FallbackInternallyTagged");
+    rust_fixtures::<FallbackExternallyTagged>(&mut docs, root, "FallbackExternallyTagged");
+    rust_fixtures::<FallbackAdjacentlyTagged>(&mut docs, root, "FallbackAdjacentlyTagged");
+    rust_fixtures::<FallbackImplicitlyTagged>(&mut docs, root, "FallbackImplicitlyTagged");
+    // Known cases with invalid payloads and values the payload rejects fail.
+    scalar_cases::<FallbackInternallyTagged>(
+        &mut docs,
+        "FallbackInternallyTagged",
+        &[r#"{"kind":"B","content":"x"}"#, r#"{"kind":"C","a":true}"#],
+    );
+    scalar_cases::<FallbackExternallyTagged>(
+        &mut docs,
+        "FallbackExternallyTagged",
+        &[r#"{"B":"x"}"#, r#""B""#, r#"{"A":1}"#, r#"{"C":1}"#, "1"],
+    );
+    scalar_cases::<FallbackAdjacentlyTagged>(
+        &mut docs,
+        "FallbackAdjacentlyTagged",
+        &[r#"{"tag":"B"}"#, r#"{"tag":1}"#, r#"{"value":1}"#],
+    );
     docs
 }
 

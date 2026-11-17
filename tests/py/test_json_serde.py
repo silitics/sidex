@@ -249,6 +249,56 @@ class TestAny:
         assert adapter.validate_json('"three"') == "three"
 
 
+FALLBACK_TYPES = [
+    "FallbackInternallyTagged",
+    "FallbackExternallyTagged",
+    "FallbackAdjacentlyTagged",
+    "FallbackImplicitlyTagged",
+]
+
+
+class TestFallback:
+    """Fallback cases hold the entire value of cases unknown to the schema."""
+
+    @pytest.mark.parametrize(
+        "type_name,name,path",
+        [(t, n, p) for t in FALLBACK_TYPES for n, p in _fixture_files(t)],
+        ids=[f"{t}-{n}" for t in FALLBACK_TYPES for n, _ in _fixture_files(t)],
+    )
+    def test_roundtrip(self, data, type_name, name, path):
+        expected, actual = _roundtrip(TypeAdapter(getattr(data, type_name)), path)
+        assert actual == expected
+
+    def test_case_selection(self, data):
+        """Known cases take precedence, and fallback models hold the entire value."""
+        internal = TypeAdapter(data.FallbackInternallyTagged)
+        assert isinstance(
+            internal.validate_json('{"kind": "B", "content": 1}'),
+            data.FallbackInternallyTagged_B,
+        )
+        other = internal.validate_json('{"kind": "D", "x": 1}')
+        assert isinstance(other, data.FallbackInternallyTagged_Other)
+        assert other.payload() == {"kind": "D", "x": 1}
+        external = TypeAdapter(data.FallbackExternallyTagged)
+        assert external.validate_json('"A"') == "A"
+        assert external.validate_json('"C"') == data.FallbackExternallyTagged_Other("C")
+        assert TypeAdapter(data.FallbackImplicitlyTagged).validate_json("42") == 42
+
+    @pytest.mark.parametrize(
+        "type_name,value",
+        [
+            ("FallbackInternallyTagged", '{"kind": "B", "content": "x"}'),
+            ("FallbackExternallyTagged", '{"B": "x"}'),
+            ("FallbackAdjacentlyTagged", '{"tag": "B", "content": "x"}'),
+            ("FallbackExternallyTagged", '{"C": 1}'),
+        ],
+    )
+    def test_rejections(self, data, type_name, value):
+        """Known cases with invalid payloads and values the payload rejects fail."""
+        with pytest.raises(ValidationError):
+            TypeAdapter(getattr(data, type_name)).validate_json(value)
+
+
 class TestScalars:
     """Booleans and integers up to 32 bits are strict and range checked."""
 

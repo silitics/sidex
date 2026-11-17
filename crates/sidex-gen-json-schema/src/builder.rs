@@ -97,6 +97,7 @@ pub struct VariantTypeSchemaBuilder {
     names: Vec<String>,
     all_unit: bool,
     variants: Vec<Schema>,
+    fallback: Option<Schema>,
 }
 
 impl VariantTypeSchemaBuilder {
@@ -107,7 +108,13 @@ impl VariantTypeSchemaBuilder {
             names: Vec::new(),
             all_unit: true,
             variants: Vec::new(),
+            fallback: None,
         }
+    }
+
+    /// Adds the fallback case, whose payload is the entire value.
+    pub fn add_fallback_variant(&mut self, type_schema: TypeSchema) {
+        self.fallback = Some(type_schema.use_schema.into());
     }
 
     pub fn add_unit_variant(&mut self, variant_name: &str) {
@@ -166,7 +173,7 @@ impl VariantTypeSchemaBuilder {
 
     pub fn build(self) -> SchemaObject {
         use JsonTaggedAttr::*;
-        if self.all_unit {
+        let known = if self.all_unit {
             SchemaObject::new().with_allowed_values(Some(
                 self.names
                     .into_iter()
@@ -190,6 +197,15 @@ impl VariantTypeSchemaBuilder {
                     SubschemaKeywords::new().with_one_of(Some(self.variants))
                 },
             ))
+        };
+        match self.fallback {
+            // Values of the other cases may also match the fallback's payload.
+            Some(fallback) => {
+                SchemaObject::new().with_subschema_keywords(Box::new(
+                    SubschemaKeywords::new().with_any_of(Some(vec![known.into(), fallback])),
+                ))
+            }
+            None => known,
         }
     }
 }

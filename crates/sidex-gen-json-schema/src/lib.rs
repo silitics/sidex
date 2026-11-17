@@ -438,6 +438,11 @@ impl<'cx> JsonSchemaCtx<'cx> {
         // let mut idl_variants = Vec::new();
         for variant in &variant_type.variants {
             let json_variant_attrs = variant_attrs(variant)?;
+            if json_variant_attrs.fallback {
+                let typ = variant.typ.as_ref().expect("fallback cases have payloads");
+                builder.add_fallback_variant(self.resolve(typ)?);
+                continue;
+            }
             let variant_name = json_type_attrs.variant_name(variant, &json_variant_attrs);
             // let mut idl_variant = IdlVariant::new(variant.name.as_str().to_owned());
             if let Some(typ) = &variant.typ {

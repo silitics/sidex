@@ -200,62 +200,76 @@ export type Case = readonly [
   string | null | readonly [string],
 ]
 
-/** Checks all Sidex tagging modes. Failed implicit cases keep their errors. */
+/**
+ * Checks all Sidex tagging modes. Failed implicit cases keep their errors.
+ *
+ * Values that select none of the cases must match the payload of the fallback
+ * case, if there is one. Its payload is the entire value.
+ */
 export function variant(
   mode: "external" | "internal" | "adjacent" | "implicit",
   tag: string,
   cases: readonly Case[],
+  fallback: Check | null = null,
 ): Check {
   return (value, path, report, key) => {
     if (key) return fail(report, path, "key", "Variants cannot be map keys.")
+    const unselected = (reject: () => void): void =>
+      fallback === null ? reject() : fallback(value, path, report, false)
     if (mode === "implicit") {
       const failures = new CheckReport()
-      for (const [name, payload] of cases) {
-        if (payload === null) {
-          if (value === name) return
-          continue
-        }
+      const matches = (payload: Check): boolean => {
         const attempt = new CheckReport()
         if (active.has(report)) active.set(attempt, active.get(report)!)
         payload(value, path, attempt, false)
-        if (attempt.isOk()) return
         failures.merge(attempt)
+        return attempt.isOk()
       }
+      for (const [name, payload] of cases)
+        if (payload === null ? value === name : matches(payload)) return
+      if (fallback !== null && matches(fallback)) return
       fail(report, path, "case", "No variant case matches.")
       report.merge(failures)
       return
     }
     if (mode === "external") {
       if (typeof value === "string") {
-        if (cases.some(([name, payload]) => name === value && payload === null))
-          return
-        return fail(report, path, "case", "Expected a case without a payload.")
+        const selected = cases.find(([name]) => name === value)
+        if (selected?.[1] === null) return
+        const reject = () =>
+          fail(report, path, "case", "Expected a case without a payload.")
+        return selected ? reject() : unselected(reject)
       }
       if (!isObject(value) || Object.keys(value).length !== 1)
-        return fail(
-          report,
-          path,
-          "type",
-          "Expected a case name or an object with one entry.",
+        return unselected(() =>
+          fail(
+            report,
+            path,
+            "type",
+            "Expected a case name or an object with one entry.",
+          ),
         )
       const name = Object.keys(value)[0]!
       const selected = cases.find(([caseName]) => caseName === name)
-      if (!selected || selected[1] === null)
+      if (!selected)
+        return unselected(() =>
+          fail(report, path, "case", "Expected a case with a payload."),
+        )
+      if (selected[1] === null)
         return fail(report, path, "case", "Expected a case with a payload.")
       selected[1](value[name], path.key(name), report, false)
       return
     }
     if (!isObject(value))
-      return fail(report, path, "type", "Expected an object.")
+      return unselected(() => fail(report, path, "type", "Expected an object."))
     if (!hasOwn(value, tag))
-      return fail(report, path.key(tag), "missing", `Missing field '${tag}'.`)
+      return unselected(() =>
+        fail(report, path.key(tag), "missing", `Missing field '${tag}'.`),
+      )
     const selected = cases.find(([name]) => name === value[tag])
     if (!selected)
-      return fail(
-        report,
-        path.key(tag),
-        "case",
-        "Expected a known variant tag.",
+      return unselected(() =>
+        fail(report, path.key(tag), "case", "Expected a known variant tag."),
       )
     const [, payload, contentSpec] = selected
     if (payload === null) return

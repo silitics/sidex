@@ -307,7 +307,7 @@ impl<'a> Walker<'a> {
         }
         let attrs = variant_type_attrs(def)?;
         // At depth limit, prefer a unit case if any exists; otherwise fall through.
-        let pick = self.pick_variant_idx(variant, source);
+        let pick = self.pick_variant_idx(variant, source)?;
         let chosen = &variant.variants[pick];
         let case_attrs = variant_attrs(chosen)?;
         let case_name = attrs.variant_name(chosen, &case_attrs);
@@ -318,14 +318,28 @@ impl<'a> Walker<'a> {
         Ok(value)
     }
 
-    fn pick_variant_idx(&self, variant: &ir::VariantTypeDef, source: &mut Source) -> usize {
-        if self.depth >= self.config.max_depth {
-            // Find a unit case to terminate recursion if one exists.
-            if let Some(idx) = variant.variants.iter().position(|v| v.typ.is_none()) {
-                return idx;
+    fn pick_variant_idx(&self, variant: &ir::VariantTypeDef, source: &mut Source) -> Result<usize> {
+        // Values of fallback cases may select other cases when read back, so
+        // only pick them if there is nothing else.
+        let mut candidates = Vec::new();
+        for (idx, case) in variant.variants.iter().enumerate() {
+            if !variant_attrs(case)?.fallback {
+                candidates.push(idx);
             }
         }
-        source.draw_choice(variant.variants.len())
+        if candidates.is_empty() {
+            return Ok(0);
+        }
+        if self.depth >= self.config.max_depth {
+            // Find a unit case to terminate recursion if one exists.
+            if let Some(&idx) = candidates
+                .iter()
+                .find(|&&idx| variant.variants[idx].typ.is_none())
+            {
+                return Ok(idx);
+            }
+        }
+        Ok(candidates[source.draw_choice(candidates.len())])
     }
 
     fn encode_variant(
@@ -341,6 +355,10 @@ impl<'a> Walker<'a> {
             .typ
             .as_ref()
             .map(|t| self.ir.apply_subst(t, &instance.subst));
+        if case_attrs.fallback {
+            let typ = payload_type.expect("fallback cases have payloads");
+            return self.gen_value(&typ, source);
+        }
         match attrs.tagged {
             JsonTaggedAttr::Externally => {
                 match payload_type {

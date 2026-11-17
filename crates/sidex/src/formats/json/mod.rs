@@ -77,7 +77,25 @@
 //! | external | `"Unknown"` | `{"Named":"home"}` | `{"Coordinates":{"x":1,"y":2}}` |
 //! | implicit | `"Unknown"` | `"home"` | `{"x":1,"y":2}` |
 //!
-//! Implicit tagging decodes the first case in declaration order that matches.
+//! Implicit tagging decodes the first case in declaration order that matches,
+//! trying a fallback case last.
+//!
+//! # Fallback Cases
+//!
+//! A variant may have one fallback case with a payload. Values that select no
+//! other case decode as the fallback case, whose payload is the entire value,
+//! tag included. Its payload is also written as is, without a tag. A value
+//! selects no other case if:
+//!
+//! - with internal or adjacent tagging, it is not a map, or its tag is absent, not a
+//!   string, or names no case,
+//! - with external tagging, it is not a string or a map with a single entry, or the
+//!   string or key names no case,
+//! - with implicit tagging, no other case matches.
+//!
+//! A value whose tag names a case but whose payload is invalid still fails to
+//! decode. Values of fallback cases written by other means than decoding may
+//! select another case when read back.
 //!
 //! [`formats`]: crate::formats
 
