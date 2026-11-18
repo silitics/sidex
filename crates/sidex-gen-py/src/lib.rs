@@ -646,14 +646,41 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
 
     let mut variant_classes: Vec<Code> = Vec::new();
     let mut members: Vec<UnionMember> = Vec::new();
+    let mut fallback_member = None;
 
-    for variant in &var_def.variants {
-        let json_attrs = json_variant_attrs(variant)?;
-        let json_name = ty_json.variant_name(variant, &json_attrs);
+    let cases = var_def
+        .variants
+        .iter()
+        .map(|variant| Ok((variant, json_variant_attrs(variant)?)))
+        .collect::<Result<Vec<_>>>()?;
+    let known_names: Vec<String> = cases
+        .iter()
+        .filter(|(_, json_attrs)| !json_attrs.fallback)
+        .map(|(variant, json_attrs)| ty_json.variant_name(variant, json_attrs))
+        .collect();
+
+    for (variant, json_attrs) in &cases {
         let variant_ident = variant.name.as_str();
         let class_name = format!("{name}_{variant_ident}");
         let used_vars = variant_used_vars(def, variant.typ.as_ref());
 
+        if json_attrs.fallback {
+            let typ = variant.typ.as_ref().expect("fallback cases have payloads");
+            variant_classes.push(generate_fallback_variant(
+                ctx,
+                def,
+                typ,
+                &class_name,
+                &ty_json,
+                &known_names,
+                &used_vars,
+            ));
+            let subscript = subscript_for(&used_vars);
+            fallback_member = Some(format!("{class_name}{subscript}"));
+            continue;
+        }
+
+        let json_name = ty_json.variant_name(variant, json_attrs);
         match (ty_json.tagged, &variant.typ) {
             (JsonTaggedAttr::Implicitly | JsonTaggedAttr::Externally, None) => {
                 // Cases without payloads encode as bare strings, so they become
@@ -693,7 +720,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
                     variant,
                     &class_name,
                     &json_name,
-                    &json_attrs,
+                    json_attrs,
                     &ty_json,
                     &used_vars,
                     &tag_py,
@@ -710,7 +737,7 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
                     variant,
                     &class_name,
                     &json_name,
-                    &json_attrs,
+                    json_attrs,
                     &ty_json,
                     &used_vars,
                     &tag_py,
@@ -743,14 +770,22 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
     // Like the other languages, implicitly tagged variants decode the first
     // case that matches.
     let first_match = union_members.len() > 1 && ty_json.tagged == JsonTaggedAttr::Implicitly;
-    let alias_decl = if use_discriminator {
-        quote!("type @name@params = Annotated[@union_expr, pydantic.Discriminator(\"@tag_py\")]")
+    let known = if use_discriminator {
+        format!("Annotated[{union_expr}, pydantic.Discriminator(\"{tag_py}\")]")
     } else if first_match {
-        quote!(
-            "type @name@params = Annotated[@union_expr, pydantic.Field(union_mode=\"left_to_right\")]"
-        )
+        format!("Annotated[{union_expr}, pydantic.Field(union_mode=\"left_to_right\")]")
     } else {
-        quote!("type @name@params = @union_expr")
+        union_expr
+    };
+    // The fallback case only holds values that no other case holds.
+    let alias_decl = match fallback_member {
+        Some(fallback) if known.is_empty() => quote!("type @name@params = @fallback"),
+        Some(fallback) => {
+            quote!(
+                "type @name@params = Annotated[@known | @fallback, pydantic.Field(union_mode=\"left_to_right\")]"
+            )
+        }
+        None => quote!("type @name@params = @known"),
     };
 
     // Each variant class needs two blank lines before it. The variant template
@@ -775,6 +810,71 @@ fn generate_variant(ctx: &SchemaCtx, def: &ir::Def, var_def: &ir::VariantTypeDef
         @alias_decl
         "#
     ))
+}
+
+/// Generates the class of a fallback case, whose payload is the entire value.
+///
+/// For explicitly tagged variants, the class rejects values that name another
+/// case, so that their invalid payloads do not fall back.
+fn generate_fallback_variant(
+    ctx: &SchemaCtx,
+    def: &ir::Def,
+    typ: &ir::Type,
+    class_name: &str,
+    ty_json: &JsonVariantTypeAttrs,
+    known_names: &[String],
+    used_vars: &[String],
+) -> Code {
+    let gen_bases = generic_bases_for(used_vars);
+    let inner = ctx.resolve_type(def, typ);
+    let names = known_names
+        .iter()
+        .map(|name| format!("\"{}\"", escape_string_literal(name)))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let reject = match ty_json.tagged {
+        JsonTaggedAttr::Internally | JsonTaggedAttr::Adjacently => {
+            let tag = escape_string_literal(&ty_json.tag_field_name());
+            Some(format!(
+                "_sidex.reject_known_tagged(value, \"{tag}\", frozenset({{{names}}}))"
+            ))
+        }
+        JsonTaggedAttr::Externally => {
+            Some(format!(
+                "_sidex.reject_known_external(value, frozenset({{{names}}}))"
+            ))
+        }
+        // Implicitly tagged variants try the fallback case last.
+        JsonTaggedAttr::Implicitly => None,
+    };
+    let payload_method = field_payload_method("root", &inner);
+    match reject {
+        Some(reject) if !known_names.is_empty() => {
+            quote!(
+                r#"
+
+
+                class @class_name(pydantic.RootModel[@inner]@gen_bases):
+                    @@pydantic.model_validator(mode="before")
+                    @@classmethod
+                    def _sidex_fallback(cls, value: object) -> object:
+                        return @reject
+
+                    @payload_method
+                "#
+            )
+        }
+        _ => {
+            quote!(
+                r#"
+
+
+                class @class_name(pydantic.RootModel[@inner]@gen_bases):
+                    @payload_method
+                "#
+            )
+        }
+    }
 }
 
 /// Member of the union that a variant type is generated as.

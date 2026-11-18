@@ -474,4 +474,15 @@ impl CaseShape {
             ..self
         }
     }
+
+    /// Makes the case hold JSON values that select no other case.
+    pub const fn json_fallback(self) -> Self {
+        Self {
+            json: json::Case {
+                fallback: true,
+                ..self.json
+            },
+            ..self
+        }
+    }
 }

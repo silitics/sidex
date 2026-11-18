@@ -36,6 +36,47 @@ variant VariantExternallyTagged<T> {
     D: T,
 }
 
+/// Exercises a fallback case holding the entire value of unknown cases.
+#[json(tag = "kind")]
+variant FallbackInternallyTagged {
+    A,
+    B: u64,
+    C: VariantTestRecord,
+    #[json(fallback)]
+    Other: json,
+}
+
+/// Exercises a fallback case recording the name of unknown cases.
+#[json(tagged = externally)]
+variant FallbackExternallyTagged {
+    A,
+    B: u64,
+    #[json(fallback)]
+    Other: string,
+}
+
+/// Exercises a fallback case with a record payload.
+#[json(tagged = adjacently)]
+variant FallbackAdjacentlyTagged {
+    A,
+    B: u64,
+    #[json(fallback)]
+    Other: FallbackRecord,
+}
+
+record FallbackRecord {
+    tag: string,
+    content?: json,
+}
+
+/// Exercises a fallback case declared before the case it must not shadow.
+#[json(tagged = implicitly)]
+variant FallbackImplicitlyTagged {
+    #[json(fallback)]
+    Other: json,
+    Number: u64,
+}
+
 /// Exercises a variant whose cases have no payloads.
 #[json(tagged = externally)]
 variant Enumeration {

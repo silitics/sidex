@@ -119,8 +119,8 @@ pub trait Decoder {
     ///
     /// Some formats cannot tell the case from the input alone, for instance,
     /// JSON for implicitly tagged variants. They try the cases in
-    /// declaration order by calling `f` for each, until a call succeeds. Hence,
-    /// `f` must only have effects if it succeeds.
+    /// declaration order, and a fallback case last, by calling `f` for each,
+    /// until a call succeeds. Hence, `f` must only have effects if it succeeds.
     fn variant(
         &mut self,
         shape: &'static Shape,

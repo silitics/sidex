@@ -60,6 +60,13 @@ variant Adjacent {
     Text: string,
 }
 
+#[json(tagged = externally)]
+variant Open {
+    Empty,
+    #[json(fallback)]
+    Other: string,
+}
+
 record Section {
     title: string,
     blocks: [Block],

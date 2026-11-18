@@ -101,73 +101,8 @@ impl Plugin for Types {
             }
             ir::DefKind::VariantType(typ) => {
                 is_nominal = false;
-                let ty_json_attrs = json_variant_type_attrs(def)?;
-                let tag_field = ts_string_literal(&ty_json_attrs.tag_field_name());
-                let mut variant_ts_types: Vec<TypeExpr> = Vec::new();
-                for variant in &typ.variants {
-                    let json_attrs = json_variant_attrs(variant)?;
-                    let variant_name =
-                        ts_string_literal(&ty_json_attrs.variant_name(variant, &json_attrs));
-
-                    if let Some(typ_) = &variant.typ {
-                        let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ_);
-                        let inner = ctx.resolve_type(def, typ_);
-
-                        match ty_json_attrs.tagged {
-                            JsonTaggedAttr::Externally => {
-                                variant_ts_types
-                                    .push(TypeExpr(quote!("{ @variant_name: @inner }")));
-                            }
-                            JsonTaggedAttr::Implicitly => {
-                                variant_ts_types.push(inner);
-                            }
-                            _ => {
-                                match super::check::is_record(ctx.bundle_ctx.unit, &resolved) {
-                                    true if json_attrs.content.is_none()
-                                        && matches!(
-                                            ty_json_attrs.tagged,
-                                            JsonTaggedAttr::Internally
-                                        ) =>
-                                    {
-                                        variant_ts_types.push(TypeExpr(quote!(
-                                            "({ @tag_field: @variant_name } & @inner)"
-                                        )));
-                                    }
-                                    _ => {
-                                        let content_field = ts_string_literal(
-                                            &ty_json_attrs.content_field_name(&json_attrs),
-                                        );
-                                        let nested = TypeExpr(quote!(
-                                            "{ @tag_field: @variant_name, @content_field: @inner }"
-                                        ));
-                                        if matches!(
-                                            ty_json_attrs.tagged,
-                                            JsonTaggedAttr::Internally
-                                        ) && json_attrs.content.is_none()
-                                            && contains_var(&resolved)
-                                        {
-                                            let inline = TypeExpr(quote!(
-                                                "({ @tag_field: @variant_name } & @inner)"
-                                            ));
-                                            variant_ts_types
-                                                .push(TypeExpr::union([nested, inline]));
-                                        } else {
-                                            variant_ts_types.push(nested);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        variant_ts_types.push(match ty_json_attrs.tagged {
-                            JsonTaggedAttr::Externally | JsonTaggedAttr::Implicitly => {
-                                TypeExpr(Code::from(variant_name))
-                            }
-                            _ => TypeExpr(quote!("{ @tag_field: @variant_name }")),
-                        });
-                    }
-                }
-                TypeExpr::union(variant_ts_types)
+                let (known, fallback) = variant_types(ctx, def, typ)?;
+                TypeExpr::union(known.into_iter().chain(fallback))
             }
             ir::DefKind::WrapperType(typ) => ctx.resolve_type(def, &typ.wrapped),
         };
@@ -258,6 +193,76 @@ impl Plugin for Types {
             .collect();
         Ok(quote!("@(@exports)*"))
     }
+}
+
+/// Returns the types of a variant's cases and of its fallback case's payload.
+pub(crate) fn variant_types(
+    ctx: &SchemaCtx,
+    def: &ir::Def,
+    typ: &ir::VariantTypeDef,
+) -> diagnostics::Result<(Vec<TypeExpr>, Option<TypeExpr>)> {
+    let ty_json_attrs = json_variant_type_attrs(def)?;
+    let tag_field = ts_string_literal(&ty_json_attrs.tag_field_name());
+    let mut variant_ts_types: Vec<TypeExpr> = Vec::new();
+    let mut fallback = None;
+    for variant in &typ.variants {
+        let json_attrs = json_variant_attrs(variant)?;
+        if json_attrs.fallback {
+            let typ = variant.typ.as_ref().expect("fallback cases have payloads");
+            fallback = Some(ctx.resolve_type(def, typ));
+            continue;
+        }
+        let variant_name = ts_string_literal(&ty_json_attrs.variant_name(variant, &json_attrs));
+
+        if let Some(typ_) = &variant.typ {
+            let resolved = ctx.bundle_ctx.unit.resolve_aliases(typ_);
+            let inner = ctx.resolve_type(def, typ_);
+
+            match ty_json_attrs.tagged {
+                JsonTaggedAttr::Externally => {
+                    variant_ts_types.push(TypeExpr(quote!("{ @variant_name: @inner }")));
+                }
+                JsonTaggedAttr::Implicitly => {
+                    variant_ts_types.push(inner);
+                }
+                _ => {
+                    match super::check::is_record(ctx.bundle_ctx.unit, &resolved) {
+                        true if json_attrs.content.is_none()
+                            && matches!(ty_json_attrs.tagged, JsonTaggedAttr::Internally) =>
+                        {
+                            variant_ts_types
+                                .push(TypeExpr(quote!("({ @tag_field: @variant_name } & @inner)")));
+                        }
+                        _ => {
+                            let content_field =
+                                ts_string_literal(&ty_json_attrs.content_field_name(&json_attrs));
+                            let nested = TypeExpr(quote!(
+                                "{ @tag_field: @variant_name, @content_field: @inner }"
+                            ));
+                            if matches!(ty_json_attrs.tagged, JsonTaggedAttr::Internally)
+                                && json_attrs.content.is_none()
+                                && contains_var(&resolved)
+                            {
+                                let inline =
+                                    TypeExpr(quote!("({ @tag_field: @variant_name } & @inner)"));
+                                variant_ts_types.push(TypeExpr::union([nested, inline]));
+                            } else {
+                                variant_ts_types.push(nested);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            variant_ts_types.push(match ty_json_attrs.tagged {
+                JsonTaggedAttr::Externally | JsonTaggedAttr::Implicitly => {
+                    TypeExpr(Code::from(variant_name))
+                }
+                _ => TypeExpr(quote!("{ @tag_field: @variant_name }")),
+            });
+        }
+    }
+    Ok((variant_ts_types, fallback))
 }
 
 pub(crate) fn ts_string_literal(s: &str) -> String {

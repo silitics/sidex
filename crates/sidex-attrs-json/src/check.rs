@@ -14,7 +14,8 @@ use crate::record_type_attrs;
 use crate::variant_attrs;
 use crate::variant_type_attrs;
 
-/// Rejects invalid inline fields and duplicate names in flattened JSON objects.
+/// Rejects invalid inline fields, duplicate names in flattened JSON objects,
+/// and invalid fallback cases.
 pub fn check(unit: &ir::Ir) {
     for (idx, def) in unit.defs.iter().enumerate() {
         let result = match &def.kind {
@@ -38,8 +39,8 @@ fn check_record(unit: &ir::Ir, idx: ir::DefIdx, record: &ir::RecordTypeDef) -> R
             names.insert(record_attrs.field_name(field, &attrs));
             for alias in &attrs.aliases {
                 if !names.insert(alias.clone()) {
-                    field_error(
-                        field,
+                    error_at(
+                        &field.span,
                         &format!(
                             "JSON field alias `{alias}` repeats the field's name or another alias."
                         ),
@@ -50,22 +51,22 @@ fn check_record(unit: &ir::Ir, idx: ir::DefIdx, record: &ir::RecordTypeDef) -> R
             continue;
         }
         if !attrs.aliases.is_empty() {
-            field_error(
-                field,
+            error_at(
+                &field.span,
                 "`#[json(alias(...))]` cannot be used on an inline field.",
                 "inline field has no JSON key",
             );
         }
         if field.is_optional {
-            field_error(
-                field,
+            error_at(
+                &field.span,
                 "`#[json(inline)]` requires a nonoptional field.",
                 "optional inline field",
             );
         }
         if resolve_record(unit, &field.typ).is_none() {
-            field_error(
-                field,
+            error_at(
+                &field.span,
                 "`#[json(inline)]` requires a record type, or an alias or wrapper of a record.",
                 "not a record",
             );
@@ -87,15 +88,50 @@ fn check_record(unit: &ir::Ir, idx: ir::DefIdx, record: &ir::RecordTypeDef) -> R
     Ok(())
 }
 
-/// Reserves the tag name beside each internally tagged record payload.
+/// Checks fallback cases and reserves the tag name beside each internally
+/// tagged record payload.
 fn check_variant(unit: &ir::Ir, def: &ir::Def, variant: &ir::VariantTypeDef) -> Result<()> {
     let attrs = variant_type_attrs(def).map_err(|error| error.with_span(def.span.clone()))?;
+    let mut fallback = None;
+    for case in &variant.variants {
+        let case_attrs = variant_attrs(case).map_err(|error| error.with_span(case.span.clone()))?;
+        if !case_attrs.fallback {
+            continue;
+        }
+        if let Some(first) = fallback.replace(case) {
+            error_at(
+                &case.span,
+                &format!(
+                    "Variant `{}` has more than one `#[json(fallback)]` case: `{}` and `{}`.",
+                    def.name.as_str(),
+                    first.name.as_str(),
+                    case.name.as_str(),
+                ),
+                "second fallback case",
+            );
+        }
+        if case.typ.is_none() {
+            error_at(
+                &case.span,
+                "`#[json(fallback)]` requires a case with a payload.",
+                "fallback case without payload",
+            );
+        }
+        if case_attrs.name.is_some() || case_attrs.rename.is_some() || case_attrs.content.is_some()
+        {
+            error_at(
+                &case.span,
+                "`#[json(fallback)]` cannot be combined with `name`, `rename`, or `content`.",
+                "fallback case has no JSON name",
+            );
+        }
+    }
     if attrs.tagged != JsonTaggedAttr::Internally {
         return Ok(());
     }
     for case in &variant.variants {
         let case_attrs = variant_attrs(case).map_err(|error| error.with_span(case.span.clone()))?;
-        if case_attrs.content.is_some() {
+        if case_attrs.content.is_some() || case_attrs.fallback {
             continue;
         }
         let Some(instance) = case.typ.as_ref().and_then(|typ| resolve_record(unit, typ)) else {
@@ -201,10 +237,10 @@ fn resolve_record(unit: &ir::Ir, typ: &ir::Type) -> Option<ir::InstanceType> {
     resolve_record(unit, &unit.apply_subst(inner, &instance.subst))
 }
 
-/// Reports an inline restriction at the field.
-fn field_error(field: &ir::Field, message: &str, label: &str) {
-    let mut diagnostic = Diagnostic::error(message).with_span(field.span.clone());
-    if let Some(span) = &field.span {
+/// Reports a restriction of a field or case at its span.
+fn error_at(span: &Option<ir::Span>, message: &str, label: &str) {
+    let mut diagnostic = Diagnostic::error(message).with_span(span.clone());
+    if let Some(span) = span {
         diagnostic = diagnostic.with_label(Label::new(span.clone(), label));
     }
     diagnostic.emit();

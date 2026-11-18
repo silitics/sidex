@@ -83,7 +83,8 @@ pub enum Tagging {
     /// payload are strings.
     External,
     /// The payload is represented directly. Cases without payload are strings.
-    /// Decoding selects the first case in declaration order that matches.
+    /// Decoding selects the first case in declaration order that matches, and
+    /// the fallback case only if no other case matches.
     Implicit,
 }
 
@@ -96,6 +97,11 @@ pub struct Case {
     /// Field holding the payload of an internally or adjacently tagged case,
     /// replacing the content field of the tagging.
     pub content: Option<&'static str>,
+    /// Indicates whether the case holds values that select no other case.
+    ///
+    /// The payload of a fallback case is the entire value, regardless of the
+    /// tagging, like with implicit tagging.
+    pub fallback: bool,
 }
 
 impl Case {
@@ -103,6 +109,7 @@ impl Case {
         Self {
             name,
             content: None,
+            fallback: false,
         }
     }
 

@@ -73,6 +73,6 @@ Lifecycle attributes describe your model. They do not compare two model revision
 
 Compatibility depends on both readers and writers. For example, adding an optional field lets a new reader accept old JSON without that field. An old reader must still tolerate the new writer's additional field.
 
-Review changes to required fields, field and case names, payload types, variant tagging, and validation constraints. Adding a variant case can also break exhaustive application code or an older reader.
+Review changes to required fields, field and case names, payload types, variant tagging, and validation constraints. Adding a variant case can also break exhaustive application code or an older reader. A [fallback case](/sidex/docs/guides/json/#unknown-cases) lets older readers accept cases added later.
 
 For a rename, prefer an overlap period: introduce the replacement, retain the old field with a deprecation note, migrate readers and writers, then remove it in a planned release. Test representative JSON with every participating application.

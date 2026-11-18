@@ -1284,6 +1284,51 @@ mod tests {
         assert_eq!(errors(source), Vec::<String>::new());
     }
 
+    /// Fallback cases need a payload and no JSON name, and there is at most one.
+    #[test]
+    fn rejects_invalid_json_fallback_cases() {
+        for (cases, error) in [
+            (
+                "#[json(fallback)] Other",
+                "`#[json(fallback)]` requires a case with a payload.",
+            ),
+            (
+                r#"#[json(fallback, name = "other")] Other: json"#,
+                "`#[json(fallback)]` cannot be combined with `name`, `rename`, or `content`.",
+            ),
+            (
+                r#"#[json(fallback, rename = "lowercase")] Other: json"#,
+                "`#[json(fallback)]` cannot be combined with `name`, `rename`, or `content`.",
+            ),
+            (
+                r#"#[json(fallback, content = "value")] Other: json"#,
+                "`#[json(fallback)]` cannot be combined with `name`, `rename`, or `content`.",
+            ),
+            (
+                "#[json(fallback)] Other: json, #[json(fallback)] Text: string",
+                "Variant `Choice` has more than one `#[json(fallback)]` case: `Other` and `Text`.",
+            ),
+        ] {
+            let source = format!("variant Choice {{ Known, {cases} }}");
+            assert_eq!(errors(&source), [error], "{cases}");
+        }
+    }
+
+    /// Fallback cases may have any payload, and internal tags do not reserve
+    /// names in fallback record payloads.
+    #[test]
+    fn accepts_json_fallback_cases() {
+        let source = r#"
+            record Unknown { tag: string }
+            variant Internal { Known, #[json(fallback)] Other: Unknown }
+            #[json(tagged = externally)]
+            variant External { #[json(fallback)] Other: string, Known }
+            #[json(tagged = implicitly)]
+            variant Implicit { Number: u64, #[json(fallback)] Other: json }
+        "#;
+        assert_eq!(errors(source), Vec::<String>::new());
+    }
+
     #[test]
     fn reports_unresolved_types() {
         assert_eq!(

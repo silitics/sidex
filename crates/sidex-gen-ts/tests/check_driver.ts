@@ -41,6 +41,10 @@ const checks: Record<string, Checker<unknown>> = {
   JsRoundtrip: wire.JsRoundtrip,
   RecordFieldNamesDefault: wire.RecordFieldNamesDefault,
   RecordFieldNamesScreamingSnake: wire.RecordFieldNamesScreamingSnake,
+  FallbackInternallyTagged: wire.FallbackInternallyTagged,
+  FallbackExternallyTagged: wire.FallbackExternallyTagged,
+  FallbackAdjacentlyTagged: wire.FallbackAdjacentlyTagged,
+  FallbackImplicitlyTagged: wire.FallbackImplicitlyTagged,
   i8map: runtime.checker(() =>
     runtime.map(runtime.builtin("i8"), runtime.builtin("string")),
   ),
@@ -236,6 +240,29 @@ assert(
 assert(
   data.Implicit.check({ x: true }).errors.length === 4,
   "implicit report includes all attempted payloads",
+)
+
+// Known cases narrow by their tag once the fallback case is excluded.
+const events: wire.FallbackInternallyTagged[] = [
+  { kind: "B", content: 1 as runtime.U64 },
+  { kind: "D", value: 1 },
+]
+const kinds = events.map((event) => {
+  if (!wire.FallbackInternallyTagged.isKnown(event)) return "other"
+  switch (event.kind) {
+    case "A":
+      return "a"
+    case "B":
+      return `b${event.content}`
+    case "C":
+      return `c${event.a}`
+  }
+})
+assert(kinds.join() === "b1,other", `known cases: ${kinds}`)
+assert(
+  wire.FallbackImplicitlyTagged.isKnown(42 as runtime.U64) &&
+    !wire.FallbackImplicitlyTagged.isKnown(-1),
+  "implicit known cases",
 )
 
 const merged = ValidationReport.ok()

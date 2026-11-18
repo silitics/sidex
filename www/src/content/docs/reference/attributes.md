@@ -14,7 +14,7 @@ Attributes precede the element they annotate. Use `#[...]` for definitions, fiel
 | Record       | `rename_all = "..."`                                                   | Default field naming                                     |
 | Field        | `name = "..."`, `rename = "..."`, `alias("...")`, `inline`                             | Explicit name, naming convention, or inlined record      |
 | Variant      | `rename_all = "..."`, `tagged = ...`, `tag = "..."`, `content = "..."` | Case naming and tagging                                  |
-| Variant case | `name = "..."`, `rename = "..."`, `content = "..."`                    | Case name and content field override                     |
+| Variant case | `name = "..."`, `rename = "..."`, `content = "..."`, `fallback`        | Case name, content field override, or fallback case      |
 
 JSON shape names are `number`, `boolean`, `string`, `null`, `object`, `array`, and `any`. Combine them with `|`, as in `"string|null"`.
 
@@ -25,6 +25,8 @@ Tagging values are unquoted paths: `internally`, `adjacently`, `externally`, and
 `alias("oldName", "olderName")` adds read-only keys to a record field. Lists accumulate across `#[json(...)]` attributes. Aliases are literal strings and do not undergo renaming. An alias must differ from the field's main JSON name and every other name or alias in the flattened record, including an internal variant tag. Inline container fields and variant case names do not support aliases.
 
 Rust's native JSON decoder and Serde bridge, and Python's Pydantic models, accept aliases. Serialization, JSON Schema, OpenAPI, and TypeScript types and checks use only the main name. Rust rejects input containing multiple spellings of one field; Python chooses the main name first, then aliases in declaration order.
+
+A `fallback` case holds every value that selects no other case. Its payload is the entire value. It requires a payload, excludes `name`, `rename`, and `content`, and may occur once per variant. See [unknown cases](/sidex/docs/guides/json/#unknown-cases).
 
 An `inline` field merges the entries of its record into the surrounding object. It must be required, and its type must be a record or resolve to one through aliases and wrappers. JSON field names must be unique after renaming and flattening nested inline records, including the tag of an internally tagged variant. See [JSON mapping](/sidex/docs/guides/json/) for examples.
 

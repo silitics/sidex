@@ -37,6 +37,18 @@ variant ImplicitlyTagged {
     AsBool: bool,
 }
 
+#[json(tagged = externally)]
+variant WithFallback {
+    Unit,
+    #[json(fallback)]
+    Other: string,
+}
+
+variant OnlyFallback {
+    #[json(fallback)]
+    Other: bool,
+}
+
 opaque Uuid
 
 #[json(type = "string")]

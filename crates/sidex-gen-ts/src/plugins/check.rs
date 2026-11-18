@@ -13,31 +13,24 @@ use sidex_gen::diagnostics::Result;
 use sidex_gen::ir;
 
 use crate::context::SchemaCtx;
+use crate::context::TypeExpr;
 use crate::plugins::types::ts_string_literal;
+use crate::plugins::types::variant_types;
 
 /// Emits object members for a type's structural checker.
 pub fn emit(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
     let name = def.name.as_str();
     let check = definition(ctx, def)?;
+    let is_known = emit_is_known(ctx, def)?;
     if def.vars.is_empty() {
         return Ok(quote!(
-            "...__sidex_types.checker<@name>((): __sidex_types.Check => @check),"
+            r#"
+            ...__sidex_types.checker<@name>((): __sidex_types.Check => @check),
+            @is_known
+        "#
         ));
     }
-    let vars: Vec<Code> = def
-        .vars
-        .iter()
-        .map(|var| Code::from(var.name.as_str()))
-        .collect();
-    let params: Vec<Code> = def
-        .vars
-        .iter()
-        .map(|var| {
-            let name = var.name.as_str();
-            let param = format!("__check_{name}");
-            quote!("@param: __sidex_types.Checker<@name>")
-        })
-        .collect();
+    let (vars, params) = type_params(def);
     let args: Vec<Code> = def
         .vars
         .iter()
@@ -53,6 +46,54 @@ pub fn emit(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
         },
         check<@(@vars), +>(value: unknown, @(@params), +): __sidex_types.CheckReport {
             return @name.checker(@(@args), +).check(value);
+        },
+        @is_known
+    "#
+    ))
+}
+
+/// Returns a definition's type parameters and the parameters of their checkers.
+fn type_params(def: &ir::Def) -> (Vec<Code>, Vec<Code>) {
+    let vars = def
+        .vars
+        .iter()
+        .map(|var| Code::from(var.name.as_str()))
+        .collect();
+    let params = def
+        .vars
+        .iter()
+        .map(|var| {
+            let name = var.name.as_str();
+            let param = format!("__check_{name}");
+            quote!("@param: __sidex_types.Checker<@name>")
+        })
+        .collect();
+    (vars, params)
+}
+
+/// Emits `isKnown` for a variant with a fallback case and other cases.
+fn emit_is_known(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
+    let ir::DefKind::VariantType(variant) = &def.kind else {
+        return Ok(Code::new());
+    };
+    let (known, fallback) = variant_types(ctx, def, variant)?;
+    if fallback.is_none() || known.is_empty() {
+        return Ok(Code::new());
+    }
+    let known_type = TypeExpr::union(known);
+    let known_check = variant_check(ctx, def, variant, false)?;
+    let name = def.name.as_str();
+    let signature = if def.vars.is_empty() {
+        quote!("isKnown(value: @name)")
+    } else {
+        let (vars, params) = type_params(def);
+        quote!("isKnown<@(@vars), +>(value: @name<@(@vars), +>, @(@params), +)")
+    };
+    Ok(quote!(
+        r#"
+        /** Indicates whether the value holds a case other than the fallback case. */
+        @signature: value is @known_type {
+            return __sidex_types.checker<unknown>((): __sidex_types.Check => @known_check).is(value);
         },
     "#
     ))
@@ -105,44 +146,64 @@ fn definition(ctx: &SchemaCtx, def: &ir::Def) -> Result<Code> {
                 "__sidex_types.record([@(@fields), +], [@(@inline), +])"
             ))
         }
-        ir::DefKind::VariantType(variant) => {
-            let attrs = variant_type_attrs(def)?;
-            let tag = ts_string_literal(&attrs.tag_field_name());
-            let mode = ts_string_literal(match attrs.tagged {
-                JsonTaggedAttr::Externally => "external",
-                JsonTaggedAttr::Internally => "internal",
-                JsonTaggedAttr::Adjacently => "adjacent",
-                JsonTaggedAttr::Implicitly => "implicit",
-            });
-            let mut cases = Vec::new();
-            for case in &variant.variants {
-                let case_attrs = variant_attrs(case)?;
-                let name = ts_string_literal(&attrs.variant_name(case, &case_attrs));
-                let (payload, content) = if let Some(typ) = &case.typ {
-                    let content = if matches!(attrs.tagged, JsonTaggedAttr::Internally)
-                        && case_attrs.content.is_none()
-                        && is_record(ctx.bundle_ctx.unit, typ)
-                    {
-                        "null".to_owned()
-                    } else {
-                        let content = ts_string_literal(&attrs.content_field_name(&case_attrs));
-                        if matches!(attrs.tagged, JsonTaggedAttr::Internally)
-                            && case_attrs.content.is_none()
-                        {
-                            format!("[{content}]")
-                        } else {
-                            content
-                        }
-                    };
-                    (type_check(ctx, def, typ)?, content)
-                } else {
-                    (Code::from("null"), "null".to_owned())
-                };
-                cases.push(quote!("[@name, @payload, @content]"));
-            }
-            Ok(quote!("__sidex_types.variant(@mode, @tag, [@(@cases), +])"))
-        }
+        ir::DefKind::VariantType(variant) => variant_check(ctx, def, variant, true),
     }
+}
+
+/// Lowers a variant to a runtime check expression, optionally without its
+/// fallback case.
+fn variant_check(
+    ctx: &SchemaCtx,
+    def: &ir::Def,
+    variant: &ir::VariantTypeDef,
+    with_fallback: bool,
+) -> Result<Code> {
+    let attrs = variant_type_attrs(def)?;
+    let tag = ts_string_literal(&attrs.tag_field_name());
+    let mode = ts_string_literal(match attrs.tagged {
+        JsonTaggedAttr::Externally => "external",
+        JsonTaggedAttr::Internally => "internal",
+        JsonTaggedAttr::Adjacently => "adjacent",
+        JsonTaggedAttr::Implicitly => "implicit",
+    });
+    let mut cases = Vec::new();
+    let mut fallback = Code::new();
+    for case in &variant.variants {
+        let case_attrs = variant_attrs(case)?;
+        if case_attrs.fallback {
+            if with_fallback {
+                let typ = case.typ.as_ref().expect("fallback cases have payloads");
+                let check = type_check(ctx, def, typ)?;
+                fallback = quote!(", @check");
+            }
+            continue;
+        }
+        let name = ts_string_literal(&attrs.variant_name(case, &case_attrs));
+        let (payload, content) = if let Some(typ) = &case.typ {
+            let content = if matches!(attrs.tagged, JsonTaggedAttr::Internally)
+                && case_attrs.content.is_none()
+                && is_record(ctx.bundle_ctx.unit, typ)
+            {
+                "null".to_owned()
+            } else {
+                let content = ts_string_literal(&attrs.content_field_name(&case_attrs));
+                if matches!(attrs.tagged, JsonTaggedAttr::Internally)
+                    && case_attrs.content.is_none()
+                {
+                    format!("[{content}]")
+                } else {
+                    content
+                }
+            };
+            (type_check(ctx, def, typ)?, content)
+        } else {
+            (Code::from("null"), "null".to_owned())
+        };
+        cases.push(quote!("[@name, @payload, @content]"));
+    }
+    Ok(quote!(
+        "__sidex_types.variant(@mode, @tag, [@(@cases), +]@fallback)"
+    ))
 }
 
 /// Resolves a reference without using TypeScript's arbitrary type mapping table.

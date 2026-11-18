@@ -208,6 +208,18 @@ fn implicitly_tagged_emits_just_payload() {
 }
 
 #[test]
+fn fallback_cases_are_only_picked_without_other_cases() {
+    let ir = load_fixture();
+    for seed in 0..30 {
+        assert_eq!(
+            sample(&ir, "fuzz_fixture::data::WithFallback", seed),
+            Value::from("Unit")
+        );
+        assert!(sample(&ir, "fuzz_fixture::data::OnlyFallback", seed).is_boolean());
+    }
+}
+
+#[test]
 fn i64_includes_full_range() {
     let ir = load_fixture();
     let mut saw_max = false;

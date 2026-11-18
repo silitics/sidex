@@ -100,6 +100,31 @@ class Model(pydantic.BaseModel):
         return flattened
 
 
+# Fallback cases hold values that select no other case. Values naming another
+# case must not fall back, even if their payloads are invalid.
+
+
+def reject_known_tagged(value: object, tag: str, names: frozenset[str]) -> object:
+    """Reject internally or adjacently tagged values that name another case."""
+    if isinstance(value, dict):
+        _reject_name(value.get(tag), names)
+    return value
+
+
+def reject_known_external(value: object, names: frozenset[str]) -> object:
+    """Reject externally tagged values that name another case."""
+    if isinstance(value, str):
+        _reject_name(value, names)
+    elif isinstance(value, dict) and len(value) == 1:
+        _reject_name(next(iter(value)), names)
+    return value
+
+
+def _reject_name(name: object, names: frozenset[str]) -> None:
+    if isinstance(name, str) and name in names:
+        raise ValueError(f"case `{name}` is not the fallback case")
+
+
 # Serializers raise `PydanticSerializationUnexpectedValue` for values of other
 # types, so serializing unions tries the next member.
 

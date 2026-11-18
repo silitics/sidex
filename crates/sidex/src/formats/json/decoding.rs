@@ -398,9 +398,20 @@ fn externally_tagged(
     f: &mut IndexFn<'_>,
 ) -> Result<(), DecodeError> {
     const EXPECTED: &str = "a string or a map with a single entry";
-    match value {
-        JsonValue::String(name) => {
-            let (index, case) = find_case(shape, name)?;
+    let selected = match value {
+        JsonValue::String(name) => find_case(shape, name).map(|case| (case, name, None)),
+        JsonValue::Map(entries) if entries.len() == 1 => {
+            let (name, payload) = entries.iter().next().expect("the map has one entry");
+            find_case(shape, name).map(|case| (case, name, Some(payload)))
+        }
+        _ => Err(DecodeError::unexpected(value.kind(), EXPECTED)),
+    };
+    let ((index, case), name, payload) = match selected {
+        Ok(selected) => selected,
+        Err(error) => return fallback(value, shape, Claimed::None, unknown, f, error),
+    };
+    match payload {
+        None => {
             if case.payload.is_some() {
                 return Err(DecodeError::new(format_args!(
                     "case `{name}` requires a payload"
@@ -408,9 +419,7 @@ fn externally_tagged(
             }
             f(index, &mut JsonDecoder::new(&JsonValue::Null, unknown))
         }
-        JsonValue::Map(entries) if entries.len() == 1 => {
-            let (name, payload) = entries.iter().next().expect("the map has one entry");
-            let (index, case) = find_case(shape, name)?;
+        Some(payload) => {
             if case.payload.is_none() {
                 return Err(DecodeError::new(format_args!(
                     "case `{name}` has no payload and must be a string"
@@ -420,11 +429,11 @@ fn externally_tagged(
                 f(index, &mut JsonDecoder::new(payload, unknown))
             })
         }
-        _ => Err(DecodeError::unexpected(value.kind(), EXPECTED)),
     }
 }
 
-/// Decodes the first case in declaration order that matches.
+/// Decodes the first case in declaration order that matches, trying the
+/// fallback case last.
 fn implicitly_tagged(
     value: &JsonValue,
     shape: &'static Shape,
@@ -434,6 +443,9 @@ fn implicitly_tagged(
     let variant = shape.as_variant().expect("callers check the shape");
     let mut failures = Vec::new();
     for (index, case) in variant.cases.iter().enumerate() {
+        if case.json.fallback {
+            continue;
+        }
         if case.payload.is_none() {
             if matches!(value, JsonValue::String(name) if name == case.json.name) {
                 return f(index, &mut JsonDecoder::new(&JsonValue::Null, unknown));
@@ -450,11 +462,12 @@ fn implicitly_tagged(
             }
         }
     }
-    Err(DecodeError::new(format_args!(
+    let error = DecodeError::new(format_args!(
         "no case of `{shape}` matches {} ({})",
         value.kind(),
         failures.join("; ")
-    )))
+    ));
+    fallback(value, shape, Claimed::None, unknown, f, error)
 }
 
 /// Decodes an internally or adjacently tagged variant.
@@ -466,19 +479,11 @@ fn tagged(
     unknown: Unknown<'_>,
     f: &mut IndexFn<'_>,
 ) -> Result<(), DecodeError> {
-    let JsonValue::Map(entries) = value else {
-        return Err(DecodeError::unexpected(value.kind(), "a map"));
+    let (entries, index, case) = match select_tagged(value, shape, tag) {
+        Ok(selected) => selected,
+        // The tag is not an unknown field of a fallback record.
+        Err(error) => return fallback(value, shape, Claimed::Tag(tag), unknown, f, error),
     };
-    let name = match entries.get(tag) {
-        Some(JsonValue::String(name)) => name,
-        Some(other) => {
-            return Err(DecodeError::unexpected(other.kind(), "a string")
-                .within(PathSegment::Key(Str::from(tag))));
-        }
-        None => return Err(missing_field(tag)),
-    };
-    let (index, case) =
-        find_case(shape, name).map_err(|error| error.within(PathSegment::Key(Str::from(tag))))?;
     let Some(payload_shape) = case.payload else {
         return f(index, &mut JsonDecoder::new(&JsonValue::Null, unknown));
     };
@@ -498,6 +503,62 @@ fn tagged(
             f(index, &mut decoder)
         }
     }
+}
+
+/// Selects the case named by the tag of an internally or adjacently tagged
+/// variant and returns it with the map holding the tag.
+fn select_tagged<'v>(
+    value: &'v JsonValue,
+    shape: &'static Shape,
+    tag: &'static str,
+) -> Result<(&'v Map<Str, JsonValue>, usize, &'static CaseShape), DecodeError> {
+    let JsonValue::Map(entries) = value else {
+        return Err(DecodeError::unexpected(value.kind(), "a map"));
+    };
+    let name = match entries.get(tag) {
+        Some(JsonValue::String(name)) => name,
+        Some(other) => {
+            return Err(DecodeError::unexpected(other.kind(), "a string")
+                .within(PathSegment::Key(Str::from(tag))));
+        }
+        None => return Err(missing_field(tag)),
+    };
+    let (index, case) =
+        find_case(shape, name).map_err(|error| error.within(PathSegment::Key(Str::from(tag))))?;
+    Ok((entries, index, case))
+}
+
+/// Decodes the entire value as the payload of the variant's fallback case.
+///
+/// Returns `error`, the reason why the value selects no other case, if there is
+/// no fallback case.
+fn fallback(
+    value: &JsonValue,
+    shape: &'static Shape,
+    claimed: Claimed,
+    unknown: Unknown<'_>,
+    f: &mut IndexFn<'_>,
+    error: DecodeError,
+) -> Result<(), DecodeError> {
+    let variant = shape.as_variant().expect("callers check the shape");
+    let Some((index, case)) = variant
+        .cases
+        .iter()
+        .enumerate()
+        .find(|(_, case)| case.json.fallback)
+    else {
+        return Err(error);
+    };
+    let mut decoder = JsonDecoder {
+        claimed,
+        ..JsonDecoder::new(value, unknown)
+    };
+    f(index, &mut decoder).map_err(|failure| {
+        DecodeError::new(format_args!(
+            "{error}, and fallback case `{}` does not match: {failure}",
+            case.name
+        ))
+    })
 }
 
 /// Returns the keys of the map that are not fields of the record, except for
@@ -532,7 +593,7 @@ fn known_fields(record: &RecordShape, known: &mut Vec<&'static str>) -> bool {
     true
 }
 
-/// Finds the case with the given JSON name.
+/// Finds the case with the given JSON name. Fallback cases have no JSON name.
 fn find_case(
     shape: &'static Shape,
     name: &str,
@@ -542,7 +603,7 @@ fn find_case(
         .cases
         .iter()
         .enumerate()
-        .find(|(_, case)| case.json.name == name)
+        .find(|(_, case)| !case.json.fallback && case.json.name == name)
         .ok_or_else(|| DecodeError::new(format_args!("unknown case `{name}` of `{shape}`")))
 }
 

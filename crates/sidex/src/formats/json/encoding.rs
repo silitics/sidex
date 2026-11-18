@@ -103,6 +103,14 @@ fn variant(variant: &dyn VariantView, f: &mut ViewFn<'_>) -> Result<(), EncodeEr
         ))
     })?;
     let name = case.json.name;
+    if case.json.fallback {
+        let payload = variant.payload().ok_or_else(|| {
+            EncodeError::new(format_args!(
+                "fallback case `{name}` of `{shape}` has no payload"
+            ))
+        })?;
+        return self::view(&payload, f);
+    }
     let tag = match variant_shape.json {
         Tagging::Internal { tag, .. } | Tagging::Adjacent { tag, .. } => tag,
         Tagging::External => {

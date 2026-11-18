@@ -147,6 +147,33 @@ match progress:
 assert summary == "in progress"
 ```
 
+## Match Fallback Cases
+
+A [fallback case](/sidex/docs/guides/json/#unknown-cases) becomes a root model holding the entire value:
+
+```sidex
+#[json(tagged = externally)]
+variant Architecture {
+    Amd64,
+    Arm64,
+    #[json(fallback)]
+    Other: string,
+}
+```
+
+Readers try the other cases first:
+
+```python
+from pydantic import TypeAdapter
+from task_models.outcomes import Architecture, Architecture_Other
+
+adapter = TypeAdapter(Architecture)
+assert adapter.validate_json('"Arm64"') == "Arm64"
+architecture = adapter.validate_json('"Riscv64"')
+assert architecture == Architecture_Other("Riscv64")
+assert architecture.payload() == "Riscv64"
+```
+
 ## Map Native Opaque Types
 
 ```sidex

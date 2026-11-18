@@ -333,7 +333,7 @@ pub mod attrs {
             })
         }
     }
-    #[doc = "JSON-specific attributes that may be applied to a single variant case.\n\nSource form: `#[json(name = \"explicit\", rename = \"kebab-case\")]`.\n"]
+    #[doc = "JSON-specific attributes that may be applied to a single variant case.\n\nSource form: `#[json(name = \"explicit\", rename = \"kebab-case\")]` or\n`#[json(fallback)]`.\n"]
     #[derive(Clone, Debug)]
     pub struct VariantAttrs {
         #[doc = "Override the JSON tag value with an explicit string.\n"]
@@ -342,10 +342,12 @@ pub mod attrs {
         pub rename: ::std::option::Option<::std::string::String>,
         #[doc = "Override the per-case content field name (only meaningful with\n`adjacently` tagging).\n"]
         pub content: ::std::option::Option<::std::string::String>,
+        #[doc = "Whether the case holds values that select no other case. Its payload\nis the entire value, which is also written as is.\n"]
+        pub fallback: ::std::option::Option<bool>,
     }
     #[automatically_derived]
     impl ::sidex::Shaped for VariantAttrs {
-        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::VariantAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON tag value with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the case name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("content" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the per-case content field name (only meaningful with\n`adjacently` tagging).\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a single variant case.\n\nSource form: `#[json(name = \"explicit\", rename = \"kebab-case\")]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("variant_case") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
+        const SHAPE : & 'static :: sidex :: Shape = & :: sidex :: Shape :: new ("::json::attrs::VariantAttrs" , :: sidex :: shape :: ShapeKind :: Record (:: sidex :: shape :: RecordShape :: new (& [:: sidex :: shape :: FieldShape :: new ("name" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the JSON tag value with an explicit string.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("rename" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Apply a rename function to the case name.\n") . optional () , :: sidex :: shape :: FieldShape :: new ("content" , :: sidex :: shape :: shape_of :: < :: std :: string :: String > ,) . with_docs ("Override the per-case content field name (only meaningful with\n`adjacently` tagging).\n") . optional () , :: sidex :: shape :: FieldShape :: new ("fallback" , :: sidex :: shape :: shape_of :: < bool > ,) . with_docs ("Whether the case holds values that select no other case. Its payload\nis the entire value, which is also written as is.\n") . optional ()]))) . with_docs ("JSON-specific attributes that may be applied to a single variant case.\n\nSource form: `#[json(name = \"explicit\", rename = \"kebab-case\")]` or\n`#[json(fallback)]`.\n") . with_attrs (& [:: sidex :: shape :: Attr :: List { path : "attrs" , args : & [:: sidex :: shape :: Attr :: Assign { path : "plugin" , value : :: sidex :: shape :: AttrValue :: String ("json") } , :: sidex :: shape :: Attr :: Assign { path : "target" , value : :: sidex :: shape :: AttrValue :: Path ("variant_case") }] } , :: sidex :: shape :: Attr :: List { path : "json" , args : & [:: sidex :: shape :: Attr :: Assign { path : "rename_all" , value : :: sidex :: shape :: AttrValue :: String ("snake_case") }] }]) ;
     }
     #[automatically_derived]
     impl ::sidex::Encode for VariantAttrs {
@@ -376,6 +378,11 @@ pub mod attrs {
                         .as_ref()
                         .map(|value| ::sidex::Encode::encode(value))
                 }
+                3usize => {
+                    self.fallback
+                        .as_ref()
+                        .map(|value| ::sidex::Encode::encode(value))
+                }
                 _ => ::std::option::Option::None,
             }
         }
@@ -389,6 +396,7 @@ pub mod attrs {
             let mut __field_0 = ::std::option::Option::<::std::string::String>::None;
             let mut __field_1 = ::std::option::Option::<::std::string::String>::None;
             let mut __field_2 = ::std::option::Option::<::std::string::String>::None;
+            let mut __field_3 = ::std::option::Option::<bool>::None;
             decoder.record(<Self as ::sidex::Shaped>::SHAPE, &mut |index, decoder| {
                 match index {
                     0usize => {
@@ -406,6 +414,10 @@ pub mod attrs {
                             <::std::string::String as ::sidex::Decode>::decode(decoder)?,
                         )
                     }
+                    3usize => {
+                        __field_3 =
+                            ::std::option::Option::Some(<bool as ::sidex::Decode>::decode(decoder)?)
+                    }
                     _ => {}
                 }
                 ::std::result::Result::Ok(())
@@ -414,6 +426,7 @@ pub mod attrs {
                 name: __field_0,
                 rename: __field_1,
                 content: __field_2,
+                fallback: __field_3,
             })
         }
     }

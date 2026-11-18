@@ -122,6 +122,7 @@ impl Walker {
         let (case, payload_shape) = payload_shape;
         // The segment follows the JSON representation of the variant.
         let segment = match variant_shape.json {
+            _ if case.json.fallback => None,
             Tagging::External => Some(case.json.name),
             Tagging::Implicit => None,
             Tagging::Internal { .. } | Tagging::Adjacent { .. } => {
