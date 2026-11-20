@@ -110,6 +110,7 @@ An optional field permits absence. It does not make `null` a valid value for a `
 Choose a guide to connect the output to your application:
 
 - [Rust](/sidex/docs/generation/rust/): generate during a Cargo build and use Serde.
+- [Rust for Embedded Targets](/sidex/docs/generation/rust-embedded/): use the model on microcontrollers without an allocator.
 - [TypeScript](/sidex/docs/generation/typescript/): import JSON-shaped types and check incoming data.
 - [Python](/sidex/docs/generation/python/): parse and serialize with Pydantic.
 - [JSON Schema](/sidex/docs/generation/json-schema/): describe JSON for validators and other tooling.

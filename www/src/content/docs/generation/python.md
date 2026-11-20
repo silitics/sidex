@@ -1,7 +1,7 @@
 ---
 title: Python
 description: Parse and serialize shared models with Pydantic.
-order: 2
+order: 3
 ---
 
 The Python generator produces a typed package built on Pydantic 2. Records become models, wrappers become root models, variants get case models and JSON adapters. Variant cases that encode as bare strings become string literals. It also emits a `py.typed` marker for type checkers.

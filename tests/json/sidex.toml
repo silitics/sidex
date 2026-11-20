@@ -11,3 +11,6 @@ description = "Used by clients."
 derive = ["Clone", "Debug"]
 plugins = ["serde", "builder"]
 group_traits = ["client"]
+
+[backend.rust-embedded]
+derive = ["Debug"]

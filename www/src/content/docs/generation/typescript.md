@@ -1,7 +1,7 @@
 ---
 title: TypeScript
 description: Generate JSON-shaped types, structural checks, and optional validation rules.
-order: 1
+order: 2
 ---
 
 The TypeScript generator emits type aliases matching the JSON representation. Records use wire field names, and variants become unions selected by their configured tags. Wrappers and primitive opaque types use nominal brands to keep distinct types separate.

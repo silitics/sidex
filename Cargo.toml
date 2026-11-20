@@ -30,6 +30,7 @@ sidex-codegen-macros = { path = "crates/sidex-codegen-macros", version = "=0.6.1
 sidex-codegen-syntax = { path = "crates/sidex-codegen-syntax", version = "=0.6.1" }
 sidex-core = { path = "crates/sidex-core", version = "=0.6.1" }
 sidex-diagnostics = { path = "crates/sidex-diagnostics", version = "=0.6.1" }
+sidex-embedded = { path = "crates/sidex-embedded", version = "=0.6.1" }
 sidex-fmt = { path = "crates/sidex-fmt", version = "=0.6.1" }
 sidex-fuzz = { path = "crates/sidex-fuzz", version = "=0.6.1" }
 sidex-gen = { path = "crates/sidex-gen", version = "=0.6.1" }
@@ -37,6 +38,7 @@ sidex-gen-ir = { path = "crates/sidex-gen-ir", version = "=0.6.1" }
 sidex-gen-json-schema = { path = "crates/sidex-gen-json-schema", version = "=0.6.1" }
 sidex-gen-py = { path = "crates/sidex-gen-py", version = "=0.6.1" }
 sidex-gen-rs = { path = "crates/sidex-gen-rs", version = "=0.6.1" }
+sidex-gen-rs-embedded = { path = "crates/sidex-gen-rs-embedded", version = "=0.6.1" }
 sidex-gen-ts = { path = "crates/sidex-gen-ts", version = "=0.6.1" }
 sidex-ir = { path = "crates/sidex-ir", version = "=0.6.1" }
 sidex-syntax = { path = "crates/sidex-syntax", version = "=0.6.1" }

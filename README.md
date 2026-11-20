@@ -34,6 +34,7 @@ To learn more, [checkout Sidex's website](https://oss.silitics.com/sidex/). 🚀
 - **Extensible** with user-defined opaque types.
 - Support for **generics**, **recursive types**, and **custom attributes**.
 - Out-of-the-box support for [Rust](https://rust-lang.org), [TypeScript](https://www.typescriptlang.org), [Python](https://www.python.org), and [JSON Schema](https://json-schema.org).
+- Allocation-free Rust types for **microcontrollers** and other `no_std` targets.
 
 ## Installation
 

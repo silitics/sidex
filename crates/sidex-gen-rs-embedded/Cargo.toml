@@ -1,0 +1,30 @@
+[package]
+name = "sidex-gen-rs-embedded"
+description = "Sidex code generator for Rust on embedded targets without an allocator."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+# Required for code generation.
+sidex-gen.workspace = true # PUBLIC
+# Required for parsing `rust`, `json`, and API lifecycle attributes.
+sidex-attrs-rust.workspace = true
+sidex-attrs-json.workspace = true
+sidex-attrs-api.workspace = true
+# Required for generating Rust code.
+proc-macro2.workspace = true # PUBLIC
+quote.workspace = true
+syn.workspace = true
+# Required for deserializing the backend configuration.
+serde.workspace = true
+
+[dev-dependencies]
+sidex-core.workspace = true
+sidex-diagnostics.workspace = true
+
+[lints]
+workspace = true

@@ -19,6 +19,7 @@ sidex-core.workspace = true
 sidex-gen.workspace = true
 sidex-gen-ir.workspace = true
 sidex-gen-rs.workspace = true
+sidex-gen-rs-embedded.workspace = true
 sidex-gen-ts.workspace = true
 sidex-gen-json-schema.workspace = true
 sidex-gen-py.workspace = true

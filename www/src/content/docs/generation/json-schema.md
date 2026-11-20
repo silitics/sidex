@@ -1,7 +1,7 @@
 ---
 title: JSON Schema
 description: Generate schema documents for the JSON representation of your models.
-order: 3
+order: 4
 ---
 
 JSON Schema describes the structure of JSON values. Sidex's `json-schema` backend generates Draft 2020-12 documents from your model and its `json` attributes.

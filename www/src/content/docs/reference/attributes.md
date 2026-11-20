@@ -37,7 +37,7 @@ An `inline` field merges the entries of its record into the surrounding object. 
 | Definition | `type = "..."`, `derive(...)`, `attr(...)`                                                       |
 | Field      | `name = "..."`, `pub`, `pub(crate)`, `pub(super)`, `private`, `box`, `arc`, `rc`, `wrap = "..."` |
 
-Fields are public by default. `pub` and `private` cannot both apply to a field. Indirection attributes wrap the native field type without changing JSON shape. `derive` and `attr` arguments accumulate.
+Fields are public by default. `pub` and `private` cannot both apply to a field. Indirection attributes wrap the native field type without changing JSON shape. `derive` and `attr` arguments accumulate. The [`rust-embedded` generator](/sidex/docs/generation/rust-embedded/#differences-from-the-rust-generator) only uses `name`. It rejects the indirection attributes and ignores the others.
 
 ```sidex
 #[rust(derive(Clone, Debug), attr(non_exhaustive))]

@@ -14,12 +14,13 @@ The [getting started guide](/sidex/docs/getting-started/) takes you from a new b
 
 Already have a model? Choose your target:
 
-| Target      | Generated Output                                                                      | Guide                                              |
-| ----------- | ------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Rust        | Structs, enums, newtypes, and optional Serde, builder, and validation implementations | [Rust](/sidex/docs/generation/rust/)               |
-| TypeScript  | Types matching the JSON representation, nominal wrappers, and optional validators     | [TypeScript](/sidex/docs/generation/typescript/)   |
-| Python      | Pydantic models, root models, and JSON adapters                                       | [Python](/sidex/docs/generation/python/)           |
-| JSON Schema | Schema documents for concrete JSON representations                                    | [JSON Schema](/sidex/docs/generation/json-schema/) |
+| Target        | Generated Output                                                                      | Guide                                                               |
+| ------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Rust          | Structs, enums, newtypes, and optional Serde, builder, and validation implementations | [Rust](/sidex/docs/generation/rust/)                                |
+| Embedded Rust | Allocation-free types for `no_std` targets that borrow from their JSON input          | [Rust for Embedded Targets](/sidex/docs/generation/rust-embedded/) |
+| TypeScript    | Types matching the JSON representation, nominal wrappers, and optional validators     | [TypeScript](/sidex/docs/generation/typescript/)                    |
+| Python        | Pydantic models, root models, and JSON adapters                                       | [Python](/sidex/docs/generation/python/)                            |
+| JSON Schema   | Schema documents for concrete JSON representations                                    | [JSON Schema](/sidex/docs/generation/json-schema/)                  |
 
 ## Understand the Model
 

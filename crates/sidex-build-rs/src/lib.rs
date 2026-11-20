@@ -17,7 +17,11 @@
 //! `./path-to-bundle` relative to the `Cargo.toml` manifest of the crate. The generated
 //! code can then be included with the [`include_bundle!`] macro.
 //!
+//! For `no_std` targets without an allocator, call [`Generator::embedded`] and
+//! include the code with [`sidex_embedded::include_bundle!`].
+//!
 //! [`include_bundle!`]: https://docs.rs/sidex/latest/sidex/macro.include_bundle.html
+//! [`sidex_embedded::include_bundle!`]: https://docs.rs/sidex-embedded/latest/sidex_embedded/macro.include_bundle.html
 
 use std::error::Error;
 use std::ffi::OsStr;
@@ -28,6 +32,7 @@ use std::path::PathBuf;
 
 use sidex_core::transformer::Transformer;
 use sidex_gen_rs::RustGenerator;
+use sidex_gen_rs_embedded::EmbeddedRustGenerator;
 
 mod utils;
 
@@ -47,6 +52,8 @@ pub struct Generator {
     emit_rerun_if_changed: bool,
     /// The `format_generated_code` option.
     format_generated_code: bool,
+    /// The `embedded` option.
+    embedded: bool,
     /// The bundles for which to generate code.
     bundles: Vec<Bundle>,
 }
@@ -59,6 +66,7 @@ impl Generator {
             root_path: utils::default_root_path(),
             emit_rerun_if_changed: true,
             format_generated_code: true,
+            embedded: false,
             bundles: Vec::new(),
         }
     }
@@ -85,6 +93,17 @@ impl Generator {
     /// By default, this option is enabled.
     pub fn format_generated_code(mut self, enabled: bool) -> Self {
         self.format_generated_code = enabled;
+        self
+    }
+
+    /// Generates code with the `rust-embedded` backend instead of the `rust`
+    /// backend.
+    ///
+    /// The `rust-embedded` backend generates types for `no_std` targets without
+    /// an allocator, which use the `sidex-embedded` crate. It reads its
+    /// configuration from the `[backend.rust-embedded]` table of `sidex.toml`.
+    pub fn embedded(mut self) -> Self {
+        self.embedded = true;
         self
     }
 
@@ -125,10 +144,15 @@ impl Generator {
         for (bundle_idx, bundle) in bundle_indices.iter().zip(&self.bundles) {
             let null = serde_json::Value::Null;
             let bundle_path = self.root_path.join(&bundle.path);
+            let backend = if self.embedded {
+                "rust-embedded"
+            } else {
+                "rust"
+            };
             let config = transformer
                 .get_bundle_manifest(*bundle_idx)
                 .backend
-                .get("rust")
+                .get(backend)
                 .unwrap_or(&null);
 
             let bundle_name = &transformer.get_bundle_manifest(*bundle_idx).metadata.name;
@@ -144,8 +168,17 @@ impl Generator {
                 config,
             };
 
-            let generator = RustGenerator::new();
-            sidex_gen::Generator::generate(&generator, job).unwrap();
+            let generated = if self.embedded {
+                sidex_gen::Generator::generate(&EmbeddedRustGenerator, job)
+            } else {
+                sidex_gen::Generator::generate(&RustGenerator::new(), job)
+            };
+            if let Err(diagnostic) = generated {
+                let ctx = sidex_core::diagnostics::DiagnosticCtx::new();
+                ctx.exec(|| diagnostic.emit());
+                ctx.report().eprint(&transformer.sources);
+                return Err(format!("failed to generate code for bundle `{bundle_name}`").into());
+            }
 
             if self.format_generated_code {
                 let mod_rs = output_path.join("mod.rs");

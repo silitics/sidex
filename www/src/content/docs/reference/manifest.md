@@ -67,6 +67,29 @@ Generated types always carry their validation rules, so Rust has no `validate` p
 
 The `types` plugin is automatically enabled. User mappings take precedence over built-in defaults.
 
+## Rust Embedded Backend
+
+```toml
+[backend.rust-embedded]
+derive = ["Debug", "PartialEq"]
+groups = ["device"]
+
+[backend.rust-embedded.external]
+identity = "::identity_models"
+
+[backend.rust-embedded.types.table]
+"::identity::ids::UserId" = "crate::UserId<'a>"
+```
+
+| Key           | Default | Meaning                                                                      |
+| ------------- | ------- | ---------------------------------------------------------------------------- |
+| `derive`      | `[]`    | Native derives on generated types, in addition to `Clone` and `Copy`         |
+| `groups`      | `[]`    | Groups whose definitions to generate; all definitions if empty               |
+| `external`    | `{}`    | Bundle name to Rust module path                                              |
+| `types.table` | `{}`    | Fully qualified Sidex path to Rust type, with the lifetime `'a` if it borrows |
+
+See [Rust for Embedded Targets](/sidex/docs/generation/rust-embedded/) for the generated code and the requirements of mapped types.
+
 ## TypeScript Backend
 
 ```toml
