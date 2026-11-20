@@ -1,0 +1,27 @@
+[package]
+name = "sidex-embedded-tests"
+version = "0.0.0"
+description = "Tests the JSON representation of Rust types generated for embedded targets."
+publish = false
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+sidex-embedded.workspace = true
+
+[build-dependencies]
+sidex-build-rs.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+# Required for comparing the embedded runtime with the `sidex` crate.
+sidex.workspace = true
+sidex-core.workspace = true
+sidex-fuzz.workspace = true
+sidex-serde-tests.workspace = true
+
+[lints]
+workspace = true

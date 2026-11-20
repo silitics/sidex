@@ -48,13 +48,14 @@ Without `--check`, the command writes formatted files.
 sidex generate BACKEND OUTPUT [--config-override KEY=VALUE]...
 ```
 
-| Backend       | Output                                              |
-| ------------- | --------------------------------------------------- |
-| `rust`        | `mod.rs`                                            |
-| `ts`          | One `.ts` per schema and `index.ts`                 |
-| `py`          | One `.py` per schema, `__init__.py`, and `py.typed` |
-| `json-schema` | Type schema documents and `schema-defs.json`        |
-| `ir`          | Compact `ir.json`                                   |
+| Backend         | Output                                              |
+| --------------- | --------------------------------------------------- |
+| `rust`          | `mod.rs`                                            |
+| `rust-embedded` | `mod.rs`                                            |
+| `ts`            | One `.ts` per schema and `index.ts`                 |
+| `py`            | One `.py` per schema, `__init__.py`, and `py.typed` |
+| `json-schema`   | Type schema documents and `schema-defs.json`        |
+| `ir`            | Compact `ir.json`                                   |
 
 Configuration comes from `[backend.BACKEND]` in the manifest. Repeat `--config-override` to change individual settings for this invocation.
 

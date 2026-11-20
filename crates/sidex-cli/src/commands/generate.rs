@@ -9,6 +9,7 @@ use sidex_gen_ir::IrGenerator;
 use sidex_gen_json_schema::JsonSchemaGenerator;
 use sidex_gen_py::PyGenerator;
 use sidex_gen_rs::RustGenerator;
+use sidex_gen_rs_embedded::EmbeddedRustGenerator;
 use sidex_gen_ts::TsGenerator;
 
 use crate::utils::load_unit_and_bundle;
@@ -40,6 +41,7 @@ impl GeneratorRegistry {
         let mut registry: HashMap<_, Box<dyn Generator>> = HashMap::new();
         registry.insert("ir".to_owned(), Box::new(IrGenerator));
         registry.insert("rust".to_owned(), Box::new(RustGenerator::new()));
+        registry.insert("rust-embedded".to_owned(), Box::new(EmbeddedRustGenerator));
         registry.insert("ts".to_owned(), Box::new(TsGenerator::new()));
         registry.insert("json-schema".to_owned(), Box::new(JsonSchemaGenerator));
         registry.insert("py".to_owned(), Box::new(PyGenerator::new()));

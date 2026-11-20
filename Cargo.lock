@@ -1300,6 +1300,7 @@ dependencies = [
  "sidex-core",
  "sidex-gen",
  "sidex-gen-rs",
+ "sidex-gen-rs-embedded",
 ]
 
 [[package]]
@@ -1324,6 +1325,7 @@ dependencies = [
  "sidex-gen-json-schema",
  "sidex-gen-py",
  "sidex-gen-rs",
+ "sidex-gen-rs-embedded",
  "sidex-gen-ts",
  "toml",
  "yansi",
@@ -1381,6 +1383,23 @@ dependencies = [
  "parking_lot",
  "scoped-tls",
  "sidex-ir",
+]
+
+[[package]]
+name = "sidex-embedded"
+version = "0.6.1"
+
+[[package]]
+name = "sidex-embedded-tests"
+version = "0.0.0"
+dependencies = [
+ "serde_json",
+ "sidex",
+ "sidex-build-rs",
+ "sidex-core",
+ "sidex-embedded",
+ "sidex-fuzz",
+ "sidex-serde-tests",
 ]
 
 [[package]]
@@ -1473,6 +1492,22 @@ dependencies = [
  "sidex-diagnostics",
  "sidex-gen",
  "sidex-validate-expr",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "sidex-gen-rs-embedded"
+version = "0.6.1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
+ "sidex-attrs-api",
+ "sidex-attrs-json",
+ "sidex-attrs-rust",
+ "sidex-core",
+ "sidex-diagnostics",
+ "sidex-gen",
  "syn 2.0.98",
 ]
 

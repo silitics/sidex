@@ -12,6 +12,7 @@ homepage.workspace = true
 sidex-core.workspace = true
 sidex-gen.workspace = true
 sidex-gen-rs.workspace = true
+sidex-gen-rs-embedded.workspace = true
 serde_json.workspace = true
 
 [lints]

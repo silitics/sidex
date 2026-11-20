@@ -1,0 +1,13 @@
+[package]
+name = "sidex-embedded"
+description = "Allocation-free runtime support for Sidex types on embedded targets."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories = ["embedded", "no-std::no-alloc", "encoding"]
+
+[lints]
+workspace = true
